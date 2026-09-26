@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Historia | Curruscos Clan</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .history-form {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .history-form.active {
+            display: block;
+        }
+
+        .history-form input,
+        .history-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .history-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .history-form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .history-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .history-timeline::before {
+            content: "";
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #ddd;
+        }
+
+        .history-year {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .history-year-title {
+            margin-left: 55px;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .history-entry {
+            position: relative;
+            margin-left: 55px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .history-entry::before {
+            content: "";
+            position: absolute;
+            left: -43px;
+            top: 24px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #333;
+        }
+
+        .history-date {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .history-entry h3 {
+            margin: 0 0 10px;
+        }
+
+        .history-description {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .history-meta {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .delete-history {
+            margin-top: 15px;
+            border: none;
+            background: #f1f1f1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+
+        @media (max-width: 600px) {
+
+            .history-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .history-timeline::before {
+                left: 10px;
+            }
+
+            .history-entry,
+            .history-year-title {
+                margin-left: 35px;
+            }
+
+            .history-entry::before {
+                left: -33px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="site-header">
+
+        <div class="brand">
+            <a href="index.html">Curruscos Clan</a>
+        </div>
+
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="miembros.html">Miembros</a>
+            <a href="eventos.html">Eventos</a>
+            <a href="recuerdos.html">Recuerdos</a>
+            <a href="historia.html">Historia</a>
+        </nav>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="history-header">
+
+            <div>
+                <h1>📖 Historia</h1>
+                <p>
+                    Los momentos que han ido construyendo
+                    la historia del grupo.
+                </p>
+            </div>
+
+            <button id="newHistoryButton">
+                + Añadir momento
+            </button>
+
+        </div>
+
+
+        <section id="historyForm" class="history-form">
+
+            <h2>Añadir momento a la historia</h2>
+
+            <label for="historyTitle">
+                Título
+            </label>
+
+            <input
+                type="text"
+                id="historyTitle"
+                placeholder="Ej. Nuestro primer viaje"
+            >
+
+
+            <label for="historyDate">
+                Fecha
+            </label>
+
+            <input
+                type="date"
+                id="historyDate"
+            >
+
+
+            <label for="historyDescription">
+                Descripción
+            </label>
+
+            <textarea
+                id="historyDescription"
+                placeholder="Cuenta qué ocurrió..."
+            ></textarea>
+
+
+            <div class="history-form-buttons">
+
+                <button id="saveHistoryButton">
+                    Guardar
+                </button>
+
+                <button
+                    id="cancelHistoryButton"
+                    type="button"
+                >
+                    Cancelar
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section
+            id="historyTimeline"
+            class="history-timeline"
+        >
+        </section>
+
+    </main>
+
+
+    <script src="js/data.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase.js"></script>
+
+
+    <script>
+
+        let historyEntries = [];
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+
+                const user =
+                    await getCurrentUser();
+
+                if (!user) {
+                    window.location.href =
+                        "login.html";
+                    return;
+                }
+
+                await loadHistoryPage();
+
+                setupHistoryForm();
+
+            }
+        );
+
+
+        async function loadHistoryPage() {
+
+            const timeline =
+                document.getElementById(
+                    "historyTimeline"
+                );
+
+            timeline.innerHTML =
+                "<p>Cargando historia...</p>";
+
+
+            historyEntries =
+                await getGroupHistory();
+
+
+            if (!historyEntries.length) {
+
+                timeline.innerHTML = `
+                    <div class="empty-history">
+                        <h2>Aún no hay historia</h2>
+                        <p>
+                            Añadid vuestro primer momento
+                            importante.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            timeline.innerHTML = "";
+
+
+            const groupedByYear = {};
+
+
+            historyEntries.forEach(
+                entry => {
+
+                    const year =
+                        entry.event_date
+                            .substring(0, 4);
+
+                    if (!groupedByYear[year]) {
+                        groupedByYear[year] = [];
+                    }
+
+                    groupedByYear[year].push(
+                        entry
+                    );
+
+                }
+            );
+
+
+            Object.keys(groupedByYear)
+                .sort((a, b) => b - a)
+                .forEach(
+                    year => {
+
+                        const yearSection =
+                            document.createElement(
+                                "div"
+                            );
+
+                        yearSection.className =
+                            "history-year";
+
+
+                        yearSection.innerHTML = `
+                            <h2 class="history-year-title">
+                                ${escapeHtml(year)}
+                            </h2>
+                        `;
+
+
+                        groupedByYear[year].forEach(
+                            entry => {
+
+                                const card =
+                                    document.createElement(
+                                        "article"
+                                    );
+
+                                card.className =
+                                    "history-entry";
+
+
+                                const profile =
+                                    entry.profiles;
+
+
+                                const creator =
+                                    profile?.display_name ||
+                                    profile?.username ||
+                                    "Miembro del grupo";
+
+
+                                const date =
+                                    new Date(
+                                        entry.event_date +
+                                        "T00:00:00"
+                                    );
+
+
+                                const formattedDate =
+                                    date.toLocaleDateString(
+                                        "es-ES",
+                                        {
+                                            day: "numeric",
+                                            month: "long"
+                                        }
+                                    );
+
+
+                                card.innerHTML = `
+
+                                    <div class="history-date">
+                                        ${escapeHtml(formattedDate)}
+                                    </div>
+
+                                    <h3>
+                                        ${escapeHtml(entry.title)}
+                                    </h3>
+
+                                    ${
+                                        entry.description
+                                            ? `
+                                                <div class="history-description">
+                                                    ${escapeHtml(entry.description)}
+                                                </div>
+                                            `
+                                            : ""
+                                    }
+
+                                    <div class="history-meta">
+                                        Añadido por
+                                        ${escapeHtml(creator)}
+                                    </div>
+
+                                    <button
+                                        class="delete-history"
+                                        data-history-id="${entry.id}"
+                                    >
+                                        Eliminar
+                                    </button>
+
+                                `;
+
+
+                                yearSection.appendChild(
+                                    card
+                                );
+
+                            }
+                        );
+
+
+                        timeline.appendChild(
+                            yearSection
+                        );
+
+                    }
+                );
+
+
+            setupDeleteButtons();
+
+        }
+
+
+        function setupHistoryForm() {
+
+            const newButton =
+                document.getElementById(
+                    "newHistoryButton"
+                );
+
+            const form =
+                document.getElementById(
+                    "historyForm"
+                );
+
+            const cancelButton =
+                document.getElementById(
+                    "cancelHistoryButton"
+                );
+
+            const saveButton =
+                document.getElementById(
+                    "saveHistoryButton"
+                );
+
+
+            newButton.addEventListener(
+                "click",
+                () => {
+
+                    form.classList.add(
+                        "active"
+                    );
+
+                    document
+                        .getElementById(
+                            "historyTitle"
+                        )
+                        .focus();
+
+                }
+            );
+
+
+            cancelButton.addEventListener(
+                "click",
+                () => {
+
+                    form.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            saveButton.addEventListener(
+                "click",
+                saveHistoryEntry
+            );
+
+        }
+
+
+        async function saveHistoryEntry() {
+
+            const title =
+                document
+                    .getElementById(
+                        "historyTitle"
+                    )
+                    .value
+                    .trim();
+
+
+            const date =
+                document
+                    .getElementById(
+                        "historyDate"
+                    )
+                    .value;
+
+
+            const description =
+                document
+                    .getElementById(
+                        "historyDescription"
+                    )
+                    .value
+                    .trim();
+
+
+            if (!title) {
+
+                alert(
+                    "El título es obligatorio."
+                );
+
+                return;
+
+            }
+
+
+            if (!date) {
+
+                alert(
+                    "La fecha es obligatoria."
+                );
+
+                return;
+
+            }
+
+
+            const button =
+                document.getElementById(
+                    "saveHistoryButton"
+                );
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Guardando...";
+
+
+            const entry =
+                await createHistoryEntry({
+
+                    title: title,
+
+                    description: description,
+
+                    event_date: date
+
+                });
+
+
+            if (!entry) {
+
+                alert(
+                    "No se ha podido guardar el momento."
+                );
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Guardar";
+
+                return;
+
+            }
+
+
+            document
+                .getElementById(
+                    "historyTitle"
+                )
+                .value = "";
+
+
+            document
+                .getElementById(
+                    "historyDate"
+                )
+                .value = "";
+
+
+            document
+                .getElementById(
+                    "historyDescription"
+                )
+                .value = "";
+
+
+            document
+                .getElementById(
+                    "historyForm"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+
+            button.disabled = false;
+
+            button.textContent =
+                "Guardar";
+
+
+            await loadHistoryPage();
+
+        }
+
+
+        function setupDeleteButtons() {
+
+            document
+                .querySelectorAll(
+                    ".delete-history"
+                )
+                .forEach(
+                    button => {
+
+                        button.addEventListener(
+                            "click",
+                            async () => {
+
+                                const confirmed =
+                                    confirm(
+                                        "¿Quieres eliminar este momento de la historia?"
+                                    );
+
+
+                                if (!confirmed) {
+                                    return;
+                                }
+
+
+                                const success =
+                                    await deleteHistoryEntry(
+                                        button.dataset.historyId
+                                    );
+
+
+                                if (!success) {
+
+                                    alert(
+                                        "No se ha podido eliminar el momento."
+                                    );
+
+                                    return;
+
+                                }
+
+
+                                await loadHistoryPage();
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+
+        }
+
+    </script>
+
+</body>
+
+</html>
