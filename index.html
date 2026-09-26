@@ -508,105 +508,6 @@
             }
 
         }
-
-    </style>
-
-</head>
-
-
-<body>
-
-
-    <!-- =====================================================
-         NAVEGACIÓN
-    ===================================================== -->
-
-    <header class="navbar">
-
-     <div class="brand-group">
-
-    <a href="index.html" class="logo">
-        CURRUSCOS<span>.</span>
-    </a>
-
-    <div class="group-selector">
-
-        <button
-            type="button"
-            id="currentGroupButton"
-            class="current-group-button"
-        >
-            <span id="currentGroupName">
-                Cargando grupo...
-            </span>
-
-            <span class="group-selector-arrow">
-                ▾
-            </span>
-        </button>
-
-        <div
-            id="groupMenu"
-            class="group-menu"
-            hidden
-        >
-
-            <div
-                id="groupList"
-                class="group-list"
-            ></div>
-
-            <div class="group-menu-divider"></div>
-
-            <button
-                type="button"
-                id="createGroupButton"
-                class="create-group-button"
-            >
-                ＋ Crear un grupo
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-        <nav id="mainNav">
-
-            <a href="index.html" class="active">
-                Inicio
-            </a>
-
-            <a href="miembros.html">
-                Miembros
-            </a>
-
-            <a href="historia.html">
-                Historia
-            </a>
-
-            <a href="recuerdos.html">
-                Recuerdos
-            </a>
-
-            <a href="eventos.html">
-                Eventos
-            </a>
-
-        </nav>
-
-
-        <button
-            class="menu-button"
-            id="menuButton"
-            aria-label="Abrir menú"
-        >
-            ☰
-        </button>
-
-    </header>
-
 /* =====================================================
    MARCA + SELECTOR DE GRUPO
 ===================================================== */
@@ -712,6 +613,106 @@
 .create-group-button:hover {
     background: #f5f5f5;
 }
+
+        
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         NAVEGACIÓN
+    ===================================================== -->
+
+    <header class="navbar">
+
+     <div class="brand-group">
+
+    <a href="index.html" class="logo">
+        CURRUSCOS<span>.</span>
+    </a>
+
+    <div class="group-selector">
+
+        <button
+            type="button"
+            id="currentGroupButton"
+            class="current-group-button"
+        >
+            <span id="currentGroupName">
+                Cargando grupo...
+            </span>
+
+            <span class="group-selector-arrow">
+                ▾
+            </span>
+        </button>
+
+        <div
+            id="groupMenu"
+            class="group-menu"
+            hidden
+        >
+
+            <div
+                id="groupList"
+                class="group-list"
+            ></div>
+
+            <div class="group-menu-divider"></div>
+
+            <button
+                type="button"
+                id="createGroupButton"
+                class="create-group-button"
+            >
+                ＋ Crear un grupo
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <nav id="mainNav">
+
+            <a href="index.html" class="active">
+                Inicio
+            </a>
+
+            <a href="miembros.html">
+                Miembros
+            </a>
+
+            <a href="historia.html">
+                Historia
+            </a>
+
+            <a href="recuerdos.html">
+                Recuerdos
+            </a>
+
+            <a href="eventos.html">
+                Eventos
+            </a>
+
+        </nav>
+
+
+        <button
+            class="menu-button"
+            id="menuButton"
+            aria-label="Abrir menú"
+        >
+            ☰
+        </button>
+
+    </header>
+
 
 @media (max-width: 600px) {
 
@@ -1492,81 +1493,18 @@
 
 
 
-        /* ===============================================
-           RECUERDOS
-           
-           Todavía utilizamos los datos antiguos
-           hasta que migremos recuerdos a Supabase.
-        =============================================== */
+/* ===============================================
+   RECUERDOS
+   Ahora vienen directamente de Supabase
+=============================================== */
 
-        let memories = [];
+const memories =
+    await getGroupMemories();
 
-
-        try {
-
-            const possibleKeys = [
-                "curruscos_memories",
-                "curruscos_recuerdos"
-            ];
-
-
-            for (const key of possibleKeys) {
-
-                const stored =
-                    JSON.parse(
-                        localStorage.getItem(key)
-                    );
-
-
-                if (Array.isArray(stored)) {
-
-                    memories = stored;
-                    break;
-
-                }
-
-            }
-
-        } catch (error) {
-
-            memories = [];
-
-        }
-
-
-        if (
-            memories.length === 0 &&
-            typeof CURRUSCOS_DATA !== "undefined"
-        ) {
-
-            if (
-                Array.isArray(
-                    CURRUSCOS_DATA.memories
-                )
-            ) {
-
-                memories =
-                    CURRUSCOS_DATA.memories;
-
-            }
-
-            else if (
-                Array.isArray(
-                    CURRUSCOS_DATA.recuerdos
-                )
-            ) {
-
-                memories =
-                    CURRUSCOS_DATA.recuerdos;
-
-            }
-
-        }
-
-
-        memoriesElement.textContent =
-            memories.length;
-
+memoriesElement.textContent =
+    Array.isArray(memories)
+        ? memories.length
+        : 0;
 
 
         /* ===============================================
