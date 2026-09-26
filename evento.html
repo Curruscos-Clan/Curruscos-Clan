@@ -99,6 +99,183 @@
     line-height: 1.65;
 }
 
+     /* ---------- EDICIÓN DEL EVENTO ---------- */
+
+.event-actions {
+    margin-top: 22px;
+}
+
+.edit-event-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.edit-event-button:hover {
+    background: white;
+    color: #111;
+}
+
+
+/* FORMULARIO */
+
+.edit-event-form {
+    margin-top: 28px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.07);
+}
+
+.edit-event-header {
+    margin-bottom: 20px;
+}
+
+.edit-event-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #aaa;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.edit-event-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+.edit-event-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.edit-event-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.edit-event-field-full {
+    grid-column: 1 / -1;
+}
+
+.edit-event-field label {
+    color: #bbb;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.edit-event-field input,
+.edit-event-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.96);
+    color: #111;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+}
+
+.edit-event-field textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.edit-event-field input:focus,
+.edit-event-field textarea:focus {
+    border-color: white;
+}
+
+
+.edit-event-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.edit-event-cancel,
+.edit-event-save {
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.edit-event-cancel {
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: #ddd;
+}
+
+.edit-event-cancel:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.edit-event-save {
+    border: 0;
+    background: white;
+    color: #111;
+}
+
+.edit-event-save:hover {
+    background: #e8e8e8;
+}
+
+.edit-event-save:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* MÓVIL */
+
+@media (max-width: 600px) {
+
+    .edit-event-form {
+        padding: 17px;
+    }
+
+    .edit-event-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .edit-event-field-full {
+        grid-column: auto;
+    }
+
+    .edit-event-actions {
+        flex-direction: column-reverse;
+    }
+
+    .edit-event-cancel,
+    .edit-event-save {
+        width: 100%;
+    }
+
+}
+
 /* ---------- INFORMACIÓN ---------- */
 
 .event-main-info {
@@ -753,29 +930,160 @@
                  CABECERA
                  ===================================== -->
 
-            <div class="event-hero">
+         <div class="event-hero">
 
-                <div class="event-hero-content">
+    <div class="event-hero-content">
 
-                    <div class="event-label">
-                        📅 EVENTO
-                    </div>
+        <div class="event-label">
+            📅 EVENTO
+        </div>
 
-                    <h1
-                        id="eventTitle"
-                        class="event-title"
-                    >
-                        Cargando evento...
-                    </h1>
+        <h1
+            id="eventTitle"
+            class="event-title"
+        >
+            Cargando evento...
+        </h1>
 
-                    <p
-                        id="eventDescription"
-                        class="event-description"
-                    ></p>
+        <p
+            id="eventDescription"
+            class="event-description"
+        ></p>
 
-                </div>
+        <div class="event-actions">
+            <button
+                type="button"
+                id="editEventButton"
+                class="edit-event-button"
+            >
+                ✏️ Editar evento
+            </button>
+        </div>
+
+    </div>
+
+    <form
+        id="editEventForm"
+        class="edit-event-form"
+        hidden
+    >
+
+        <div class="edit-event-header">
+            <div>
+                <span class="edit-event-label">
+                    EDITAR EVENTO
+                </span>
+
+                <h2>
+                    Modificar evento
+                </h2>
+            </div>
+        </div>
+
+        <div class="edit-event-grid">
+
+            <div class="edit-event-field edit-event-field-full">
+
+                <label for="editEventTitle">
+                    Nombre del evento
+                </label>
+
+                <input
+                    type="text"
+                    id="editEventTitle"
+                    maxlength="150"
+                    required
+                >
 
             </div>
+
+
+            <div class="edit-event-field">
+
+                <label for="editEventDate">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    id="editEventDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="edit-event-field">
+
+                <label for="editEventTime">
+                    Hora
+                </label>
+
+                <input
+                    type="time"
+                    id="editEventTime"
+                    required
+                >
+
+            </div>
+
+
+            <div class="edit-event-field edit-event-field-full">
+
+                <label for="editEventLocation">
+                    Lugar
+                </label>
+
+                <input
+                    type="text"
+                    id="editEventLocation"
+                    maxlength="200"
+                    required
+                >
+
+            </div>
+
+
+            <div class="edit-event-field edit-event-field-full">
+
+                <label for="editEventDescription">
+                    Descripción
+                </label>
+
+                <textarea
+                    id="editEventDescription"
+                    rows="4"
+                    maxlength="1000"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="edit-event-actions">
+
+            <button
+                type="button"
+                id="cancelEditEventButton"
+                class="edit-event-cancel"
+            >
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                id="saveEditEventButton"
+                class="edit-event-save"
+            >
+                Guardar cambios
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
 
 
             <!-- =====================================
@@ -1689,6 +1997,176 @@ updateProgress();
 updateStatus();
 }
 
+/* =====================================================
+   EDICIÓN DEL EVENTO
+   ===================================================== */
+
+function openEditEventForm() {
+
+    if (!currentEvent) {
+        return;
+    }
+
+    document.getElementById("editEventTitle").value =
+        currentEvent.title || "";
+
+    document.getElementById("editEventDate").value =
+        currentEvent.date || "";
+
+    document.getElementById("editEventTime").value =
+        currentEvent.time || "";
+
+    document.getElementById("editEventLocation").value =
+        currentEvent.location || "";
+
+    document.getElementById("editEventDescription").value =
+        currentEvent.description || "";
+
+    document.getElementById("editEventButton").hidden =
+        true;
+
+    document.getElementById("editEventForm").hidden =
+        false;
+
+    document.getElementById("editEventTitle").focus();
+
+}
+
+
+function closeEditEventForm() {
+
+    document.getElementById("editEventForm").hidden =
+        true;
+
+    document.getElementById("editEventButton").hidden =
+        false;
+
+}
+
+
+async function saveEditedEvent() {
+
+    if (!currentEvent) {
+        return;
+    }
+
+    const title =
+        document
+            .getElementById("editEventTitle")
+            .value
+            .trim();
+
+    const date =
+        document
+            .getElementById("editEventDate")
+            .value;
+
+    const time =
+        document
+            .getElementById("editEventTime")
+            .value;
+
+    const location =
+        document
+            .getElementById("editEventLocation")
+            .value
+            .trim();
+
+    const description =
+        document
+            .getElementById("editEventDescription")
+            .value
+            .trim();
+
+
+    if (!title || !date || !time || !location) {
+
+        alert(
+            "Completa todos los campos obligatorios."
+        );
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "saveEditEventButton"
+        );
+
+    saveButton.disabled = true;
+
+    saveButton.textContent =
+        "Guardando...";
+
+
+    const updatedEvent =
+        await updateGroupEvent(
+            currentEvent.id,
+            {
+                title: title,
+                description: description,
+                date: date,
+                time: time,
+                location: location
+            }
+        );
+
+
+    if (!updatedEvent) {
+
+        alert(
+            "No se han podido guardar los cambios."
+        );
+
+        saveButton.disabled = false;
+
+        saveButton.textContent =
+            "Guardar cambios";
+
+        return;
+
+    }
+
+
+    currentEvent = {
+        ...currentEvent,
+        ...updatedEvent
+    };
+
+
+    document.getElementById("eventTitle")
+        .textContent =
+        currentEvent.title || "Sin título";
+
+    document.getElementById("eventDescription")
+        .textContent =
+        currentEvent.description || "Sin descripción";
+
+    document.getElementById("eventDate")
+        .textContent =
+        currentEvent.date || "Sin fecha";
+
+    document.getElementById("eventTime")
+        .textContent =
+        currentEvent.time || "Sin hora";
+
+    document.getElementById("eventLocation")
+        .textContent =
+        currentEvent.location || "Sin lugar";
+
+
+    closeEditEventForm();
+
+
+    saveButton.disabled = false;
+
+    saveButton.textContent =
+        "Guardar cambios";
+
+}
+    
     async function loadSupabaseTasks() {
 
     if (!currentEvent) return;
@@ -2735,7 +3213,35 @@ document
 
     }
 
+document
+    .getElementById("editEventButton")
+    .addEventListener(
+        "click",
+        openEditEventForm
+    );
 
+
+document
+    .getElementById("cancelEditEventButton")
+    .addEventListener(
+        "click",
+        closeEditEventForm
+    );
+
+
+document
+    .getElementById("editEventForm")
+    .addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+            await saveEditedEvent();
+
+        }
+    );
+    
     /* =====================================================
        INICIO
        ===================================================== */
