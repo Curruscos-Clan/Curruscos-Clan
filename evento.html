@@ -2341,35 +2341,29 @@ document
             `;
 
 
-           card.querySelector(".expense-delete")
-    .addEventListener(
-        "click",
-        async () => {
+card.querySelector(".expense-delete").addEventListener(
+    "click",
+    async () => {
 
-            const deleted =
-                await deleteEventExpense(expense.id);
+        const deleted =
+            await deleteEventExpense(expense.id);
 
-            if (!deleted) {
-
-                alert(
-                    "No se ha podido eliminar el gasto."
-                );
-
-                return;
-            }
-
-            currentEvent.expenses =
-                currentEvent.expenses.filter(
-                    item =>
-                        String(item.id) !==
-                        String(expense.id)
-                );
-
-            renderExpenses();
-
-            updateProgress();
+        if (!deleted) {
+            alert("No se ha podido eliminar el gasto.");
+            return;
         }
-    );
+
+        currentEvent.expenses =
+            currentEvent.expenses.filter(
+                item =>
+                    String(item.id) !==
+                    String(expense.id)
+            );
+
+        renderExpenses();
+        updateProgress();
+    }
+);
 
         return;
     }
