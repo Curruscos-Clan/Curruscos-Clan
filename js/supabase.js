@@ -248,6 +248,29 @@ async function getGroupEvent(eventId) {
     return data;
 }
 
+async function updateGroupEvent(eventId, eventData) {
+
+    const { data, error } = await supabaseClient
+        .from("events")
+        .update({
+            title: eventData.title,
+            description: eventData.description,
+            date: eventData.date,
+            time: eventData.time,
+            location: eventData.location
+        })
+        .eq("id", eventId)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error actualizando evento:", error);
+        return null;
+    }
+
+    return data;
+}
+
 // ========================================
 // PARTICIPANTES
 // ========================================
