@@ -2345,19 +2345,33 @@ document
                     "click",
                     () => {
 
-                        currentEvent.expenses =
-                            currentEvent.expenses.filter(
-                                item =>
-                                    String(item.id) !==
-                                    String(expense.id)
-                            );
+                   async () => {
 
+    const deleted =
+        await deleteEventExpense(expense.id);
 
-                        saveEvent();
+    if (!deleted) {
 
-                        renderExpenses();
+        alert(
+            "No se ha podido eliminar el gasto."
+        );
 
-                        updateProgress();
+        return;
+    }
+
+    currentEvent.expenses =
+        currentEvent.expenses.filter(
+            item =>
+                String(item.id) !==
+                String(expense.id)
+        );
+
+    renderExpenses();
+
+    renderExpenseSplit();
+
+    updateProgress();
+}
 
                     }
                 );
@@ -2561,13 +2575,13 @@ document
              * locales con sus cuentas reales de Supabase.
              */
 
-            const expense =
-                await createEventExpense(
-                    currentEvent.id,
-                    title,
-                    amount,
-                    null
-                );
+     const expense =
+    await createEventExpense(
+        currentEvent.id,
+        title,
+        amount,
+        payer
+    );
 
 
             if (!expense) {
@@ -2581,18 +2595,12 @@ document
             }
 
 
-            currentEvent.expenses.push({
-
-                id: expense.id,
-
-                title: expense.title,
-
-                amount: Number(expense.amount),
-
-                payer: null
-
-            });
-
+         currentEvent.expenses.push({
+    id: expense.id,
+    title: expense.title,
+    amount: Number(expense.amount),
+    payer: expense.paid_by
+});
 
             document
                 .getElementById("expenseTitle")
