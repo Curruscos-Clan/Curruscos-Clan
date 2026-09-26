@@ -2086,49 +2086,73 @@ async function loadSupabaseExpenses() {
             `;
 
 
-            card.querySelector(".task-checkbox")
-                .addEventListener(
-                    "change",
-                    () => {
+          card.querySelector(".task-checkbox")
+    .addEventListener(
+        "change",
+        async () => {
 
-                        task.completed =
-                            !task.completed;
+            const newCompleted =
+                !task.completed;
 
-                        saveEvent();
-
-                        renderTasks();
-
-                        updateProgress();
-
-                        updateStatus();
-
-                    }
+            const updatedTask =
+                await updateEventTask(
+                    task.id,
+                    newCompleted
                 );
 
+            if (!updatedTask) {
+
+                alert(
+                    "No se ha podido actualizar la tarea."
+                );
+
+                return;
+            }
+
+            task.completed =
+                updatedTask.completed;
+
+            renderTasks();
+
+            updateProgress();
+
+            updateStatus();
+
+        }
+    );
 
             card.querySelector(".delete-task")
-                .addEventListener(
-                    "click",
-                    () => {
+    .addEventListener(
+        "click",
+        async () => {
 
-                        currentEvent.tasks =
-                            currentEvent.tasks.filter(
-                                item =>
-                                    String(item.id) !==
-                                    String(task.id)
-                            );
+            const deleted =
+                await deleteEventTask(task.id);
 
-                        saveEvent();
+            if (!deleted) {
 
-                        renderTasks();
-
-                        updateProgress();
-
-                        updateStatus();
-
-                    }
+                alert(
+                    "No se ha podido eliminar la tarea."
                 );
 
+                return;
+            }
+
+            currentEvent.tasks =
+                currentEvent.tasks.filter(
+                    item =>
+                        String(item.id) !==
+                        String(task.id)
+                );
+
+            renderTasks();
+
+            updateProgress();
+
+            updateStatus();
+
+        }
+    );
 
             container.appendChild(card);
 
@@ -2185,12 +2209,12 @@ document
              * conectemos los miembros con sus cuentas.
              */
 
-            const task =
-                await createEventTask(
-                    currentEvent.id,
-                    title,
-                    null
-                );
+           const task =
+    await createEventTask(
+        currentEvent.id,
+        title,
+        assignee || null
+    );
 
 
             if (!task) {
@@ -2204,17 +2228,17 @@ document
             }
 
 
-            currentEvent.tasks.push({
+          currentEvent.tasks.push({
 
-                id: task.id,
+    id: task.id,
 
-                title: task.title,
+    title: task.title,
 
-                assignee: null,
+    assignee: task.assigned_to,
 
-                completed: task.completed
+    completed: task.completed
 
-            });
+});
 
 
             document
