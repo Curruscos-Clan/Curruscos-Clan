@@ -553,3 +553,82 @@ async function deleteGroupMemory(memoryId) {
 
     return true;
 }
+
+async function getGroupHistory() {
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("history_entries")
+        .select(`
+            id,
+            group_id,
+            created_by,
+            title,
+            description,
+            event_date,
+            created_at,
+            profiles (
+                display_name,
+                username
+            )
+        `)
+        .eq("group_id", group.id)
+        .order("event_date", {
+            ascending: false
+        });
+
+    if (error) {
+        console.error("Error obteniendo historia:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+
+async function createHistoryEntry(historyData) {
+    const group = await getCurrentGroup();
+    const user = await getCurrentUser();
+
+    if (!group || !user) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("history_entries")
+        .insert({
+            group_id: group.id,
+            created_by: user.id,
+            title: historyData.title,
+            description: historyData.description || null,
+            event_date: historyData.event_date
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creando entrada de historia:", error);
+        return null;
+    }
+
+    return data;
+}
+
+
+async function deleteHistoryEntry(historyId) {
+    const { error } = await supabaseClient
+        .from("history_entries")
+        .delete()
+        .eq("id", historyId);
+
+    if (error) {
+        console.error("Error eliminando entrada de historia:", error);
+        return false;
+    }
+
+    return true;
+}
