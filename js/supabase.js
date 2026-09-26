@@ -474,3 +474,82 @@ async function testSupabaseConnection() {
 }
 
 testSupabaseConnection();
+
+async function getGroupMemories() {
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("memories")
+        .select(`
+            id,
+            group_id,
+            created_by,
+            title,
+            description,
+            image_url,
+            created_at,
+            profiles (
+                display_name,
+                username
+            )
+        `)
+        .eq("group_id", group.id)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+        console.error("Error obteniendo recuerdos:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+
+async function createGroupMemory(memoryData) {
+    const group = await getCurrentGroup();
+    const user = await getCurrentUser();
+
+    if (!group || !user) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("memories")
+        .insert({
+            group_id: group.id,
+            created_by: user.id,
+            title: memoryData.title,
+            description: memoryData.description || null,
+            image_url: memoryData.image_url || null
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creando recuerdo:", error);
+        return null;
+    }
+
+    return data;
+}
+
+
+async function deleteGroupMemory(memoryId) {
+    const { error } = await supabaseClient
+        .from("memories")
+        .delete()
+        .eq("id", memoryId);
+
+    if (error) {
+        console.error("Error eliminando recuerdo:", error);
+        return false;
+    }
+
+    return true;
+}
