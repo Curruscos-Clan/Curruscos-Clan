@@ -2264,161 +2264,127 @@ document
        GASTOS
        ===================================================== */
 
-    function renderExpenses() {
+function renderExpenses() {
 
-        const container =
-            document.getElementById("expensesList");
+    const container =
+        document.getElementById("expensesList");
 
+    container.innerHTML = "";
 
-        container.innerHTML = "";
+    const expenses =
+        currentEvent.expenses || [];
 
+    let total = 0;
 
-        const expenses =
-            currentEvent.expenses || [];
+    expenses.forEach(expense => {
 
+        total +=
+            Number(expense.amount) || 0;
 
-        let total = 0;
+        const card =
+            document.createElement("div");
 
+        card.className =
+            "expense-card";
 
-        expenses.forEach(expense => {
+        card.innerHTML = `
 
-            total +=
-                Number(expense.amount) || 0;
+            <div class="expense-card-left">
 
+                <div class="expense-icon">
+                    €
+                </div>
 
-            const card =
-                document.createElement("div");
+                <div class="expense-information">
 
-            card.className =
-                "expense-card";
+                    <span class="expense-name">
+                        ${escapeHtml(expense.title)}
+                    </span>
 
-
-            card.innerHTML = `
-
-                <div class="expense-card-left">
-
-                    <div class="expense-icon">
-                        €
-                    </div>
-
-                    <div class="expense-information">
-
-                        <span class="expense-name">
+                    <span class="expense-payer">
+                        Pagado por
+                        <strong>
                             ${escapeHtml(
-                                expense.title
+                                getAssigneeName(expense.payer)
                             )}
-                        </span>
-
-                        <span class="expense-payer">
-                            Pagado por
-                            <strong>
-                                ${escapeHtml(
-                                    getAssigneeName(
-                                        expense.payer
-                                    )
-                                )}
-                            </strong>
-                        </span>
-
-                    </div>
+                        </strong>
+                    </span>
 
                 </div>
 
+            </div>
 
-                <div class="expense-amount">
-                    ${formatMoney(expense.amount)}
-                </div>
+            <div class="expense-amount">
+                ${formatMoney(expense.amount)}
+            </div>
 
+            <button
+                type="button"
+                class="expense-delete"
+                title="Eliminar gasto"
+            >
+                🗑
+            </button>
 
-                <button
-                    type="button"
-                    class="expense-delete"
-                    title="Eliminar gasto"
-                >
-                    🗑
-                </button>
+        `;
 
-            `;
+        card.querySelector(".expense-delete")
+            .addEventListener(
+                "click",
+                async () => {
 
+                    const deleted =
+                        await deleteEventExpense(expense.id);
 
-card.querySelector(".expense-delete").addEventListener(
-    "click",
-    async () => {
+                    if (!deleted) {
 
-        const deleted =
-            await deleteEventExpense(expense.id);
+                        alert(
+                            "No se ha podido eliminar el gasto."
+                        );
 
-        if (!deleted) {
-            alert("No se ha podido eliminar el gasto.");
-            return;
-        }
+                        return;
+                    }
 
-        currentEvent.expenses =
-            currentEvent.expenses.filter(
-                item =>
-                    String(item.id) !==
-                    String(expense.id)
+                    currentEvent.expenses =
+                        currentEvent.expenses.filter(
+                            item =>
+                                String(item.id) !==
+                                String(expense.id)
+                        );
+
+                    renderExpenses();
+
+                    updateProgress();
+                }
             );
 
-        renderExpenses();
-        updateProgress();
+        container.appendChild(card);
+
+    });
+
+    document.getElementById("expensesTotal")
+        .textContent =
+        formatMoney(total);
+
+    document.getElementById("expensesCount")
+        .textContent =
+        expenses.length;
+
+    if (!expenses.length) {
+
+        container.innerHTML = `
+
+            <div class="expense-empty">
+                Todavía no hay gastos en este evento.
+            </div>
+
+        `;
+
     }
-);
-
-        return;
-    }
-
-    currentEvent.expenses =
-        currentEvent.expenses.filter(
-            item =>
-                String(item.id) !==
-                String(expense.id)
-        );
-
-    renderExpenses();
 
     renderExpenseSplit();
 
-    updateProgress();
 }
-
-                    }
-                );
-
-
-            container.appendChild(card);
-
-        });
-
-
-        document.getElementById("expensesTotal")
-            .textContent =
-            formatMoney(total);
-
-
-        document.getElementById("expensesCount")
-            .textContent =
-            expenses.length;
-
-
-        if (!expenses.length) {
-
-            container.innerHTML = `
-
-                <div class="expense-empty">
-                    Todavía no hay gastos en este evento.
-                </div>
-
-            `;
-
-        }
-
-
-        renderExpenseSplit();
-
-    }
-
-
     function formatMoney(amount) {
 
         return Number(amount || 0)
