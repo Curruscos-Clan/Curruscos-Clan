@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadStats();
-    loadMembers();
     loadMemories();
     loadQuote();
     setupMobileMenu();
