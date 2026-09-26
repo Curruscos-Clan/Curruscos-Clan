@@ -2204,22 +2204,43 @@
 
                     </div>
 
-                    <button
-                        type="button"
-                        class="accept-invitation-button"
-                        data-invitation-id="${invitation.id}"
-                        style="
-                            border:none;
-                            background:#111;
-                            color:#fff;
-                            padding:11px 18px;
-                            border-radius:10px;
-                            font-weight:700;
-                            cursor:pointer;
-                        "
-                    >
-                        Aceptar
-                    </button>
+                  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+
+    <button
+        type="button"
+        class="accept-invitation-button"
+        data-invitation-id="${invitation.id}"
+        style="
+            border:none;
+            background:#111;
+            color:#fff;
+            padding:11px 18px;
+            border-radius:10px;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        Aceptar
+    </button>
+
+    <button
+        type="button"
+        class="reject-invitation-button"
+        data-invitation-id="${invitation.id}"
+        style="
+            border:1px solid #ddd;
+            background:#fff;
+            color:#333;
+            padding:11px 18px;
+            border-radius:10px;
+            font-weight:700;
+            cursor:pointer;
+        "
+    >
+        Rechazar
+    </button>
+
+</div>
 
                 `;
 
@@ -2228,74 +2249,143 @@
             }
         );
 
-        const buttons =
-            container.querySelectorAll(
-                ".accept-invitation-button"
-            );
+const acceptButtons =
+    container.querySelectorAll(
+        ".accept-invitation-button"
+    );
 
-        buttons.forEach(
-            button => {
+acceptButtons.forEach(
+    button => {
 
-                button.addEventListener(
-                    "click",
-                    async () => {
+        button.addEventListener(
+            "click",
+            async () => {
 
-                        const invitationId =
-                            button.dataset
-                                .invitationId;
+                const invitationId =
+                    button.dataset.invitationId;
 
-                        button.disabled = true;
+                button.disabled = true;
 
-                        button.textContent =
-                            "Aceptando...";
+                button.textContent =
+                    "Aceptando...";
 
-                        const {
-                            error
-                        } =
-                            await supabaseClient.rpc(
-                                "accept_group_invitation",
-                                {
-                                    invitation_id:
-                                        invitationId
-                                }
-                            );
-
-                        if (error) {
-
-                            console.error(
-                                "Error aceptando invitación:",
-                                error
-                            );
-
-                            alert(
-                                error.message ||
-                                "No se ha podido aceptar la invitación."
-                            );
-
-                            button.disabled =
-                                false;
-
-                            button.textContent =
-                                "Aceptar";
-
-                            return;
-
-                        }
-
-                        alert(
-                            "¡Ya formas parte del grupo!"
-                        );
-
-                        window.location.reload();
-
+                const {
+                    error
+                } = await supabaseClient.rpc(
+                    "accept_group_invitation",
+                    {
+                        invitation_id:
+                            invitationId
                     }
                 );
+
+                if (error) {
+
+                    console.error(
+                        "Error aceptando invitación:",
+                        error
+                    );
+
+                    alert(
+                        error.message ||
+                        "No se ha podido aceptar la invitación."
+                    );
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Aceptar";
+
+                    return;
+                }
+
+                alert(
+                    "¡Ya formas parte del grupo!"
+                );
+
+                window.location.reload();
 
             }
         );
 
     }
+);
 
+
+/* ==========================================
+   RECHAZAR INVITACIONES
+========================================== */
+
+const rejectButtons =
+    container.querySelectorAll(
+        ".reject-invitation-button"
+    );
+
+rejectButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            async () => {
+
+                const invitationId =
+                    button.dataset.invitationId;
+
+                const confirmed =
+                    confirm(
+                        "¿Quieres rechazar esta invitación?"
+                    );
+
+                if (!confirmed) {
+                    return;
+                }
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Rechazando...";
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("group_invitations")
+                    .update({
+                        status: "rejected"
+                    })
+                    .eq(
+                        "id",
+                        invitationId
+                    );
+
+                if (error) {
+
+                    console.error(
+                        "Error rechazando invitación:",
+                        error
+                    );
+
+                    alert(
+                        error.message ||
+                        "No se ha podido rechazar la invitación."
+                    );
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Rechazar";
+
+                    return;
+                }
+
+                await loadPendingInvitations();
+
+            }
+        );
+
+    }
+);
     loadPendingInvitations();
 
 </script>
