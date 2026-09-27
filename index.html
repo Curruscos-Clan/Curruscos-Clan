@@ -1743,124 +1743,192 @@ memoriesElement.textContent =
 
 
 
-        /* ===============================================
-           ACTIVIDAD
-        =============================================== */
+      /* ===============================================
+   ACTIVIDAD
+=============================================== */
 
-        const activities = [];
-
-
-        validEvents
-            .slice()
-            .sort((a, b) =>
-                new Date(
-                    b.created_at || b.date
-                ) -
-                new Date(
-                    a.created_at || a.date
-                )
-            )
-            .slice(0, 5)
-            .forEach(event => {
-
-                activities.push({
-
-                    icon: "📅",
-
-                    title:
-                        `Evento "${event.title || "Evento"}"`,
-
-                    detail:
-                        event.date
-                            ? formatDate(event.date)
-                            : "Evento reciente"
-
-                });
-
-            });
+const activities = [];
 
 
-        if (memories.length > 0) {
+/* ===============================================
+   EVENTOS
+=============================================== */
 
-            activities.unshift({
+validEvents.forEach(event => {
 
-                icon: "📸",
+    activities.push({
 
-                title:
-                    `Hay ${memories.length} recuerdos guardados`,
+        icon: "📅",
 
-                detail:
-                    "El archivo del clan sigue creciendo"
+        title:
+            `Se creó el evento "${event.title || "Evento"}"`,
 
-            });
+        detail:
+            event.created_at
+                ? formatDate(event.created_at)
+                : event.date
+                    ? formatDate(event.date)
+                    : "Evento reciente",
 
-        }
+        date:
+            event.created_at
+                ? new Date(event.created_at)
+                : event.date
+                    ? new Date(event.date)
+                    : new Date(0)
 
+    });
 
-        if (activities.length > 0) {
-
-            activityList.innerHTML = "";
-
-
-            activities
-                .slice(0, 6)
-                .forEach(activity => {
-
-                    const element =
-                        document.createElement("div");
-
-
-                    element.className =
-                        "activity-item";
+});
 
 
-                    element.innerHTML = `
+/* ===============================================
+   RECUERDOS
+=============================================== */
 
-                        <div class="activity-icon">
-                            ${activity.icon}
-                        </div>
+if (Array.isArray(memories)) {
 
-                        <div class="activity-text">
+    memories.forEach(memory => {
 
-                            <strong>
-                                ${escapeHtml(
-                                    activity.title
-                                )}
-                            </strong>
+        activities.push({
 
-                            <span>
-                                ${escapeHtml(
-                                    activity.detail
-                                )}
-                            </span>
+            icon: "📸",
 
-                        </div>
+            title:
+                `Se añadió el recuerdo "${memory.title || "Recuerdo"}"`,
 
-                    `;
+            detail:
+                memory.created_at
+                    ? formatDate(memory.created_at)
+                    : "Recuerdo reciente",
+
+            date:
+                memory.created_at
+                    ? new Date(memory.created_at)
+                    : new Date(0)
+
+        });
+
+    });
+
+}
 
 
-                    activityList.appendChild(
-                        element
-                    );
+/* ===============================================
+   HISTORIA
+=============================================== */
 
-                });
+const history =
+    await getGroupHistory();
 
-        }
+if (Array.isArray(history)) {
 
-        else {
+    history.forEach(entry => {
 
-            activityList.innerHTML = `
+        activities.push({
 
-                <div class="empty-dashboard">
-                    Todavía no hay actividad reciente.
+            icon: "📖",
+
+            title:
+                `Se añadió "${entry.title || "una entrada"}" a la historia`,
+
+            detail:
+                entry.created_at
+                    ? formatDate(entry.created_at)
+                    : entry.event_date
+                        ? formatDate(entry.event_date)
+                        : "Entrada reciente",
+
+            date:
+                entry.created_at
+                    ? new Date(entry.created_at)
+                    : entry.event_date
+                        ? new Date(entry.event_date)
+                        : new Date(0)
+
+        });
+
+    });
+
+}
+
+
+/* ===============================================
+   ORDENAR ACTIVIDAD
+=============================================== */
+
+activities.sort((a, b) => {
+
+    return b.date - a.date;
+
+});
+
+
+/* ===============================================
+   MOSTRAR ACTIVIDAD
+=============================================== */
+
+if (activities.length > 0) {
+
+    activityList.innerHTML = "";
+
+
+    activities
+        .slice(0, 6)
+        .forEach(activity => {
+
+            const element =
+                document.createElement("div");
+
+
+            element.className =
+                "activity-item";
+
+
+            element.innerHTML = `
+
+                <div class="activity-icon">
+                    ${activity.icon}
+                </div>
+
+                <div class="activity-text">
+
+                    <strong>
+                        ${escapeHtml(
+                            activity.title
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            activity.detail
+                        )}
+                    </span>
+
                 </div>
 
             `;
 
-        }
 
+            activityList.appendChild(
+                element
+            );
 
+        });
 
+}
+
+else {
+
+    activityList.innerHTML = `
+
+        <div class="empty-dashboard">
+            Todavía no hay actividad reciente.
+        </div>
+
+    `;
+
+}
         /* ===============================================
            ORGANIZACIÓN
         =============================================== */
