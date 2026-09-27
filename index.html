@@ -631,6 +631,193 @@
     }
 
 }
+
+.notification-wrapper {
+    position: relative;
+    margin-left: auto;
+    margin-right: 18px;
+}
+
+.notification-button {
+    position: relative;
+    border: none;
+    background: transparent;
+    font-size: 21px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    min-width: 17px;
+    height: 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 4px;
+
+    border-radius: 999px;
+
+    background: #e53935;
+    color: white;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.notification-panel {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 350px;
+    max-width: calc(100vw - 30px);
+
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow:
+        0 12px 35px rgba(0, 0, 0, 0.12);
+
+    z-index: 1000;
+
+    overflow: hidden;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 15px 16px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+.notification-header strong {
+    font-size: 15px;
+}
+
+.mark-all-notifications {
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    color: #666;
+}
+
+.notification-list {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    gap: 12px;
+
+    padding: 14px 16px;
+
+    cursor: pointer;
+
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-item:hover {
+    background: #f8f8f8;
+}
+
+.notification-item.unread {
+    background: #f5f7ff;
+}
+
+.notification-item-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eeeeee;
+}
+
+.notification-item-content {
+    min-width: 0;
+}
+
+.notification-item-content strong {
+    display: block;
+
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.notification-item-content p {
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.4;
+
+    color: #666;
+}
+
+.notification-item-content span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    color: #999;
+}
+
+.empty-notifications {
+    padding: 30px 20px;
+
+    text-align: center;
+
+    color: #888;
+
+    font-size: 13px;
+}
+
+
+@media (max-width: 600px) {
+
+    .notification-wrapper {
+        margin-right: 5px;
+    }
+
+    .notification-panel {
+        position: fixed;
+
+        top: 70px;
+        left: 15px;
+        right: 15px;
+
+        width: auto;
+        max-width: none;
+    }
+
+}
         
     </style>
 
@@ -695,6 +882,52 @@
 
 </div>
 
+<div class="notification-wrapper">
+
+    <button
+        id="notificationButton"
+        class="notification-button"
+        aria-label="Notificaciones"
+    >
+        🔔
+        <span
+            id="notificationBadge"
+            class="notification-badge"
+            hidden
+        >
+            0
+        </span>
+    </button>
+
+    <div
+        id="notificationPanel"
+        class="notification-panel"
+        hidden
+    >
+
+        <div class="notification-header">
+
+            <strong>Notificaciones</strong>
+
+            <button
+                id="markAllNotificationsButton"
+                class="mark-all-notifications"
+            >
+                Marcar todas como leídas
+            </button>
+
+        </div>
+
+        <div
+            id="notificationList"
+            class="notification-list"
+        >
+        </div>
+
+    </div>
+
+</div>
+        
         <nav id="mainNav">
 
             <a href="index.html" class="active">
@@ -731,7 +964,277 @@
     </header>
 
 
+document.addEventListener("DOMContentLoaded", async () => {
 
+    const notificationButton =
+        document.getElementById(
+            "notificationButton"
+        );
+
+    const notificationPanel =
+        document.getElementById(
+            "notificationPanel"
+        );
+
+    const notificationBadge =
+        document.getElementById(
+            "notificationBadge"
+        );
+
+    const notificationList =
+        document.getElementById(
+            "notificationList"
+        );
+
+    const markAllButton =
+        document.getElementById(
+            "markAllNotificationsButton"
+        );
+
+
+    if (
+        !notificationButton ||
+        !notificationPanel ||
+        !notificationBadge ||
+        !notificationList
+    ) {
+        return;
+    }
+
+
+    function getNotificationIcon(type) {
+
+        switch (type) {
+
+            case "event":
+                return "📅";
+
+            case "memory":
+                return "📸";
+
+            case "history":
+                return "📖";
+
+            case "task":
+                return "✅";
+
+            case "expense":
+                return "💰";
+
+            case "invitation":
+                return "👥";
+
+            case "member":
+                return "👤";
+
+            default:
+                return "🔔";
+        }
+    }
+
+
+    function formatNotificationDate(dateString) {
+
+        const date =
+            new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return "";
+        }
+
+        return date.toLocaleDateString(
+            "es-ES",
+            {
+                day: "numeric",
+                month: "short"
+            }
+        );
+    }
+
+
+    async function loadNotifications() {
+
+        const notifications =
+            await getUserNotifications();
+
+
+        const unreadCount =
+            notifications.filter(
+                notification =>
+                    !notification.is_read
+            ).length;
+
+
+        if (unreadCount > 0) {
+
+            notificationBadge.hidden = false;
+
+            notificationBadge.textContent =
+                unreadCount > 99
+                    ? "99+"
+                    : unreadCount;
+
+        } else {
+
+            notificationBadge.hidden = true;
+
+        }
+
+
+        if (notifications.length === 0) {
+
+            notificationList.innerHTML = `
+
+                <div class="empty-notifications">
+                    No tienes notificaciones todavía.
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        notificationList.innerHTML = "";
+
+
+        notifications.forEach(notification => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "notification-item" +
+                (
+                    notification.is_read
+                        ? ""
+                        : " unread"
+                );
+
+
+            item.innerHTML = `
+
+                <div class="notification-item-icon">
+                    ${getNotificationIcon(
+                        notification.type
+                    )}
+                </div>
+
+                <div class="notification-item-content">
+
+                    <strong>
+                        ${escapeHtml(
+                            notification.title
+                        )}
+                    </strong>
+
+                    <p>
+                        ${escapeHtml(
+                            notification.message || ""
+                        )}
+                    </p>
+
+                    <span>
+                        ${formatNotificationDate(
+                            notification.created_at
+                        )}
+                    </span>
+
+                </div>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                async () => {
+
+                    if (!notification.is_read) {
+
+                        await markNotificationAsRead(
+                            notification.id
+                        );
+
+                    }
+
+
+                    if (
+                        notification.type === "event" &&
+                        notification.reference_id
+                    ) {
+
+                        window.location.href =
+                            `evento.html?id=${notification.reference_id}`;
+
+                        return;
+                    }
+
+
+                    await loadNotifications();
+
+                }
+            );
+
+
+            notificationList.appendChild(item);
+
+        });
+
+    }
+
+
+    notificationButton.addEventListener(
+        "click",
+        async event => {
+
+            event.stopPropagation();
+
+            notificationPanel.hidden =
+                !notificationPanel.hidden;
+
+            if (!notificationPanel.hidden) {
+                await loadNotifications();
+            }
+
+        }
+    );
+
+
+    notificationPanel.addEventListener(
+        "click",
+        event => {
+            event.stopPropagation();
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        () => {
+            notificationPanel.hidden = true;
+        }
+    );
+
+
+    if (markAllButton) {
+
+        markAllButton.addEventListener(
+            "click",
+            async () => {
+
+                await markAllNotificationsAsRead();
+
+                await loadNotifications();
+
+            }
+        );
+
+    }
+
+
+    await loadNotifications();
+
+});
 
     <!-- =====================================================
          DASHBOARD
