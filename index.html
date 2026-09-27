@@ -965,7 +965,7 @@
 
 
 document.addEventListener("DOMContentLoaded", async () => {
-
+console.log("🔔 SISTEMA DE NOTIFICACIONES CARGADO");
     const notificationButton =
         document.getElementById(
             "notificationButton"
@@ -992,15 +992,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
 
 
-    if (
-        !notificationButton ||
-        !notificationPanel ||
-        !notificationBadge ||
-        !notificationList
-    ) {
-        return;
-    }
+  if (
+    !notificationButton ||
+    !notificationPanel ||
+    !notificationBadge ||
+    !notificationList
+) {
 
+    console.error(
+        "🔔 Faltan elementos del sistema de notificaciones",
+        {
+            notificationButton,
+            notificationPanel,
+            notificationBadge,
+            notificationList
+        }
+    );
+
+    return;
+}
+
+console.log("🔔 Elementos de notificaciones encontrados");
 
     function getNotificationIcon(type) {
 
