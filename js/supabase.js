@@ -725,3 +725,66 @@ async function markAllNotificationsAsRead() {
 
     return true;
 }
+
+// ==========================================
+// 🔔 SUPABASE REALTIME - NOTIFICACIONES
+// ==========================================
+
+let notificationRealtimeChannel = null;
+
+async function startNotificationRealtime() {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return;
+    }
+
+    // Evitar crear varios canales iguales
+    if (notificationRealtimeChannel) {
+        await supabaseClient.removeChannel(
+            notificationRealtimeChannel
+        );
+    }
+
+    notificationRealtimeChannel =
+        supabaseClient
+            .channel("user-notifications-" + user.id)
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "notifications",
+                    filter: `user_id=eq.${user.id}`
+                },
+                payload => {
+
+                    console.log(
+                        "🔔 Nueva notificación en tiempo real:",
+                        payload.new
+                    );
+
+                    // Avisar a la interfaz
+                    window.dispatchEvent(
+                        new CustomEvent(
+                            "curruscos:new-notification",
+                            {
+                                detail: payload.new
+                            }
+                        )
+                    );
+
+                }
+            )
+
+            .subscribe(status => {
+
+                console.log(
+                    "🔔 Estado Realtime:",
+                    status
+                );
+
+            });
+}
