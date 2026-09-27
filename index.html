@@ -964,55 +964,63 @@
     </header>
 
 
+<script>
+
 document.addEventListener("DOMContentLoaded", async () => {
-console.log("🔔 SISTEMA DE NOTIFICACIONES CARGADO");
+
+    console.log("🔔 SISTEMA DE NOTIFICACIONES CARGADO");
+
     const notificationButton =
-        document.getElementById(
-            "notificationButton"
-        );
+        document.getElementById("notificationButton");
 
     const notificationPanel =
-        document.getElementById(
-            "notificationPanel"
-        );
+        document.getElementById("notificationPanel");
 
     const notificationBadge =
-        document.getElementById(
-            "notificationBadge"
-        );
+        document.getElementById("notificationBadge");
 
     const notificationList =
-        document.getElementById(
-            "notificationList"
-        );
+        document.getElementById("notificationList");
 
     const markAllButton =
-        document.getElementById(
-            "markAllNotificationsButton"
+        document.getElementById("markAllNotificationsButton");
+
+
+    if (
+        !notificationButton ||
+        !notificationPanel ||
+        !notificationBadge ||
+        !notificationList
+    ) {
+        console.error(
+            "🔔 Faltan elementos del sistema de notificaciones"
         );
+        return;
+    }
 
 
-  if (
-    !notificationButton ||
-    !notificationPanel ||
-    !notificationBadge ||
-    !notificationList
-) {
+    console.log("🔔 Elementos de notificaciones encontrados");
 
-    console.error(
-        "🔔 Faltan elementos del sistema de notificaciones",
-        {
-            notificationButton,
-            notificationPanel,
-            notificationBadge,
-            notificationList
-        }
-    );
 
-    return;
-}
+    /* ==========================================
+       ESCAPAR HTML
+    ========================================== */
 
-console.log("🔔 Elementos de notificaciones encontrados");
+    function escapeNotificationHtml(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* ==========================================
+       ICONOS
+    ========================================== */
 
     function getNotificationIcon(type) {
 
@@ -1041,9 +1049,15 @@ console.log("🔔 Elementos de notificaciones encontrados");
 
             default:
                 return "🔔";
+
         }
+
     }
 
+
+    /* ==========================================
+       FECHA
+    ========================================== */
 
     function formatNotificationDate(dateString) {
 
@@ -1061,14 +1075,31 @@ console.log("🔔 Elementos de notificaciones encontrados");
                 month: "short"
             }
         );
+
     }
 
 
+    /* ==========================================
+       CARGAR NOTIFICACIONES
+    ========================================== */
+
     async function loadNotifications() {
+
+        console.log("🔔 Cargando notificaciones...");
 
         const notifications =
             await getUserNotifications();
 
+
+        console.log(
+            "🔔 Notificaciones recibidas:",
+            notifications
+        );
+
+
+        /* ======================================
+           BADGE
+        ====================================== */
 
         const unreadCount =
             notifications.filter(
@@ -1093,6 +1124,10 @@ console.log("🔔 Elementos de notificaciones encontrados");
         }
 
 
+        /* ======================================
+           LISTA VACÍA
+        ====================================== */
+
         if (notifications.length === 0) {
 
             notificationList.innerHTML = `
@@ -1104,94 +1139,193 @@ console.log("🔔 Elementos de notificaciones encontrados");
             `;
 
             return;
+
         }
 
+
+        /* ======================================
+           MOSTRAR NOTIFICACIONES
+        ====================================== */
 
         notificationList.innerHTML = "";
 
 
-        notifications.forEach(notification => {
+        notifications.forEach(
+            notification => {
 
-            const item =
-                document.createElement("div");
+                const item =
+                    document.createElement("div");
 
-            item.className =
-                "notification-item" +
-                (
-                    notification.is_read
-                        ? ""
-                        : " unread"
+
+                item.className =
+                    "notification-item" +
+                    (
+                        notification.is_read
+                            ? ""
+                            : " unread"
+                    );
+
+
+                item.innerHTML = `
+
+                    <div class="notification-item-icon">
+                        ${getNotificationIcon(
+                            notification.type
+                        )}
+                    </div>
+
+                    <div class="notification-item-content">
+
+                        <strong>
+                            ${escapeNotificationHtml(
+                                notification.title
+                            )}
+                        </strong>
+
+                        <p>
+                            ${escapeNotificationHtml(
+                                notification.message || ""
+                            )}
+                        </p>
+
+                        <span>
+                            ${formatNotificationDate(
+                                notification.created_at
+                            )}
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                /* ==============================
+                   CLICK EN NOTIFICACIÓN
+                ============================== */
+
+                item.addEventListener(
+                    "click",
+                    async () => {
+
+                        if (!notification.is_read) {
+
+                            await markNotificationAsRead(
+                                notification.id
+                            );
+
+                        }
+
+
+                        if (
+                            notification.type === "event" &&
+                            notification.reference_id
+                        ) {
+
+                            window.location.href =
+                                `evento.html?id=${notification.reference_id}`;
+
+                            return;
+
+                        }
+
+
+                        await loadNotifications();
+
+                    }
                 );
 
 
-            item.innerHTML = `
+                notificationList.appendChild(item);
 
-                <div class="notification-item-icon">
-                    ${getNotificationIcon(
-                        notification.type
-                    )}
-                </div>
+            }
+        );
 
-                <div class="notification-item-content">
-
-                    <strong>
-                        ${escapeHtml(
-                            notification.title
-                        )}
-                    </strong>
-
-                    <p>
-                        ${escapeHtml(
-                            notification.message || ""
-                        )}
-                    </p>
-
-                    <span>
-                        ${formatNotificationDate(
-                            notification.created_at
-                        )}
-                    </span>
-
-                </div>
-
-            `;
+    }
 
 
-            item.addEventListener(
-                "click",
-                async () => {
+    /* ==========================================
+       BOTÓN DE LA CAMPANA
+    ========================================== */
 
-                    if (!notification.is_read) {
+    notificationButton.addEventListener(
+        "click",
+        async event => {
 
-                        await markNotificationAsRead(
-                            notification.id
-                        );
+            event.stopPropagation();
 
-                    }
-
-
-                    if (
-                        notification.type === "event" &&
-                        notification.reference_id
-                    ) {
-
-                        window.location.href =
-                            `evento.html?id=${notification.reference_id}`;
-
-                        return;
-                    }
+            notificationPanel.hidden =
+                !notificationPanel.hidden;
 
 
-                    await loadNotifications();
+            if (!notificationPanel.hidden) {
 
-                }
-            );
+                await loadNotifications();
+
+            }
+
+        }
+    );
 
 
-            notificationList.appendChild(item);
+    /* ==========================================
+       EVITAR QUE EL PANEL SE CIERRE
+    ========================================== */
 
-        });
+    notificationPanel.addEventListener(
+        "click",
+        event => {
 
+            event.stopPropagation();
+
+        }
+    );
+
+
+    /* ==========================================
+       CERRAR AL HACER CLICK FUERA
+    ========================================== */
+
+    document.addEventListener(
+        "click",
+        () => {
+
+            notificationPanel.hidden = true;
+
+        }
+    );
+
+
+    /* ==========================================
+       MARCAR TODAS COMO LEÍDAS
+    ========================================== */
+
+    if (markAllButton) {
+
+        markAllButton.addEventListener(
+            "click",
+            async event => {
+
+                event.stopPropagation();
+
+                await markAllNotificationsAsRead();
+
+                await loadNotifications();
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       CARGA INICIAL
+    ========================================== */
+
+    await loadNotifications();
+
+});
+
+</script>
     }
 
 
