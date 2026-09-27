@@ -1751,6 +1751,39 @@ const activities = [];
 
 
 /* ===============================================
+   NOMBRES DE LOS MIEMBROS
+=============================================== */
+
+const membersMap = {};
+
+const {
+    data: groupMembersForActivity,
+    error: activityMembersError
+} = await supabaseClient
+    .rpc("get_group_members", {
+        target_group_id: currentGroup.id
+    });
+
+if (!activityMembersError && Array.isArray(groupMembersForActivity)) {
+
+    groupMembersForActivity.forEach(member => {
+
+        membersMap[member.user_id] =
+            member.display_name ||
+            member.username ||
+            "Alguien";
+
+    });
+
+}
+
+function getMemberName(userId) {
+
+    return membersMap[userId] || "Alguien";
+
+}
+
+/* ===============================================
    EVENTOS
 =============================================== */
 
@@ -1760,9 +1793,8 @@ validEvents.forEach(event => {
 
         icon: "📅",
 
-        title:
-            `Se creó el evento "${event.title || "Evento"}"`,
-
+       title:
+    `${getMemberName(event.created_by)} creó el evento "${event.title || "Evento"}"`,
         detail:
             event.created_at
                 ? formatDate(event.created_at)
@@ -1794,8 +1826,8 @@ if (Array.isArray(memories)) {
 
             icon: "📸",
 
-            title:
-                `Se añadió el recuerdo "${memory.title || "Recuerdo"}"`,
+         title:
+    `${getMemberName(memory.created_by)} añadió el recuerdo "${memory.title || "Recuerdo"}"`,
 
             detail:
                 memory.created_at
@@ -1829,9 +1861,8 @@ if (Array.isArray(history)) {
 
             icon: "📖",
 
-            title:
-                `Se añadió "${entry.title || "una entrada"}" a la historia`,
-
+          title:
+    `${getMemberName(entry.created_by)} añadió "${entry.title || "una entrada"}" a la historia`,
             detail:
                 entry.created_at
                     ? formatDate(entry.created_at)
