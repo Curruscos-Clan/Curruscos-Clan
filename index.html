@@ -1195,9 +1195,21 @@ console.log("🔔 Elementos de notificaciones encontrados");
     }
 
 
-    notificationButton.addEventListener(
-        "click",
-        async event => {
+notificationButton.addEventListener("click", async () => {
+
+    const panel = document.getElementById("notificationPanel");
+
+    if (!panel) {
+        return;
+    }
+
+    panel.hidden = !panel.hidden;
+
+    if (!panel.hidden) {
+        await loadNotifications();
+    }
+
+});
 
             event.stopPropagation();
 
