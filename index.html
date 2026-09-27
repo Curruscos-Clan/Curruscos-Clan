@@ -1698,6 +1698,247 @@ console.log("🔔 Elementos de notificaciones encontrados");
 
 <script>
 
+    <script>
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    console.log("🔔 SISTEMA DE NOTIFICACIONES CARGADO");
+
+    const notificationButton =
+        document.getElementById("notificationButton");
+
+    const notificationPanel =
+        document.getElementById("notificationPanel");
+
+    const notificationBadge =
+        document.getElementById("notificationBadge");
+
+    const notificationList =
+        document.getElementById("notificationList");
+
+    const markAllButton =
+        document.getElementById(
+            "markAllNotificationsButton"
+        );
+
+
+    console.log("🔔 Elementos:", {
+        notificationButton,
+        notificationPanel,
+        notificationBadge,
+        notificationList,
+        markAllButton
+    });
+
+
+    if (
+        !notificationButton ||
+        !notificationPanel ||
+        !notificationBadge ||
+        !notificationList
+    ) {
+
+        console.error(
+            "🔔 Faltan elementos del sistema de notificaciones"
+        );
+
+        return;
+    }
+
+
+    async function loadNotifications() {
+
+        console.log("🔔 Cargando notificaciones...");
+
+        const notifications =
+            await getUserNotifications();
+
+        console.log(
+            "🔔 Notificaciones recibidas:",
+            notifications
+        );
+
+
+        const unreadCount =
+            notifications.filter(
+                notification =>
+                    !notification.is_read
+            ).length;
+
+
+        if (unreadCount > 0) {
+
+            notificationBadge.hidden = false;
+
+            notificationBadge.textContent =
+                unreadCount > 99
+                    ? "99+"
+                    : unreadCount;
+
+        } else {
+
+            notificationBadge.hidden = true;
+
+        }
+
+
+        if (notifications.length === 0) {
+
+            notificationList.innerHTML = `
+                <div class="empty-notifications">
+                    No tienes notificaciones todavía.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        notificationList.innerHTML = "";
+
+
+        notifications.forEach(notification => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "notification-item" +
+                (
+                    notification.is_read
+                        ? ""
+                        : " unread"
+                );
+
+
+            item.innerHTML = `
+
+                <div class="notification-item-icon">
+                    ${
+                        notification.type === "event"
+                            ? "📅"
+                            : notification.type === "memory"
+                                ? "📸"
+                                : notification.type === "history"
+                                    ? "📖"
+                                    : "🔔"
+                    }
+                </div>
+
+                <div class="notification-item-content">
+
+                    <strong>
+                        ${escapeHtml(
+                            notification.title
+                        )}
+                    </strong>
+
+                    <p>
+                        ${escapeHtml(
+                            notification.message || ""
+                        )}
+                    </p>
+
+                    <span>
+                        ${new Date(
+                            notification.created_at
+                        ).toLocaleDateString(
+                            "es-ES"
+                        )}
+                    </span>
+
+                </div>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                async () => {
+
+                    await markNotificationAsRead(
+                        notification.id
+                    );
+
+                    if (
+                        notification.type === "event" &&
+                        notification.reference_id
+                    ) {
+
+                        window.location.href =
+                            `evento.html?id=${notification.reference_id}`;
+
+                        return;
+                    }
+
+                    await loadNotifications();
+
+                }
+            );
+
+
+            notificationList.appendChild(item);
+
+        });
+
+    }
+
+
+    notificationButton.addEventListener(
+        "click",
+        async event => {
+
+            event.stopPropagation();
+
+            notificationPanel.hidden =
+                !notificationPanel.hidden;
+
+            if (!notificationPanel.hidden) {
+                await loadNotifications();
+            }
+
+        }
+    );
+
+
+    markAllButton.addEventListener(
+        "click",
+        async () => {
+
+            await markAllNotificationsAsRead();
+
+            await loadNotifications();
+
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        () => {
+
+            notificationPanel.hidden = true;
+
+        }
+    );
+
+
+    notificationPanel.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+        }
+    );
+
+
+    await loadNotifications();
+
+});
+
+</script>
+
     async function initializeCurruscos() {
 
         const user = await getCurrentUser();
