@@ -1036,6 +1036,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         switch (type) {
 
+                case "participant":
+    return "👥";
+
             case "event":
                 return "📅";
 
@@ -1229,17 +1232,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
 
 
-                        if (
-                            notification.type === "event" &&
-                            notification.reference_id
-                        ) {
+                      if (
+    (
+        notification.type === "event" ||
+        notification.type === "participant"
+    ) &&
+    notification.reference_id
+) {
+    window.location.href =
+        `evento.html?id=${notification.reference_id}`;
 
-                            window.location.href =
-                                `evento.html?id=${notification.reference_id}`;
-
-                            return;
-
-                        }
+    return;
+}
 
 
                         await loadNotifications();
