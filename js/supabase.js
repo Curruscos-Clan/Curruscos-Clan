@@ -632,3 +632,96 @@ async function deleteHistoryEntry(historyId) {
 
     return true;
 }
+
+async function getUserNotifications() {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("notifications")
+        .select(`
+            id,
+            group_id,
+            type,
+            title,
+            message,
+            reference_id,
+            is_read,
+            created_at
+        `)
+        .eq("user_id", user.id)
+        .order("created_at", {
+            ascending: false
+        })
+        .limit(30);
+
+    if (error) {
+        console.error(
+            "Error obteniendo notificaciones:",
+            error
+        );
+
+        return [];
+    }
+
+    return data || [];
+}
+
+
+async function markNotificationAsRead(
+    notificationId
+) {
+
+    const { error } = await supabaseClient
+        .from("notifications")
+        .update({
+            is_read: true
+        })
+        .eq("id", notificationId);
+
+    if (error) {
+
+        console.error(
+            "Error marcando notificación como leída:",
+            error
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+async function markAllNotificationsAsRead() {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return false;
+    }
+
+    const { error } = await supabaseClient
+        .from("notifications")
+        .update({
+            is_read: true
+        })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
+
+    if (error) {
+
+        console.error(
+            "Error marcando notificaciones:",
+            error
+        );
+
+        return false;
+    }
+
+    return true;
+}
