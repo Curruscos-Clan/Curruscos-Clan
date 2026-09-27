@@ -970,6 +970,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log("🔔 SISTEMA DE NOTIFICACIONES CARGADO");
 
+
+    /* ==========================================
+       ELEMENTOS
+    ========================================== */
+
     const notificationButton =
         document.getElementById("notificationButton");
 
@@ -992,14 +997,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         !notificationBadge ||
         !notificationList
     ) {
+
         console.error(
             "🔔 Faltan elementos del sistema de notificaciones"
         );
+
         return;
+
     }
 
 
-    console.log("🔔 Elementos de notificaciones encontrados");
+    console.log(
+        "🔔 Elementos de notificaciones encontrados"
+    );
 
 
     /* ==========================================
@@ -1085,7 +1095,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadNotifications() {
 
-        console.log("🔔 Cargando notificaciones...");
+        console.log(
+            "🔔 Cargando notificaciones..."
+        );
+
 
         const notifications =
             await getUserNotifications();
@@ -1268,7 +1281,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* ==========================================
-       EVITAR QUE EL PANEL SE CIERRE
+       EVITAR CIERRE DEL PANEL
     ========================================== */
 
     notificationPanel.addEventListener(
@@ -1318,6 +1331,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     /* ==========================================
+       🔔 REALTIME
+    ========================================== */
+
+    window.addEventListener(
+        "curruscos:new-notification",
+        async () => {
+
+            console.log(
+                "🔔 Nueva notificación recibida. Actualizando..."
+            );
+
+            await loadNotifications();
+
+        }
+    );
+
+
+    await startNotificationRealtime();
+
+
+    /* ==========================================
        CARGA INICIAL
     ========================================== */
 
@@ -1326,73 +1360,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 </script>
-    }
-
-
-notificationButton.addEventListener("click", async () => {
-
-    const panel = document.getElementById("notificationPanel");
-
-    if (!panel) {
-        return;
-    }
-
-    panel.hidden = !panel.hidden;
-
-    if (!panel.hidden) {
-        await loadNotifications();
-    }
-
-});
-
-            event.stopPropagation();
-
-            notificationPanel.hidden =
-                !notificationPanel.hidden;
-
-            if (!notificationPanel.hidden) {
-                await loadNotifications();
-            }
-
-        }
-    );
-
-
-    notificationPanel.addEventListener(
-        "click",
-        event => {
-            event.stopPropagation();
-        }
-    );
-
-
-    document.addEventListener(
-        "click",
-        () => {
-            notificationPanel.hidden = true;
-        }
-    );
-
-
-    if (markAllButton) {
-
-        markAllButton.addEventListener(
-            "click",
-            async () => {
-
-                await markAllNotificationsAsRead();
-
-                await loadNotifications();
-
-            }
-        );
-
-    }
-
-
-    await loadNotifications();
-
-});
 
     <!-- =====================================================
          DASHBOARD
