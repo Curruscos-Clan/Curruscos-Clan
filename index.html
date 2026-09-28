@@ -1232,9 +1232,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
 
 
-                      if (
+if (
     (
         notification.type === "event" ||
+        notification.type === "task" ||
+        notification.type === "expense" ||
         notification.type === "participant"
     ) &&
     notification.reference_id
