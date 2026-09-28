@@ -1219,47 +1219,49 @@ document.addEventListener("DOMContentLoaded", async () => {
                    CLICK EN NOTIFICACIÓN
                 ============================== */
 
-                item.addEventListener(
-                    "click",
-                    async () => {
+item.addEventListener(
+    "click",
+    async () => {
 
-                        if (!notification.is_read) {
+        // Guardar como leída sin bloquear la navegación
+        if (!notification.is_read) {
+            markNotificationAsRead(
+                notification.id
+            );
+        }
 
-                            await markNotificationAsRead(
-                                notification.id
-                            );
+        // Notificaciones relacionadas con eventos
+        if (
+            (
+                notification.type === "event" ||
+                notification.type === "task" ||
+                notification.type === "expense" ||
+                notification.type === "participant"
+            ) &&
+            notification.reference_id
+        ) {
 
-                        }
+            const eventId =
+                String(notification.reference_id).trim();
 
+            console.log(
+                "🔗 Abriendo evento desde notificación:",
+                eventId
+            );
 
-if (
-    (
-        notification.type === "event" ||
-        notification.type === "task" ||
-        notification.type === "expense" ||
-        notification.type === "participant"
-    ) &&
-    notification.reference_id
-) {
-    window.location.href =
-        `evento.html?id=${notification.reference_id}`;
+            window.location.assign(
+                "evento.html?id=" +
+                encodeURIComponent(eventId)
+            );
 
-    return;
-}
+            return;
+        }
 
-
-                        await loadNotifications();
-
-                    }
-                );
-
-
-                notificationList.appendChild(item);
-
-            }
-        );
+        // Para notificaciones que no tienen destino
+        await loadNotifications();
 
     }
+);
 
 
     /* ==========================================
