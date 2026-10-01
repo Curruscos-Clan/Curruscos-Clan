@@ -91,15 +91,24 @@
 
             message.textContent = "Entrando...";
 
-            const { error } = await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
+          const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+});
 
-            if (error) {
-                message.textContent = error.message;
-                return;
-            }
+if (error) {
+    message.textContent = error.message;
+    return;
+}
+
+message.textContent = "Entrando...";
+
+const groups = await getUserGroups();
+
+if (!groups || groups.length === 0) {
+    window.location.href = "onboarding.html";
+    return;
+}
 
 window.location.href = "dashboard.html";
         });
