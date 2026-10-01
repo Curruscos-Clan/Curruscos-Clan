@@ -549,102 +549,403 @@ console.log(
     "MIEMBROS RECIBIDOS:",
     members
 );
-                /* ==========================================
-                   MOSTRAR MIEMBROS
-                ========================================== */
+/* ==========================================
+   MOSTRAR Y GESTIONAR MIEMBROS
+========================================== */
 
-               const validMembers =
-    members || [];
+const validMembers = members || [];
 
-                membersSubtitle.textContent =
-                    validMembers.length === 1
-                        ? "1 persona forma parte de este grupo."
-                        : `${validMembers.length} personas forman parte de este grupo.`;
+membersSubtitle.textContent =
+    validMembers.length === 1
+        ? "1 persona forma parte de este grupo."
+        : `${validMembers.length} personas forman parte de este grupo.`;
 
-
-                membersGrid.innerHTML = "";
+membersGrid.innerHTML = "";
 
 
-                validMembers.forEach(
-                    member => {
+/* ==========================================
+   PERMISOS DEL USUARIO ACTUAL
+========================================== */
+
+const currentUser =
+    await getCurrentUser();
+
+const currentMember =
+    validMembers.find(
+        member =>
+            member.user_id === currentUser?.id
+    );
+
+const currentRole =
+    currentMember?.role || "member";
 
 
+/* ==========================================
+   CREAR TARJETAS
+========================================== */
 
-                        const card =
-                            document.createElement(
-                                "div"
-                            );
+validMembers.forEach(member => {
 
-                        card.className =
-                            "member-card";
+    const card =
+        document.createElement("article");
 
-
-                   const displayName =
-    member.display_name ||
-    member.username ||
-    "Usuario";
+    card.className =
+        "member-card";
 
 
-                        const role =
-                            member.role === "owner"
-                                ? "Propietario"
-                                : member.role === "admin"
-                                    ? "Administrador"
-                                    : "Miembro";
-
-
-                        card.innerHTML = `
-
-                            <div class="member-avatar">
-                                ${String(
-                                    displayName
-                                        .charAt(0)
-                                        .toUpperCase()
-                                )}
-                            </div>
-
-                            <div class="member-info">
-
-                                <h3>
-                                    ${String(
-                                        displayName
-                                    )}
-                                </h3>
-
-                            <p>
-    @${String(
+    const displayName =
+        member.display_name ||
         member.username ||
-        ""
-    )}
-</p>
-
-                                <span>
-                                    ${role}
-                                </span>
-
-                            </div>
-
-                        `;
+        "Usuario";
 
 
-                        membersGrid.appendChild(
-                            card
-                        );
+    const roleLabel =
+        member.role === "owner"
+            ? "Propietario"
+            : member.role === "admin"
+                ? "Administrador"
+                : "Miembro";
 
+
+    /* ======================================
+       TARJETA DEL MIEMBRO
+    ====================================== */
+
+    card.innerHTML = `
+
+        <div class="member-avatar">
+            ${String(
+                displayName
+                    .charAt(0)
+                    .toUpperCase()
+            )}
+        </div>
+
+        <div class="member-info">
+
+            <h3>
+                ${String(displayName)}
+            </h3>
+
+            <p>
+                @${String(
+                    member.username || ""
+                )}
+            </p>
+
+            <span>
+                ${roleLabel}
+            </span>
+
+        </div>
+
+    `;
+
+
+    /* ======================================
+       ¿TIENE PERMISOS DE GESTIÓN?
+    ====================================== */
+
+    let canManage = false;
+
+
+    /*
+       OWNER:
+       puede gestionar admins y miembros.
+    */
+
+    if (
+        currentRole === "owner" &&
+        member.role !== "owner"
+    ) {
+
+        canManage = true;
+
+    }
+
+
+    /*
+       ADMIN:
+       solamente puede gestionar miembros normales.
+    */
+
+    if (
+        currentRole === "admin" &&
+        member.role === "member"
+    ) {
+
+        canManage = true;
+
+    }
+
+
+    if (!canManage) {
+
+        membersGrid.appendChild(card);
+
+        return;
+
+    }
+
+
+    /* ======================================
+       CONTROLES
+    ====================================== */
+
+    const actions =
+        document.createElement("div");
+
+    actions.style.marginTop = "15px";
+
+    actions.style.display = "flex";
+
+    actions.style.gap = "8px";
+
+    actions.style.flexWrap = "wrap";
+
+
+    /* ======================================
+       CAMBIAR ROL
+    ====================================== */
+
+    if (currentRole === "owner") {
+
+        const roleButton =
+            document.createElement("button");
+
+        roleButton.type = "button";
+
+        roleButton.textContent =
+            member.role === "admin"
+                ? "Hacer miembro"
+                : "Hacer admin";
+
+
+        roleButton.style.border = "1px solid #ddd";
+
+        roleButton.style.background = "white";
+
+        roleButton.style.color = "#111";
+
+        roleButton.style.padding = "8px 12px";
+
+        roleButton.style.borderRadius = "8px";
+
+        roleButton.style.cursor = "pointer";
+
+        roleButton.style.fontWeight = "600";
+
+
+        roleButton.addEventListener(
+            "click",
+            async () => {
+
+                const newRole =
+                    member.role === "admin"
+                        ? "member"
+                        : "admin";
+
+
+                const confirmation =
+                    confirm(
+                        newRole === "admin"
+                            ? `¿Quieres hacer administrador a ${displayName}?`
+                            : `¿Quieres quitarle el rol de administrador a ${displayName}?`
+                    );
+
+
+                if (!confirmation) {
+                    return;
+                }
+
+
+                roleButton.disabled = true;
+
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient.rpc(
+                    "change_group_member_role",
+                    {
+                        target_group_id:
+                            currentGroup.id,
+
+                        target_user_id:
+                            member.user_id,
+
+                        new_role:
+                            newRole
                     }
                 );
 
 
-                if (!validMembers.length) {
+                roleButton.disabled = false;
 
-                    membersGrid.innerHTML = `
-                        <p>
-                            Este grupo todavía no tiene miembros.
-                        </p>
-                    `;
+
+                if (error) {
+
+                    console.error(
+                        "Error cambiando rol:",
+                        error
+                    );
+
+                    alert(
+                        error.message ||
+                        "No se ha podido cambiar el rol."
+                    );
+
+                    return;
 
                 }
 
+
+                member.role =
+                    data.role;
+
+
+                window.location.reload();
+
+            }
+        );
+
+
+        actions.appendChild(
+            roleButton
+        );
+
+    }
+
+
+    /* ======================================
+       EXPULSAR
+    ====================================== */
+
+    const removeButton =
+        document.createElement("button");
+
+    removeButton.type = "button";
+
+    removeButton.textContent =
+        "Expulsar";
+
+
+    removeButton.style.border =
+        "1px solid #ddd";
+
+    removeButton.style.background =
+        "white";
+
+    removeButton.style.color =
+        "#b00020";
+
+    removeButton.style.padding =
+        "8px 12px";
+
+    removeButton.style.borderRadius =
+        "8px";
+
+    removeButton.style.cursor =
+        "pointer";
+
+    removeButton.style.fontWeight =
+        "600";
+
+
+    removeButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmation =
+                confirm(
+                    `¿Seguro que quieres expulsar a ${displayName} del grupo?`
+                );
+
+
+            if (!confirmation) {
+                return;
+            }
+
+
+            removeButton.disabled = true;
+
+
+            const {
+                error
+            } = await supabaseClient.rpc(
+                "remove_group_member",
+                {
+                    target_group_id:
+                        currentGroup.id,
+
+                    target_user_id:
+                        member.user_id
+                }
+            );
+
+
+            removeButton.disabled = false;
+
+
+            if (error) {
+
+                console.error(
+                    "Error expulsando miembro:",
+                    error
+                );
+
+                alert(
+                    error.message ||
+                    "No se ha podido expulsar al miembro."
+                );
+
+                return;
+
+            }
+
+
+            window.location.reload();
+
+        }
+    );
+
+
+    actions.appendChild(
+        removeButton
+    );
+
+
+    card.appendChild(
+        actions
+    );
+
+
+    membersGrid.appendChild(
+        card
+    );
+
+});
+
+
+/* ==========================================
+   GRUPO SIN MIEMBROS
+========================================== */
+
+if (!validMembers.length) {
+
+    membersGrid.innerHTML = `
+
+        <div class="empty-state">
+
+            <h3>
+                Este grupo todavía no tiene miembros.
+            </h3>
+
+        </div>
+
+    `;
+
+}
             }
         );
 
