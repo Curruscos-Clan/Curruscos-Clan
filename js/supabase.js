@@ -1115,3 +1115,307 @@ async function closePoll(
 
     return data;
 }
+
+// ==========================================
+// 🗳️ VOTACIONES
+// ==========================================
+
+async function getGroupPolls() {
+
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("polls")
+        .select(`
+            id,
+            group_id,
+            created_by,
+            question,
+            description,
+            is_closed,
+            created_at,
+            poll_options (
+                id,
+                option_text,
+                created_at
+            )
+        `)
+        .eq("group_id", group.id)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+        console.error("Error obteniendo votaciones:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+
+// ==========================================
+// ➕ CREAR VOTACIÓN
+// ==========================================
+
+async function createGroupPoll(
+    question,
+    description,
+    options
+) {
+
+    const group = await getCurrentGroup();
+    const user = await getCurrentUser();
+
+    if (!group || !user) {
+        return null;
+    }
+
+    if (!question || !question.trim()) {
+        console.error("La pregunta de la votación es obligatoria.");
+        return null;
+    }
+
+    if (!Array.isArray(options) || options.length < 2) {
+        console.error("Una votación necesita al menos dos opciones.");
+        return null;
+    }
+
+    const cleanOptions = options
+        .map(option => String(option).trim())
+        .filter(option => option !== "");
+
+    if (cleanOptions.length < 2) {
+        console.error("La votación necesita al menos dos opciones válidas.");
+        return null;
+    }
+
+    const { data: poll, error: pollError } =
+        await supabaseClient
+            .from("polls")
+            .insert({
+                group_id: group.id,
+                created_by: user.id,
+                question: question.trim(),
+                description:
+                    description && description.trim()
+                        ? description.trim()
+                        : null
+            })
+            .select()
+            .single();
+
+    if (pollError) {
+        console.error("Error creando votación:", pollError);
+        return null;
+    }
+
+    const optionsToInsert = cleanOptions.map(
+        option => ({
+            poll_id: poll.id,
+            option_text: option
+        })
+    );
+
+    const {
+        data: createdOptions,
+        error: optionsError
+    } = await supabaseClient
+        .from("poll_options")
+        .insert(optionsToInsert)
+        .select();
+
+    if (optionsError) {
+        console.error(
+            "Error creando opciones de votación:",
+            optionsError
+        );
+
+        await supabaseClient
+            .from("polls")
+            .delete()
+            .eq("id", poll.id);
+
+        return null;
+    }
+
+    return {
+        ...poll,
+        poll_options: createdOptions || []
+    };
+}
+
+
+// ==========================================
+// 👆 VOTAR
+// ==========================================
+
+async function voteInPoll(
+    pollId,
+    optionId
+) {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
+
+    const { data: poll, error: pollError } =
+        await supabaseClient
+            .from("polls")
+            .select(`
+                id,
+                is_closed
+            `)
+            .eq("id", pollId)
+            .single();
+
+    if (pollError || !poll) {
+        console.error(
+            "Error obteniendo votación:",
+            pollError
+        );
+
+        return null;
+    }
+
+    if (poll.is_closed) {
+        console.error("Esta votación ya está cerrada.");
+        return null;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("poll_votes")
+            .insert({
+                poll_id: pollId,
+                option_id: optionId,
+                user_id: user.id
+            })
+            .select()
+            .single();
+
+    if (error) {
+        console.error(
+            "Error registrando voto:",
+            error
+        );
+
+        return null;
+    }
+
+    return data;
+}
+
+
+// ==========================================
+// 📊 OBTENER MIS VOTOS
+// ==========================================
+
+async function getMyPollVotes(
+    pollIds
+) {
+
+    const user = await getCurrentUser();
+
+    if (
+        !user ||
+        !Array.isArray(pollIds) ||
+        pollIds.length === 0
+    ) {
+        return [];
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("poll_votes")
+            .select(`
+                id,
+                poll_id,
+                option_id,
+                user_id,
+                created_at
+            `)
+            .eq("user_id", user.id)
+            .in("poll_id", pollIds);
+
+    if (error) {
+        console.error(
+            "Error obteniendo mis votos:",
+            error
+        );
+
+        return [];
+    }
+
+    return data || [];
+}
+
+
+// ==========================================
+// 📊 OBTENER RESULTADOS
+// ==========================================
+
+async function getPollResults(
+    pollId
+) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("poll_votes")
+            .select(`
+                id,
+                poll_id,
+                option_id,
+                user_id,
+                created_at
+            `)
+            .eq("poll_id", pollId);
+
+    if (error) {
+        console.error(
+            "Error obteniendo resultados:",
+            error
+        );
+
+        return [];
+    }
+
+    return data || [];
+}
+
+
+// ==========================================
+// 🔒 CERRAR VOTACIÓN
+// ==========================================
+
+async function closePoll(
+    pollId
+) {
+
+    const { data, error } =
+        await supabaseClient
+            .from("polls")
+            .update({
+                is_closed: true
+            })
+            .eq("id", pollId)
+            .select()
+            .single();
+
+    if (error) {
+        console.error(
+            "Error cerrando votación:",
+            error
+        );
+
+        return null;
+    }
+
+    return data;
+}
