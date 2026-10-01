@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Crear tu grupo · Curruscos</title>
+
+    <meta
+        name="description"
+        content="Crea el espacio de tu grupo en Curruscos."
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #f7f7f5;
+            color: #111;
+        }
+
+        .onboarding-page {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px 20px;
+        }
+
+        .onboarding-card {
+            width: 100%;
+            max-width: 520px;
+
+            background: white;
+
+            border: 1px solid #e5e5e2;
+
+            border-radius: 24px;
+
+            padding: 42px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.06);
+        }
+
+        .onboarding-eyebrow {
+            display: block;
+
+            margin-bottom: 18px;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            letter-spacing: 0.14em;
+
+            color: #888;
+        }
+
+        .onboarding-card h1 {
+            margin: 0;
+
+            font-size: clamp(36px, 7vw, 52px);
+
+            line-height: 0.98;
+
+            letter-spacing: -0.055em;
+        }
+
+        .onboarding-intro {
+            margin: 20px 0 35px;
+
+            color: #777;
+
+            line-height: 1.6;
+        }
+
+        .onboarding-form {
+            display: flex;
+            flex-direction: column;
+
+            gap: 9px;
+        }
+
+        .onboarding-form label {
+            margin-top: 10px;
+
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .onboarding-form input,
+        .onboarding-form textarea {
+            width: 100%;
+            box-sizing: border-box;
+
+            padding: 13px 14px;
+
+            border: 1px solid #ddd;
+
+            border-radius: 12px;
+
+            background: #fafafa;
+
+            font: inherit;
+
+            outline: none;
+        }
+
+        .onboarding-form textarea {
+            min-height: 100px;
+
+            resize: vertical;
+        }
+
+        .onboarding-form input:focus,
+        .onboarding-form textarea:focus {
+            border-color: #999;
+
+            background: white;
+        }
+
+        .onboarding-button {
+            margin-top: 18px;
+
+            width: 100%;
+
+            border: 0;
+
+            border-radius: 999px;
+
+            padding: 14px 20px;
+
+            background: #111;
+
+            color: white;
+
+            font: inherit;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .onboarding-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .onboarding-button:disabled {
+            opacity: 0.6;
+
+            cursor: wait;
+
+            transform: none;
+        }
+
+        .onboarding-message {
+            min-height: 20px;
+
+            margin: 16px 0 0;
+
+            text-align: center;
+
+            color: #777;
+
+            font-size: 14px;
+        }
+
+        .onboarding-note {
+            margin-top: 25px;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #eee;
+
+            color: #999;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+
+            .onboarding-card {
+                padding: 30px 22px;
+
+                border-radius: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<main class="onboarding-page">
+
+    <section class="onboarding-card">
+
+        <span class="onboarding-eyebrow">
+            BIENVENIDO A CURRUSCOS
+        </span>
+
+        <h1>
+            Crea vuestro espacio.
+        </h1>
+
+        <p class="onboarding-intro">
+            Ponle un nombre a vuestro grupo y empezad a
+            organizar eventos, compartir recuerdos y
+            construir vuestra historia.
+        </p>
+
+
+        <form
+            id="createGroupForm"
+            class="onboarding-form"
+        >
+
+            <label for="groupName">
+                Nombre del grupo
+            </label>
+
+            <input
+                type="text"
+                id="groupName"
+                placeholder="Ej. Curruscos Clan"
+                maxlength="80"
+                required
+            >
+
+
+            <label for="groupDescription">
+                Descripción
+            </label>
+
+            <textarea
+                id="groupDescription"
+                placeholder="¿Qué tipo de grupo sois?"
+                maxlength="300"
+            ></textarea>
+
+
+            <button
+                type="submit"
+                id="createGroupButton"
+                class="onboarding-button"
+            >
+                Crear mi grupo
+            </button>
+
+        </form>
+
+
+        <p
+            id="onboardingMessage"
+            class="onboarding-message"
+        ></p>
+
+
+        <p class="onboarding-note">
+            Serás automáticamente el propietario del grupo
+            y podrás invitar a otras personas.
+        </p>
+
+    </section>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+
+<script>
+
+    const form =
+        document.getElementById("createGroupForm");
+
+    const button =
+        document.getElementById("createGroupButton");
+
+    const message =
+        document.getElementById("onboardingMessage");
+
+
+    form.addEventListener("submit", async event => {
+
+        event.preventDefault();
+
+        const name =
+            document
+                .getElementById("groupName")
+                .value
+                .trim();
+
+        const description =
+            document
+                .getElementById("groupDescription")
+                .value
+                .trim();
+
+
+        if (!name) {
+
+            message.textContent =
+                "Escribe un nombre para el grupo.";
+
+            return;
+        }
+
+
+        button.disabled = true;
+
+        message.textContent =
+            "Creando vuestro espacio...";
+
+
+        const group =
+            await createGroup(
+                name,
+                description
+            );
+
+
+        if (!group) {
+
+            button.disabled = false;
+
+            message.textContent =
+                "No se ha podido crear el grupo.";
+
+            return;
+        }
+
+
+        message.textContent =
+            "Grupo creado. Entrando...";
+
+
+        setTimeout(() => {
+
+            window.location.href =
+                "dashboard.html";
+
+        }, 500);
+
+    });
+
+</script>
+
+</body>
+
+</html>
