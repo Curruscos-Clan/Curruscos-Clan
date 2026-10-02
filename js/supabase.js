@@ -1886,3 +1886,146 @@ async function getMyPublicEvents() {
         organizing: organizing || []
     };
 }
+
+async function getPublicEvent(id) {
+    const { data, error } = await supabaseClient
+        .from("events")
+        .select("*")
+        .eq("id", id)
+        .eq("visibility", "public")
+        .single();
+    if (error) {
+        console.error("Error obteniendo evento público:", error);
+        return null;
+    }
+    return data;
+}
+
+async function getPublicEvents(filters = {}) {
+    let query = supabaseClient
+        .from("events")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name")
+        .eq("visibility", "public")
+        .eq("status", "published")
+        .order("date", { ascending: true })
+        .order("time", { ascending: true });
+
+    const search = String(filters.search || "").trim();
+    const category = filters.category || "all";
+
+    if (category !== "all") {
+        query = query.eq("category", category);
+    }
+
+    if (search) {
+        query = query.or("title.ilike.%" + search + "%,location.ilike.%" + search + "%,description.ilike.%" + search + "%");
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        console.error("Error obteniendo eventos públicos:", error);
+        return [];
+    }
+    return data || [];
+}
+
+async function createPublicEvent(eventData) {
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    const { data, error } = await supabaseClient
+        .from("events")
+        .insert({
+            group_id: null,
+            created_by: user.id,
+            title: eventData.title,
+            description: eventData.description || null,
+            date: eventData.date,
+            time: eventData.time || null,
+            location: eventData.location || null,
+            visibility: "public",
+            category: eventData.category || "other",
+            capacity: eventData.capacity ? Number(eventData.capacity) : null,
+            entry_fee: eventData.entry_fee ? Number(eventData.entry_fee) : 0,
+            registration_deadline: eventData.registration_deadline || null,
+            status: "published",
+            format: eventData.format || "standard",
+            rules: eventData.rules || null,
+            organizer_name: eventData.organizer_name || null
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creando evento público:", error);
+        return null;
+    }
+    return data;
+}
+
+async function getPublicEventParticipants(eventId) {
+    const { data, error } = await supabaseClient
+        .from("event_participants")
+        .select("id,event_id,user_id,status")
+        .eq("event_id", eventId)
+        .eq("status", "yes");
+
+    if (error) {
+        console.error("Error obteniendo participantes públicos:", error);
+        return [];
+    }
+    return data || [];
+}
+
+async function joinPublicEvent(eventId) {
+    const user = await getCurrentUser();
+    if (!user) return null;
+    return setEventParticipant(eventId, user.id, "yes");
+}
+
+async function leavePublicEvent(eventId) {
+    const user = await getCurrentUser();
+    if (!user) return false;
+
+    const { error } = await supabaseClient
+        .from("event_participants")
+        .delete()
+        .eq("event_id", eventId)
+        .eq("user_id", user.id);
+
+    if (error) {
+        console.error("Error saliendo del evento:", error);
+        return false;
+    }
+    return true;
+}
+
+async function getPublicEventTeams(eventId) {
+    const { data, error } = await supabaseClient
+        .from("event_teams")
+        .select("id,event_id,name,seed")
+        .eq("event_id", eventId)
+        .order("seed", { ascending: true, nullsFirst: false })
+        .order("name", { ascending: true });
+
+    if (error) {
+        console.error("Error obteniendo equipos:", error);
+        return [];
+    }
+    return data || [];
+}
+
+async function getPublicEventMatches(eventId) {
+    const { data, error } = await supabaseClient
+        .from("event_matches")
+        .select("id,event_id,round_number,match_number,home_team_id,away_team_id,home_score,away_score,scheduled_at,status")
+        .eq("event_id", eventId)
+        .order("round_number", { ascending: true })
+        .order("match_number", { ascending: true });
+
+    if (error) {
+        console.error("Error obteniendo partidos:", error);
+        return [];
+    }
+    return data || [];
+}
