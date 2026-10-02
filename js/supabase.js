@@ -1651,7 +1651,7 @@ async function updateProfile(displayName, username) {
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,event_participants(count)")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,created_at,event_participants(count)")
         .eq("visibility", "public")
         .in("status", ["published", "preparing", "live"])
         .order("date", { ascending: true })
