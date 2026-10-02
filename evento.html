@@ -541,6 +541,18 @@
     color: white;
 }
 
+.participant-actions button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.participant-actions button:disabled:hover {
+    background: #f7f7f7;
+    border-color: #ddd;
+    color: inherit;
+}
+
 /* ---------- PROGRESO ---------- */
 
 .progress-container {
@@ -1550,9 +1562,6 @@
     </div>
 
 </footer>
-
-
-<script src="js/data.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/app.js"></script>
@@ -1852,8 +1861,24 @@
        ===================================================== */
 
   let currentEvent = null;
-
 let currentGroupMembers = [];
+let currentUser = null;
+let currentGroupRole = null;
+
+function canManageGroup() {
+    return currentGroupRole === "owner" || currentGroupRole === "admin";
+}
+
+function canManageEvent() {
+    return Boolean(
+        currentUser &&
+        currentEvent &&
+        (
+            canManageGroup() ||
+            currentEvent.created_by === currentUser.id
+        )
+    );
+}
 
 function escapeHtml(value) {
     return String(value ?? "")
@@ -1921,6 +1946,22 @@ async function loadCurrentGroupMembers() {
 }
  async function loadEvent() {
 
+    currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        window.location.replace("login.html");
+        return;
+    }
+
+    const currentGroup = await getCurrentGroup();
+
+    if (!currentGroup) {
+        window.location.replace("onboarding.html");
+        return;
+    }
+
+    currentGroupRole = currentGroup.role;
+
     const params =
         new URLSearchParams(window.location.search);
 
@@ -1943,6 +1984,13 @@ async function loadCurrentGroupMembers() {
             "Evento no encontrado";
 
         return;
+    }
+
+    const editButton =
+        document.getElementById("editEventButton");
+
+    if (editButton && !canManageEvent()) {
+        editButton.hidden = true;
     }
 
     // Mantener estas estructuras preparadas mientras
@@ -2313,6 +2361,7 @@ async function loadSupabaseExpenses() {
                         type="button"
                         title="Va"
                         class="${participant.status === "yes" ? "active" : ""}"
+                        ${String(memberId) !== String(currentUser?.id) && !canManageGroup() ? "disabled" : ""}
                     >
                         ✓
                     </button>
@@ -2321,6 +2370,7 @@ async function loadSupabaseExpenses() {
                         type="button"
                         title="No va"
                         class="${participant.status === "no" ? "active" : ""}"
+                        ${String(memberId) !== String(currentUser?.id) && !canManageGroup() ? "disabled" : ""}
                     >
                         ✕
                     </button>
@@ -2329,6 +2379,7 @@ async function loadSupabaseExpenses() {
                         type="button"
                         title="Pendiente"
                         class="${participant.status === "pending" ? "active" : ""}"
+                        ${String(memberId) !== String(currentUser?.id) && !canManageGroup() ? "disabled" : ""}
                     >
                         ?
                     </button>
@@ -2392,6 +2443,14 @@ async function loadSupabaseExpenses() {
 
 
    async function changeParticipant(memberId, status) {
+
+    const isOwnStatus =
+        String(memberId) === String(currentUser?.id);
+
+    if (!isOwnStatus && !canManageGroup()) {
+        alert("Solo puedes cambiar tu propia asistencia.");
+        return;
+    }
 
     const result = await setEventParticipant(
         currentEvent.id,
@@ -3248,8 +3307,24 @@ document
 
   (async () => {
 
-    await loadCurrentGroupMembers();
+    const user = await getCurrentUser();
 
+    if (!user) {
+        window.location.replace("login.html");
+        return;
+    }
+
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        window.location.replace("onboarding.html");
+        return;
+    }
+
+    currentUser = user;
+    currentGroupRole = group.role;
+
+    await loadCurrentGroupMembers();
     await loadEvent();
 
 })();
