@@ -1653,7 +1653,7 @@ async function getPublicEvents(filters = {}) {
         .from("events")
         .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,event_participants(count)")
         .eq("visibility", "public")
-        .eq("status", "published")
+        .in("status", ["published", "preparing", "live"])
         .order("date", { ascending: true })
         .order("time", { ascending: true });
 
@@ -1669,7 +1669,7 @@ async function getPublicEvents(filters = {}) {
     if (eventType !== "all") query = query.eq("event_type", eventType);
 
     if (search) {
-        query = query.or("title.ilike.%" + search + "%,location.ilike.%" + search + "%,description.ilike.%" + search + "%");
+        query = query.or("title.ilike.%" + search + "%,location.ilike.%" + search + "%,description.ilike.%" + search + "%,organizer_name.ilike.%" + search + "%");
     }
 
     const { data, error } = await query;
