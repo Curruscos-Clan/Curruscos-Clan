@@ -1660,9 +1660,13 @@ async function getPublicEvents(filters = {}) {
     const search = String(filters.search || "").trim();
     const category = filters.category || "all";
 
+    const eventType = filters.event_type || "all";
+
     if (category !== "all") {
         query = query.eq("category", category);
     }
+
+    if (eventType !== "all") query = query.eq("event_type", eventType);
 
     if (search) {
         query = query.or("title.ilike.%" + search + "%,location.ilike.%" + search + "%,description.ilike.%" + search + "%");
