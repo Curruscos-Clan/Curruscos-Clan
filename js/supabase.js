@@ -1680,6 +1680,8 @@ async function getPublicEvents(filters = {}) {
     return data || [];
 }
 
+async function setPublicEventStatus(eventId,status){const {data,error}=await supabaseClient.rpc("set_public_event_status",{target_event_id:eventId,new_status:status});if(error)throw error;return data;}
+
 async function createPublicEvent(eventData) {
     const user = await getCurrentUser();
     if (!user) return null;
