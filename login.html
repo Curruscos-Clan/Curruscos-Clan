@@ -75,73 +75,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
-
-    <script>
-
-        const form = document.getElementById("loginForm");
-        const registerButton = document.getElementById("registerButton");
-        const message = document.getElementById("loginMessage");
-
-        form.addEventListener("submit", async (event) => {
-
-            event.preventDefault();
-
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-
-            message.textContent = "Entrando...";
-
-          const { error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-});
-
-if (error) {
-    message.textContent = error.message;
-    return;
-}
-
-message.textContent = "Entrando...";
-
-const groups = await getUserGroups();
-
-if (!groups || groups.length === 0) {
-    window.location.href = "onboarding.html";
-    return;
-}
-
-window.location.href = "dashboard.html";
-        });
-
-
-        registerButton.addEventListener("click", async () => {
-
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
-
-            if (!email || !password) {
-                message.textContent =
-                    "Escribe un correo y una contraseña.";
-                return;
-            }
-
-            message.textContent = "Creando cuenta...";
-
-            const { error } = await supabaseClient.auth.signUp({
-                email,
-                password
-            });
-
-            if (error) {
-                message.textContent = error.message;
-                return;
-            }
-
-            message.textContent =
-                "Cuenta creada. Revisa tu correo para confirmar la cuenta.";
-        });
-
-    </script>
-
+<script src="js/login.js"></script>
 </body>
+
 </html>

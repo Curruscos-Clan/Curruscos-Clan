@@ -8,12 +8,20 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_ANON_KEY
 );
 
+function getSupabaseErrorMessage(error, fallback = "Ha ocurrido un error.") {
+    return error?.message || error?.details || error?.hint || fallback;
+}
+
 
 // ========================================
 // USUARIO ACTUAL
 // ========================================
 
-async function getCurrentUser() {
+async function getCurrentUser(forceRefresh = false) {
+
+    if (currentUserLoaded && !forceRefresh) {
+        return currentUserCache;
+    }
 
     const {
         data: { user },
@@ -21,11 +29,19 @@ async function getCurrentUser() {
     } = await supabaseClient.auth.getUser();
 
     if (error) {
-        console.error("Error obteniendo usuario:", error);
-        return null;
+        console.error(
+            "Error obteniendo usuario:",
+            error
+        );
+
+        currentUserCache = null;
+    } else {
+        currentUserCache = user || null;
     }
 
-    return user;
+    currentUserLoaded = true;
+
+    return currentUserCache;
 }
 
 
@@ -33,11 +49,16 @@ async function getCurrentUser() {
 // PERFIL ACTUAL
 // ========================================
 
-async function getCurrentProfile() {
+async function getCurrentProfile(forceRefresh = false) {
+
+    if (currentProfileCache && !forceRefresh) {
+        return currentProfileCache;
+    }
 
     const user = await getCurrentUser();
 
     if (!user) {
+        currentProfileCache = null;
         return null;
     }
 
@@ -48,11 +69,18 @@ async function getCurrentProfile() {
         .single();
 
     if (error) {
-        console.error("Error obteniendo perfil:", error);
+        console.error(
+            "Error obteniendo perfil:",
+            error
+        );
+
+        currentProfileCache = null;
         return null;
     }
 
-    return data;
+    currentProfileCache = data;
+
+    return currentProfileCache;
 }
 
 
@@ -60,75 +88,113 @@ async function getCurrentProfile() {
 // GRUPO ACTUAL
 // ========================================
 
-async function getUserGroups() {
+async function getUserGroups(forceRefresh = false) {
+
+    if (userGroupsCache && !forceRefresh) {
+        return userGroupsCache;
+    }
 
     const user = await getCurrentUser();
 
-    if (!user) return [];
+    if (!user) {
+        userGroupsCache = [];
+        return userGroupsCache;
+    }
 
     const { data, error } = await supabaseClient
         .from("group_members")
         .select(`
             role,
+            joined_at,
             groups (
                 id,
                 name,
                 description
             )
         `)
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .order("joined_at", {
+            ascending: true
+        });
 
     if (error) {
-        console.error("Error obteniendo grupos:", error);
-        return [];
+        console.error(
+            "Error obteniendo grupos:",
+            error
+        );
+
+        userGroupsCache = [];
+        return userGroupsCache;
     }
 
-    return (data || [])
+    userGroupsCache = (data || [])
         .filter(item => item.groups)
         .map(item => ({
             id: item.groups.id,
             name: item.groups.name,
             description: item.groups.description,
-            role: item.role
+            role: item.role,
+            joined_at: item.joined_at
         }));
+
+    return userGroupsCache;
 }
 
 
-async function getCurrentGroup() {
+async function getCurrentGroup(forceRefresh = false) {
 
-    const groups = await getUserGroups();
+    if (currentGroupCache && !forceRefresh) {
+        return currentGroupCache;
+    }
 
-    if (groups.length === 0) {
+    const groups =
+        await getUserGroups(forceRefresh);
+
+    if (!groups.length) {
+        currentGroupCache = null;
         return null;
     }
 
     const savedGroupId =
-        localStorage.getItem("curruscos_current_group");
+        localStorage.getItem(
+            "curruscos_current_group"
+        );
 
-    if (savedGroupId) {
-
-        const savedGroup =
-            groups.find(group =>
+    currentGroupCache =
+        groups.find(
+            group =>
                 group.id === savedGroupId
-            );
+        ) || groups[0];
 
-        if (savedGroup) {
-            return savedGroup;
-        }
-
+    if (
+        currentGroupCache.id !==
+        savedGroupId
+    ) {
+        localStorage.setItem(
+            "curruscos_current_group",
+            currentGroupCache.id
+        );
     }
 
-    return groups[0];
+    return currentGroupCache;
 }
 
 
 function setCurrentGroup(groupId) {
 
+    currentGroupCache = null;
+
+    if (!groupId) {
+        localStorage.removeItem(
+            "curruscos_current_group"
+        );
+        return;
+    }
+
     localStorage.setItem(
         "curruscos_current_group",
-        groupId
+        String(groupId)
     );
-
 }
 
 
@@ -338,7 +404,17 @@ async function getEventTasks(eventId) {
 }
 
 
-async function createEventTask(eventId, title, assignedTo) {
+async function createEventTask(
+    eventId,
+    title,
+    assignedTo
+) {
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
 
     const { data, error } = await supabaseClient
         .from("tasks")
@@ -346,6 +422,7 @@ async function createEventTask(eventId, title, assignedTo) {
             event_id: eventId,
             title: title,
             assigned_to: assignedTo || null,
+            created_by: user.id,
             completed: false
         })
         .select()
@@ -424,13 +501,20 @@ async function createEventExpense(
     paidBy
 ) {
 
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
+
     const { data, error } = await supabaseClient
         .from("expenses")
         .insert({
             event_id: eventId,
             title: title,
             amount: amount,
-            paid_by: paidBy
+            paid_by: paidBy,
+            created_by: user.id
         })
         .select()
         .single();
@@ -731,6 +815,11 @@ async function markAllNotificationsAsRead() {
 // ==========================================
 
 let notificationRealtimeChannel = null;
+let currentUserCache = null;
+let currentUserLoaded = false;
+let currentProfileCache = null;
+let userGroupsCache = null;
+let currentGroupCache = null;
 
 async function startNotificationRealtime() {
 
@@ -1116,3 +1205,302 @@ async function closePoll(
     return data;
 }
 
+
+  
+async function signOut() {
+    const { error } =
+        await supabaseClient.auth.signOut();
+
+    if (error) {
+        console.error(
+            "Error cerrando sesión:",
+            error
+        );
+        return false;
+    }
+
+    localStorage.removeItem(
+        "curruscos_current_group"
+    );
+
+    currentUserCache = null;
+    currentUserLoaded = true;
+    currentProfileCache = null;
+    userGroupsCache = null;
+    currentGroupCache = null;
+
+    if (
+        typeof notificationRealtimeChannel !==
+            "undefined" &&
+        notificationRealtimeChannel
+    ) {
+        await supabaseClient.removeChannel(
+            notificationRealtimeChannel
+        );
+        notificationRealtimeChannel = null;
+    }
+
+    return true;
+}
+
+async function getGroupMembers(groupId) {
+    const currentGroupId =
+        groupId || (await getCurrentGroup())?.id;
+
+    if (!currentGroupId) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient.rpc(
+        "get_group_members",
+        { target_group_id: currentGroupId }
+    );
+
+    if (error) {
+        console.error("Error obteniendo miembros:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function updateGroup(groupId, name, description) {
+    const { data, error } = await supabaseClient.rpc(
+        "update_group",
+        {
+            target_group_id: groupId,
+            new_name: String(name || "").trim(),
+            new_description: String(description || "").trim() || null
+        }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se han podido guardar los cambios."
+        ));
+    }
+
+    return data;
+}
+
+async function leaveGroup(groupId) {
+    const { data, error } = await supabaseClient.rpc(
+        "leave_group",
+        { target_group_id: groupId }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido abandonar el grupo."
+        ));
+    }
+
+    return data;
+}
+
+async function deleteGroup(groupId) {
+    const { data, error } = await supabaseClient.rpc(
+        "delete_group",
+        { target_group_id: groupId }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido eliminar el grupo."
+        ));
+    }
+
+    return data;
+}
+
+async function changeGroupMemberRole(groupId, userId, role) {
+    const { data, error } = await supabaseClient.rpc(
+        "change_group_member_role",
+        {
+            target_group_id: groupId,
+            target_user_id: userId,
+            new_role: role
+        }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido cambiar el rol."
+        ));
+    }
+
+    return data;
+}
+
+async function removeGroupMember(groupId, userId) {
+    const { data, error } = await supabaseClient.rpc(
+        "remove_group_member",
+        {
+            target_group_id: groupId,
+            target_user_id: userId
+        }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido expulsar al miembro."
+        ));
+    }
+
+    return data;
+}
+
+async function inviteUserByUsername(groupId, username) {
+    const { data, error } = await supabaseClient.rpc(
+        "invite_user_by_username",
+        {
+            target_group_id: groupId,
+            target_username: String(username || "").trim()
+        }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido enviar la invitación."
+        ));
+    }
+
+    return data;
+}
+
+async function getMyInvitations() {
+    const { data, error } = await supabaseClient.rpc(
+        "get_my_invitations"
+    );
+
+    if (error) {
+        console.error("Error obteniendo invitaciones:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function acceptGroupInvitation(invitationId) {
+    const { data, error } = await supabaseClient.rpc(
+        "accept_group_invitation",
+        { invitation_id: invitationId }
+    );
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido aceptar la invitación."
+        ));
+    }
+
+    return data;
+}
+
+async function rejectGroupInvitation(invitationId) {
+    const { error } = await supabaseClient
+        .from("group_invitations")
+        .update({ status: "rejected" })
+        .eq("id", invitationId)
+        .eq("status", "pending");
+
+    if (error) {
+        throw new Error(getSupabaseErrorMessage(
+            error,
+            "No se ha podido rechazar la invitación."
+        ));
+    }
+
+    return true;
+}
+
+async function getTasksForEvents(eventIds) {
+    if (!Array.isArray(eventIds) || !eventIds.length) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("tasks")
+        .select(
+            "id, event_id, title, assigned_to, completed, created_by, created_at"
+        )
+        .in("event_id", eventIds)
+        .order("created_at", { ascending: true });
+
+    if (error) {
+        console.error("Error obteniendo tareas del grupo:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+
+async function updateProfile(displayName, username) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        throw new Error("No hay una sesión activa.");
+    }
+
+    const cleanName =
+        String(displayName || "").trim();
+
+    const cleanUsername =
+        String(username || "")
+            .trim()
+            .toLowerCase();
+
+    if (!cleanName) {
+        throw new Error("El nombre visible es obligatorio.");
+    }
+
+    if (
+        cleanUsername.length < 3 ||
+        cleanUsername.length > 24 ||
+        !/^[a-z0-9_]+$/.test(cleanUsername)
+    ) {
+        throw new Error(
+            "El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _. "
+        );
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .update({
+                display_name: cleanName,
+                username: cleanUsername
+            })
+            .eq("id", user.id)
+            .select()
+            .single();
+
+    if (error) {
+        console.error(
+            "Error actualizando perfil:",
+            error
+        );
+
+        if (error.code === "23505") {
+            throw new Error(
+                "Ese nombre de usuario ya está en uso."
+            );
+        }
+
+        throw new Error(
+            getSupabaseErrorMessage(
+                error,
+                "No se ha podido actualizar el perfil."
+            )
+        );
+    }
+
+    return data;
+}

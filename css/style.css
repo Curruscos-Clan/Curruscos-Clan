@@ -1681,3 +1681,699 @@ footer p {
     }
 
   }
+
+
+/* =====================================================
+   CURRUSCOS APP SHELL — MULTIGRUPO
+===================================================== */
+
+.brand-group {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.group-selector {
+    position: relative;
+}
+
+.current-group-button {
+    border: 1px solid #e7e7e7;
+    background: #fff;
+    color: #111;
+    border-radius: 12px;
+    padding: 9px 13px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    max-width: 230px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.current-group-button:hover {
+    background: #f7f7f7;
+}
+
+.group-selector-arrow {
+    color: #777;
+    font-size: 11px;
+}
+
+.group-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 250px;
+    max-width: calc(100vw - 30px);
+    background: #fff;
+    color: #111;
+    border: 1px solid #e7e7e7;
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    z-index: 2000;
+}
+
+.group-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.group-option {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #111;
+    padding: 11px 12px;
+    border-radius: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.group-option:hover,
+.group-option.active {
+    background: #f1f1f1;
+}
+
+.group-option strong,
+.group-option span {
+    display: block;
+}
+
+.group-option strong {
+    font-size: 13px;
+    margin-bottom: 3px;
+}
+
+.group-option span {
+    color: #888;
+    font-size: 11px;
+}
+
+.group-menu-divider {
+    height: 1px;
+    margin: 7px 4px;
+    background: #eeeeee;
+}
+
+.create-group-button {
+    width: 100%;
+    border: none;
+    background: #111;
+    color: #fff;
+    padding: 11px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.notification-wrapper {
+    position: relative;
+    margin-left: auto;
+}
+
+.notification-button {
+    position: relative;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #e53935;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.notification-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 370px;
+    max-width: calc(100vw - 24px);
+    background: #fff;
+    color: #111;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.28);
+    z-index: 2000;
+    overflow: hidden;
+}
+
+.notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 16px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.notification-header strong {
+    font-size: 15px;
+}
+
+.mark-all-notifications {
+    border: none;
+    background: transparent;
+    color: #666;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.notification-list {
+    max-height: 430px;
+    overflow: auto;
+}
+
+.notification-item {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fff;
+    color: #111;
+    padding: 13px 15px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.notification-item:hover,
+.notification-item.unread {
+    background: #fafafa;
+}
+
+.notification-item-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #f1f1f1;
+}
+
+.notification-item-content {
+    min-width: 0;
+}
+
+.notification-item-content strong,
+.notification-item-content p,
+.notification-item-content span {
+    display: block;
+}
+
+.notification-item-content strong {
+    margin-bottom: 2px;
+    font-size: 12px;
+}
+
+.notification-item-content p {
+    color: #666;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.notification-item-content span {
+    margin-top: 4px;
+    color: #999;
+    font-size: 10px;
+}
+
+.empty-notifications {
+    padding: 28px 18px;
+    color: #888;
+    font-size: 12px;
+    text-align: center;
+}
+
+.account-wrapper {
+    position: relative;
+    margin-left: 10px;
+}
+
+.account-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #2b2b2b;
+    background: #111;
+    color: #fff;
+    border-radius: 999px;
+    padding: 5px 9px 5px 6px;
+    cursor: pointer;
+}
+
+.account-initial {
+    width: 27px;
+    height: 27px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #f1f1f1;
+    color: #111;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.account-name {
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.account-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 235px;
+    background: #fff;
+    color: #111;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.28);
+    padding: 8px;
+    z-index: 2000;
+}
+
+.account-summary {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.account-summary strong,
+.account-summary span {
+    display: block;
+}
+
+.account-summary strong {
+    font-size: 13px;
+}
+
+.account-summary span {
+    margin-top: 2px;
+    color: #888;
+    font-size: 11px;
+}
+
+.account-link,
+.account-logout {
+    display: block;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #111;
+    padding: 10px;
+    border-radius: 9px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.account-link:hover,
+.account-logout:hover {
+    background: #f5f5f5;
+}
+
+.account-logout {
+    color: #a00020;
+}
+
+/* =====================================================
+   EVENTOS — LISTA COMPARTIDA
+===================================================== */
+
+.events-list {
+    display: grid;
+    gap: 12px;
+}
+
+.event-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+}
+
+.event-card.past {
+    opacity: .68;
+}
+
+.event-card-body {
+    min-width: 0;
+}
+
+.event-card-date {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.event-card h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.event-card p {
+    margin-top: 4px;
+    color: var(--muted-light);
+    font-size: 12px;
+}
+
+.event-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-delete-button {
+    color: #ff7070 !important;
+}
+
+/* =====================================================
+   MIEMBROS + INVITACIONES
+===================================================== */
+
+.member-invitations {
+    margin-bottom: 28px;
+    display: grid;
+    gap: 12px;
+}
+
+.member-invitation-card,
+.invitation-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    background: #fff;
+    color: #111;
+    border: 1px solid #e4e4e4;
+    border-radius: 16px;
+}
+
+.member-invitation-info strong,
+.member-invitation-info p,
+.invitation-info strong,
+.invitation-info p {
+    display: block;
+}
+
+.member-invitation-info strong,
+.invitation-info strong {
+    font-size: 14px;
+}
+
+.member-invitation-info p,
+.invitation-info p {
+    margin-top: 3px;
+    color: #777;
+    font-size: 12px;
+}
+
+.member-invitation-actions,
+.invitation-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.member-card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.member-role-select {
+    min-width: 135px;
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    background: #fff;
+    font: inherit;
+    font-size: 11px;
+}
+
+.member-remove-button {
+    border: 1px solid #e4d5d9;
+    background: #fff;
+    color: #a00020;
+    padding: 8px 11px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.member-remove-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   DASHBOARD — ACTIVIDAD + INVITACIONES
+===================================================== */
+
+.activity-list {
+    display: grid;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 13px 0;
+    border-bottom: 1px solid #ececec;
+}
+
+.activity-item:last-child {
+    border-bottom: 0;
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #f2f2f2;
+}
+
+.activity-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.activity-main strong,
+.activity-main small {
+    display: block;
+}
+
+.activity-main strong {
+    font-size: 12px;
+}
+
+.activity-main small {
+    margin-top: 2px;
+    color: #777;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.activity-date {
+    color: #999;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.dashboard-invitations {
+    margin-bottom: 28px;
+}
+
+.dashboard-invitations-heading {
+    margin-bottom: 12px;
+}
+
+.dashboard-invitations-heading span {
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.dashboard-invitations-heading h2 {
+    margin-top: 5px;
+    color: var(--text);
+    font-size: 25px;
+    letter-spacing: -1px;
+}
+
+.upcoming-event {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 15px 0;
+    border-bottom: 1px solid #ececec;
+}
+
+.upcoming-event:last-child {
+    border-bottom: 0;
+}
+
+.upcoming-event-date {
+    min-width: 58px;
+    color: #777;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.upcoming-event-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.upcoming-event-main strong,
+.upcoming-event-main small {
+    display: block;
+}
+
+.upcoming-event-main strong {
+    color: #111;
+    font-size: 13px;
+}
+
+.upcoming-event-main small {
+    margin-top: 2px;
+    color: #777;
+    font-size: 11px;
+}
+
+.upcoming-event-arrow {
+    color: #999;
+    font-size: 15px;
+}
+
+/* =====================================================
+   RESPONSIVE APP SHELL
+===================================================== */
+
+@media (max-width: 900px) {
+    .account-name {
+        display: none;
+    }
+
+    .brand-group {
+        gap: 10px;
+    }
+
+    .current-group-button {
+        max-width: 160px;
+    }
+
+    .navbar {
+        gap: 8px;
+    }
+}
+
+@media (max-width: 650px) {
+    .brand-group {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .group-selector {
+        min-width: 0;
+    }
+
+    .current-group-button {
+        max-width: 150px;
+    }
+
+    .notification-wrapper {
+        margin-left: 0;
+    }
+
+    .account-wrapper {
+        margin-left: 0;
+    }
+
+    .account-button {
+        padding-right: 6px;
+    }
+
+    .notification-panel {
+        right: -55px;
+    }
+
+    .account-panel {
+        right: -5px;
+    }
+
+    .event-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .event-card-actions {
+        width: 100%;
+    }
+
+    .event-card-actions .button {
+        flex: 1;
+    }
+
+    .member-invitation-card,
+    .invitation-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .member-invitation-actions .button,
+    .invitation-actions .button {
+        flex: 1;
+    }
+
+    .upcoming-event {
+        gap: 10px;
+    }
+}
