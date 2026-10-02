@@ -1706,7 +1706,9 @@ async function createPublicEvent(eventData) {
             rules: eventData.rules || null,
             organizer_name: eventData.organizer_name || null,
             participant_mode: eventData.participant_mode || "individual",
-            team_size: eventData.team_size || null
+            team_size: eventData.team_size || null,
+            event_type: eventData.event_type || "otro",
+            scoring_system: eventData.scoring_system || "win_draw_loss"
         })
         .select()
         .single();
