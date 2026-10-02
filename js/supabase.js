@@ -746,6 +746,7 @@ async function getGroupHistory() {
             description,
             event_date,
             created_at,
+            event_id,
             profiles (
                 display_name,
                 username
