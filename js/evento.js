@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let participants = [];
     let tasks = [];
     let expenses = [];
+    let relatedTrip = null;
 
     const params =
         new URLSearchParams(
@@ -867,6 +868,68 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    function renderRelatedTrip() {
+        const container = document.getElementById("eventTripContext");
+
+        if (!container) {
+            return;
+        }
+
+        if (!relatedTrip) {
+            container.hidden = true;
+            container.innerHTML = "";
+            return;
+        }
+
+        const dates = relatedTrip.start_date
+            ? relatedTrip.start_date +
+              (relatedTrip.end_date ? " → " + relatedTrip.end_date : "")
+            : "Fechas por definir";
+
+        container.hidden = false;
+        container.innerHTML =
+            '<div class="event-trip-context-inner">' +
+                '<div>' +
+                    '<span class="event-trip-kicker">PARTE DE UN VIAJE</span>' +
+                    '<strong>' +
+                        escapeHtml(relatedTrip.title || "Viaje") +
+                    '</strong>' +
+                    '<span>' +
+                        escapeHtml(
+                            (relatedTrip.destination || "Destino por definir") +
+                            " · " +
+                            dates
+                        ) +
+                    '</span>' +
+                '</div>' +
+                '<a href="viajes.html" class="button button-secondary">Abrir Viajes →</a>' +
+            '</div>';
+    }
+
+    function populateEditTripSelect() {
+        const select = document.getElementById("editEventTrip");
+
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '<option value="">Sin viaje relacionado</option>';
+
+        getGroupTripsForEvent().then(trips => {
+            trips.forEach(trip => {
+                const option = document.createElement("option");
+                option.value = trip.id;
+                option.textContent =
+                    trip.destination
+                        ? trip.title + " · " + trip.destination
+                        : trip.title;
+                select.appendChild(option);
+            });
+
+            select.value = currentEvent.trip_id || "";
+        });
+    }
+
     function updateProgress() {
         const participantProgress =
             members.length
@@ -1030,6 +1093,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentEvent.location ||
             "Sin lugar";
 
+        relatedTrip = await getTripForEvent(currentEvent.trip_id);
+        renderRelatedTrip();
+
         const editButton =
             document.getElementById(
                 "editEventButton"
@@ -1091,6 +1157,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     "editEventDescription"
                 ).value =
                     currentEvent.description || "";
+
+                populateEditTripSelect();
 
                 editButton.hidden =
                     true;
@@ -1155,7 +1223,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 description:
                                     document.getElementById(
                                         "editEventDescription"
-                                    ).value.trim()
+                                    ).value.trim(),
+
+                                trip_id:
+                                    document.getElementById(
+                                        "editEventTrip"
+                                    )?.value || null
                             }
                         );
 
@@ -1167,6 +1240,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     currentEvent =
                         updated;
+
+                    relatedTrip =
+                        await getTripForEvent(currentEvent.trip_id);
+
+                    renderRelatedTrip();
 
                     editForm.hidden =
                         true;
