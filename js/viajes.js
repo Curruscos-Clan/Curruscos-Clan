@@ -80,6 +80,100 @@ async function selectTrip(id) {
     renderActiveTrip();
 }
 
+async function loadTripParticipants() {
+    if (!activeTrip) return;
+
+    const container = $("tripParticipants");
+    if (!container) return;
+
+    const members = await getGroupMembers(activeTrip.group_id);
+    if (!members.length) {
+        container.innerHTML = '<div class="trip-participants-empty">Todavía no hay miembros en este grupo.</div>';
+        return;
+    }
+
+    const { data: rows, error } = await supabaseClient
+        .from("trip_participants")
+        .select("user_id,status")
+        .eq("trip_id", activeTrip.id);
+
+    if (error) {
+        console.error("Error obteniendo participantes del viaje:", error);
+        container.innerHTML = '<div class="trip-participants-empty">No se han podido cargar los participantes.</div>';
+        return;
+    }
+
+    const participation = new Map(
+        (rows || []).map(row => [String(row.user_id), row.status])
+    );
+    const currentUserId = window.curruscosCurrentUserId;
+
+    container.innerHTML = members.map(member => {
+        const userId = String(member.user_id);
+        const confirmed = participation.get(userId) === "confirmed";
+        const isCurrentUser = userId === String(currentUserId || "");
+        const name = member.display_name || member.username || "Miembro";
+        const initial = escapeHtml(name.charAt(0).toUpperCase());
+
+        return '<article class="trip-participant">' +
+            '<div class="trip-participant-main">' +
+                '<span class="trip-participant-avatar">' + initial + '</span>' +
+                '<div><span class="trip-participant-name">' + escapeHtml(name) + '</span>' +
+                '<span class="trip-participant-status">' + (confirmed ? "Va" : "No va") + '</span></div>' +
+            '</div>' +
+            '<button type="button" class="trip-participant-button ' + (confirmed ? "active" : "") + '" data-participant-id="' + escapeHtml(userId) + '">' +
+                (isCurrentUser ? (confirmed ? "✓ Voy" : "Apuntarme") : (confirmed ? "Confirmado" : "No participa")) +
+            '</button>' +
+        '</article>';
+    }).join("");
+
+    container.querySelectorAll(".trip-participant-button").forEach(button => {
+        const userId = button.dataset.participantId;
+        const isCurrentUser = userId === String(currentUserId || "");
+        if (!isCurrentUser) {
+            button.disabled = true;
+            return;
+        }
+
+        button.addEventListener("click", async () => {
+            button.disabled = true;
+            const confirmed = participation.get(userId) === "confirmed";
+
+            if (confirmed) {
+                const { error: updateError } = await supabaseClient
+                    .from("trip_participants")
+                    .update({ status: "declined", updated_at: new Date().toISOString() })
+                    .eq("trip_id", activeTrip.id)
+                    .eq("user_id", userId);
+
+                if (updateError) {
+                    console.error(updateError);
+                    button.disabled = false;
+                    alert("No se ha podido actualizar tu participación.");
+                    return;
+                }
+            } else {
+                const { error: insertError } = await supabaseClient
+                    .from("trip_participants")
+                    .upsert(
+                        { trip_id: activeTrip.id, user_id: userId, status: "confirmed", updated_at: new Date().toISOString() },
+                        { onConflict: "trip_id,user_id" }
+                    );
+
+                if (insertError) {
+                    console.error(insertError);
+                    button.disabled = false;
+                    alert("No se ha podido apuntarte al viaje.");
+                    return;
+                }
+            }
+
+            await loadTripParticipants();
+            await loadTripFinances();
+        });
+    });
+}
+
 async function loadTripFinances() {
     if (!activeTrip) return;
 
@@ -129,7 +223,16 @@ async function loadTripFinances() {
 
     const total = expenses.reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
     const budgetPerPerson = Number(activeTrip.budget_per_person || 0);
-    const memberCount = (await getGroupMembers(activeTrip.group_id)).length;
+    const { data: participantRows, error: participantError } = await supabaseClient
+        .from("trip_participants")
+        .select("user_id")
+        .eq("trip_id", activeTrip.id)
+        .eq("status", "confirmed");
+    if (participantError) console.error("Error obteniendo participantes para finanzas:", participantError);
+    const participantIds = new Set((participantRows || []).map(row => String(row.user_id)));
+    const memberRows = await getGroupMembers(activeTrip.group_id);
+    const participatingMembers = memberRows.filter(member => participantIds.has(String(member.user_id)));
+    const memberCount = participatingMembers.length;
     const budgetTotal = budgetPerPerson > 0 && memberCount ? budgetPerPerson * memberCount : null;
 
     $("tripSpentTotal").textContent = money(total);
@@ -162,8 +265,7 @@ async function loadTripFinances() {
     }).filter(Boolean).join("") || '<div class="trip-empty">Cuando haya gastos en eventos vinculados, aparecerán aquí.</div>';
 
     const balances = new Map();
-    const memberRows = await getGroupMembers(activeTrip.group_id);
-    memberRows.forEach(member => balances.set(String(member.user_id), 0));
+    participatingMembers.forEach(member => balances.set(String(member.user_id), 0));
 
     expenses.forEach(expense => {
         const payer = String(expense.paid_by || "");
@@ -199,7 +301,7 @@ async function loadTripFinances() {
     } else {
         settlement.hidden=false;
         settlement.innerHTML='<strong>Liquidación de los eventos del viaje</strong>' +
-            transfers.map(t=>'<div class="trip-finance-transfer"><span>'+escapeHtml(memberRows.find(m=>String(m.user_id)===t.from)?.display_name || "Miembro")+' → '+escapeHtml(memberRows.find(m=>String(m.user_id)===t.to)?.display_name || "Miembro")+'</span><strong>'+money(t.amount)+'</strong></div>').join("");
+            transfers.map(t=>'<div class="trip-finance-transfer"><span>'+escapeHtml(participatingMembers.find(m=>String(m.user_id)===t.from)?.display_name || "Miembro")+' → '+escapeHtml(participatingMembers.find(m=>String(m.user_id)===t.to)?.display_name || "Miembro")+'</span><strong>'+money(t.amount)+'</strong></div>').join("");
     }
 }
 
@@ -216,6 +318,7 @@ function renderActiveTrip() {
     $("activeTripVotesCount").textContent = activeTrip.votes.length;
     renderOptions();
     renderDecisionSummary();
+    loadTripParticipants();
     loadTripFinances();
 }
 
