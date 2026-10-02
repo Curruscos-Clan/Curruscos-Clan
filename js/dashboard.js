@@ -51,6 +51,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         getMyInvitations()
     ]);
 
+    const { data: trips, error: tripsError } = await supabaseClient
+        .from("trips")
+        .select("id, title, destination, status, start_date, end_date")
+        .eq("group_id", group.id)
+        .in("status", ["planning", "confirmed"])
+        .order("created_at", { ascending: false });
+
+    if (tripsError) {
+        console.error("No se han podido cargar los viajes:", tripsError);
+    }
+
+    const pulseEventEl = document.getElementById("pulseEvent");
+    const pulseMembersEl = document.getElementById("pulseMembers");
+    const pulseTripsEl = document.getElementById("pulseTrips");
+    const pulseMemoriesEl = document.getElementById("pulseMemories");
+    const pulseMessageEl = document.getElementById("pulseMessage");
+
+    if (pulseEventEl) {
+        pulseEventEl.textContent = "Cargando…";
+    }
+    if (pulseMembersEl) {
+        pulseMembersEl.textContent = members.length;
+    }
+    if (pulseTripsEl) {
+        pulseTripsEl.textContent = (trips || []).length;
+    }
+    if (pulseMemoriesEl) {
+        pulseMemoriesEl.textContent = memories.length;
+    }
+
     const eventIds =
         events.map(event => event.id);
 
@@ -88,6 +118,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const next =
         upcoming[0] || null;
+
+    if (pulseEventEl) {
+        pulseEventEl.textContent = next
+            ? (next.event.title || "Próximo evento")
+            : "Sin planes";
+    }
+
+    if (pulseMessageEl) {
+        if (next) {
+            const days = Math.max(0, Math.ceil((next.date.getTime() - now.getTime()) / 86400000));
+            const tripText = (trips || []).length
+                ? " Además, tenéis " + (trips || []).length + " viaje" + ((trips || []).length === 1 ? "" : "s") + " en planificación."
+                : " Podéis empezar a planificar vuestro próximo viaje desde Viajes.";
+            pulseMessageEl.textContent = days === 0
+                ? "Hoy pasa algo en el grupo." + tripText
+                : "Faltan " + days + " días para " + (next.event.title || "el próximo plan") + "." + tripText;
+        } else {
+            pulseMessageEl.textContent = (trips || []).length
+                ? "No hay eventos próximos, pero ya hay " + (trips || []).length + " viaje" + ((trips || []).length === 1 ? "" : "s") + " en movimiento."
+                : "Todavía no hay ningún plan próximo. Este es un buen momento para crear uno.";
+        }
+    }
 
     if (next) {
         const event = next.event;
