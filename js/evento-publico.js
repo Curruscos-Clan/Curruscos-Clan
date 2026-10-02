@@ -6,12 +6,15 @@ const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación direc
 function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
 
+function buildStandings(teams,matches){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));matches.filter(m=>m.status==="finished"&&m.home_team_id&&m.away_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=table.get(m.away_team_id);if(!h||!a)return;const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=3;a.losses++;}else if(as>hs){a.wins++;a.points+=3;h.losses++;}else{h.draws++;a.draws++;h.points++;a.points++;}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
+
 function renderTournamentPanel(event,teams,matches,isOrganizer){
     const area=document.getElementById("publicTournamentArea");
     if(!area)return;
     if(event.format==="standard"&&!teams.length&&!matches.length&&!isOrganizer){area.innerHTML="";return;}
 
     const teamMap=new Map(teams.map(team=>[team.id,team]));
+    const standings=event.format==="round_robin"&&matches.length?buildStandings(teams,matches):[];
     const rounds=[...new Set(matches.map(match=>match.round_number))].sort((a,b)=>a-b);
 
     const matchHtml=rounds.map(round=>{
@@ -21,7 +24,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
             const finished=match.status==="finished";
             const bye=finished&&!match.home_team_id||finished&&!match.away_team_id;
             let action="";
-            if(isOrganizer&&event.format==="knockout"&&!finished&&home&&away){
+            if(isOrganizer&&(event.format==="knockout"||event.format==="round_robin")&&!finished&&home&&away){
                 action='<form class="match-result-form" data-match-id="'+match.id+'"><input type="number" min="0" step="0.01" name="home" placeholder="0" required><span>:</span><input type="number" min="0" step="0.01" name="away" placeholder="0" required><button class="button button-small" type="submit">Guardar</button></form>';
             }else if(finished&&home&&away){
                 action='<strong>'+escapeHtml(match.home_score??"—")+' : '+escapeHtml(match.away_score??"—")+'</strong>';
@@ -36,18 +39,18 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
 
     const teamHtml=teams.length?'<h3>Participantes / equipos</h3><div class="public-team-list">'+teams.map(team=>'<div class="public-team-row"><span>'+publicTeamName(team)+'</span><small>'+(team.seed?'Seed '+team.seed:'')+'</small></div>').join("")+'</div>':"";
     const hasBracket=matches.length>0;
-    const organizerTools=isOrganizer&&event.format==="knockout"&&!hasBracket
+    const organizerTools=isOrganizer&&(event.format==="knockout"||event.format==="round_robin")&&!hasBracket
         ?'<div class="tournament-admin-box"><strong>Generar cuadro</strong><p>Curruscos usará los participantes confirmados y creará automáticamente las rondas.</p><button id="generateBracketButton" class="button button-primary" type="button">Generar cuadro</button><p id="tournamentAdminMessage"></p></div>'
         :"";
     const winner=hasBracket?(() => {const final=matches.filter(m=>m.round_number===Math.max(...rounds))[0];if(!final||final.status!=="finished"||!final.home_team_id||!final.away_team_id)return null;return final.home_score>final.away_score?teamMap.get(final.home_team_id):teamMap.get(final.away_team_id);})():null;
 
-    area.innerHTML='<div class="public-tournament-panel"><span class="public-tournament-label">FORMATO</span><strong>'+escapeHtml(PUBLIC_FORMAT_LABELS[event.format]||"Formato")+'</strong>'+((event.rules)?'<p>'+escapeHtml(event.rules)+'</p>':"")+teamHtml+(hasBracket?'<h3>Cuadro</h3><div class="public-rounds">'+matchHtml+'</div>':"")+(winner?'<div class="tournament-winner"><span>CAMPEÓN</span><strong>'+publicTeamName(winner)+'</strong></div>':"")+organizerTools+'</div>';
+    area.innerHTML='<div class="public-tournament-panel"><span class="public-tournament-label">FORMATO</span><strong>'+escapeHtml(PUBLIC_FORMAT_LABELS[event.format]||"Formato")+'</strong>'+((event.rules)?'<p>'+escapeHtml(event.rules)+'</p>':"")+teamHtml+(hasBracket?'<h3>'+(event.format==="round_robin"?"Calendario":"Cuadro")+'</h3><div class="public-rounds">'+matchHtml+'</div>':"")+(standings.length?'<h3>Clasificación</h3><div class="public-standings">'+standings.map((row,i)=>'<div class="public-standing-row"><span>'+(i+1)+'. '+publicTeamName(row.team)+'</span><strong>'+row.points+' pts</strong><small>'+row.wins+'V · '+row.draws+'E · '+row.losses+'D</small></div>').join("")+'</div>':"")+(winner?'<div class="tournament-winner"><span>CAMPEÓN</span><strong>'+publicTeamName(winner)+'</strong></div>':"")+organizerTools+'</div>';
 
     const generate=document.getElementById("generateBracketButton");
     if(generate){
         generate.addEventListener("click",async()=>{
             generate.disabled=true;generate.textContent="Generando...";
-            try{await generateKnockoutBracket(event.id);await renderPublicEvent();}
+            try{if(event.format==="knockout"){await generateKnockoutBracket(event.id);}else{await generateRoundRobinSchedule(event.id);}await renderPublicEvent();}
             catch(error){const message=document.getElementById("tournamentAdminMessage");if(message)message.textContent=error.message;generate.disabled=false;generate.textContent="Generar cuadro";}
         });
     }
@@ -56,7 +59,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
         form.addEventListener("submit",async e=>{
             e.preventDefault();
             const button=form.querySelector("button");const home=form.elements.home.value;const away=form.elements.away.value;
-            if(Number(home)===Number(away)){alert("En eliminación directa tiene que haber un ganador.");return;}
+            if(event.format==="knockout"&&Number(home)===Number(away)){alert("En eliminación directa tiene que haber un ganador.");return;}
             button.disabled=true;button.textContent="Guardando...";
             try{await recordEventMatchResult(form.dataset.matchId,home,away);await renderPublicEvent();}
             catch(error){alert(error.message);button.disabled=false;button.textContent="Guardar";}
