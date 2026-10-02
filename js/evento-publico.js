@@ -79,7 +79,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
         }).join("")+'</div>';
     }).join("");
 
-    const teamHtml=teams.length?'<h3>Participantes / equipos</h3><div class="public-team-list">'+teams.map(team=>'<div class="public-team-row"><span>'+publicTeamName(team)+'</span><small>'+(team.seed?'Seed '+team.seed:'')+'</small></div>').join("")+'</div>':"";
+    const teamHtml=teams.length?'<h3>Participantes / equipos</h3><div class="public-team-list">'+teams.map(team=>'<a class="public-team-row" href="equipo-publico.html?id='+encodeURIComponent(team.id)+'"><span>'+publicTeamName(team)+'</span><small>'+(team.seed?'Seed '+team.seed:'Ver equipo')+'</small></a>').join("")+'</div>':"";
     const hasBracket=matches.length>0;
     const swissReady=event.format==="swiss"&&!matches.some(m=>m.status==="scheduled"||m.status==="live");
     const organizerCanGenerate=(isOrganizer&&["knockout","round_robin"].includes(event.format)&&!hasBracket)||(isOrganizer&&event.format==="swiss"&&swissReady);
