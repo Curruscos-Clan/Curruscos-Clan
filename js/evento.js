@@ -936,6 +936,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.appendChild(controls);
     }
 
+    async function setupHistoryButton() {
+        const button = document.getElementById("saveToHistoryButton");
+        if (!button || !currentEvent) return;
+
+        const existing = await getHistoryEntryForEvent(currentEvent.id);
+        if (existing) {
+            button.textContent = "✓ En la historia";
+            button.disabled = true;
+            button.classList.add("save-history-success");
+            return;
+        }
+
+        button.addEventListener("click", async () => {
+            button.disabled = true;
+            button.textContent = "Guardando…";
+
+            const entry = await createHistoryEntryForEvent(currentEvent);
+
+            if (!entry) {
+                button.disabled = false;
+                button.textContent = "📖 Guardar en historia";
+                alert("No se ha podido guardar el evento en la historia.");
+                return;
+            }
+
+            button.textContent = "✓ En la historia";
+            button.classList.add("save-history-success");
+        });
+    }
+
     function renderRelatedTrip() {
         const container = document.getElementById("eventTripContext");
 
@@ -1223,6 +1253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateStatus();
 
         setupForms();
+        setupHistoryButton();
     }
 
     function setupForms() {
