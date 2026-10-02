@@ -78,7 +78,8 @@ async function renderPublicEvent(){
 
     const user=await getCurrentUser();
     const participants=await getPublicEventParticipants(id);
-    const teams=await getPublicEventTeams(id);\n    const teamMembers=await getPublicEventTeamMembers(id);
+    const teams=await getPublicEventTeams(id);
+    const teamMembers=await getPublicEventTeamMembers(id);
     const matches=await getPublicEventMatches(id);
     const mine=user?participants.find(p=>p.user_id===user.id):null;
     const yes=participants.filter(p=>p.status==="yes").length;
