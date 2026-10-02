@@ -1835,3 +1835,54 @@ async function createPublicEvent(eventData) {
 
     return data;
 }
+
+
+async function getMyPublicEvents() {
+    const user = await getCurrentUser();
+    if (!user) {
+        return { participating: [], organizing: [] };
+    }
+
+    const { data: participations, error: participationError } = await supabaseClient
+        .from("event_participants")
+        .select("event_id,status")
+        .eq("user_id", user.id)
+        .eq("status", "yes");
+
+    if (participationError) {
+        console.error("Error obteniendo mis participaciones:", participationError);
+        return { participating: [], organizing: [] };
+    }
+
+    const ids = (participations || []).map(item => item.event_id);
+
+    let participating = [];
+    if (ids.length) {
+        const { data, error } = await supabaseClient
+            .from("events")
+            .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility")
+            .in("id", ids)
+            .eq("visibility", "public")
+            .order("date", { ascending: true });
+
+        if (!error) {
+            participating = data || [];
+        }
+    }
+
+    const { data: organizing, error: organizingError } = await supabaseClient
+        .from("events")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility")
+        .eq("created_by", user.id)
+        .eq("visibility", "public")
+        .order("date", { ascending: true });
+
+    if (organizingError) {
+        console.error("Error obteniendo mis eventos creados:", organizingError);
+    }
+
+    return {
+        participating,
+        organizing: organizing || []
+    };
+}

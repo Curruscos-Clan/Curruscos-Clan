@@ -908,6 +908,7 @@ function ensureProductNavigation() {
     const links = [
         { href: "explorar.html", text: "Explorar" },
         { href: "crear.html", text: "Crear" },
+        { href: "mis-eventos.html", text: "Mis eventos" },
         { href: "decisiones.html", text: "Decisiones" }
     ];
 
