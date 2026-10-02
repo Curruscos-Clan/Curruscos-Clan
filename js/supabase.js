@@ -1867,3 +1867,6 @@ async function getPublicProfileActivity(userId){
     const {data,error}=await supabaseClient.rpc("get_public_profile_activity",{target_user_id:userId});
     if(error){console.error("Error obteniendo actividad pública:",error);return [];}return data||[];
 }
+
+
+async function getPublicRelatedEvents(eventId){const {data,error}=await supabaseClient.rpc("get_public_related_events",{target_event_id:eventId});if(error){console.error("Error obteniendo eventos relacionados:",error);return [];}return data||[];}
