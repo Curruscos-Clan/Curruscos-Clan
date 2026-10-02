@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mi perfil — Curruscos</title>
+
+    <meta
+        name="description"
+        content="Gestiona tu perfil de Curruscos."
+    >
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .profile-page {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 80px 24px 110px;
+        }
+
+        .profile-card {
+            background: #fff;
+            color: #111;
+            border: 1px solid #e7e7e7;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 10px 35px rgba(0,0,0,.05);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            display: grid;
+            place-items: center;
+            border-radius: 20px;
+            background: #111;
+            color: #fff;
+            font-size: 23px;
+            font-weight: 900;
+        }
+
+        .profile-header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: -1.5px;
+        }
+
+        .profile-header p {
+            margin-top: 3px;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .profile-form {
+            display: grid;
+            gap: 10px;
+        }
+
+        .profile-form label {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .profile-form input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px 14px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #fafafa;
+            color: #111;
+            font: inherit;
+            outline: none;
+        }
+
+        .profile-form input:focus {
+            background: #fff;
+            border-color: #999;
+        }
+
+        .profile-help {
+            margin: 2px 0 4px;
+            color: #888;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .profile-message {
+            min-height: 20px;
+            margin: 6px 0 0;
+            color: #777;
+            font-size: 12px;
+        }
+
+        .profile-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 650px) {
+            .profile-page {
+                padding-top: 55px;
+            }
+
+            .profile-card {
+                padding: 22px;
+            }
+
+            .profile-actions .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <a href="dashboard.html" class="logo">
+        CURRUSCOS<span>.</span>
+    </a>
+
+    <nav id="mainNav">
+        <a href="dashboard.html">Inicio</a>
+        <a href="miembros.html">Miembros</a>
+        <a href="historia.html">Historia</a>
+        <a href="recuerdos.html">Recuerdos</a>
+        <a href="eventos.html">Eventos</a>
+    </nav>
+
+    <button id="menuButton" class="menu-button" type="button">
+        ☰
+    </button>
+</header>
+
+<main class="profile-page">
+
+    <div class="profile-card">
+
+        <div class="profile-header">
+            <div
+                id="profileAvatar"
+                class="profile-avatar"
+            >C</div>
+
+            <div>
+                <h1>Tu perfil.</h1>
+                <p id="profileEmail"></p>
+            </div>
+        </div>
+
+        <form
+            id="profileForm"
+            class="profile-form"
+        >
+            <label for="displayName">
+                Nombre visible
+            </label>
+
+            <input
+                id="displayName"
+                type="text"
+                maxlength="80"
+                autocomplete="name"
+                required
+            >
+
+            <label for="username">
+                Nombre de usuario
+            </label>
+
+            <input
+                id="username"
+                type="text"
+                maxlength="24"
+                autocomplete="username"
+                spellcheck="false"
+                required
+            >
+
+            <p class="profile-help">
+                Tu nombre de usuario es el que otros miembros utilizarán para invitarte. Usa entre 3 y 24 caracteres: letras, números y _.
+            </p>
+
+            <div class="profile-actions">
+                <a
+                    href="dashboard.html"
+                    class="button button-secondary"
+                >
+                    Volver
+                </a>
+
+                <button
+                    id="saveProfileButton"
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Guardar perfil
+                </button>
+            </div>
+
+            <p
+                id="profileMessage"
+                class="profile-message"
+                aria-live="polite"
+            ></p>
+        </form>
+
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/app.js"></script>
+<script src="js/perfil.js"></script>
+
+</body>
+</html>
