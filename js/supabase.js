@@ -1023,6 +1023,7 @@ async function followUser(userId){const {data,error}=await supabaseClient.rpc("f
 async function unfollowUser(userId){const {data,error}=await supabaseClient.rpc("unfollow_user",{target_user_id:userId});if(error){console.error(error);return false;}return !!data;}
 async function getFollowStatus(userId){const {data,error}=await supabaseClient.rpc("get_follow_status",{target_user_id:userId});if(error){console.error(error);return null;}return data?.[0]||null;}
 async function getSocialActivity(){const {data,error}=await supabaseClient.rpc("get_social_activity");if(error){console.error(error);return [];}return data||[];}
+async function getRecommendedPublicEvents(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_recommended_public_events",{search_text:search,target_event_type:eventType});if(error){console.error(error);return [];}return data||[];}
 
 // ==========================================
 // 🗳️ VOTACIONES
