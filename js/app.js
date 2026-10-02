@@ -10,7 +10,8 @@ const PRIVATE_PAGES = new Set([
     "historia.html",
     "recuerdos.html",
     "eventos.html",
-    "evento.html"
+    "evento.html",
+    "perfil.html"
 ]);
 
 let resolveCurruscosReady;
@@ -771,7 +772,7 @@ function createAccountMenu() {
                 '<strong id="accountDisplayName">Cuenta</strong>' +
                 '<span id="accountUsername"></span>' +
             '</div>' +
-            '<a href="miembros.html" class="account-link">Mi perfil / grupo</a>' +
+            '<a href="perfil.html" class="account-link">Mi perfil</a>' +
             '<button id="signOutButton" class="account-logout" type="button">Cerrar sesión</button>' +
         '</div>';
 
