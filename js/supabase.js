@@ -1698,7 +1698,9 @@ async function createPublicEvent(eventData) {
             status: "published",
             format: eventData.format || "standard",
             rules: eventData.rules || null,
-            organizer_name: eventData.organizer_name || null
+            organizer_name: eventData.organizer_name || null,
+            participant_mode: eventData.participant_mode || "individual",
+            team_size: eventData.team_size || null
         })
         .select()
         .single();
