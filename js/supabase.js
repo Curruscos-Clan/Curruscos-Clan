@@ -1648,6 +1648,21 @@ async function updateProfile(displayName, username) {
 // 🌍 EVENTOS PÚBLICOS
 // ========================================
 
+async function getPublicEvent(eventId) {
+    const { data, error } = await supabaseClient
+        .from("events")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,rules,organizer_name,created_by,participant_mode,team_size,event_type,scoring_system,created_at")
+        .eq("id", eventId)
+        .eq("visibility", "public")
+        .in("status", ["published", "preparing", "live", "finished"])
+        .maybeSingle();
+    if (error) {
+        console.error("Error obteniendo evento público:", error);
+        return null;
+    }
+    return data || null;
+}
+
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
@@ -1846,3 +1861,9 @@ async function getMyEventActivity(){const user=await getCurrentUser();if(!user)r
 async function getPublicRankings(eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_rankings",{target_event_type:eventType});if(error){console.error("Error obteniendo rankings:",error);return [];}return data||[];}
 
 async function getPublicProfile(userId){const {data,error}=await supabaseClient.rpc("get_public_profile",{target_user_id:userId});if(error){console.error("Error obteniendo perfil público:",error);return null;}return data?.[0]||null;}
+
+
+async function getPublicProfileActivity(userId){
+    const {data,error}=await supabaseClient.rpc("get_public_profile_activity",{target_user_id:userId});
+    if(error){console.error("Error obteniendo actividad pública:",error);return [];}return data||[];
+}
