@@ -1651,7 +1651,7 @@ async function updateProfile(displayName, username) {
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,event_participants(count)")
         .eq("visibility", "public")
         .eq("status", "published")
         .order("date", { ascending: true })
@@ -1660,9 +1660,13 @@ async function getPublicEvents(filters = {}) {
     const search = String(filters.search || "").trim();
     const category = filters.category || "all";
 
+    const eventType = filters.event_type || "all";
+
     if (category !== "all") {
         query = query.eq("category", category);
     }
+
+    if (eventType !== "all") query = query.eq("event_type", eventType);
 
     if (search) {
         query = query.or("title.ilike.%" + search + "%,location.ilike.%" + search + "%,description.ilike.%" + search + "%");
