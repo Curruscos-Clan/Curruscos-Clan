@@ -326,6 +326,6 @@ function setupDeleteButtons() {
                         );
                     }
                 }
-            }
+            );
         });
-        });
+}
