@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear evento · Curruscos</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.public-create-page{max-width:760px;margin:0 auto;padding:70px 24px 100px}.public-create-card{margin-top:30px;padding:30px;border:1px solid var(--border);border-radius:25px;background:var(--surface);box-shadow:var(--shadow-sm)}.public-create-form{display:grid;gap:16px}.public-create-form label{display:grid;gap:7px;font-size:12px;font-weight:750}.public-create-form input,.public-create-form select,.public-create-form textarea{width:100%;box-sizing:border-box}.public-create-form textarea{min-height:120px;resize:vertical}.public-create-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.create-note{margin:0 0 20px;padding:14px 16px;border-radius:14px;background:var(--accent-soft);color:var(--muted);font-size:12px;line-height:1.5}@media(max-width:600px){.public-create-page{padding:45px 16px 75px}.public-create-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="navbar">
+<a href="index.html" class="logo">CURRUSCOS.</a>
+<nav id="mainNav"><a href="explorar.html">Explorar</a><a href="crear.html" class="active">Crear</a><a href="login.html">Entrar</a></nav>
+<button id="menuButton" class="menu-button" aria-label="Menú">☰</button>
+</header>
+<main class="public-create-page">
+<span class="eyebrow">NUEVO EVENTO</span>
+<h1 style="font-size:clamp(45px,7vw,70px);line-height:.94;letter-spacing:-.07em;margin:13px 0">Haz que la gente<br>pueda apuntarse.</h1>
+<p style="color:var(--muted);font-size:17px;line-height:1.55;max-width:620px">Crea el evento y Curruscos lo publicará en el espacio de descubrimiento.</p>
+<section class="public-create-card">
+<p id="authNote" class="create-note">Necesitas una cuenta para publicar un evento.</p>
+<form id="publicEventForm" class="public-create-form">
+<label>Nombre del evento<input id="publicEventTitle" maxlength="120" placeholder="Ej. Torneo de Pádel Ciudad de Palencia" required></label>
+<div class="public-create-grid">
+<label>Categoría<select id="publicEventCategory"><option value="tournament">Torneo</option><option value="sport">Deporte</option><option value="gaming">Gaming</option><option value="social">Social</option><option value="activity">Actividad</option><option value="other">Otro</option></select></label>
+<label>Plazas<input id="publicEventCapacity" type="number" min="1" placeholder="Sin límite"></label>
+</div>
+<div class="public-create-grid">
+<label>Fecha<input id="publicEventDate" type="date" required></label>
+<label>Hora<input id="publicEventTime" type="time"></label>
+</div>
+<label>Lugar<input id="publicEventLocation" maxlength="160" placeholder="Pista, pabellón, ciudad..."></label>
+<div class="public-create-grid">
+<label>Precio por participante (€)<input id="publicEventFee" type="number" min="0" step="0.01" value="0"></label>
+<label>Fin de inscripciones<input id="publicEventDeadline" type="datetime-local"></label>
+</div>
+<label>Descripción<textarea id="publicEventDescription" maxlength="2000" placeholder="Reglas, formato, información importante..."></textarea></label>
+<button class="button button-primary" type="submit">Publicar evento</button>
+<p id="publicEventMessage" class="login-message"></p>
+</form>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/crear-evento.js"></script>
+</body>
+</html>

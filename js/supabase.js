@@ -1641,3 +1641,197 @@ async function updateProfile(displayName, username) {
 
     return data;
 }
+
+
+
+// ========================================
+// 🌍 EVENTOS PÚBLICOS
+// ========================================
+
+async function getPublicEvents(filters = {}) {
+    let query = supabaseClient
+        .from("events")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,created_by")
+        .eq("visibility", "public")
+        .in("status", ["published", "finished"])
+        .order("date", { ascending: true });
+
+    if (filters.category && filters.category !== "all") {
+        query = query.eq("category", filters.category);
+    }
+
+    if (filters.search) {
+        const term = String(filters.search).trim();
+        if (term) {
+            query = query.or(
+                "title.ilike.%" + term + "%," +
+                "location.ilike.%" + term + "%," +
+                "description.ilike.%" + term + "%"
+            );
+        }
+    }
+
+    if (filters.limit) {
+        query = query.limit(filters.limit);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error("Error obteniendo eventos públicos:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function getPublicEvent(eventId) {
+    const { data, error } = await supabaseClient
+        .from("events")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,created_by")
+        .eq("id", eventId)
+        .eq("visibility", "public")
+        .in("status", ["published", "finished"])
+        .single();
+
+    if (error) {
+        console.error("Error obteniendo evento público:", error);
+        return null;
+    }
+
+    return data;
+}
+
+async function getPublicEventParticipants(eventId) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("event_participants")
+        .select("id,event_id,user_id,status")
+        .eq("event_id", eventId);
+
+    if (error) {
+        console.error("Error obteniendo participantes del evento público:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function getMyEventParticipation(eventId) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("event_participants")
+        .select("id,event_id,user_id,status")
+        .eq("event_id", eventId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Error obteniendo mi participación:", error);
+        return null;
+    }
+
+    return data;
+}
+
+async function joinPublicEvent(eventId) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("event_participants")
+        .upsert(
+            {
+                event_id: eventId,
+                user_id: user.id,
+                status: "yes"
+            },
+            {
+                onConflict: "event_id,user_id"
+            }
+        )
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error apuntándose al evento:", error);
+        return null;
+    }
+
+    return data;
+}
+
+async function leavePublicEvent(eventId) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return false;
+    }
+
+    const { error } = await supabaseClient
+        .from("event_participants")
+        .delete()
+        .eq("event_id", eventId)
+        .eq("user_id", user.id);
+
+    if (error) {
+        console.error("Error saliendo del evento:", error);
+        return false;
+    }
+
+    return true;
+}
+
+async function createPublicEvent(eventData) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        return null;
+    }
+
+    const payload = {
+        group_id: null,
+        created_by: user.id,
+        title: String(eventData.title || "").trim(),
+        description: String(eventData.description || "").trim() || null,
+        date: eventData.date,
+        time: eventData.time || null,
+        location: String(eventData.location || "").trim() || null,
+        category: eventData.category || "other",
+        capacity: eventData.capacity ? Number(eventData.capacity) : null,
+        entry_fee: eventData.entry_fee ? Number(eventData.entry_fee) : 0,
+        registration_deadline: eventData.registration_deadline || null,
+        visibility: "public",
+        status: "published"
+    };
+
+    if (!payload.title || !payload.date) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("events")
+        .insert(payload)
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error creando evento público:", error);
+        return null;
+    }
+
+    return data;
+}

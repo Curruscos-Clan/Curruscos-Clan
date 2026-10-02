@@ -901,19 +901,31 @@ async function initAccountMenu() {
 function ensureProductNavigation() {
     const nav = document.getElementById("mainNav");
 
-    if (!nav || nav.querySelector('a[href="decisiones.html"]')) {
+    if (!nav) {
         return;
     }
 
-    const link = document.createElement("a");
-    link.href = "decisiones.html";
-    link.textContent = "Decisiones";
+    const links = [
+        { href: "explorar.html", text: "Explorar" },
+        { href: "crear.html", text: "Crear" },
+        { href: "decisiones.html", text: "Decisiones" }
+    ];
 
-    if (getCurrentPage() === "decisiones.html") {
-        link.classList.add("active");
-    }
+    links.forEach(item => {
+        if (nav.querySelector('a[href="' + item.href + '"]')) {
+            return;
+        }
 
-    nav.appendChild(link);
+        const link = document.createElement("a");
+        link.href = item.href;
+        link.textContent = item.text;
+
+        if (getCurrentPage() === item.href) {
+            link.classList.add("active");
+        }
+
+        nav.appendChild(link);
+    });
 }
 
 async function initPrivateShell(access) {
