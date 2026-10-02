@@ -1804,3 +1804,15 @@ async function recordEventMatchResult(matchId, homeScore, awayScore) {
     }
     return data;
 }
+
+async function generateRoundRobinSchedule(eventId) {
+    const { data, error } = await supabaseClient.rpc(
+        "generate_round_robin_schedule",
+        { target_event_id: eventId }
+    );
+    if (error) {
+        console.error("Error generando calendario:", error);
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido generar el calendario."));
+    }
+    return data;
+}
