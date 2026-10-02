@@ -1655,7 +1655,8 @@ async function getPublicEvents(filters = {}) {
         .eq("visibility", "public")
         .in("status", ["published", "preparing", "live"])
         .order("date", { ascending: true })
-        .order("time", { ascending: true });
+        .order("time", { ascending: true })
+        .limit(48);
 
     const search = String(filters.search || "").trim();
     const category = filters.category || "all";
