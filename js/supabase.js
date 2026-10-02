@@ -1015,6 +1015,10 @@ async function startNotificationRealtime() {
             });
 }
 
+async function getMySocialInvitations(){const {data,error}=await supabaseClient.rpc("get_my_social_invitations");if(error){console.error("Error obteniendo invitaciones:",error);return [];}return data||[];}
+async function sendInvitation(userId,kind,targetId){const {data,error}=await supabaseClient.rpc("send_invitation",{target_user_id:userId,target_kind:kind,target_id:targetId});if(error){console.error("Error enviando invitación:",error);return null;}return data;}
+async function respondToInvitation(invitationId,accept){const {data,error}=await supabaseClient.rpc("respond_to_invitation",{target_invitation_id:invitationId,accept});if(error){console.error("Error respondiendo invitación:",error);return false;}return !!data;}
+
 // ==========================================
 // 🗳️ VOTACIONES
 // ==========================================
