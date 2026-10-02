@@ -12,6 +12,7 @@ const PRIVATE_PAGES = new Set([
     "eventos.html",
     "evento.html",
     "viajes.html",
+    "decisiones.html",
     "perfil.html"
 ]);
 
@@ -897,10 +898,29 @@ async function initAccountMenu() {
    SHELL PRIVADO
    ========================================================= */
 
+function ensureProductNavigation() {
+    const nav = document.getElementById("mainNav");
+
+    if (!nav || nav.querySelector('a[href="decisiones.html"]')) {
+        return;
+    }
+
+    const link = document.createElement("a");
+    link.href = "decisiones.html";
+    link.textContent = "Decisiones";
+
+    if (getCurrentPage() === "decisiones.html") {
+        link.classList.add("active");
+    }
+
+    nav.appendChild(link);
+}
+
 async function initPrivateShell(access) {
     await initGroupSelector(access);
     await initNotificationCenter();
     await initAccountMenu();
+    ensureProductNavigation();
 }
 
 /* =========================================================
