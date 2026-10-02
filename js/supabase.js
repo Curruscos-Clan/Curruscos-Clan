@@ -1651,7 +1651,7 @@ async function updateProfile(displayName, username) {
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,participant_mode,team_size")
         .eq("visibility", "public")
         .eq("status", "published")
         .order("date", { ascending: true })
@@ -1698,7 +1698,9 @@ async function createPublicEvent(eventData) {
             status: "published",
             format: eventData.format || "standard",
             rules: eventData.rules || null,
-            organizer_name: eventData.organizer_name || null
+            organizer_name: eventData.organizer_name || null,
+            participant_mode: eventData.participant_mode || "individual",
+            team_size: eventData.team_size || null
         })
         .select()
         .single();
