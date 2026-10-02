@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evento · Curruscos</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.public-event-page{max-width:1000px;margin:0 auto;padding:70px 24px 100px}.public-event-shell{margin-top:30px;display:grid;grid-template-columns:minmax(0,1.5fr) 310px;gap:16px}.public-event-main,.public-event-side{padding:28px;border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow-sm)}.public-event-main h1{font-size:clamp(42px,7vw,72px);line-height:.94;letter-spacing:-.07em;margin:12px 0 20px}.public-event-main p{color:var(--muted);line-height:1.65}.public-event-description{white-space:pre-wrap}.public-event-side{height:max-content;position:sticky;top:85px}.public-event-stat{padding:14px 0;border-bottom:1px solid var(--border)}.public-event-stat:last-of-type{border-bottom:0}.public-event-stat span{display:block;color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase}.public-event-stat strong{display:block;margin-top:5px;font-size:16px}.public-event-side .button{width:100%;margin-top:16px}.public-login-note{font-size:12px;color:var(--muted);line-height:1.5;margin:13px 0 0}@media(max-width:800px){.public-event-shell{grid-template-columns:1fr}.public-event-side{position:static}.public-event-page{padding:45px 16px 75px}}
+</style>
+</head>
+<body>
+<header class="navbar">
+<a href="index.html" class="logo">CURRUSCOS.</a>
+<nav id="mainNav"><a href="explorar.html">Explorar</a><a href="crear.html">Crear</a><a href="login.html">Entrar</a></nav>
+<button id="menuButton" class="menu-button" aria-label="Menú">☰</button>
+</header>
+<main class="public-event-page">
+<div id="publicEventRoot"></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/evento-publico.js"></script>
+</body>
+</html>
