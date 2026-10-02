@@ -85,7 +85,7 @@ async function loadTripFinances() {
 
     const eventResult = await supabaseClient
         .from("events")
-        .select("id,title,amount:created_at,trip_id")
+        .select("id,title,trip_id")
         .eq("trip_id", activeTrip.id);
 
     // Fetch event expenses separately so the module remains compatible with the existing schema.
