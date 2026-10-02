@@ -191,11 +191,13 @@ function renderOrganizerLifecycle(event,isOrganizer){
  return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div><select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select></div>';
 }
 
+async function trackEventView(event){const u=await getCurrentUser();if(u&&event?.id)logActivitySignal("view",event.id,event.event_type,null,{source:"public_event"});}
+
 async function renderPublicEvent(){
     const root=document.getElementById("publicEventRoot");
     const id=new URLSearchParams(location.search).get("id");
     if(!id){root.innerHTML='<div class="empty-state">Evento no encontrado.</div>';return;}
-    const event=await getPublicEvent(id);
+    const event=await getPublicEvent(id);\n    trackEventView(event);
     if(!event){root.innerHTML='<div class="empty-state">Este evento no existe o ya no está publicado.</div>';return;}
 
     const user=await getCurrentUser();
@@ -255,7 +257,7 @@ async function renderPublicEvent(){
     if(!user){btn.addEventListener("click",()=>location.href="login.html");return;}
     if(mine?.status==="yes"){if(event.status==="finished"){btn.disabled=true;return;}btn.addEventListener("click",async()=>{if(!confirm("¿Quieres salir de este evento?"))return;btn.disabled=true;await leavePublicEvent(id);await renderPublicEvent();});return;}
     if(full||closed){btn.disabled=true;return;}
-    btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";const joined=await joinPublicEvent(id);if(!joined){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent="No se ha podido completar la inscripción.";return;}await renderPublicEvent();});
+    btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";logActivitySignal("join",id,event.event_type,null,{source:"event_button"});const joined=await joinPublicEvent(id);if(!joined){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent="No se ha podido completar la inscripción.";return;}await renderPublicEvent();});
 }
 
 document.addEventListener("DOMContentLoaded",renderPublicEvent);
