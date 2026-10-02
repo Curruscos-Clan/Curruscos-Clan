@@ -1711,7 +1711,7 @@ async function getPublicEventParticipants(eventId) {
 
     const { data, error } = await supabaseClient
         .from("event_participants")
-        .select("id,event_id,user_id,status,profiles(display_name,username)")
+        .select("id,event_id,user_id,status")
         .eq("event_id", eventId);
 
     if (error) {
