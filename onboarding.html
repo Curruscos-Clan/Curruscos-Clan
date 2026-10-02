@@ -291,85 +291,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="js/supabase.js"></script>
-
-
-<script>
-
-    const form =
-        document.getElementById("createGroupForm");
-
-    const button =
-        document.getElementById("createGroupButton");
-
-    const message =
-        document.getElementById("onboardingMessage");
-
-
-    form.addEventListener("submit", async event => {
-
-        event.preventDefault();
-
-        const name =
-            document
-                .getElementById("groupName")
-                .value
-                .trim();
-
-        const description =
-            document
-                .getElementById("groupDescription")
-                .value
-                .trim();
-
-
-        if (!name) {
-
-            message.textContent =
-                "Escribe un nombre para el grupo.";
-
-            return;
-        }
-
-
-        button.disabled = true;
-
-        message.textContent =
-            "Creando vuestro espacio...";
-
-
-        const group =
-            await createGroup(
-                name,
-                description
-            );
-
-
-        if (!group) {
-
-            button.disabled = false;
-
-            message.textContent =
-                "No se ha podido crear el grupo.";
-
-            return;
-        }
-
-
-        message.textContent =
-            "Grupo creado. Entrando...";
-
-
-        setTimeout(() => {
-
-            window.location.href =
-                "dashboard.html";
-
-        }, 500);
-
-    });
-
-</script>
-
+<script src="js/onboarding.js"></script>
 </body>
+
 
 </html>
