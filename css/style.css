@@ -3248,3 +3248,53 @@ textarea:focus-visible {
         padding: 10px 6px;
     }
 }
+
+/* =====================================================
+   CURRUSCOS PUBLIC PRODUCT UI — APPLE × RED BULL
+   Shared visual layer for the new platform
+===================================================== */
+:root{
+ --background:#f5f5f7;--surface:#fff;--surface-elevated:rgba(255,255,255,.82);
+ --border:#e4e4e7;--border-strong:#c9c9ce;--text:#111113;--muted:#6e6e73;
+ --accent:#e10600;--accent-dark:#b80500;--accent-soft:#fff0ef;
+ --shadow-sm:0 4px 18px rgba(0,0,0,.045);--shadow-md:0 16px 45px rgba(0,0,0,.09);
+ --shadow-lg:0 30px 90px rgba(0,0,0,.12);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;background:var(--background);color:var(--text);-webkit-font-smoothing:antialiased}
+.navbar{height:64px;padding:0 max(22px,4vw);background:rgba(245,245,247,.78);border-bottom:1px solid rgba(0,0,0,.08);box-shadow:0 1px 12px rgba(0,0,0,.025)}
+.navbar .logo{font-size:15px;letter-spacing:-.04em}
+.navbar nav{gap:25px}.navbar nav a{font-size:12px;color:#666}.navbar nav a:hover,.navbar nav a.active{color:#111}.navbar nav a.active::after{background:#111;height:2px;bottom:-7px}
+.button,.landing-button{border-radius:999px;min-height:44px;padding:0 19px;font-size:12px;letter-spacing:-.01em;box-shadow:none;transition:transform .2s,box-shadow .2s,background .2s}
+.button:hover,.landing-button:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(0,0,0,.09)}
+.button-primary,.landing-button-primary{background:#111!important;color:#fff!important}
+.button-primary:hover,.landing-button-primary:hover{background:#252525!important}
+.button-secondary,.landing-button-secondary{background:#fff!important;color:#111!important;border:1px solid var(--border)!important}
+input,select,textarea{border:1px solid #d8d8dc!important;background:rgba(255,255,255,.92)!important;border-radius:12px!important;min-height:46px;padding:0 13px!important;font:inherit;color:#111;outline:none;transition:border .2s,box-shadow .2s}
+textarea{padding:12px 13px!important}
+input:focus,select:focus,textarea:focus{border-color:#999!important;box-shadow:0 0 0 4px rgba(0,0,0,.045)}
+.eyebrow{color:#8a8a8f;font-size:9px;letter-spacing:.18em}
+.public-event-card,.create-choice,.public-create-card,.public-event-main,.public-event-side,.rank-table,.pub-stat,.my-event-card,.activity-stat{border-color:var(--border);background:var(--surface);box-shadow:var(--shadow-sm)}
+.public-event-card:hover,.create-choice:hover,.my-event-card:hover{border-color:#d0d0d4;box-shadow:var(--shadow-md)}
+.public-event-category{background:var(--accent-soft);color:var(--accent);border-radius:7px}
+.public-event-date{color:var(--accent)}
+.explore-page,.create-page,.public-create-page,.public-event-page,.rank-page,.pub-profile,.my-events-page{padding-top:64px}
+.explore-top h1,.create-page h1,.public-create-page h1,.public-event-main h1,.rank-head h1,.pub-head h1,.my-events-header h1{font-weight:800}
+.public-event-shell{gap:20px}
+.public-event-side{border-radius:20px}
+.public-tournament-panel,.team-manager,.participant-team-box{border-color:var(--border);background:#f7f7f8}
+.public-match-row,.public-team-row,.public-standing-row,.public-participant-row,.managed-team{border:1px solid #ededf0;background:#fff}
+.tournament-admin-box{background:#111;color:#fff}
+.tournament-admin-box p{color:#aaa}
+.tournament-winner{background:linear-gradient(135deg,#111 0%,#1d1d1f 100%);box-shadow:var(--shadow-md)}
+.create-choice{position:relative;overflow:hidden}
+.create-choice::after{content:"";position:absolute;right:-55px;top:-55px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(225,6,0,.10),transparent 68%);pointer-events:none}
+.create-icon{width:48px;height:48px;border-radius:14px;background:#111;color:#fff;font-size:0;position:relative}
+.create-icon::before{content:"";width:17px;height:17px;border:2px solid #fff;border-radius:4px}
+.create-icon::after{content:"";position:absolute;width:6px;height:6px;background:#e10600;border-radius:50%}
+.public-event-main{position:relative;overflow:hidden}
+.public-event-main::before{content:"";position:absolute;left:0;top:0;width:5px;height:100%;background:#e10600}
+.rank-row{background:#fff}.rank-row.head{background:#f7f7f8}
+.rank-points{color:#e10600}
+.pub-avatar{background:#111;box-shadow:0 10px 25px rgba(0,0,0,.12)}
+.my-activity-summary .activity-stat:first-child{border-top:3px solid #e10600}
+@media(max-width:700px){.navbar{height:58px}.navbar nav{gap:0}.explore-page,.create-page,.public-create-page,.public-event-page,.rank-page,.pub-profile,.my-events-page{padding-top:42px}}
