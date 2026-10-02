@@ -1763,6 +1763,11 @@ async function getPublicEventTeams(eventId) {
     return data || [];
 }
 
+async function recordTennisPadelResult(matchId,setScores){const {data,error}=await supabaseClient.rpc("record_tennis_padel_result",{target_match_id:matchId,set_scores:setScores});if(error)throw error;return data;}
+async function recordChessResult(matchId,homeScore,awayScore){const {data,error}=await supabaseClient.rpc("record_chess_result",{target_match_id:matchId,new_home_score:homeScore,new_away_score:awayScore});if(error)throw error;return data;}
+async function getPublicRaceResults(eventId){const {data,error}=await supabaseClient.rpc("get_public_race_results",{target_event_id:eventId});if(error){console.error("Error obteniendo resultados de carrera:",error);return [];}return data||[];}
+async function recordRaceResult(eventId,participantId,timeMs,position=null,points=null){const {data,error}=await supabaseClient.rpc("record_race_result",{target_event_id:eventId,target_participant_id:participantId,target_time_ms:timeMs,target_finish_position:position,target_points:points});if(error)throw error;return data;}
+
 async function getPublicEventMatches(eventId) {
     const { data, error } = await supabaseClient
         .from("event_matches")

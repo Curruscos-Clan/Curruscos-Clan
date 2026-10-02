@@ -30,6 +30,26 @@ function renderParticipantDashboard(event,teams,teamMembers,matches,user,mine){
 
 function buildStandings(teams,matches,scoringSystem="win_draw_loss"){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));const award=(result)=>scoringSystem==="chess"?(result==="win"?1:result==="draw"?0.5:0):scoringSystem==="points"?Number(result||0):(result==="win"?3:result==="draw"?1:0);matches.filter(m=>m.status==="finished"&&m.home_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=m.away_team_id?table.get(m.away_team_id):null;if(!h)return;if(!a){h.played++;h.points+=scoringSystem==="chess"?1:1;return;}const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=award("win");a.losses++;}else if(as>hs){a.wins++;a.points+=award("win");h.losses++;}else{h.draws++;a.draws++;h.points+=award("draw");a.points+=award("draw");}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
 
+function renderSportResultForm(event,match){
+    if(match.status==="finished") return '<strong>'+escapeHtml(match.home_score??"—")+' : '+escapeHtml(match.away_score??"—")+'</strong>';
+    if(event.event_type==="tenis"||event.event_type==="padel") return '<form class="sport-result-form sets-result-form" data-match-id="'+match.id+'"><div class="set-inputs"><label>Set 1 <input name="s1h" type="number" min="0" max="99" required><input name="s1a" type="number" min="0" max="99" required></label><label>Set 2 <input name="s2h" type="number" min="0" max="99" required><input name="s2a" type="number" min="0" max="99" required></label><label>Set 3 <input name="s3h" type="number" min="0" max="99"><input name="s3a" type="number" min="0" max="99"></label></div><button class="button button-small" type="submit">Guardar sets</button></form>';
+    if(event.event_type==="ajedrez") return '<form class="sport-result-form chess-result-form" data-match-id="'+match.id+'"><select name="result" required><option value="">Resultado…</option><option value="1-0">1 — 0</option><option value="0.5-0.5">½ — ½</option><option value="0-1">0 — 1</option></select><button class="button button-small" type="submit">Guardar</button></form>';
+    return '<form class="match-result-form" data-match-id="'+match.id+'"><input type="number" min="0" step="1" name="home" placeholder="0" required><span>:</span><input type="number" min="0" step="1" name="away" placeholder="0" required><button class="button button-small" type="submit">Guardar</button></form>';
+}
+
+async function renderRacePanel(event,participants,isOrganizer){
+    if(event.format!=="race")return;
+    const area=document.getElementById("publicTournamentArea");if(!area)return;
+    const results=await getPublicRaceResults(event.id);
+    const rows=results.map((r,i)=>'<div class="race-row"><strong>'+(r.finish_position||i+1)+'</strong><span>'+escapeHtml(r.display_name||r.username||"Participante")+'</span><strong>'+formatRaceTime(r.time_ms)+'</strong><small>'+(r.points!=null?escapeHtml(r.points)+" pts":"")+'</small></div>').join("");
+    const options=participants.filter(p=>p.status==="yes"&&!results.some(r=>r.participant_id===p.user_id)).map(p=>'<option value="'+p.user_id+'">'+escapeHtml(p.display_name||p.username||"Participante")+'</option>').join("");
+    const admin=isOrganizer?'<form id="raceResultForm" class="race-admin-form"><select id="raceParticipant" required><option value="">Participante…</option>'+options+'</select><input id="raceTime" type="text" inputmode="numeric" placeholder="MM:SS.mmm" required><input id="racePosition" type="number" min="1" placeholder="Posición"><input id="racePoints" type="number" min="0" step="0.01" placeholder="Puntos"><button class="button button-primary" type="submit">Registrar resultado</button></form>':"";
+    area.insertAdjacentHTML("beforeend",'<div class="public-tournament-panel race-panel"><span class="public-tournament-label">CLASIFICACIÓN</span><h3>Resultados de carrera</h3>'+admin+'<div class="race-table">'+(rows||'<small>Aún no hay resultados registrados.</small>')+'</div></div>');
+    if(isOrganizer)document.getElementById("raceResultForm")?.addEventListener("submit",async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{await recordRaceResult(event.id,document.getElementById("raceParticipant").value,parseRaceTime(document.getElementById("raceTime").value),Number(document.getElementById("racePosition").value)||null,document.getElementById("racePoints").value===""?null:Number(document.getElementById("racePoints").value));await renderPublicEvent();}catch(err){alert(err.message);b.disabled=false;}});
+}
+function parseRaceTime(value){const m=String(value).trim().match(/^(?:(\\d+):)?(\\d+)(?:\\.(\\d{1,3}))?$/);if(!m)throw new Error("Tiempo inválido. Usa MM:SS.mmm");const minutes=Number(m[1]||0),seconds=Number(m[2]);if(seconds>=60)throw new Error("Los segundos deben estar entre 0 y 59.");const ms=Number((m[3]||"").padEnd(3,"0")||0);return minutes*60000+seconds*1000+ms;}
+function formatRaceTime(ms){if(ms==null)return "—";const n=Number(ms),minutes=Math.floor(n/60000),seconds=Math.floor((n%60000)/1000),millis=n%1000;return String(minutes).padStart(2,"0")+":"+String(seconds).padStart(2,"0")+"."+String(millis).padStart(3,"0");}
+
 function renderTournamentPanel(event,teams,matches,isOrganizer){
     const area=document.getElementById("publicTournamentArea");
     if(!area)return;
@@ -47,7 +67,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
             const bye=finished&&!match.home_team_id||finished&&!match.away_team_id;
             let action="";
             if(isOrganizer&&(event.format==="knockout"||event.format==="round_robin"||event.format==="swiss")&&!finished&&home&&away){
-                action='<form class="match-result-form" data-match-id="'+match.id+'"><input type="number" min="0" step="0.01" name="home" placeholder="0" required><span>:</span><input type="number" min="0" step="0.01" name="away" placeholder="0" required><button class="button button-small" type="submit">Guardar</button></form>';
+                action=renderSportResultForm(event,match);
             }else if(finished&&home&&away){
                 action='<strong>'+escapeHtml(match.home_score??"—")+' : '+escapeHtml(match.away_score??"—")+'</strong>';
             }else if(bye){
@@ -79,6 +99,8 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
         });
     }
 
+    document.querySelectorAll(".sets-result-form").forEach(form=>form.addEventListener("submit",async e=>{e.preventDefault();const b=form.querySelector("button");const values=[1,2,3].map(i=>({home:form.elements["s"+i+"h"].value,away:form.elements["s"+i+"a"].value})).filter(s=>s.home!==""&&s.away!=="").map(s=>({home:Number(s.home),away:Number(s.away)}));if(values.length<2)return alert("Introduce al menos dos sets.");b.disabled=true;try{await recordTennisPadelResult(form.dataset.matchId,values);await renderPublicEvent();}catch(err){alert(err.message);b.disabled=false;}}));
+    document.querySelectorAll(".chess-result-form").forEach(form=>form.addEventListener("submit",async e=>{e.preventDefault();const b=form.querySelector("button");const [h,a]=form.elements.result.value.split("-").map(Number);b.disabled=true;try{await recordChessResult(form.dataset.matchId,h,a);await renderPublicEvent();}catch(err){alert(err.message);b.disabled=false;}}));
     document.querySelectorAll(".match-result-form").forEach(form=>{
         form.addEventListener("submit",async e=>{
             e.preventDefault();
@@ -131,6 +153,7 @@ async function renderPublicEvent(){
     const participantTeam=await renderParticipantTeamArea(event,teams,teamMembers,participants,user,isOrganizer);
     renderTournamentPanel(event,teams,matches,isOrganizer);
     if(participantDashboard){document.getElementById("publicTournamentArea")?.insertAdjacentHTML("afterbegin",participantDashboard);}
+    await renderRacePanel(event,participants,isOrganizer);
     const participantArea=document.getElementById("publicTournamentArea");
     if(participantArea && participants.length){
         const participantList=participants.filter(p=>p.status==="yes").map(p=>`<a class="public-participant-row" href="perfil-publico.html?id=${encodeURIComponent(p.user_id)}"><span>${escapeHtml(p.display_name||p.username||"Participante")}</span><small>${p.user_id===user?.id?"Tú":"Ver perfil"}</small></a>`).join("");
