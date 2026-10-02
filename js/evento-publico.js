@@ -6,7 +6,7 @@ const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación direc
 function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
 
-function buildStandings(teams,matches){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));matches.filter(m=>m.status==="finished"&&m.home_team_id&&m.away_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=table.get(m.away_team_id);if(!h||!a)return;const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=3;a.losses++;}else if(as>hs){a.wins++;a.points+=3;h.losses++;}else{h.draws++;a.draws++;h.points++;a.points++;}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
+function buildStandings(teams,matches){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));matches.filter(m=>m.status==="finished"&&m.home_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=m.away_team_id?table.get(m.away_team_id):null;if(!h)return;if(!a){h.played++;h.points+=1;return;}const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=3;a.losses++;}else if(as>hs){a.wins++;a.points+=3;h.losses++;}else{h.draws++;a.draws++;h.points++;a.points++;}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
 
 function renderTournamentPanel(event,teams,matches,isOrganizer){
     const area=document.getElementById("publicTournamentArea");
@@ -14,7 +14,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
     if(event.format==="standard"&&!teams.length&&!matches.length&&!isOrganizer){area.innerHTML="";return;}
 
     const teamMap=new Map(teams.map(team=>[team.id,team]));
-    const standings=event.format==="round_robin"&&matches.length?buildStandings(teams,matches):[];
+    const standings=(event.format==="round_robin"||event.format==="swiss")&&matches.length?buildStandings(teams,matches):[];
     const rounds=[...new Set(matches.map(match=>match.round_number))].sort((a,b)=>a-b);
 
     const matchHtml=rounds.map(round=>{
@@ -24,7 +24,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
             const finished=match.status==="finished";
             const bye=finished&&!match.home_team_id||finished&&!match.away_team_id;
             let action="";
-            if(isOrganizer&&(event.format==="knockout"||event.format==="round_robin")&&!finished&&home&&away){
+            if(isOrganizer&&(event.format==="knockout"||event.format==="round_robin"||event.format==="swiss")&&!finished&&home&&away){
                 action='<form class="match-result-form" data-match-id="'+match.id+'"><input type="number" min="0" step="0.01" name="home" placeholder="0" required><span>:</span><input type="number" min="0" step="0.01" name="away" placeholder="0" required><button class="button button-small" type="submit">Guardar</button></form>';
             }else if(finished&&home&&away){
                 action='<strong>'+escapeHtml(match.home_score??"—")+' : '+escapeHtml(match.away_score??"—")+'</strong>';
@@ -39,8 +39,10 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
 
     const teamHtml=teams.length?'<h3>Participantes / equipos</h3><div class="public-team-list">'+teams.map(team=>'<div class="public-team-row"><span>'+publicTeamName(team)+'</span><small>'+(team.seed?'Seed '+team.seed:'')+'</small></div>').join("")+'</div>':"";
     const hasBracket=matches.length>0;
-    const organizerTools=isOrganizer&&(event.format==="knockout"||event.format==="round_robin")&&!hasBracket
-        ?'<div class="tournament-admin-box"><strong>Generar cuadro</strong><p>Curruscos usará los participantes confirmados y creará automáticamente las rondas.</p><button id="generateBracketButton" class="button button-primary" type="button">Generar cuadro</button><p id="tournamentAdminMessage"></p></div>'
+    const swissReady=event.format==="swiss"&&!matches.some(m=>m.status==="scheduled"||m.status==="live");
+    const organizerCanGenerate=(isOrganizer&&["knockout","round_robin"].includes(event.format)&&!hasBracket)||(isOrganizer&&event.format==="swiss"&&swissReady);
+    const organizerTools=organizerCanGenerate
+        ?'<div class="tournament-admin-box"><strong>'+(event.format==="swiss"&&hasBracket?"Generar siguiente ronda":"Generar cuadro / calendario")+'</strong><p>Curruscos calculará automáticamente los enfrentamientos a partir de los participantes y resultados.</p><button id="generateBracketButton" class="button button-primary" type="button">'+(event.format==="swiss"&&hasBracket?"Generar ronda":"Generar")+'</button><p id="tournamentAdminMessage"></p></div>'
         :"";
     const winner=hasBracket?(() => {const final=matches.filter(m=>m.round_number===Math.max(...rounds))[0];if(!final||final.status!=="finished"||!final.home_team_id||!final.away_team_id)return null;return final.home_score>final.away_score?teamMap.get(final.home_team_id):teamMap.get(final.away_team_id);})():null;
 
@@ -50,7 +52,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
     if(generate){
         generate.addEventListener("click",async()=>{
             generate.disabled=true;generate.textContent="Generando...";
-            try{if(event.format==="knockout"){await generateKnockoutBracket(event.id);}else{await generateRoundRobinSchedule(event.id);}await renderPublicEvent();}
+            try{if(event.format==="knockout"){await generateKnockoutBracket(event.id);}else if(event.format==="round_robin"){await generateRoundRobinSchedule(event.id);}else{await generateSwissRound(event.id);}await renderPublicEvent();}
             catch(error){const message=document.getElementById("tournamentAdminMessage");if(message)message.textContent=error.message;generate.disabled=false;generate.textContent="Generar cuadro";}
         });
     }
