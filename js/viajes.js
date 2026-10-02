@@ -35,6 +35,8 @@ async function loadTrips(selectId = null) {
     const { data, error } = await supabaseClient.from("trips").select("*").eq("group_id", group.id).order("created_at", { ascending: false });
     if (error) { console.error(error); return; }
     trips = data || [];
+    const currentUser = await getCurrentUser();
+    window.curruscosCurrentUserId = currentUser?.id || null;
     renderTripList();
     if (!trips.length) {
         activeTrip = null; activeTripId = null;
@@ -64,8 +66,15 @@ async function selectTrip(id) {
     if (!activeTrip) return;
     const { data: options, error } = await supabaseClient.from("trip_options").select("*").eq("trip_id", id).order("created_at", { ascending: true });
     if (error) { console.error(error); return; }
-    const { data: votes, error: voteError } = await supabaseClient.from("trip_votes").select("*").in("option_id", (options || []).map(o => o.id));
-    if (voteError) console.error(voteError);
+    let votes = [];
+    if ((options || []).length) {
+        const { data: voteRows, error: voteError } = await supabaseClient
+            .from("trip_votes")
+            .select("*")
+            .in("option_id", options.map(o => o.id));
+        if (voteError) console.error(voteError);
+        votes = voteRows || [];
+    }
     activeTrip.options = options || [];
     activeTrip.votes = votes || [];
     renderActiveTrip();
