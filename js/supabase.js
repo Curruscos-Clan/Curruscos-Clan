@@ -1711,12 +1711,7 @@ async function createPublicEvent(eventData) {
 }
 
 async function getPublicEventParticipants(eventId) {
-    const { data, error } = await supabaseClient
-        .from("event_participants")
-        .select("id,event_id,user_id,status")
-        .eq("event_id", eventId)
-        .eq("status", "yes");
-
+    const { data, error } = await supabaseClient.rpc("get_public_event_participants", { target_event_id: eventId });
     if (error) {
         console.error("Error obteniendo participantes públicos:", error);
         return [];
@@ -1816,3 +1811,8 @@ async function generateRoundRobinSchedule(eventId) {
     }
     return data;
 }
+
+async function getPublicEventTeamMembers(eventId){const {data,error}=await supabaseClient.rpc("get_public_event_team_members",{target_event_id:eventId});if(error){console.error("Error obteniendo miembros de equipos:",error);return [];}return data||[];}
+async function createEventTeam(eventId,name){const {data,error}=await supabaseClient.rpc("create_event_team",{target_event_id:eventId,team_name:name});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido crear el equipo."));return data;}
+async function addEventTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("add_event_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido añadir al jugador."));return data;}
+async function removeEventTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("remove_event_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido quitar al jugador."));return data;}
