@@ -1889,3 +1889,19 @@
 <script src="js/evento.js"></script>
 </body>
 </html>
+
+
+/* =========================================================
+   GASTOS — LIQUIDACIÓN
+========================================================= */
+.expense-settlement-title{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--text)}
+.expense-settlement-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.expense-settlement-row strong{white-space:nowrap}
+.expense-split-controls{display:grid;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.expense-split-controls>span{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.expense-split-editor{display:grid;gap:7px;padding:14px;border:1px solid var(--border);border-radius:14px;background:var(--surface-soft)}
+.expense-split-editor>strong{font-size:12px}
+.expense-split-input-row{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
+.expense-split-input-row input{width:100%;box-sizing:border-box;min-height:36px;padding:0 9px}
+.expense-split-save{justify-self:end;min-height:36px;padding:0 12px;border:0;border-radius:9px;background:var(--text);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
+@media(max-width:600px){.expense-split-input-row{grid-template-columns:minmax(0,1fr) 90px}.expense-settlement-row{font-size:12px}}

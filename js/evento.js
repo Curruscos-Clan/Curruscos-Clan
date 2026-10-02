@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let participants = [];
     let tasks = [];
     let expenses = [];
+    let expenseSplits = new Map();
     let relatedTrip = null;
 
     const params =
@@ -673,16 +674,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 return;
                             }
 
-                            expenses =
-                                expenses.filter(
-                                    item =>
-                                        String(
-                                            item.id
-                                        ) !==
-                                        String(
-                                            expense.id
-                                        )
-                                );
+                            expenses = expenses.filter(item => String(item.id) !== String(expense.id));
+                            expenseSplits.delete(String(expense.id));
 
                             renderExpenses();
                         }
@@ -707,165 +700,240 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderExpenseSplit();
     }
 
-    function renderExpenseSplit() {
-        const container =
-            document.getElementById(
-                "expenseSplit"
+    function getGoingMembers() {
+        return members.filter(member => {
+            const participant = participants.find(
+                item => String(item.user_id) === String(member.user_id)
             );
+            return participant?.status === "yes";
+        });
+    }
 
-        container.innerHTML = "";
+    function calculateBalances() {
+        const going = getGoingMembers();
+        const balances = new Map();
 
-        if (
-            !members.length ||
-            !expenses.length
-        ) {
-            return;
-        }
+        going.forEach(member => balances.set(String(member.user_id), 0));
 
-        const going =
-            members.filter(member => {
-                const participant =
-                    participants.find(
-                        item =>
-                            String(
-                                item.user_id
-                            ) ===
-                            String(
-                                member.user_id
-                            )
+        expenses.forEach(expense => {
+            const payer = String(expense.paid_by || "");
+            const splits = expenseSplits.get(String(expense.id)) || [];
+
+            if (balances.has(payer)) {
+                balances.set(
+                    payer,
+                    balances.get(payer) + Number(expense.amount || 0)
+                );
+            }
+
+            splits.forEach(split => {
+                const userId = String(split.user_id);
+                if (balances.has(userId)) {
+                    balances.set(
+                        userId,
+                        balances.get(userId) - Number(split.amount || 0)
                     );
+                }
+            });
+        });
 
-                return participant?.status ===
-                    "yes";
+        return balances;
+    }
+
+    function buildSettlementTransfers() {
+        const balances = calculateBalances();
+        const creditors = [];
+        const debtors = [];
+
+        balances.forEach((balance, userId) => {
+            if (balance > 0.01) creditors.push({ userId, amount: balance });
+            if (balance < -0.01) debtors.push({ userId, amount: -balance });
+        });
+
+        creditors.sort((a, b) => b.amount - a.amount);
+        debtors.sort((a, b) => b.amount - a.amount);
+
+        const transfers = [];
+        let i = 0;
+        let j = 0;
+
+        while (i < debtors.length && j < creditors.length) {
+            const amount = Math.min(debtors[i].amount, creditors[j].amount);
+            transfers.push({
+                from: debtors[i].userId,
+                to: creditors[j].userId,
+                amount
             });
 
+            debtors[i].amount -= amount;
+            creditors[j].amount -= amount;
+
+            if (debtors[i].amount <= 0.01) i++;
+            if (creditors[j].amount <= 0.01) j++;
+        }
+
+        return transfers;
+    }
+
+    function renderExpenseSplit() {
+        const container = document.getElementById("expenseSplit");
+        container.innerHTML = "";
+
+        if (!expenses.length) return;
+
+        const going = getGoingMembers();
         if (!going.length) {
+            container.textContent = "Confirma quién va al evento para calcular el reparto.";
             return;
         }
 
-        const total =
-            expenses.reduce(
-                (sum, expense) =>
-                    sum +
-                    (
-                        Number(
-                            expense.amount
-                        ) || 0
-                    ),
-                0
-            );
-
-        const share =
-            total / going.length;
-
-        const paidBy =
-            new Map();
-
-        expenses.forEach(
-            expense => {
-                const id =
-                    String(
-                        expense.paid_by
-                    );
-
-                paidBy.set(
-                    id,
-                    (
-                        paidBy.get(id) ||
-                        0
-                    ) +
-                    (
-                        Number(
-                            expense.amount
-                        ) || 0
-                    )
-                );
-            }
+        const total = expenses.reduce(
+            (sum, expense) => sum + Number(expense.amount || 0), 0
         );
 
-        const heading =
-            document.createElement("div");
-
-        heading.className =
-            "expense-split-title";
-
-        heading.textContent =
-            "💸 Reparto entre quienes van";
-
-        const note =
-            document.createElement("p");
-
-        note.className =
-            "expense-split-note";
-
-        note.textContent =
-            "Cada persona asume " +
-            formatMoney(share) +
-            " del total.";
-
-        container.append(
-            heading,
-            note
+        const defaultShare = total / going.length;
+        const hasSavedSplits = expenses.some(
+            expense => (expenseSplits.get(String(expense.id)) || []).length
         );
 
-        going.forEach(member => {
-            const paid =
-                paidBy.get(
-                    String(
-                        member.user_id
-                    )
-                ) || 0;
+        const heading = document.createElement("div");
+        heading.className = "expense-split-title";
+        heading.textContent = "💸 Reparto y deudas";
 
-            const balance =
-                paid - share;
+        const note = document.createElement("p");
+        note.className = "expense-split-note";
+        note.textContent = hasSavedSplits
+            ? "El reparto usa los importes guardados para cada gasto."
+            : "Por defecto, cada gasto se reparte a partes iguales entre quienes van.";
 
-            const row =
-                document.createElement("div");
+        container.append(heading, note);
 
-            row.className =
-                "expense-person-row";
+        const transfers = buildSettlementTransfers();
 
-            const name =
-                document.createElement("span");
+        if (!hasSavedSplits) {
+            going.forEach(member => {
+                const row = document.createElement("div");
+                row.className = "expense-person-row";
+                const name = document.createElement("span");
+                name.textContent = memberName(member.user_id);
+                const result = document.createElement("strong");
+                const paid = expenses
+                    .filter(expense => String(expense.paid_by) === String(member.user_id))
+                    .reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
+                const balance = paid - defaultShare;
+                result.textContent = balance > 0.01
+                    ? "A favor " + formatMoney(balance)
+                    : balance < -0.01
+                        ? "Debe " + formatMoney(Math.abs(balance))
+                        : "Equilibrado";
+                result.className = balance > 0.01
+                    ? "expense-balance-positive"
+                    : balance < -0.01
+                        ? "expense-balance-negative"
+                        : "expense-balance-neutral";
+                row.append(name, result);
+                container.appendChild(row);
+            });
+        }
 
-            name.textContent =
-                memberName(
-                    member.user_id
+        if (transfers.length) {
+            const title = document.createElement("div");
+            title.className = "expense-settlement-title";
+            title.textContent = "Liquidación mínima";
+            container.appendChild(title);
+
+            transfers.forEach(transfer => {
+                const row = document.createElement("div");
+                row.className = "expense-settlement-row";
+                const copy = document.createElement("span");
+                copy.textContent =
+                    memberName(transfer.from) + " → " +
+                    memberName(transfer.to);
+                const amount = document.createElement("strong");
+                amount.textContent = formatMoney(transfer.amount);
+                row.append(copy, amount);
+                container.appendChild(row);
+            });
+        } else if (hasSavedSplits) {
+            const done = document.createElement("p");
+            done.className = "expense-split-note";
+            done.textContent = "Todo está equilibrado.";
+            container.appendChild(done);
+        }
+
+        const controls = document.createElement("div");
+        controls.className = "expense-split-controls";
+        controls.innerHTML =
+            '<span>Reparto personalizado por gasto</span>';
+
+        expenses.forEach(expense => {
+            const saved = expenseSplits.get(String(expense.id)) || [];
+            const defaultAmount = Number(expense.amount || 0) / going.length;
+            const card = document.createElement("div");
+            card.className = "expense-split-editor";
+
+            const title = document.createElement("strong");
+            title.textContent = expense.title + " · " + formatMoney(expense.amount);
+            card.appendChild(title);
+
+            going.forEach(member => {
+                const row = document.createElement("label");
+                row.className = "expense-split-input-row";
+                const text = document.createElement("span");
+                text.textContent = memberName(member.user_id);
+                const input = document.createElement("input");
+                input.type = "number";
+                input.min = "0";
+                input.step = "0.01";
+                input.dataset.expenseId = expense.id;
+                input.dataset.userId = member.user_id;
+                const match = saved.find(
+                    split => String(split.user_id) === String(member.user_id)
                 );
+                input.value = match
+                    ? Number(match.amount).toFixed(2)
+                    : defaultAmount.toFixed(2);
+                row.append(text, input);
+                card.appendChild(row);
+            });
 
-            const result =
-                document.createElement("strong");
+            const save = document.createElement("button");
+            save.type = "button";
+            save.className = "expense-split-save";
+            save.textContent = "Guardar reparto";
+            save.addEventListener("click", async () => {
+                const inputs = [...card.querySelectorAll("input")];
+                const splits = inputs
+                    .map(input => ({
+                        user_id: input.dataset.userId,
+                        amount: Number(input.value || 0)
+                    }))
+                    .filter(split => split.amount > 0);
 
-            if (balance > 0.005) {
-                result.textContent =
-                    "A favor " +
-                    formatMoney(balance);
-                result.className =
-                    "expense-balance-positive";
-            } else if (balance < -0.005) {
-                result.textContent =
-                    "Debe " +
-                    formatMoney(
-                        Math.abs(balance)
-                    );
-                result.className =
-                    "expense-balance-negative";
-            } else {
-                result.textContent =
-                    "Equilibrado";
-                result.className =
-                    "expense-balance-neutral";
-            }
+                const sum = splits.reduce((total, split) => total + split.amount, 0);
+                if (Math.abs(sum - Number(expense.amount)) > 0.011) {
+                    alert("El reparto debe sumar exactamente " + formatMoney(expense.amount) + ".");
+                    return;
+                }
 
-            row.append(
-                name,
-                result
-            );
+                save.disabled = true;
+                const ok = await replaceExpenseSplits(expense.id, splits);
+                save.disabled = false;
 
-            container.appendChild(
-                row
-            );
+                if (!ok) {
+                    alert("No se ha podido guardar el reparto.");
+                    return;
+                }
+
+                expenseSplits.set(String(expense.id), splits);
+                renderExpenseSplit();
+                updateCommandCenter();
+            });
+
+            controls.appendChild(card);
         });
+
+        container.appendChild(controls);
     }
 
     function renderRelatedTrip() {
@@ -1075,11 +1143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 currentGroup.id
             );
 
-        const [
-            participantData,
-            taskData,
-            expenseData
-        ] = await Promise.all([
+        const [participantData, taskData, expenseData] = await Promise.all([
             getEventParticipants(
                 currentEvent.id
             ),
@@ -1097,8 +1161,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         tasks =
             taskData || [];
 
-        expenses =
-            expenseData || [];
+        expenses = expenseData || [];
+
+        const splitRows = await Promise.all(
+            expenses.map(expense => getExpenseSplits(expense.id))
+        );
+
+        expenseSplits = new Map(
+            expenses.map((expense, index) => [
+                String(expense.id),
+                splitRows[index] || []
+            ])
+        );
 
         document.getElementById(
             "eventTitle"
@@ -1458,9 +1532,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         );
                     }
 
-                    expenses.push(
-                        expense
-                    );
+                    expenses.push(expense);
+                    expenseSplits.set(String(expense.id), []);
 
                     event.currentTarget.reset();
 
