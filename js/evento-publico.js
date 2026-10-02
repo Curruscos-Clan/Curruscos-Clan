@@ -7,6 +7,26 @@ const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación direc
 
 function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
+function renderParticipantDashboard(event,teams,teamMembers,matches,user,mine){
+    if(!user||mine?.status!=="yes")return "";
+    const teamMember=teamMembers.find(m=>m.user_id===user.id);
+    const myTeam=teamMember?teams.find(t=>t.id===teamMember.team_id):null;
+    const myMatches=myTeam?matches.filter(m=>m.home_team_id===myTeam.id||m.away_team_id===myTeam.id):[];
+    const nextMatch=myMatches.find(m=>m.status==="live")||myMatches.find(m=>m.status==="scheduled");
+    let wins=0,draws=0,losses=0,played=0,points=0;
+    myMatches.filter(m=>m.status==="finished"&&m.home_team_id&&m.away_team_id).forEach(m=>{
+        const mineHome=m.home_team_id===myTeam?.id;
+        const mineScore=Number(mineHome?m.home_score:m.away_score);
+        const oppScore=Number(mineHome?m.away_score:m.home_score);
+        played++;
+        if(mineScore>oppScore){wins++;points+=event.scoring_system==="chess"?1:event.scoring_system==="points"?mineScore:3;}
+        else if(mineScore<oppScore){losses++;}
+        else{draws++;points+=event.scoring_system==="chess"?0.5:event.scoring_system==="points"?mineScore:1;}
+    });
+    const status=event.status==="finished"?"Finalizado":nextMatch?.status==="live"?"En directo":myMatches.length?"En competición":"Inscripción confirmada";
+    const nextHtml=nextMatch?(()=>{const home=teams.find(t=>t.id===nextMatch.home_team_id),away=teams.find(t=>t.id===nextMatch.away_team_id);return '<div class="participant-next-match"><span>'+escapeHtml(nextMatch.status==="live"?"EN DIRECTO":"PRÓXIMO PARTIDO")+'</span><strong>'+publicTeamName(home)+' <em>vs</em> '+publicTeamName(away)+'</strong>'+(nextMatch.scheduled_at?'<small>'+new Date(nextMatch.scheduled_at).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"})+'</small>':"")+'</div>';})():'<div class="participant-next-match participant-next-empty"><span>PRÓXIMO PASO</span><strong>'+escapeHtml(event.format==="standard"?"Ya estás dentro del evento":"El organizador todavía no ha publicado tu siguiente enfrentamiento")+'</strong></div>';
+    return '<section class="participant-dashboard"><div class="participant-dashboard-head"><div><span class="public-tournament-label">TU COMPETICIÓN</span><h3>'+escapeHtml(status)+'</h3><p>'+escapeHtml(myTeam?"Equipo · "+myTeam.name:"Participación individual")+'</p></div><div class="participant-record"><strong>'+played+'</strong><span>partidos</span></div></div>'+nextHtml+'<div class="participant-mini-stats"><div><strong>'+wins+'</strong><span>Victorias</span></div><div><strong>'+draws+'</strong><span>Empates</span></div><div><strong>'+losses+'</strong><span>Derrotas</span></div><div><strong>'+points+'</strong><span>Puntos</span></div></div></section>';
+}
 
 function buildStandings(teams,matches,scoringSystem="win_draw_loss"){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));const award=(result)=>scoringSystem==="chess"?(result==="win"?1:result==="draw"?0.5:0):scoringSystem==="points"?Number(result||0):(result==="win"?3:result==="draw"?1:0);matches.filter(m=>m.status==="finished"&&m.home_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=m.away_team_id?table.get(m.away_team_id):null;if(!h)return;if(!a){h.played++;h.points+=scoringSystem==="chess"?1:1;return;}const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=award("win");a.losses++;}else if(as>hs){a.wins++;a.points+=award("win");h.losses++;}else{h.draws++;a.draws++;h.points+=award("draw");a.points+=award("draw");}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
 
@@ -103,12 +123,14 @@ async function renderPublicEvent(){
     const closed=event.status!=="published"||deadlinePassed;
     const fee=Number(event.entry_fee||0);
     const isOrganizer=!!user&&event.created_by===user.id;
+    const participantDashboard=renderParticipantDashboard(event,teams,teamMembers,matches,user,mine);
 
     root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span><div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> '+escapeHtml(event.organizer_name)+'</p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div></article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?"Ya estás apuntado":(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div>';
 
     const manager=await renderTeamManager(event,teams,teamMembers,participants,isOrganizer);
     const participantTeam=await renderParticipantTeamArea(event,teams,teamMembers,participants,user,isOrganizer);
     renderTournamentPanel(event,teams,matches,isOrganizer);
+    if(participantDashboard){document.getElementById("publicTournamentArea")?.insertAdjacentHTML("afterbegin",participantDashboard);}
     const participantArea=document.getElementById("publicTournamentArea");
     if(participantArea && participants.length){
         const participantList=participants.filter(p=>p.status==="yes").map(p=>`<a class="public-participant-row" href="perfil-publico.html?id=${encodeURIComponent(p.user_id)}"><span>${escapeHtml(p.display_name||p.username||"Participante")}</span><small>${p.user_id===user?.id?"Tú":"Ver perfil"}</small></a>`).join("");
