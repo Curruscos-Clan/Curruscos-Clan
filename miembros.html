@@ -382,939 +382,603 @@
     <script src="js/app.js"></script>
 
 
-    <script>
+  <script>
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            async () => {
-
-                const groupButton =
-                    document.getElementById(
-                        "currentGroupButton"
-                    );
-
-                const groupName =
-                    document.getElementById(
-                        "currentGroupName"
-                    );
-
-                const groupMenu =
-                    document.getElementById(
-                        "groupMenu"
-                    );
-
-                const groupList =
-                    document.getElementById(
-                        "groupList"
-                    );
-
-                const createGroupButton =
-                    document.getElementById(
-                        "createGroupButton"
-                    );
-
-                const membersGrid =
-                    document.getElementById(
-                        "membersGrid"
-                    );
-
-                const membersSubtitle =
-                    document.getElementById(
-                        "membersSubtitle"
-                    );
-
-
-                /* ==========================================
-                   USUARIO
-                ========================================== */
-
-                const user =
-                    await getCurrentUser();
-
-                if (!user) {
-
-                    window.location.href =
-                        "login.html";
-
-                    return;
-
-                }
-
-
-                /* ==========================================
-                   GRUPO ACTUAL
-                ========================================== */
-
-                const groups =
-                    await getUserGroups();
-
-                if (!groups.length) {
-
-                    groupName.textContent =
-                        "Sin grupo";
-
-                    membersSubtitle.textContent =
-                        "Todavía no perteneces a ningún grupo.";
-
-                    membersGrid.innerHTML = `
-                        <p>
-                            No tienes ningún grupo todavía.
-                        </p>
-                    `;
-
-                    return;
-
-                }
-
-
-                const currentGroup =
-                    await getCurrentGroup();
-
-
-                if (!currentGroup) {
-                    /* ==========================================
-   AJUSTES DEL GRUPO
-========================================== */
-
-const groupSettingsName =
-    document.getElementById(
-        "groupSettingsName"
-    );
-
-const groupSettingsDescription =
-    document.getElementById(
-        "groupSettingsDescription"
-    );
-
-const saveGroupSettingsButton =
-    document.getElementById(
-        "saveGroupSettingsButton"
-    );
-
-const leaveGroupButton =
-    document.getElementById(
-        "leaveGroupButton"
-    );
-
-const deleteGroupButton =
-    document.getElementById(
-        "deleteGroupButton"
-    );
-
-
-/* ==========================================
-   CARGAR DATOS
-========================================== */
-
-groupSettingsName.value =
-    currentGroup.name || "";
-
-groupSettingsDescription.value =
-    currentGroup.description || "";
-
-
-/* ==========================================
-   PERMISOS
-========================================== */
-
-if (currentGroup.role !== "owner") {
-
-    saveGroupSettingsButton.style.display =
-        "none";
-
-    deleteGroupButton.style.display =
-        "none";
-
-}
-
-
-/* ==========================================
-   GUARDAR CAMBIOS
-========================================== */
-console.log("BOTÓN DE GUARDAR ENCONTRADO:", saveGroupSettingsButton);
-saveGroupSettingsButton.addEventListener(
-    "click",
+document.addEventListener(
+    "DOMContentLoaded",
     async () => {
 
-        const name =
-            groupSettingsName.value.trim();
+        /* ==========================================
+           ELEMENTOS
+        ========================================== */
 
-        const description =
-            groupSettingsDescription.value.trim();
-
-
-        if (!name) {
-
-            alert(
-                "El nombre del grupo es obligatorio."
+        const groupButton =
+            document.getElementById(
+                "currentGroupButton"
             );
+
+        const groupName =
+            document.getElementById(
+                "currentGroupName"
+            );
+
+        const groupMenu =
+            document.getElementById(
+                "groupMenu"
+            );
+
+        const groupList =
+            document.getElementById(
+                "groupList"
+            );
+
+        const createGroupButton =
+            document.getElementById(
+                "createGroupButton"
+            );
+
+        const membersGrid =
+            document.getElementById(
+                "membersGrid"
+            );
+
+        const membersSubtitle =
+            document.getElementById(
+                "membersSubtitle"
+            );
+
+        const inviteMemberButton =
+            document.getElementById(
+                "inviteMemberButton"
+            );
+
+        const groupSettingsName =
+            document.getElementById(
+                "groupSettingsName"
+            );
+
+        const groupSettingsDescription =
+            document.getElementById(
+                "groupSettingsDescription"
+            );
+
+        const saveGroupSettingsButton =
+            document.getElementById(
+                "saveGroupSettingsButton"
+            );
+
+        const leaveGroupButton =
+            document.getElementById(
+                "leaveGroupButton"
+            );
+
+        const deleteGroupButton =
+            document.getElementById(
+                "deleteGroupButton"
+            );
+
+
+        /* ==========================================
+           USUARIO
+        ========================================== */
+
+        const user =
+            await getCurrentUser();
+
+
+        if (!user) {
+
+            window.location.href =
+                "login.html";
 
             return;
 
         }
 
 
-        saveGroupSettingsButton.disabled =
-            true;
+        /* ==========================================
+           GRUPOS DEL USUARIO
+        ========================================== */
 
-        saveGroupSettingsButton.textContent =
-            "Guardando...";
-
-
-        const {
-            error
-        } = await supabaseClient.rpc(
-            "update_group",
-            {
-                target_group_id:
-                    currentGroup.id,
-
-                new_name:
-                    name,
-
-                new_description:
-                    description || null
-            }
-        );
+        const groups =
+            await getUserGroups();
 
 
-        saveGroupSettingsButton.disabled =
-            false;
+        if (!groups || !groups.length) {
 
-        saveGroupSettingsButton.textContent =
-            "Guardar cambios";
+            groupName.textContent =
+                "Sin grupo";
 
+            membersSubtitle.textContent =
+                "Todavía no perteneces a ningún grupo.";
 
-        if (error) {
-
-            console.error(
-                "Error actualizando grupo:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "No se han podido guardar los cambios."
-            );
+            membersGrid.innerHTML = `
+                <p>
+                    No tienes ningún grupo todavía.
+                </p>
+            `;
 
             return;
 
         }
 
 
-        setCurrentGroup(
-            currentGroup.id
-        );
+        /* ==========================================
+           GRUPO ACTUAL
+        ========================================== */
+
+        const currentGroup =
+            await getCurrentGroup();
 
 
-        alert(
-            "Grupo actualizado correctamente."
-        );
+        if (!currentGroup) {
 
-
-        window.location.reload();
-
-    }
-);
-
-
-/* ==========================================
-   ABANDONAR GRUPO
-========================================== */
-
-leaveGroupButton.addEventListener(
-    "click",
-    async () => {
-
-        if (currentGroup.role === "owner") {
-
-            alert(
-                "El propietario no puede abandonar el grupo."
-            );
+            membersSubtitle.textContent =
+                "No se ha podido cargar el grupo.";
 
             return;
 
         }
 
 
-        const confirmation =
-            confirm(
-                `¿Seguro que quieres abandonar "${currentGroup.name}"?`
-            );
-
-
-        if (!confirmation) {
-            return;
-        }
-
-
-        leaveGroupButton.disabled =
-            true;
-
-
-        const {
-            error
-        } = await supabaseClient.rpc(
-            "leave_group",
-            {
-                target_group_id:
-                    currentGroup.id
-            }
+        console.log(
+            "GRUPO ACTUAL:",
+            currentGroup
         );
 
 
-        leaveGroupButton.disabled =
-            false;
+        groupName.textContent =
+            currentGroup.name;
 
 
-        if (error) {
+        /* ==========================================
+           AJUSTES DEL GRUPO
+        ========================================== */
 
-            console.error(
-                "Error abandonando grupo:",
-                error
-            );
+        if (groupSettingsName) {
 
-            alert(
-                error.message ||
-                "No se ha podido abandonar el grupo."
-            );
-
-            return;
+            groupSettingsName.value =
+                currentGroup.name || "";
 
         }
 
 
-        localStorage.removeItem(
-            "curruscos_current_group"
-        );
+        if (groupSettingsDescription) {
+
+            groupSettingsDescription.value =
+                currentGroup.description || "";
+
+        }
 
 
-        window.location.href =
-            "dashboard.html";
-
-    }
-);
-
-
-/* ==========================================
-   ELIMINAR GRUPO
-========================================== */
-
-deleteGroupButton.addEventListener(
-    "click",
-    async () => {
+        /* ==========================================
+           PERMISOS DE LOS AJUSTES
+        ========================================== */
 
         if (currentGroup.role !== "owner") {
-            return;
+
+            if (saveGroupSettingsButton) {
+
+                saveGroupSettingsButton.style.display =
+                    "none";
+
+            }
+
+            if (deleteGroupButton) {
+
+                deleteGroupButton.style.display =
+                    "none";
+
+            }
+
         }
 
 
-        const firstConfirmation =
-            confirm(
-                `¿Seguro que quieres eliminar "${currentGroup.name}"?`
+        /* ==========================================
+           GUARDAR CAMBIOS DEL GRUPO
+        ========================================== */
+
+        if (saveGroupSettingsButton) {
+
+            saveGroupSettingsButton.addEventListener(
+                "click",
+                async () => {
+
+                    const name =
+                        groupSettingsName.value.trim();
+
+                    const description =
+                        groupSettingsDescription.value.trim();
+
+
+                    if (!name) {
+
+                        alert(
+                            "El nombre del grupo es obligatorio."
+                        );
+
+                        return;
+
+                    }
+
+
+                    saveGroupSettingsButton.disabled =
+                        true;
+
+                    saveGroupSettingsButton.textContent =
+                        "Guardando...";
+
+
+                    const {
+                        error
+                    } = await supabaseClient.rpc(
+                        "update_group",
+                        {
+                            target_group_id:
+                                currentGroup.id,
+
+                            new_name:
+                                name,
+
+                            new_description:
+                                description || null
+                        }
+                    );
+
+
+                    saveGroupSettingsButton.disabled =
+                        false;
+
+                    saveGroupSettingsButton.textContent =
+                        "Guardar cambios";
+
+
+                    if (error) {
+
+                        console.error(
+                            "Error actualizando grupo:",
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            "No se han podido guardar los cambios."
+                        );
+
+                        return;
+
+                    }
+
+
+                    alert(
+                        "Grupo actualizado correctamente."
+                    );
+
+
+                    window.location.reload();
+
+                }
             );
 
-
-        if (!firstConfirmation) {
-            return;
         }
 
 
-        const secondConfirmation =
-            confirm(
-                "Esta acción eliminará el grupo y sus datos. ¿Continuar?"
+        /* ==========================================
+           ABANDONAR GRUPO
+        ========================================== */
+
+        if (leaveGroupButton) {
+
+            leaveGroupButton.addEventListener(
+                "click",
+                async () => {
+
+                    if (
+                        currentGroup.role ===
+                        "owner"
+                    ) {
+
+                        alert(
+                            "El propietario no puede abandonar el grupo."
+                        );
+
+                        return;
+
+                    }
+
+
+                    const confirmation =
+                        confirm(
+                            `¿Seguro que quieres abandonar "${currentGroup.name}"?`
+                        );
+
+
+                    if (!confirmation) {
+                        return;
+                    }
+
+
+                    leaveGroupButton.disabled =
+                        true;
+
+
+                    const {
+                        error
+                    } = await supabaseClient.rpc(
+                        "leave_group",
+                        {
+                            target_group_id:
+                                currentGroup.id
+                        }
+                    );
+
+
+                    leaveGroupButton.disabled =
+                        false;
+
+
+                    if (error) {
+
+                        console.error(
+                            "Error abandonando grupo:",
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            "No se ha podido abandonar el grupo."
+                        );
+
+                        return;
+
+                    }
+
+
+                    localStorage.removeItem(
+                        "curruscos_current_group"
+                    );
+
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }
             );
 
-
-        if (!secondConfirmation) {
-            return;
         }
 
 
-        deleteGroupButton.disabled =
-            true;
+        /* ==========================================
+           ELIMINAR GRUPO
+        ========================================== */
 
-        deleteGroupButton.textContent =
-            "Eliminando...";
+        if (deleteGroupButton) {
+
+            deleteGroupButton.addEventListener(
+                "click",
+                async () => {
+
+                    if (
+                        currentGroup.role !==
+                        "owner"
+                    ) {
+
+                        return;
+
+                    }
 
 
-        const {
-            error
-        } = await supabaseClient.rpc(
-            "delete_group",
-            {
-                target_group_id:
-                    currentGroup.id
+                    const firstConfirmation =
+                        confirm(
+                            `¿Seguro que quieres eliminar "${currentGroup.name}"?`
+                        );
+
+
+                    if (!firstConfirmation) {
+                        return;
+                    }
+
+
+                    const secondConfirmation =
+                        confirm(
+                            "Esta acción eliminará el grupo y sus datos. ¿Continuar?"
+                        );
+
+
+                    if (!secondConfirmation) {
+                        return;
+                    }
+
+
+                    deleteGroupButton.disabled =
+                        true;
+
+                    deleteGroupButton.textContent =
+                        "Eliminando...";
+
+
+                    const {
+                        error
+                    } = await supabaseClient.rpc(
+                        "delete_group",
+                        {
+                            target_group_id:
+                                currentGroup.id
+                        }
+                    );
+
+
+                    deleteGroupButton.disabled =
+                        false;
+
+                    deleteGroupButton.textContent =
+                        "Eliminar grupo";
+
+
+                    if (error) {
+
+                        console.error(
+                            "Error eliminando grupo:",
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            "No se ha podido eliminar el grupo."
+                        );
+
+                        return;
+
+                    }
+
+
+                    localStorage.removeItem(
+                        "curruscos_current_group"
+                    );
+
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }
+            );
+
+        }
+
+
+        /* ==========================================
+           SELECTOR DE GRUPOS
+        ========================================== */
+
+        groupButton.addEventListener(
+            "click",
+            () => {
+
+                groupMenu.hidden =
+                    !groupMenu.hidden;
+
             }
         );
 
 
-        deleteGroupButton.disabled =
-            false;
+        groupList.innerHTML = "";
 
 
-        deleteGroupButton.textContent =
-            "Eliminar grupo";
+        groups.forEach(
+            group => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
 
 
-        if (error) {
+                button.type = "button";
 
-            console.error(
-                "Error eliminando grupo:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "No se ha podido eliminar el grupo."
-            );
-
-            return;
-
-        }
+                button.className =
+                    "group-option";
 
 
-        localStorage.removeItem(
-            "curruscos_current_group"
-        );
+                if (
+                    group.id ===
+                    currentGroup.id
+                ) {
 
-
-        window.location.href =
-            "dashboard.html";
-
-    }
-);
-
-                    membersSubtitle.textContent =
-                        "No se ha podido cargar el grupo.";
-
-                    return;
+                    button.classList.add(
+                        "active"
+                    );
 
                 }
 
 
-                groupName.textContent =
-                    currentGroup.name;
+                button.innerHTML = `
+                    <strong>
+                        ${String(
+                            group.name ?? ""
+                        )}
+                    </strong>
+
+                    <span>
+                        ${String(
+                            group.role ?? ""
+                        )}
+                    </span>
+                `;
 
 
-                /* ==========================================
-                   SELECTOR DE GRUPOS
-                ========================================== */
-
-                groupButton.addEventListener(
+                button.addEventListener(
                     "click",
                     () => {
 
-                        groupMenu.hidden =
-                            !groupMenu.hidden;
-
-                    }
-                );
-
-
-                groupList.innerHTML = "";
-
-
-                groups.forEach(
-                    group => {
-
-                        const button =
-                            document.createElement(
-                                "button"
-                            );
-
-                        button.type = "button";
-
-                        button.className =
-                            "group-option";
-
-
-                        if (
-                            group.id ===
-                            currentGroup.id
-                        ) {
-
-                            button.classList.add(
-                                "active"
-                            );
-
-                        }
-
-
-                        button.innerHTML = `
-                            <strong>
-                                ${String(
-                                    group.name ?? ""
-                                )}
-                            </strong>
-
-                            <span>
-                                ${String(
-                                    group.role ?? ""
-                                )}
-                            </span>
-                        `;
-
-
-                        button.addEventListener(
-                            "click",
-                            () => {
-
-                                setCurrentGroup(
-                                    group.id
-                                );
-
-                                window.location.reload();
-
-                            }
-                        );
-
-
-                        groupList.appendChild(
-                            button
-                        );
-
-                    }
-                );
-
-
-                /* ==========================================
-                   CREAR GRUPO
-                ========================================== */
-
-                createGroupButton.addEventListener(
-                    "click",
-                    async () => {
-
-                        const name =
-                            prompt(
-                                "Nombre del nuevo grupo:"
-                            );
-
-
-                        if (
-                            !name ||
-                            !name.trim()
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        const description =
-                            prompt(
-                                "Descripción del grupo (opcional):"
-                            );
-
-
-                        createGroupButton.disabled =
-                            true;
-
-
-                        const newGroup =
-                            await createGroup(
-                                name.trim(),
-                                description
-                                    ? description.trim()
-                                    : null
-                            );
-
-
-                        createGroupButton.disabled =
-                            false;
-
-
-                        if (!newGroup) {
-
-                            alert(
-                                "No se ha podido crear el grupo."
-                            );
-
-                            return;
-
-                        }
-
-
                         setCurrentGroup(
-                            newGroup.id
+                            group.id
                         );
 
                         window.location.reload();
 
                     }
                 );
-/* ==========================================
-   INVITAR MIEMBRO
-========================================== */
-
-const inviteMemberButton =
-    document.getElementById(
-        "inviteMemberButton"
-    );
 
 
-if (
-    currentGroup.role === "owner" ||
-    currentGroup.role === "admin"
-) {
-
-    inviteMemberButton.style.display =
-        "block";
-
-
-    inviteMemberButton.addEventListener(
-        "click",
-        async () => {
-
-            const username =
-                prompt(
-                    "Introduce el nombre de usuario de la persona que quieres invitar:"
+                groupList.appendChild(
+                    button
                 );
-
-
-            if (
-                !username ||
-                !username.trim()
-            ) {
-                return;
-            }
-
-
-            inviteMemberButton.disabled =
-                true;
-
-
-            const {
-                data,
-                error
-            } = await supabaseClient.rpc(
-                "invite_user_by_username",
-                {
-                    target_group_id:
-                        currentGroup.id,
-
-                    target_username:
-                        username.trim()
-                }
-            );
-
-
-            inviteMemberButton.disabled =
-                false;
-
-
-            if (error) {
-
-                console.error(
-                    "Error enviando invitación:",
-                    error
-                );
-
-                alert(
-                    error.message ||
-                    "No se ha podido enviar la invitación."
-                );
-
-                return;
 
             }
+        );
 
 
-            alert(
-                "Invitación enviada correctamente."
-            );
+        /* ==========================================
+           CREAR GRUPO
+        ========================================== */
 
-        }
-    );
-
-} else {
-
-    inviteMemberButton.style.display =
-        "none";
-
-}
-
-/* ==========================================
-   OBTENER MIEMBROS DEL GRUPO
-========================================== */
-
-const {
-    data: members,
-    error
-} = await supabaseClient.rpc(
-    "get_group_members",
-    {
-        target_group_id: currentGroup.id
-    }
-);
-
-if (error) {
-
-    console.error(
-        "Error obteniendo miembros:",
-        error
-    );
-
-    membersSubtitle.textContent =
-        "No se han podido cargar los miembros.";
-
-    membersGrid.innerHTML = `
-        <p>
-            Error cargando los miembros.
-        </p>
-    `;
-
-    return;
-}
-
-console.log(
-    "MIEMBROS RECIBIDOS:",
-    members
-);
-/* ==========================================
-   MOSTRAR Y GESTIONAR MIEMBROS
-========================================== */
-
-const validMembers = members || [];
-
-membersSubtitle.textContent =
-    validMembers.length === 1
-        ? "1 persona forma parte de este grupo."
-        : `${validMembers.length} personas forman parte de este grupo.`;
-
-membersGrid.innerHTML = "";
-
-
-/* ==========================================
-   PERMISOS DEL USUARIO ACTUAL
-========================================== */
-
-const currentUser = user;
-
-const currentMember =
-    validMembers.find(
-        member =>
-            member.user_id === currentUser?.id
-    );
-
-const currentRole =
-    currentMember?.role || "member";
-
-
-/* ==========================================
-   CREAR TARJETAS
-========================================== */
-
-validMembers.forEach(member => {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "member-card";
-
-
-    const displayName =
-        member.display_name ||
-        member.username ||
-        "Usuario";
-
-
-    const roleLabel =
-        member.role === "owner"
-            ? "Propietario"
-            : member.role === "admin"
-                ? "Administrador"
-                : "Miembro";
-
-
-    /* ======================================
-       TARJETA DEL MIEMBRO
-    ====================================== */
-
-    card.innerHTML = `
-
-        <div class="member-avatar">
-            ${String(
-                displayName
-                    .charAt(0)
-                    .toUpperCase()
-            )}
-        </div>
-
-        <div class="member-info">
-
-            <h3>
-                ${String(displayName)}
-            </h3>
-
-            <p>
-                @${String(
-                    member.username || ""
-                )}
-            </p>
-
-            <span>
-                ${roleLabel}
-            </span>
-
-        </div>
-
-    `;
-
-
-    /* ======================================
-       ¿TIENE PERMISOS DE GESTIÓN?
-    ====================================== */
-
-    let canManage = false;
-
-
-    /*
-       OWNER:
-       puede gestionar admins y miembros.
-    */
-
-    if (
-        currentRole === "owner" &&
-        member.role !== "owner"
-    ) {
-
-        canManage = true;
-
-    }
-
-
-    /*
-       ADMIN:
-       solamente puede gestionar miembros normales.
-    */
-
-    if (
-        currentRole === "admin" &&
-        member.role === "member"
-    ) {
-
-        canManage = true;
-
-    }
-
-
-    if (!canManage) {
-
-        membersGrid.appendChild(card);
-
-        return;
-
-    }
-
-
-    /* ======================================
-       CONTROLES
-    ====================================== */
-
-    const actions =
-        document.createElement("div");
-
-    actions.style.marginTop = "15px";
-
-    actions.style.display = "flex";
-
-    actions.style.gap = "8px";
-
-    actions.style.flexWrap = "wrap";
-
-
-    /* ======================================
-       CAMBIAR ROL
-    ====================================== */
-
-    if (currentRole === "owner") {
-
-        const roleButton =
-            document.createElement("button");
-
-        roleButton.type = "button";
-
-        roleButton.textContent =
-            member.role === "admin"
-                ? "Hacer miembro"
-                : "Hacer admin";
-
-
-        roleButton.style.border = "1px solid #ddd";
-
-        roleButton.style.background = "white";
-
-        roleButton.style.color = "#111";
-
-        roleButton.style.padding = "8px 12px";
-
-        roleButton.style.borderRadius = "8px";
-
-        roleButton.style.cursor = "pointer";
-
-        roleButton.style.fontWeight = "600";
-
-
-        roleButton.addEventListener(
+        createGroupButton.addEventListener(
             "click",
             async () => {
 
-                const newRole =
-                    member.role === "admin"
-                        ? "member"
-                        : "admin";
-
-
-                const confirmation =
-                    confirm(
-                        newRole === "admin"
-                            ? `¿Quieres hacer administrador a ${displayName}?`
-                            : `¿Quieres quitarle el rol de administrador a ${displayName}?`
+                const name =
+                    prompt(
+                        "Nombre del nuevo grupo:"
                     );
 
 
-                if (!confirmation) {
+                if (
+                    !name ||
+                    !name.trim()
+                ) {
+
                     return;
+
                 }
 
 
-                roleButton.disabled = true;
-
-
-                const {
-                    data,
-                    error
-                } = await supabaseClient.rpc(
-                    "change_group_member_role",
-                    {
-                        target_group_id:
-                            currentGroup.id,
-
-                        target_user_id:
-                            member.user_id,
-
-                        new_role:
-                            newRole
-                    }
-                );
-
-
-                roleButton.disabled = false;
-
-
-                if (error) {
-
-                    console.error(
-                        "Error cambiando rol:",
-                        error
+                const description =
+                    prompt(
+                        "Descripción del grupo (opcional):"
                     );
+
+
+                createGroupButton.disabled =
+                    true;
+
+
+                const newGroup =
+                    await createGroup(
+                        name.trim(),
+                        description
+                            ? description.trim()
+                            : null
+                    );
+
+
+                createGroupButton.disabled =
+                    false;
+
+
+                if (!newGroup) {
 
                     alert(
-                        error.message ||
-                        "No se ha podido cambiar el rol."
+                        "No se ha podido crear el grupo."
                     );
 
                     return;
@@ -1322,8 +986,9 @@ validMembers.forEach(member => {
                 }
 
 
-                member.role =
-                    data.role;
+                setCurrentGroup(
+                    newGroup.id
+                );
 
 
                 window.location.reload();
@@ -1332,146 +997,567 @@ validMembers.forEach(member => {
         );
 
 
-        actions.appendChild(
-            roleButton
-        );
+        /* ==========================================
+           INVITAR MIEMBRO
+        ========================================== */
 
-    }
+        if (
+            currentGroup.role === "owner" ||
+            currentGroup.role === "admin"
+        ) {
 
-
-    /* ======================================
-       EXPULSAR
-    ====================================== */
-
-    const removeButton =
-        document.createElement("button");
-
-    removeButton.type = "button";
-
-    removeButton.textContent =
-        "Expulsar";
+            inviteMemberButton.style.display =
+                "block";
 
 
-    removeButton.style.border =
-        "1px solid #ddd";
+            inviteMemberButton.addEventListener(
+                "click",
+                async () => {
 
-    removeButton.style.background =
-        "white";
-
-    removeButton.style.color =
-        "#b00020";
-
-    removeButton.style.padding =
-        "8px 12px";
-
-    removeButton.style.borderRadius =
-        "8px";
-
-    removeButton.style.cursor =
-        "pointer";
-
-    removeButton.style.fontWeight =
-        "600";
+                    const username =
+                        prompt(
+                            "Introduce el nombre de usuario de la persona que quieres invitar:"
+                        );
 
 
-    removeButton.addEventListener(
-        "click",
-        async () => {
+                    if (
+                        !username ||
+                        !username.trim()
+                    ) {
 
-            const confirmation =
-                confirm(
-                    `¿Seguro que quieres expulsar a ${displayName} del grupo?`
-                );
+                        return;
 
-
-            if (!confirmation) {
-                return;
-            }
+                    }
 
 
-            removeButton.disabled = true;
+                    inviteMemberButton.disabled =
+                        true;
 
 
-            const {
-                error
-            } = await supabaseClient.rpc(
-                "remove_group_member",
-                {
-                    target_group_id:
-                        currentGroup.id,
+                    const {
+                        error
+                    } = await supabaseClient.rpc(
+                        "invite_user_by_username",
+                        {
+                            target_group_id:
+                                currentGroup.id,
 
-                    target_user_id:
-                        member.user_id
+                            target_username:
+                                username.trim()
+                        }
+                    );
+
+
+                    inviteMemberButton.disabled =
+                        false;
+
+
+                    if (error) {
+
+                        console.error(
+                            "Error enviando invitación:",
+                            error
+                        );
+
+                        alert(
+                            error.message ||
+                            "No se ha podido enviar la invitación."
+                        );
+
+                        return;
+
+                    }
+
+
+                    alert(
+                        "Invitación enviada correctamente."
+                    );
+
                 }
             );
 
+        } else {
 
-            removeButton.disabled = false;
-
-
-            if (error) {
-
-                console.error(
-                    "Error expulsando miembro:",
-                    error
-                );
-
-                alert(
-                    error.message ||
-                    "No se ha podido expulsar al miembro."
-                );
-
-                return;
-
-            }
-
-
-            window.location.reload();
+            inviteMemberButton.style.display =
+                "none";
 
         }
-    );
 
 
-    actions.appendChild(
-        removeButton
-    );
+        /* ==========================================
+           OBTENER MIEMBROS
+        ========================================== */
 
-
-    card.appendChild(
-        actions
-    );
-
-
-    membersGrid.appendChild(
-        card
-    );
-
-});
-
-
-/* ==========================================
-   GRUPO SIN MIEMBROS
-========================================== */
-
-if (!validMembers.length) {
-
-    membersGrid.innerHTML = `
-
-        <div class="empty-state">
-
-            <h3>
-                Este grupo todavía no tiene miembros.
-            </h3>
-
-        </div>
-
-    `;
-
-}
+        const {
+            data: members,
+            error: membersError
+        } = await supabaseClient.rpc(
+            "get_group_members",
+            {
+                target_group_id:
+                    currentGroup.id
             }
         );
 
-    </script>
+
+        if (membersError) {
+
+            console.error(
+                "Error obteniendo miembros:",
+                membersError
+            );
+
+            membersSubtitle.textContent =
+                "No se han podido cargar los miembros.";
+
+            membersGrid.innerHTML = `
+                <p>
+                    Error cargando los miembros.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        console.log(
+            "MIEMBROS RECIBIDOS:",
+            members
+        );
+
+
+        /* ==========================================
+           MOSTRAR MIEMBROS
+        ========================================== */
+
+        const validMembers =
+            members || [];
+
+
+        membersSubtitle.textContent =
+            validMembers.length === 1
+                ? "1 persona forma parte de este grupo."
+                : `${validMembers.length} personas forman parte de este grupo.`;
+
+
+        membersGrid.innerHTML = "";
+
+
+        const currentMember =
+            validMembers.find(
+                member =>
+                    member.user_id ===
+                    user.id
+            );
+
+
+        const currentRole =
+            currentMember?.role ||
+            "member";
+
+
+        /* ==========================================
+           TARJETAS DE MIEMBROS
+        ========================================== */
+
+        validMembers.forEach(
+            member => {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                card.className =
+                    "member-card";
+
+
+                const displayName =
+                    member.display_name ||
+                    member.username ||
+                    "Usuario";
+
+
+                const roleLabel =
+                    member.role === "owner"
+                        ? "Propietario"
+                        : member.role === "admin"
+                            ? "Administrador"
+                            : "Miembro";
+
+
+                card.innerHTML = `
+
+                    <div class="member-avatar">
+                        ${String(
+                            displayName
+                                .charAt(0)
+                                .toUpperCase()
+                        )}
+                    </div>
+
+                    <div class="member-info">
+
+                        <h3>
+                            ${String(
+                                displayName
+                            )}
+                        </h3>
+
+                        <p>
+                            @${String(
+                                member.username || ""
+                            )}
+                        </p>
+
+                        <span>
+                            ${roleLabel}
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                /* ======================================
+                   PERMISOS
+                ====================================== */
+
+                let canManage =
+                    false;
+
+
+                if (
+                    currentRole === "owner" &&
+                    member.role !== "owner"
+                ) {
+
+                    canManage =
+                        true;
+
+                }
+
+
+                if (
+                    currentRole === "admin" &&
+                    member.role === "member"
+                ) {
+
+                    canManage =
+                        true;
+
+                }
+
+
+                if (!canManage) {
+
+                    membersGrid.appendChild(
+                        card
+                    );
+
+                    return;
+
+                }
+
+
+                /* ======================================
+                   CONTROLES
+                ====================================== */
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                actions.style.marginTop =
+                    "15px";
+
+                actions.style.display =
+                    "flex";
+
+                actions.style.gap =
+                    "8px";
+
+                actions.style.flexWrap =
+                    "wrap";
+
+
+                /* ======================================
+                   CAMBIAR ROL
+                ====================================== */
+
+                if (
+                    currentRole === "owner"
+                ) {
+
+                    const roleButton =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    roleButton.type =
+                        "button";
+
+
+                    roleButton.textContent =
+                        member.role === "admin"
+                            ? "Hacer miembro"
+                            : "Hacer admin";
+
+
+                    roleButton.style.border =
+                        "1px solid #ddd";
+
+                    roleButton.style.background =
+                        "white";
+
+                    roleButton.style.color =
+                        "#111";
+
+                    roleButton.style.padding =
+                        "8px 12px";
+
+                    roleButton.style.borderRadius =
+                        "8px";
+
+                    roleButton.style.cursor =
+                        "pointer";
+
+                    roleButton.style.fontWeight =
+                        "600";
+
+
+                    roleButton.addEventListener(
+                        "click",
+                        async () => {
+
+                            const newRole =
+                                member.role === "admin"
+                                    ? "member"
+                                    : "admin";
+
+
+                            const confirmation =
+                                confirm(
+                                    newRole === "admin"
+                                        ? `¿Quieres hacer administrador a ${displayName}?`
+                                        : `¿Quieres quitarle el rol de administrador a ${displayName}?`
+                                );
+
+
+                            if (!confirmation) {
+                                return;
+                            }
+
+
+                            roleButton.disabled =
+                                true;
+
+
+                            const {
+                                data,
+                                error
+                            } =
+                                await supabaseClient.rpc(
+                                    "change_group_member_role",
+                                    {
+                                        target_group_id:
+                                            currentGroup.id,
+
+                                        target_user_id:
+                                            member.user_id,
+
+                                        new_role:
+                                            newRole
+                                    }
+                                );
+
+
+                            roleButton.disabled =
+                                false;
+
+
+                            if (error) {
+
+                                console.error(
+                                    "Error cambiando rol:",
+                                    error
+                                );
+
+                                alert(
+                                    error.message ||
+                                    "No se ha podido cambiar el rol."
+                                );
+
+                                return;
+
+                            }
+
+
+                            member.role =
+                                data.role;
+
+
+                            window.location.reload();
+
+                        }
+                    );
+
+
+                    actions.appendChild(
+                        roleButton
+                    );
+
+                }
+
+
+                /* ======================================
+                   EXPULSAR
+                ====================================== */
+
+                const removeButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                removeButton.type =
+                    "button";
+
+
+                removeButton.textContent =
+                    "Expulsar";
+
+
+                removeButton.style.border =
+                    "1px solid #ddd";
+
+                removeButton.style.background =
+                    "white";
+
+                removeButton.style.color =
+                    "#b00020";
+
+                removeButton.style.padding =
+                    "8px 12px";
+
+                removeButton.style.borderRadius =
+                    "8px";
+
+                removeButton.style.cursor =
+                    "pointer";
+
+                removeButton.style.fontWeight =
+                    "600";
+
+
+                removeButton.addEventListener(
+                    "click",
+                    async () => {
+
+                        const confirmation =
+                            confirm(
+                                `¿Seguro que quieres expulsar a ${displayName} del grupo?`
+                            );
+
+
+                        if (!confirmation) {
+                            return;
+                        }
+
+
+                        removeButton.disabled =
+                            true;
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient.rpc(
+                                "remove_group_member",
+                                {
+                                    target_group_id:
+                                        currentGroup.id,
+
+                                    target_user_id:
+                                        member.user_id
+                                }
+                            );
+
+
+                        removeButton.disabled =
+                            false;
+
+
+                        if (error) {
+
+                            console.error(
+                                "Error expulsando miembro:",
+                                error
+                            );
+
+                            alert(
+                                error.message ||
+                                "No se ha podido expulsar al miembro."
+                            );
+
+                            return;
+
+                        }
+
+
+                        window.location.reload();
+
+                    }
+                );
+
+
+                actions.appendChild(
+                    removeButton
+                );
+
+
+                card.appendChild(
+                    actions
+                );
+
+
+                membersGrid.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        /* ==========================================
+           SIN MIEMBROS
+        ========================================== */
+
+        if (!validMembers.length) {
+
+            membersGrid.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        Este grupo todavía no tiene miembros.
+                    </h3>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
 </html>
