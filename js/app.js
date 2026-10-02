@@ -166,7 +166,7 @@ function setupMobileMenu() {
         event.stopPropagation();
 
         const open =
-            nav.classList.toggle("open");
+            nav.classList.toggle("mobile-open");
 
         menuButton.setAttribute(
             "aria-expanded",
