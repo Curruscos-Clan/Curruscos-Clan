@@ -571,6 +571,53 @@ async function createEventExpense(
 }
 
 
+async function getExpenseSplits(expenseId) {
+    const { data, error } = await supabaseClient
+        .from("expense_splits")
+        .select("id, expense_id, user_id, amount")
+        .eq("expense_id", expenseId);
+
+    if (error) {
+        console.error("Error obteniendo reparto:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function replaceExpenseSplits(expenseId, splits) {
+    const { error: deleteError } = await supabaseClient
+        .from("expense_splits")
+        .delete()
+        .eq("expense_id", expenseId);
+
+    if (deleteError) {
+        console.error("Error limpiando reparto:", deleteError);
+        return false;
+    }
+
+    if (!splits.length) {
+        return true;
+    }
+
+    const { error } = await supabaseClient
+        .from("expense_splits")
+        .insert(
+            splits.map(split => ({
+                expense_id: expenseId,
+                user_id: split.user_id,
+                amount: Number(split.amount.toFixed(2))
+            }))
+        );
+
+    if (error) {
+        console.error("Error guardando reparto:", error);
+        return false;
+    }
+
+    return true;
+}
+
 async function deleteEventExpense(expenseId) {
 
     const { error } = await supabaseClient
