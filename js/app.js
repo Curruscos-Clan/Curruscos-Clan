@@ -11,6 +11,7 @@ const PRIVATE_PAGES = new Set([
     "recuerdos.html",
     "eventos.html",
     "evento.html",
+    "viajes.html",
     "perfil.html"
 ]);
 
