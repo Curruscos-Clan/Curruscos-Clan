@@ -268,7 +268,8 @@ async function createGroupEvent(eventData) {
             description: eventData.description,
             date: eventData.date,
             time: eventData.time,
-            location: eventData.location
+            location: eventData.location,
+            trip_id: eventData.trip_id || null
         })
         .select()
         .single();
@@ -298,6 +299,47 @@ async function deleteGroupEvent(eventId) {
 }
 
 
+async function getGroupTripsForEvent() {
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return [];
+    }
+
+    const { data, error } = await supabaseClient
+        .from("trips")
+        .select("id, title, destination, status, start_date, end_date")
+        .eq("group_id", group.id)
+        .in("status", ["planning", "confirmed"])
+        .order("start_date", { ascending: true });
+
+    if (error) {
+        console.error("Error obteniendo viajes para eventos:", error);
+        return [];
+    }
+
+    return data || [];
+}
+
+async function getTripForEvent(tripId) {
+    if (!tripId) {
+        return null;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("trips")
+        .select("id, title, destination, status, start_date, end_date")
+        .eq("id", tripId)
+        .single();
+
+    if (error) {
+        console.error("Error obteniendo viaje del evento:", error);
+        return null;
+    }
+
+    return data;
+}
+
 async function getGroupEvent(eventId) {
 
     const { data, error } = await supabaseClient
@@ -323,7 +365,8 @@ async function updateGroupEvent(eventId, eventData) {
             description: eventData.description,
             date: eventData.date,
             time: eventData.time,
-            location: eventData.location
+            location: eventData.location,
+            trip_id: eventData.trip_id || null
         })
         .eq("id", eventId)
         .select()

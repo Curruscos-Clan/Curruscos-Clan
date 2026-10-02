@@ -1098,6 +1098,23 @@ function setupEventForm() {
 
     form.dataset.ready = "true";
 
+    const tripSelect =
+        document.getElementById("eventTrip");
+
+    if (tripSelect) {
+        const trips = await getGroupTripsForEvent();
+
+        trips.forEach(trip => {
+            const option = document.createElement("option");
+            option.value = trip.id;
+            option.textContent =
+                trip.destination
+                    ? trip.title + " · " + trip.destination
+                    : trip.title;
+            tripSelect.appendChild(option);
+        });
+    }
+
     form.addEventListener(
         "submit",
         async event => {
@@ -1132,7 +1149,12 @@ function setupEventForm() {
                 description:
                     document.getElementById(
                         "eventDescription"
-                    ).value.trim()
+                    ).value.trim(),
+
+                trip_id:
+                    document.getElementById(
+                        "eventTrip"
+                    )?.value || null
             };
 
             if (
