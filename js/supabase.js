@@ -1870,3 +1870,5 @@ async function getPublicProfileActivity(userId){
 
 
 async function getPublicRelatedEvents(eventId){const {data,error}=await supabaseClient.rpc("get_public_related_events",{target_event_id:eventId});if(error){console.error("Error obteniendo eventos relacionados:",error);return [];}return data||[];}
+
+async function getPublicActivePeople(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_active_people",{search_text:String(search||"").trim()||null,target_event_type:eventType||"all"});if(error){console.error("Error obteniendo personas públicas:",error);return [];}return data||[];}
