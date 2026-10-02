@@ -1356,3 +1356,67 @@ async function getTasksForEvents(eventIds) {
 
     return data || [];
 }
+
+
+async function updateProfile(displayName, username) {
+    const user = await getCurrentUser();
+
+    if (!user) {
+        throw new Error("No hay una sesión activa.");
+    }
+
+    const cleanName =
+        String(displayName || "").trim();
+
+    const cleanUsername =
+        String(username || "")
+            .trim()
+            .toLowerCase();
+
+    if (!cleanName) {
+        throw new Error("El nombre visible es obligatorio.");
+    }
+
+    if (
+        cleanUsername.length < 3 ||
+        cleanUsername.length > 24 ||
+        !/^[a-z0-9_]+$/.test(cleanUsername)
+    ) {
+        throw new Error(
+            "El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _. "
+        );
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("profiles")
+            .update({
+                display_name: cleanName,
+                username: cleanUsername
+            })
+            .eq("id", user.id)
+            .select()
+            .single();
+
+    if (error) {
+        console.error(
+            "Error actualizando perfil:",
+            error
+        );
+
+        if (error.code === "23505") {
+            throw new Error(
+                "Ese nombre de usuario ya está en uso."
+            );
+        }
+
+        throw new Error(
+            getSupabaseErrorMessage(
+                error,
+                "No se ha podido actualizar el perfil."
+            )
+        );
+    }
+
+    return data;
+}
