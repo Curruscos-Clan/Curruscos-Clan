@@ -1860,6 +1860,13 @@ async function getMyEventActivity(){const user=await getCurrentUser();if(!user)r
 
 async function getPublicRankings(eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_rankings",{target_event_type:eventType});if(error){console.error("Error obteniendo rankings:",error);return [];}return data||[];}
 
+async function getOrCreateGroupChat(groupId){const {data,error}=await supabaseClient.rpc("get_or_create_group_chat",{target_group_id:groupId});if(error){console.error("Error abriendo chat del grupo:",error);return null;}return data||null;}
+async function getOrCreateEventChat(eventId){const {data,error}=await supabaseClient.rpc("get_or_create_event_chat",{target_event_id:eventId});if(error){console.error("Error abriendo chat del evento:",error);return null;}return data||null;}
+async function getChatMessages(roomId){const {data,error}=await supabaseClient.from("chat_messages").select("id,room_id,user_id,body,created_at,edited_at,deleted_at").eq("room_id",roomId).is("deleted_at",null).order("created_at",{ascending:true}).limit(200);if(error){console.error("Error obteniendo mensajes:",error);return [];}return data||[];}
+async function sendChatMessage(roomId,body){const user=await getCurrentUser();if(!user||!String(body||"").trim())return null;const {data,error}=await supabaseClient.from("chat_messages").insert({room_id:roomId,user_id:user.id,body:String(body).trim().slice(0,2000)}).select().single();if(error){console.error("Error enviando mensaje:",error);return null;}return data;}
+function subscribeToChat(roomId,callback){return supabaseClient.channel("chat-"+roomId).on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages",filter:"room_id=eq."+roomId},payload=>callback?.(payload.new)).subscribe();}
+function unsubscribeFromChat(channel){if(channel)return supabaseClient.removeChannel(channel);}
+
 async function getPublicActiveTeams(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_active_teams",{search_text:String(search||"").trim()||null,target_event_type:eventType||"all"});if(error){console.error("Error obteniendo equipos públicos:",error);return [];}return data||[];}\n\nasync function getPublicTeam(teamId){const {data,error}=await supabaseClient.rpc("get_public_team",{target_team_id:teamId});if(error){console.error("Error obteniendo equipo público:",error);return null;}return data?.[0]||null;}\n\nasync function getPublicProfile(userId){const {data,error}=await supabaseClient.rpc("get_public_profile",{target_user_id:userId});if(error){console.error("Error obteniendo perfil público:",error);return null;}return data?.[0]||null;}
 
 
