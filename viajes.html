@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Planificad viajes juntos: destinos, vuelos, hoteles, lugares, presupuesto y decisiones.">
+<title>Curruscos — Viajes</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="navbar">
+  <div class="brand-group">
+    <a href="dashboard.html" class="logo">CURRUSCOS<span>.</span></a>
+    <div class="group-selector">
+      <button type="button" id="currentGroupButton" class="current-group-button">
+        <span id="currentGroupName">Cargando grupo...</span><span class="group-selector-arrow">▾</span>
+      </button>
+      <div id="groupMenu" class="group-menu" hidden>
+        <div id="groupList" class="group-list"></div>
+        <div class="group-menu-divider"></div>
+        <button type="button" id="createGroupButton" class="create-group-button">＋ Crear un grupo</button>
+      </div>
+    </div>
+  </div>
+  <div class="notification-wrapper">
+    <button id="notificationButton" class="notification-button" aria-label="Notificaciones">🔔<span id="notificationBadge" class="notification-badge" hidden>0</span></button>
+    <div id="notificationPanel" class="notification-panel" hidden>
+      <div class="notification-header"><strong>Notificaciones</strong><button id="markAllNotificationsButton" class="mark-all-notifications">Marcar todas como leídas</button></div>
+      <div id="notificationList" class="notification-list"></div>
+    </div>
+  </div>
+  <nav id="mainNav">
+    <a href="dashboard.html">Inicio</a><a href="miembros.html">Miembros</a><a href="historia.html">Historia</a><a href="recuerdos.html">Recuerdos</a><a href="eventos.html">Eventos</a><a href="viajes.html" class="active">Viajes</a>
+  </nav>
+  <button class="menu-button" id="menuButton" aria-label="Abrir menú">☰</button>
+</header>
+
+<main class="trip-page">
+  <section class="trip-hero">
+    <div>
+      <span class="trip-eyebrow">EXPLORAR · DECIDIR · VIVIR</span>
+      <h1>El próximo viaje<br><span>lo decidís juntos.</span></h1>
+      <p>Guardad destinos, comparad opciones, construid un presupuesto y votad sin perder la conversación por el camino.</p>
+    </div>
+    <button class="button primary" id="newTripButton">＋ Nuevo viaje</button>
+  </section>
+
+  <section class="trip-layout">
+    <aside class="trip-sidebar">
+      <div class="trip-panel-title"><span>VUESTROS VIAJES</span><strong id="tripCount">0 viajes</strong></div>
+      <div id="tripsList" class="trips-list"></div>
+      <div id="tripsEmpty" class="trip-empty">Todavía no habéis creado ningún viaje.</div>
+    </aside>
+
+    <section class="trip-workspace">
+      <div id="tripEmptyState" class="trip-empty-state">
+        <div class="trip-empty-icon">✈️</div>
+        <h2>Un viaje empieza mucho antes de salir.</h2>
+        <p>Cread uno para reunir destino, fechas, presupuesto, vuelos, hoteles, lugares y decisiones del grupo en un mismo espacio.</p>
+        <button class="button primary" id="emptyNewTripButton">Crear viaje</button>
+      </div>
+
+      <div id="tripWorkspaceContent" hidden>
+        <div class="trip-header-card">
+          <div>
+            <span class="trip-kicker" id="activeTripStatus">PLANIFICANDO</span>
+            <h2 id="activeTripTitle">—</h2>
+            <p id="activeTripDescription">—</p>
+          </div>
+          <div class="trip-budget-chip"><span>Presupuesto / persona</span><strong id="activeTripBudget">Sin definir</strong></div>
+        </div>
+
+        <div class="trip-summary-grid">
+          <article class="trip-stat"><span>DESTINO</span><strong id="activeTripDestination">Por decidir</strong></article>
+          <article class="trip-stat"><span>FECHAS</span><strong id="activeTripDates">Por decidir</strong></article>
+          <article class="trip-stat"><span>OPCIONES</span><strong id="activeTripOptionsCount">0</strong></article>
+          <article class="trip-stat"><span>VOTOS</span><strong id="activeTripVotesCount">0</strong></article>
+        </div>
+
+        <div class="trip-section">
+          <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div>
+          <div id="tripOptions" class="trip-options"></div>
+          <div id="optionsEmpty" class="trip-empty">Guardad aquí un vuelo, hotel, destino o actividad que estéis considerando.</div>
+        </div>
+
+        <div class="trip-section trip-tools-grid">
+          <article class="trip-tool">
+            <span>✈️ VUELOS</span><h3>Buscar fuera de Curruscos</h3>
+            <p>Usad un comparador externo y guardad después la opción que os interese.</p>
+            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/travel/flights">Comparar vuelos</a></div>
+          </article>
+          <article class="trip-tool">
+            <span>🏨 ALOJAMIENTO</span><h3>Encontrar dónde dormir</h3>
+            <p>Comparad alojamientos y volved aquí para que el grupo vote entre las opciones finales.</p>
+            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/travel/hotels">Comparar hoteles</a></div>
+          </article>
+          <article class="trip-tool">
+            <span>📍 LUGARES</span><h3>Descubrir qué hacer</h3>
+            <p>Buscad lugares de interés y añadid las actividades que queráis meter en el plan.</p>
+            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/maps">Abrir mapa</a></div>
+          </article>
+        </div>
+
+        <div class="trip-section">
+          <div class="trip-section-head"><div><span>DECISIÓN</span><h3>Elegid entre todos</h3></div></div>
+          <p class="trip-section-copy">Cada opción puede recibir un voto por persona. Así la información acaba convertida en una decisión del grupo.</p>
+          <div id="tripDecisionSummary" class="trip-decision-summary"></div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="tripModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tripModalTitle">
+    <div class="modal-header"><div><span>PLANIFICACIÓN</span><h2 id="tripModalTitle">Nuevo viaje</h2></div><button class="modal-close" id="closeTripModal" aria-label="Cerrar">×</button></div>
+    <form id="tripForm">
+      <label>Nombre del viaje<input id="tripTitle" maxlength="120" required placeholder="Ej. Portugal 2027"></label>
+      <label>Destino<input id="tripDestination" maxlength="160" placeholder="Ej. Lisboa"></label>
+      <div class="form-grid-2"><label>Desde<input id="tripStartDate" type="date"></label><label>Hasta<input id="tripEndDate" type="date"></label></div>
+      <label>Presupuesto por persona<input id="tripBudget" type="number" min="0" step="0.01" placeholder="500"></label>
+      <label>Descripción<textarea id="tripDescription" rows="3" maxlength="500" placeholder="Qué queréis hacer o qué estáis buscando…"></textarea></label>
+      <div class="modal-actions"><button type="button" class="button secondary" id="cancelTripButton">Cancelar</button><button type="submit" class="button primary">Crear viaje</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="optionModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="optionModalTitle">
+    <div class="modal-header"><div><span>COMPARADOR</span><h2 id="optionModalTitle">Guardar opción</h2></div><button class="modal-close" id="closeOptionModal" aria-label="Cerrar">×</button></div>
+    <form id="optionForm">
+      <label>Tipo<select id="optionCategory"><option value="destination">Destino</option><option value="flight">Vuelo</option><option value="hotel">Hotel</option><option value="activity">Actividad</option><option value="transport">Transporte</option><option value="other">Otro</option></select></label>
+      <label>Nombre<input id="optionTitle" maxlength="160" required placeholder="Ej. Vuelo Madrid → Roma"></label>
+      <div class="form-grid-2"><label>Precio total<input id="optionPrice" type="number" min="0" step="0.01" placeholder="320"></label><label>Precio / persona<input id="optionPricePerson" type="number" min="0" step="0.01" placeholder="40"></label></div>
+      <label>Proveedor<input id="optionProvider" maxlength="100" placeholder="Aerolínea, hotel, web…"></label>
+      <label>Enlace<input id="optionUrl" type="url" placeholder="https://…"></label>
+      <label>Notas<textarea id="optionNotes" rows="3" maxlength="500" placeholder="Horarios, equipaje, ubicación, condiciones…"></textarea></label>
+      <div class="modal-actions"><button type="button" class="button secondary" id="cancelOptionButton">Cancelar</button><button type="submit" class="button primary">Guardar opción</button></div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/app.js"></script>
+<script src="js/viajes.js"></script>
+</body>
+</html>
