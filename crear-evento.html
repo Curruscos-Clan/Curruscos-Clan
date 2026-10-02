@@ -25,17 +25,20 @@
 <label>Nombre del evento<input id="publicEventTitle" maxlength="120" placeholder="Ej. Torneo de Pádel Ciudad de Palencia" required></label>
 <div class="public-create-grid">
 <label>Categoría<select id="publicEventCategory"><option value="tournament">Torneo</option><option value="sport">Deporte</option><option value="gaming">Gaming</option><option value="social">Social</option><option value="activity">Actividad</option><option value="other">Otro</option></select></label>
+<label>Formato<select id="publicEventFormat"><option value="standard">Evento libre</option><option value="knockout">Eliminación directa</option><option value="round_robin">Liga / todos contra todos</option><option value="swiss">Sistema suizo</option><option value="race">Carrera / clasificación</option><option value="custom">Formato personalizado</option></select></label>
 <label>Plazas<input id="publicEventCapacity" type="number" min="1" placeholder="Sin límite"></label>
 </div>
 <div class="public-create-grid">
 <label>Fecha<input id="publicEventDate" type="date" required></label>
 <label>Hora<input id="publicEventTime" type="time"></label>
 </div>
+<label>Nombre del organizador<input id="publicEventOrganizer" maxlength="120" placeholder="Club, persona, asociación..."></label>
 <label>Lugar<input id="publicEventLocation" maxlength="160" placeholder="Pista, pabellón, ciudad..."></label>
 <div class="public-create-grid">
 <label>Precio por participante (€)<input id="publicEventFee" type="number" min="0" step="0.01" value="0"></label>
 <label>Fin de inscripciones<input id="publicEventDeadline" type="datetime-local"></label>
 </div>
+<label>Reglas o información del formato<textarea id="publicEventRules" maxlength="4000" placeholder="Cómo se juega, sistema de puntuación, normas..."></textarea></label>
 <label>Descripción<textarea id="publicEventDescription" maxlength="2000" placeholder="Reglas, formato, información importante..."></textarea></label>
 <button class="button button-primary" type="submit">Publicar evento</button>
 <p id="publicEventMessage" class="login-message"></p>
