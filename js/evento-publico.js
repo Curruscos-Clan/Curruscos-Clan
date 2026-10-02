@@ -6,7 +6,7 @@ const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación direc
 function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
 
-function buildStandings(teams,matches){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));matches.filter(m=>m.status==="finished"&&m.home_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=m.away_team_id?table.get(m.away_team_id):null;if(!h)return;if(!a){h.played++;h.points+=1;return;}const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=3;a.losses++;}else if(as>hs){a.wins++;a.points+=3;h.losses++;}else{h.draws++;a.draws++;h.points++;a.points++;}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
+function buildStandings(teams,matches,scoringSystem="win_draw_loss"){const table=new Map(teams.map(t=>[t.id,{team:t,played:0,wins:0,draws:0,losses:0,points:0,scored:0,conceded:0}]));const award=(result)=>scoringSystem==="chess"?(result==="win"?1:result==="draw"?0.5:0):scoringSystem==="points"?Number(result||0):(result==="win"?3:result==="draw"?1:0);matches.filter(m=>m.status==="finished"&&m.home_team_id).forEach(m=>{const h=table.get(m.home_team_id),a=m.away_team_id?table.get(m.away_team_id):null;if(!h)return;if(!a){h.played++;h.points+=scoringSystem==="chess"?1:1;return;}const hs=Number(m.home_score||0),as=Number(m.away_score||0);h.played++;a.played++;h.scored+=hs;h.conceded+=as;a.scored+=as;a.conceded+=hs;if(hs>as){h.wins++;h.points+=award("win");a.losses++;}else if(as>hs){a.wins++;a.points+=award("win");h.losses++;}else{h.draws++;a.draws++;h.points+=award("draw");a.points+=award("draw");}});return [...table.values()].sort((a,b)=>b.points-a.points||(b.scored-b.conceded)-(a.scored-a.conceded)||b.scored-a.scored);}
 
 function renderTournamentPanel(event,teams,matches,isOrganizer){
     const area=document.getElementById("publicTournamentArea");
@@ -14,7 +14,7 @@ function renderTournamentPanel(event,teams,matches,isOrganizer){
     if(event.format==="standard"&&!teams.length&&!matches.length&&!isOrganizer){area.innerHTML="";return;}
 
     const teamMap=new Map(teams.map(team=>[team.id,team]));
-    const standings=(event.format==="round_robin"||event.format==="swiss")&&matches.length?buildStandings(teams,matches):[];
+    const standings=(event.format==="round_robin"||event.format==="swiss")&&matches.length?buildStandings(teams,matches,event.scoring_system):[];
     const rounds=[...new Set(matches.map(match=>match.round_number))].sort((a,b)=>a-b);
 
     const matchHtml=rounds.map(round=>{
