@@ -1822,3 +1822,5 @@ async function removeEventTeamMember(teamId,userId){const {data,error}=await sup
 async function joinEventTeam(teamId){const {data,error}=await supabaseClient.rpc("join_event_team",{target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido unir al equipo."));return data;}
 async function createEventTeamForSelf(eventId,name){const {data,error}=await supabaseClient.rpc("create_event_team_for_self",{target_event_id:eventId,team_name:name});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido crear el equipo."));return data;}
 async function leaveEventTeam(teamId){const {data,error}=await supabaseClient.rpc("leave_event_team",{target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido abandonar el equipo."));return data;}
+
+async function generateSwissRound(eventId){const {data,error}=await supabaseClient.rpc("generate_swiss_round",{target_event_id:eventId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido generar la ronda suiza."));return data;}
