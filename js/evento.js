@@ -990,6 +990,43 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderExpenseSplit();
     }
 
+    function updateCommandCenter() {
+        const yes = participants.filter(item => item.status === "yes").length;
+        const pending = members.length - participants.filter(item => item.status === "yes" || item.status === "no").length;
+        const completed = tasks.filter(task => task.completed).length;
+        const taskPercent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
+        const total = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+
+        const people = document.getElementById("commandPeople");
+        const taskEl = document.getElementById("commandTasks");
+        const cost = document.getElementById("commandCost");
+        const headline = document.getElementById("eventCommandHeadline");
+        const subline = document.getElementById("eventCommandSubline");
+
+        if (people) people.textContent = yes + "/" + members.length;
+        if (taskEl) taskEl.textContent = taskPercent + "%";
+        if (cost) cost.textContent = formatMoney(total);
+
+        if (headline && subline) {
+            if (!members.length) {
+                headline.textContent = "El evento está listo para organizarse.";
+                subline.textContent = "Añade miembros al grupo para empezar a coordinarlo.";
+            } else if (pending > 0) {
+                headline.textContent = pending + (pending === 1 ? " persona aún no ha respondido." : " personas aún no han respondido.");
+                subline.textContent = yes + " confirmadas · " + pending + " pendientes.";
+            } else if (tasks.length && taskPercent < 100) {
+                headline.textContent = "La asistencia está cerrada, pero aún quedan tareas.";
+                subline.textContent = completed + " de " + tasks.length + " tareas completadas.";
+            } else if (expenses.length) {
+                headline.textContent = "El plan ya está bastante definido.";
+                subline.textContent = "Hay " + expenses.length + " gasto" + (expenses.length === 1 ? "" : "s") + " registrado" + (expenses.length === 1 ? "" : "s") + ".";
+            } else {
+                headline.textContent = "El evento ya tiene una base sólida.";
+                subline.textContent = "Ahora podéis completar asistencia, tareas y presupuesto.";
+            }
+        }
+    }
+
     function updateStatus() {
         const status =
             document.getElementById(
