@@ -36,6 +36,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById(
             "profileAvatar"
         );
+    const interestGrid=document.getElementById("interestGrid");
+    const interestSave=document.getElementById("saveInterestsButton");
+    const interestMessage=document.getElementById("interestMessage");
+    const interests=await getMyInterests();
+    interestGrid.querySelectorAll("[data-interest]").forEach(btn=>{
+        btn.setAttribute("aria-pressed",interests.includes(btn.dataset.interest)?"true":"false");
+        btn.addEventListener("click",()=>btn.setAttribute("aria-pressed",btn.getAttribute("aria-pressed")==="true"?"false":"true"));
+    });
+    interestSave.addEventListener("click",async()=>{
+        interestSave.disabled=true; interestSave.textContent="Guardando..."; interestMessage.textContent="";
+        try{
+            const selected=[...interestGrid.querySelectorAll('[aria-pressed="true"]')].map(x=>x.dataset.interest);
+            await setMyInterests(selected);
+            interestMessage.textContent=selected.length ? ("Guardados "+selected.length+" intereses.") : "Intereses actualizados.";
+        }catch(error){interestMessage.textContent=getSupabaseErrorMessage(error,"No se han podido guardar los intereses.");}
+        finally{interestSave.disabled=false;interestSave.textContent="Guardar intereses";}
+    });
+
 
     const activity=await getMyEventActivity();const stats=document.getElementById("profileActivityStats");const teamsRoot=document.getElementById("profileTeams");const resultsRoot=document.getElementById("profileResults");const finished=activity.matches||[];const teamIds=new Set(activity.teams.map(t=>t.id));let wins=0,draws=0,losses=0;finished.forEach(m=>{const mineHome=teamIds.has(m.home_team_id),mineAway=teamIds.has(m.away_team_id);if(!mineHome&&!mineAway)return;const hs=Number(m.home_score),as=Number(m.away_score);if(hs===as)draws++;else if((mineHome&&hs>as)||(mineAway&&as>hs))wins++;else losses++;});const upcoming=activity.participating.filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;const typeLabels={padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otros"};stats.innerHTML=`<div class="profile-activity-card"><span>Eventos</span><strong>${activity.participating.length}</strong></div><div class="profile-activity-card"><span>Próximos</span><strong>${upcoming}</strong></div><div class="profile-activity-card"><span>Partidos</span><strong>${finished.length}</strong></div><div class="profile-activity-card"><span>Victorias</span><strong>${wins}</strong></div><div class="profile-activity-card"><span>Empates</span><strong>${draws}</strong></div><div class="profile-activity-card"><span>Derrotas</span><strong>${losses}</strong></div>`;teamsRoot.innerHTML=activity.teams.length?`<strong>Equipos</strong>${activity.teams.map(t=>`<div>${String(t.name).replace(/</g,"&lt;")}<small>Equipo de evento</small></div>`).join("")}`:"";const types=activity.activityTypes||[];resultsRoot.innerHTML=`<strong>Actividad</strong><div>${types.length?types.map(t=>typeLabels[t]||t).join(" · "):"Todavía no has participado en actividades."}<small>${activity.organizing.length} evento${activity.organizing.length===1?"":"s"} organizado${activity.organizing.length===1?"":"s"}</small></div>`+(finished.length?finished.slice(0,5).map(m=>`<div>Ronda ${m.round_number}<small>${m.home_score} : ${m.away_score}</small></div>`).join(""):"");
 
