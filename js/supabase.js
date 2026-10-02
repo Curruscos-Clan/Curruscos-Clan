@@ -1860,6 +1860,11 @@ async function getMyEventActivity(){const user=await getCurrentUser();if(!user)r
 
 async function getPublicRankings(eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_rankings",{target_event_type:eventType});if(error){console.error("Error obteniendo rankings:",error);return [];}return data||[];}
 
+async function getOrCreateDirectChat(userId){const {data,error}=await supabaseClient.rpc("get_or_create_direct_chat",{target_user_id:userId});if(error){console.error("Error abriendo chat privado:",error);return null;}return data||null;}
+async function getOrCreateTeamChat(teamId){const {data,error}=await supabaseClient.rpc("get_or_create_team_chat",{target_team_id:teamId});if(error){console.error("Error abriendo chat del equipo:",error);return null;}return data||null;}
+async function getMyChatRooms(){const {data,error}=await supabaseClient.rpc("get_my_chat_rooms");if(error){console.error("Error obteniendo chats:",error);return [];}return data||[];}
+async function markChatRead(roomId){const {data,error}=await supabaseClient.rpc("mark_chat_read",{target_room_id:roomId});if(error)console.error("Error marcando chat como leído:",error);return !!data;}
+async function getChatPeople(search=""){const {data,error}=await supabaseClient.rpc("get_chat_people",{search_text:String(search||"").trim()||null});if(error){console.error("Error buscando personas para chat:",error);return [];}return data||[];}
 async function getOrCreateGroupChat(groupId){const {data,error}=await supabaseClient.rpc("get_or_create_group_chat",{target_group_id:groupId});if(error){console.error("Error abriendo chat del grupo:",error);return null;}return data||null;}
 async function getOrCreateEventChat(eventId){const {data,error}=await supabaseClient.rpc("get_or_create_event_chat",{target_event_id:eventId});if(error){console.error("Error abriendo chat del evento:",error);return null;}return data||null;}
 async function getChatMessages(roomId){const {data,error}=await supabaseClient.from("chat_messages").select("id,room_id,user_id,body,created_at,edited_at,deleted_at").eq("room_id",roomId).is("deleted_at",null).order("created_at",{ascending:true}).limit(200);if(error){console.error("Error obteniendo mensajes:",error);return [];}return data||[];}
