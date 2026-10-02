@@ -150,6 +150,217 @@
 
 </section>
 
+   <!-- =====================================================
+     AJUSTES DEL GRUPO
+===================================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+        <div
+            style="
+                max-width:760px;
+                margin:0 auto;
+            "
+        >
+
+            <span class="eyebrow">
+                GRUPO
+            </span>
+
+            <h2>
+                Ajustes del grupo
+            </h2>
+
+            <p
+                style="
+                    color:#666;
+                    margin-bottom:30px;
+                "
+            >
+                Gestiona la información y el acceso de este grupo.
+            </p>
+
+
+            <!-- DATOS DEL GRUPO -->
+
+            <div
+                id="groupSettingsCard"
+                style="
+                    border:1px solid #e5e5e5;
+                    border-radius:16px;
+                    padding:24px;
+                    background:#fff;
+                "
+            >
+
+                <div
+                    style="
+                        display:grid;
+                        gap:18px;
+                    "
+                >
+
+                    <div>
+
+                        <label
+                            for="groupSettingsName"
+                            style="
+                                display:block;
+                                font-weight:700;
+                                margin-bottom:8px;
+                            "
+                        >
+                            Nombre del grupo
+                        </label>
+
+                        <input
+                            id="groupSettingsName"
+                            type="text"
+                            maxlength="80"
+                            style="
+                                width:100%;
+                                box-sizing:border-box;
+                                padding:12px 14px;
+                                border:1px solid #ddd;
+                                border-radius:10px;
+                                font:inherit;
+                            "
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            for="groupSettingsDescription"
+                            style="
+                                display:block;
+                                font-weight:700;
+                                margin-bottom:8px;
+                            "
+                        >
+                            Descripción
+                        </label>
+
+                        <textarea
+                            id="groupSettingsDescription"
+                            rows="4"
+                            maxlength="500"
+                            style="
+                                width:100%;
+                                box-sizing:border-box;
+                                padding:12px 14px;
+                                border:1px solid #ddd;
+                                border-radius:10px;
+                                font:inherit;
+                                resize:vertical;
+                            "
+                        ></textarea>
+
+                    </div>
+
+
+                    <button
+                        id="saveGroupSettingsButton"
+                        type="button"
+                        style="
+                            border:none;
+                            background:#111;
+                            color:white;
+                            padding:12px 18px;
+                            border-radius:10px;
+                            font-weight:700;
+                            cursor:pointer;
+                            width:max-content;
+                        "
+                    >
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- ZONA DE PELIGRO -->
+
+            <div
+                style="
+                    margin-top:24px;
+                    border:1px solid #eee;
+                    border-radius:16px;
+                    padding:24px;
+                    background:#fafafa;
+                "
+            >
+
+                <h3>
+                    Zona de grupo
+                </h3>
+
+                <p
+                    style="
+                        color:#666;
+                        margin-bottom:20px;
+                    "
+                >
+                    Estas acciones afectan a tu pertenencia al grupo.
+                </p>
+
+
+                <div
+                    style="
+                        display:flex;
+                        gap:10px;
+                        flex-wrap:wrap;
+                    "
+                >
+
+                    <button
+                        id="leaveGroupButton"
+                        type="button"
+                        style="
+                            border:1px solid #ddd;
+                            background:white;
+                            color:#111;
+                            padding:11px 16px;
+                            border-radius:10px;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Abandonar grupo
+                    </button>
+
+
+                    <button
+                        id="deleteGroupButton"
+                        type="button"
+                        style="
+                            border:1px solid #ddd;
+                            background:white;
+                            color:#b00020;
+                            padding:11px 16px;
+                            border-radius:10px;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Eliminar grupo
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>     
     </main>
 
 
@@ -261,6 +472,318 @@
 
 
                 if (!currentGroup) {
+                    /* ==========================================
+   AJUSTES DEL GRUPO
+========================================== */
+
+const groupSettingsName =
+    document.getElementById(
+        "groupSettingsName"
+    );
+
+const groupSettingsDescription =
+    document.getElementById(
+        "groupSettingsDescription"
+    );
+
+const saveGroupSettingsButton =
+    document.getElementById(
+        "saveGroupSettingsButton"
+    );
+
+const leaveGroupButton =
+    document.getElementById(
+        "leaveGroupButton"
+    );
+
+const deleteGroupButton =
+    document.getElementById(
+        "deleteGroupButton"
+    );
+
+
+/* ==========================================
+   CARGAR DATOS
+========================================== */
+
+groupSettingsName.value =
+    currentGroup.name || "";
+
+groupSettingsDescription.value =
+    currentGroup.description || "";
+
+
+/* ==========================================
+   PERMISOS
+========================================== */
+
+if (currentGroup.role !== "owner") {
+
+    saveGroupSettingsButton.style.display =
+        "none";
+
+    deleteGroupButton.style.display =
+        "none";
+
+}
+
+
+/* ==========================================
+   GUARDAR CAMBIOS
+========================================== */
+
+saveGroupSettingsButton.addEventListener(
+    "click",
+    async () => {
+
+        const name =
+            groupSettingsName.value.trim();
+
+        const description =
+            groupSettingsDescription.value.trim();
+
+
+        if (!name) {
+
+            alert(
+                "El nombre del grupo es obligatorio."
+            );
+
+            return;
+
+        }
+
+
+        saveGroupSettingsButton.disabled =
+            true;
+
+        saveGroupSettingsButton.textContent =
+            "Guardando...";
+
+
+        const {
+            error
+        } = await supabaseClient.rpc(
+            "update_group",
+            {
+                target_group_id:
+                    currentGroup.id,
+
+                new_name:
+                    name,
+
+                new_description:
+                    description || null
+            }
+        );
+
+
+        saveGroupSettingsButton.disabled =
+            false;
+
+        saveGroupSettingsButton.textContent =
+            "Guardar cambios";
+
+
+        if (error) {
+
+            console.error(
+                "Error actualizando grupo:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "No se han podido guardar los cambios."
+            );
+
+            return;
+
+        }
+
+
+        setCurrentGroup(
+            currentGroup.id
+        );
+
+
+        alert(
+            "Grupo actualizado correctamente."
+        );
+
+
+        window.location.reload();
+
+    }
+);
+
+
+/* ==========================================
+   ABANDONAR GRUPO
+========================================== */
+
+leaveGroupButton.addEventListener(
+    "click",
+    async () => {
+
+        if (currentGroup.role === "owner") {
+
+            alert(
+                "El propietario no puede abandonar el grupo."
+            );
+
+            return;
+
+        }
+
+
+        const confirmation =
+            confirm(
+                `¿Seguro que quieres abandonar "${currentGroup.name}"?`
+            );
+
+
+        if (!confirmation) {
+            return;
+        }
+
+
+        leaveGroupButton.disabled =
+            true;
+
+
+        const {
+            error
+        } = await supabaseClient.rpc(
+            "leave_group",
+            {
+                target_group_id:
+                    currentGroup.id
+            }
+        );
+
+
+        leaveGroupButton.disabled =
+            false;
+
+
+        if (error) {
+
+            console.error(
+                "Error abandonando grupo:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "No se ha podido abandonar el grupo."
+            );
+
+            return;
+
+        }
+
+
+        localStorage.removeItem(
+            "curruscos_current_group"
+        );
+
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+);
+
+
+/* ==========================================
+   ELIMINAR GRUPO
+========================================== */
+
+deleteGroupButton.addEventListener(
+    "click",
+    async () => {
+
+        if (currentGroup.role !== "owner") {
+            return;
+        }
+
+
+        const firstConfirmation =
+            confirm(
+                `¿Seguro que quieres eliminar "${currentGroup.name}"?`
+            );
+
+
+        if (!firstConfirmation) {
+            return;
+        }
+
+
+        const secondConfirmation =
+            confirm(
+                "Esta acción eliminará el grupo y sus datos. ¿Continuar?"
+            );
+
+
+        if (!secondConfirmation) {
+            return;
+        }
+
+
+        deleteGroupButton.disabled =
+            true;
+
+        deleteGroupButton.textContent =
+            "Eliminando...";
+
+
+        const {
+            error
+        } = await supabaseClient.rpc(
+            "delete_group",
+            {
+                target_group_id:
+                    currentGroup.id
+            }
+        );
+
+
+        deleteGroupButton.disabled =
+            false;
+
+
+        deleteGroupButton.textContent =
+            "Eliminar grupo";
+
+
+        if (error) {
+
+            console.error(
+                "Error eliminando grupo:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "No se ha podido eliminar el grupo."
+            );
+
+            return;
+
+        }
+
+
+        localStorage.removeItem(
+            "curruscos_current_group"
+        );
+
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+);
 
                     membersSubtitle.textContent =
                         "No se ha podido cargar el grupo.";
@@ -567,8 +1090,7 @@ membersGrid.innerHTML = "";
    PERMISOS DEL USUARIO ACTUAL
 ========================================== */
 
-const currentUser =
-    await getCurrentUser();
+const currentUser = user;
 
 const currentMember =
     validMembers.find(
