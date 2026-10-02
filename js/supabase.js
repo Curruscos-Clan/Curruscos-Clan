@@ -1024,6 +1024,8 @@ async function unfollowUser(userId){const {data,error}=await supabaseClient.rpc(
 async function getFollowStatus(userId){const {data,error}=await supabaseClient.rpc("get_follow_status",{target_user_id:userId});if(error){console.error(error);return null;}return data?.[0]||null;}
 async function getSocialActivity(){const {data,error}=await supabaseClient.rpc("get_social_activity");if(error){console.error(error);return [];}return data||[];}
 async function getRecommendedPublicEvents(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_recommended_public_events",{search_text:search,target_event_type:eventType});if(error){console.error(error);return [];}return data||[];}
+async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);return [];}return (data||[]).map(x=>x.interest);}
+async function setMyInterests(interests){const {data,error}=await supabaseClient.rpc("set_my_interests",{target_interests:interests});if(error)throw error;return !!data;}
 async function logActivitySignal(signal,eventId=null,eventType=null,searchText=null,metadata={}){const {data,error}=await supabaseClient.rpc("log_activity_signal",{target_signal:signal,target_event_id:eventId,target_event_type:eventType,target_search:searchText,target_metadata:metadata});if(error){console.error("Activity signal:",error);return false;}return !!data;}
 
 // ==========================================
