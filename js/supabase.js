@@ -666,6 +666,7 @@ async function getGroupMemories() {
             description,
             image_url,
             created_at,
+            event_id,
             profiles (
                 display_name,
                 username
@@ -745,6 +746,7 @@ async function getGroupHistory() {
             description,
             event_date,
             created_at,
+            event_id,
             profiles (
                 display_name,
                 username
@@ -792,6 +794,51 @@ async function createHistoryEntry(historyData) {
     return data;
 }
 
+
+async function getHistoryEntryForEvent(eventId) {
+    const { data, error } = await supabaseClient
+        .from("history_entries")
+        .select("id,event_id,title,description,event_date")
+        .eq("event_id", eventId)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Error comprobando historia del evento:", error);
+        return null;
+    }
+
+    return data;
+}
+
+async function createHistoryEntryForEvent(eventData) {
+    const group = await getCurrentGroup();
+    const user = await getCurrentUser();
+
+    if (!group || !user || !eventData?.id) return null;
+
+    const existing = await getHistoryEntryForEvent(eventData.id);
+    if (existing) return existing;
+
+    const { data, error } = await supabaseClient
+        .from("history_entries")
+        .insert({
+            group_id: group.id,
+            created_by: user.id,
+            event_id: eventData.id,
+            title: eventData.title || "Evento",
+            description: eventData.description || null,
+            event_date: eventData.date
+        })
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error guardando evento en historia:", error);
+        return null;
+    }
+
+    return data;
+}
 
 async function deleteHistoryEntry(historyId) {
     const { error } = await supabaseClient
