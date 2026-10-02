@@ -135,6 +135,44 @@ function renderEventContext(event,yes){
  return '<div class="event-context-strip"><div><span>ACTIVIDAD</span><strong>'+escapeHtml(activity)+'</strong></div><div><span>FORMATO</span><strong>'+escapeHtml(format)+'</strong></div><div><span>ESTADO</span><strong>'+escapeHtml(status)+'</strong></div><div><span>INSCRITOS</span><strong>'+yes+'</strong></div>'+(scoring?'<div class="event-context-wide"><span>PUNTUACIÓN</span><strong>'+escapeHtml(scoring)+'</strong></div>':"")+'</div>';
 }
 
+function buildCalendarFile(event){
+    const start=new Date(event.date+"T"+(event.time||"12:00"));
+    const end=new Date(start.getTime()+2*60*60*1000);
+    const pad=n=>String(n).padStart(2,"0");
+    const utc=d=>d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
+    const escapeICS=v=>String(v||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\\n/g,"\\n");
+    const lines=[
+        "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Curruscos//Eventos//ES","BEGIN:VEVENT",
+        "UID:"+event.id+"@curruscos","DTSTAMP:"+utc(new Date()),"DTSTART:"+utc(start),"DTEND:"+utc(end),
+        "SUMMARY:"+escapeICS(event.title),"DESCRIPTION:"+escapeICS(event.description||""),
+        "LOCATION:"+escapeICS(event.location||""),"END:VEVENT","END:VCALENDAR"
+    ];
+    return lines.join("\r\n");
+}
+function downloadEventCalendar(event){
+    const blob=new Blob([buildCalendarFile(event)],{type:"text/calendar;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download=(String(event.title||"evento").replace(/[^a-z0-9áéíóúüñ -]/gi,"").trim()||"evento")+".ics";
+    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+function renderParticipantActions(event,user,mine,isOrganizer){
+    const actions=[];
+    if(isOrganizer){
+        actions.push('<button class="button button-primary event-action-main" id="manageEventButton" type="button">Gestionar evento</button>');
+    }else if(mine?.status==="yes"){
+        if(event.status==="live")actions.push('<button class="button button-primary event-action-main" id="eventResultsButton" type="button">Ver evento en directo</button>');
+        else if(event.status==="finished")actions.push('<button class="button button-primary event-action-main" id="eventResultsButton" type="button">Ver resultados</button>');
+        else if(event.participant_mode==="team")actions.push('<button class="button button-primary event-action-main" id="eventParticipationButton" type="button">Ver mi participación</button>');
+        else actions.push('<button class="button button-primary event-action-main" id="eventParticipationButton" type="button">Ver mi participación</button>');
+    }
+    if(mine?.status==="yes"||isOrganizer){
+        actions.push('<button class="event-calendar-button" id="addCalendarButton" type="button">Añadir al calendario</button>');
+    }
+    if(!actions.length)return "";
+    return '<section class="event-action-panel"><div><span class="public-tournament-label">SIGUIENTE PASO</span><h3>'+escapeHtml(isOrganizer?"Tienes el control del evento":event.status==="live"?"El evento está en directo":event.status==="finished"?"El evento ha terminado":"Tu participación está confirmada")+'</h3><p>'+escapeHtml(isOrganizer?"Gestiona inscripciones, equipos, resultados y estado desde este mismo evento.":event.participant_mode==="team"&&mine?.status==="yes"?"Consulta tu equipo y la competición desde aquí.":"Tu inscripción queda vinculada a tu cuenta y podrás seguir la actividad desde esta página.")+'</p></div><div class="event-action-buttons">'+actions.join("")+'</div></section>';
+}
+
 function renderOrganizerCommandCenter(event,participants,teams,matches,isOrganizer){
  if(!isOrganizer)return "";
  const confirmed=participants.filter(p=>p.status==="yes").length;
@@ -174,6 +212,7 @@ async function renderPublicEvent(){
     const isOrganizer=!!user&&event.created_by===user.id;
     const relatedEvents=await getPublicRelatedEvents(id);
     const participantDashboard=renderParticipantDashboard(event,teams,teamMembers,matches,user,mine);
+    const participantActions=renderParticipantActions(event,user,mine,isOrganizer);
     const eventContext=renderEventContext(event,yes);
     const lifecycle=renderOrganizerLifecycle(event,isOrganizer);
     const commandCenter=renderOrganizerCommandCenter(event,participants,teams,matches,isOrganizer);
@@ -181,6 +220,13 @@ async function renderPublicEvent(){
     root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span><div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> <a class="public-organizer-link" href="perfil-publico.html?id='+encodeURIComponent(event.created_by)+'">'+escapeHtml(event.organizer_name)+'</a></p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div></article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?(event.status==="finished"?"Participación cerrada":"Salir del evento"):(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div>';
 
     document.querySelector(".public-event-shell")?.insertAdjacentHTML("afterend",eventContext);
+    if(participantActions){
+        document.getElementById("publicTournamentArea")?.insertAdjacentHTML("afterbegin",participantActions);
+        document.getElementById("manageEventButton")?.addEventListener("click",()=>document.getElementById("publicTournamentArea")?.scrollIntoView({behavior:"smooth",block:"start"}));
+        document.getElementById("eventParticipationButton")?.addEventListener("click",()=>document.getElementById("publicTournamentArea")?.scrollIntoView({behavior:"smooth",block:"start"}));
+        document.getElementById("eventResultsButton")?.addEventListener("click",()=>document.getElementById("publicTournamentArea")?.scrollIntoView({behavior:"smooth",block:"start"}));
+        document.getElementById("addCalendarButton")?.addEventListener("click",e=>{downloadEventCalendar(event);e.currentTarget.textContent="Añadido al calendario";});
+    }
     document.querySelector(".public-event-main")?.insertAdjacentHTML("beforeend",'<div class="event-primary-actions"><button id="shareEventButton" class="event-share-button" type="button">Compartir evento</button></div>');
     document.getElementById("shareEventButton")?.addEventListener("click",async()=>{const button=document.getElementById("shareEventButton");try{if(navigator.share){await navigator.share({title:event.title,text:"Mira este evento en Curruscos",url:location.href});}else{await navigator.clipboard.writeText(location.href);button.textContent="Enlace copiado";button.classList.add("copied");setTimeout(()=>{button.textContent="Compartir evento";button.classList.remove("copied")},1800);}}catch(err){if(err?.name!=="AbortError")alert("No se ha podido compartir el evento.");}});
 
