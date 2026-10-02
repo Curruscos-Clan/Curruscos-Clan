@@ -328,4 +328,4 @@ function setupDeleteButtons() {
                 }
             );
         });
-});
+}
