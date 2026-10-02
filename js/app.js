@@ -1208,6 +1208,8 @@ document.addEventListener(
             return;
         }
 
+        window.curruscosCurrentAccess = access;
+
         await initPrivateShell(access);
 
         if (page === "eventos.html") {
