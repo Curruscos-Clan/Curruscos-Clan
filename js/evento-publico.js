@@ -126,6 +126,14 @@ async function renderParticipantTeamArea(event,teams,teamMembers,participants,us
 }
 async function renderTeamManager(event,teams,teamMembers,participants,isOrganizer){if(!isOrganizer||!["knockout","round_robin"].includes(event.format))return "";const membersByTeam=new Map(teams.map(t=>[t.id,teamMembers.filter(m=>m.team_id===t.id)]));const names=new Map(participants.map(p=>[p.user_id,p.display_name||p.username||p.user_id.slice(0,8)]));return `<div class="team-manager"><div class="team-manager-head"><div><span class="public-tournament-label">ORGANIZACIÓN</span><h3>Equipos</h3><p>Crea equipos y asigna a los participantes inscritos. Después podrás generar el cuadro o calendario.</p></div><form id="createTeamForm"><input id="newTeamName" maxlength="80" placeholder="Nombre del equipo" required><button class="button button-primary" type="submit">Crear equipo</button></form></div><div class="team-manager-grid">${teams.map(team=>{const ms=membersByTeam.get(team.id)||[];const options=participants.filter(p=>!teamMembers.some(m=>m.user_id===p.user_id)).map(p=>`<option value="${p.user_id}">${names.get(p.user_id)}</option>`).join("");return `<div class="managed-team"><strong>${escapeHtml(team.name)}</strong><div class="managed-members">${ms.length?ms.map(m=>`<span>${escapeHtml(m.display_name||m.username||names.get(m.user_id))}<button type="button" class="remove-team-member" data-team="${team.id}" data-user="${m.user_id}" aria-label="Quitar">×</button></span>`).join(""):"<small>Sin jugadores</small>"}</div><form class="add-team-member" data-team="${team.id}"><select required><option value="">Añadir participante…</option>${options}</select><button class="button button-small" type="submit">Añadir</button></form></div>`;}).join("")}</div></div>`;}
 
+const EVENT_STATUS_LABELS={draft:"Borrador",published:"Inscripciones abiertas",preparing:"Preparando",live:"En directo",finished:"Finalizado",cancelled:"Cancelado"};
+function renderOrganizerLifecycle(event,isOrganizer){
+ if(!isOrganizer)return "";
+ const current=EVENT_STATUS_LABELS[event.status]||event.status;
+ const choices=["published","preparing","live","finished","cancelled"].filter(s=>s!==event.status);
+ return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div><select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select></div>';
+}
+
 async function renderPublicEvent(){
     const root=document.getElementById("publicEventRoot");
     const id=new URLSearchParams(location.search).get("id");
@@ -146,6 +154,7 @@ async function renderPublicEvent(){
     const fee=Number(event.entry_fee||0);
     const isOrganizer=!!user&&event.created_by===user.id;
     const participantDashboard=renderParticipantDashboard(event,teams,teamMembers,matches,user,mine);
+    const lifecycle=renderOrganizerLifecycle(event,isOrganizer);
 
     root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span><div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> '+escapeHtml(event.organizer_name)+'</p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div></article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?"Ya estás apuntado":(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div>';
 
@@ -154,6 +163,7 @@ async function renderPublicEvent(){
     renderTournamentPanel(event,teams,matches,isOrganizer);
     if(participantDashboard){document.getElementById("publicTournamentArea")?.insertAdjacentHTML("afterbegin",participantDashboard);}
     await renderRacePanel(event,participants,isOrganizer);
+    if(lifecycle){const area=document.getElementById("publicTournamentArea");area.insertAdjacentHTML("afterbegin",lifecycle);document.getElementById("eventStatusSelect")?.addEventListener("change",async e=>{if(!e.target.value)return;e.target.disabled=true;try{await setPublicEventStatus(event.id,e.target.value);await renderPublicEvent();}catch(err){alert(err.message);e.target.disabled=false;e.target.value="";}});}
     const participantArea=document.getElementById("publicTournamentArea");
     if(participantArea && participants.length){
         const participantList=participants.filter(p=>p.status==="yes").map(p=>`<a class="public-participant-row" href="perfil-publico.html?id=${encodeURIComponent(p.user_id)}"><span>${escapeHtml(p.display_name||p.username||"Participante")}</span><small>${p.user_id===user?.id?"Tú":"Ver perfil"}</small></a>`).join("");
