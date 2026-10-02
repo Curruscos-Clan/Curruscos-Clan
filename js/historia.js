@@ -357,5 +357,5 @@ function setupDeleteButtons() {
                         );
                     }
                 }
-            );
+            });
         });
