@@ -17,7 +17,11 @@ function getSupabaseErrorMessage(error, fallback = "Ha ocurrido un error.") {
 // USUARIO ACTUAL
 // ========================================
 
-async function getCurrentUser() {
+async function getCurrentUser(forceRefresh = false) {
+
+    if (currentUserLoaded && !forceRefresh) {
+        return currentUserCache;
+    }
 
     const {
         data: { user },
@@ -25,11 +29,19 @@ async function getCurrentUser() {
     } = await supabaseClient.auth.getUser();
 
     if (error) {
-        console.error("Error obteniendo usuario:", error);
-        return null;
+        console.error(
+            "Error obteniendo usuario:",
+            error
+        );
+
+        currentUserCache = null;
+    } else {
+        currentUserCache = user || null;
     }
 
-    return user;
+    currentUserLoaded = true;
+
+    return currentUserCache;
 }
 
 
@@ -37,11 +49,16 @@ async function getCurrentUser() {
 // PERFIL ACTUAL
 // ========================================
 
-async function getCurrentProfile() {
+async function getCurrentProfile(forceRefresh = false) {
+
+    if (currentProfileCache && !forceRefresh) {
+        return currentProfileCache;
+    }
 
     const user = await getCurrentUser();
 
     if (!user) {
+        currentProfileCache = null;
         return null;
     }
 
@@ -52,11 +69,18 @@ async function getCurrentProfile() {
         .single();
 
     if (error) {
-        console.error("Error obteniendo perfil:", error);
+        console.error(
+            "Error obteniendo perfil:",
+            error
+        );
+
+        currentProfileCache = null;
         return null;
     }
 
-    return data;
+    currentProfileCache = data;
+
+    return currentProfileCache;
 }
 
 
@@ -64,75 +88,113 @@ async function getCurrentProfile() {
 // GRUPO ACTUAL
 // ========================================
 
-async function getUserGroups() {
+async function getUserGroups(forceRefresh = false) {
+
+    if (userGroupsCache && !forceRefresh) {
+        return userGroupsCache;
+    }
 
     const user = await getCurrentUser();
 
-    if (!user) return [];
+    if (!user) {
+        userGroupsCache = [];
+        return userGroupsCache;
+    }
 
     const { data, error } = await supabaseClient
         .from("group_members")
         .select(`
             role,
+            joined_at,
             groups (
                 id,
                 name,
                 description
             )
         `)
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .order("joined_at", {
+            ascending: true
+        });
 
     if (error) {
-        console.error("Error obteniendo grupos:", error);
-        return [];
+        console.error(
+            "Error obteniendo grupos:",
+            error
+        );
+
+        userGroupsCache = [];
+        return userGroupsCache;
     }
 
-    return (data || [])
+    userGroupsCache = (data || [])
         .filter(item => item.groups)
         .map(item => ({
             id: item.groups.id,
             name: item.groups.name,
             description: item.groups.description,
-            role: item.role
+            role: item.role,
+            joined_at: item.joined_at
         }));
+
+    return userGroupsCache;
 }
 
 
-async function getCurrentGroup() {
+async function getCurrentGroup(forceRefresh = false) {
 
-    const groups = await getUserGroups();
+    if (currentGroupCache && !forceRefresh) {
+        return currentGroupCache;
+    }
 
-    if (groups.length === 0) {
+    const groups =
+        await getUserGroups(forceRefresh);
+
+    if (!groups.length) {
+        currentGroupCache = null;
         return null;
     }
 
     const savedGroupId =
-        localStorage.getItem("curruscos_current_group");
+        localStorage.getItem(
+            "curruscos_current_group"
+        );
 
-    if (savedGroupId) {
-
-        const savedGroup =
-            groups.find(group =>
+    currentGroupCache =
+        groups.find(
+            group =>
                 group.id === savedGroupId
-            );
+        ) || groups[0];
 
-        if (savedGroup) {
-            return savedGroup;
-        }
-
+    if (
+        currentGroupCache.id !==
+        savedGroupId
+    ) {
+        localStorage.setItem(
+            "curruscos_current_group",
+            currentGroupCache.id
+        );
     }
 
-    return groups[0];
+    return currentGroupCache;
 }
 
 
 function setCurrentGroup(groupId) {
 
+    currentGroupCache = null;
+
+    if (!groupId) {
+        localStorage.removeItem(
+            "curruscos_current_group"
+        );
+        return;
+    }
+
     localStorage.setItem(
         "curruscos_current_group",
-        groupId
+        String(groupId)
     );
-
 }
 
 
@@ -753,6 +815,11 @@ async function markAllNotificationsAsRead() {
 // ==========================================
 
 let notificationRealtimeChannel = null;
+let currentUserCache = null;
+let currentUserLoaded = false;
+let currentProfileCache = null;
+let userGroupsCache = null;
+let currentGroupCache = null;
 
 async function startNotificationRealtime() {
 
@@ -1141,18 +1208,35 @@ async function closePoll(
 
   
 async function signOut() {
-    const { error } = await supabaseClient.auth.signOut();
+    const { error } =
+        await supabaseClient.auth.signOut();
 
     if (error) {
-        console.error("Error cerrando sesión:", error);
+        console.error(
+            "Error cerrando sesión:",
+            error
+        );
         return false;
     }
 
-    localStorage.removeItem("curruscos_current_group");
+    localStorage.removeItem(
+        "curruscos_current_group"
+    );
 
-    if (typeof notificationRealtimeChannel !== "undefined" &&
-        notificationRealtimeChannel) {
-        await supabaseClient.removeChannel(notificationRealtimeChannel);
+    currentUserCache = null;
+    currentUserLoaded = true;
+    currentProfileCache = null;
+    userGroupsCache = null;
+    currentGroupCache = null;
+
+    if (
+        typeof notificationRealtimeChannel !==
+            "undefined" &&
+        notificationRealtimeChannel
+    ) {
+        await supabaseClient.removeChannel(
+            notificationRealtimeChannel
+        );
         notificationRealtimeChannel = null;
     }
 
