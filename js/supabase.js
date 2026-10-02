@@ -1711,12 +1711,7 @@ async function createPublicEvent(eventData) {
 }
 
 async function getPublicEventParticipants(eventId) {
-    const { data, error } = await supabaseClient
-        .from("event_participants")
-        .select("id,event_id,user_id,status")
-        .eq("event_id", eventId)
-        .eq("status", "yes");
-
+    const { data, error } = await supabaseClient.rpc("get_public_event_participants", { target_event_id: eventId });
     if (error) {
         console.error("Error obteniendo participantes públicos:", error);
         return [];
