@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         openTasks: tasks.filter(task => !task.completed).length,
         planningTrips: (trips || []).filter(trip => trip.status === "planning").length,
         memories: memories.length,
-        hasProfile: Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type),
+        hasProfile: Boolean(group.onboarding_profile?.completed_at || (group.description && group.description.trim())),
         features: usage?.plan?.features || {}
     };
     const milestoneChecks = workspaceState.type === "sports"
@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ["personas", workspaceState.members > 1, 25],
             ["actividad", workspaceState.events > 0, 30],
             ["contexto", workspaceState.hasProfile, 15],
-            ["organización", workspaceState.openTasks === 0, 15],
+            ["organización", tasks.length > 0 && workspaceState.openTasks === 0, 15],
             ["historial", workspaceState.memories > 0, 15]
         ]
         : workspaceState.type === "travel"
@@ -180,13 +180,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ["personas", workspaceState.members > 1, 25],
                     ["contexto", workspaceState.hasProfile, 20],
                     ["actividad", workspaceState.events > 0, 30],
-                    ["organización", workspaceState.openTasks === 0, 25]
+                    ["organización", tasks.length > 0 && workspaceState.openTasks === 0, 25]
                 ]
                 : [
                     ["personas", workspaceState.members > 1, 25],
                     ["actividad", workspaceState.events > 0, 30],
                     ["contexto", workspaceState.hasProfile, 20],
-                    ["organización", workspaceState.openTasks === 0, 15],
+                    ["organización", tasks.length > 0 && workspaceState.openTasks === 0, 15],
                     ["historial", workspaceState.memories > 0, 10]
                 ];
     const workspaceActivationScore = milestoneChecks.reduce(
@@ -227,17 +227,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             ? { title: "Cerrar los pendientes", text: "Resolver las tareas abiertas aumentará la capacidad operativa del workspace.", href: "eventos.html" }
             : workspaceState.members <= 1
                 ? { title: "Traer a la primera persona", text: "Un workspace empieza a cobrar vida cuando deja de depender de una sola persona.", href: "miembros.html" }
-                : workspaceState.events === 0
-                    ? { title: "Crear la primera actividad", text: "Un evento convierte la estructura del workspace en actividad real.", href: "crear-evento.html" }
-        : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
-                        ? { title: "Abrir el primer viaje", text: "El siguiente salto para este workspace es convertir una idea en un viaje planificado.", href: "viajes.html" }
-                        : workspaceState.type === "sports" && workspaceState.events === 0 && workspaceState.features.competitions
-                            ? { title: "Poner en marcha la competición", text: "Crea la primera actividad deportiva y después podrás organizar participantes y resultados.", href: "crear.html" }
-                            : workspaceState.type === "study" && workspaceState.events === 0
-                                ? { title: "Crear la primera sesión", text: "Convierte el objetivo del workspace en una actividad concreta.", href: "crear-evento.html" }
+                : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
+                    ? { title: "Abrir el primer viaje", text: "El siguiente salto para este workspace es convertir una idea en un viaje planificado.", href: "viajes.html" }
+                    : workspaceState.type === "sports" && workspaceState.events === 0 && workspaceState.features.competitions
+                        ? { title: "Poner en marcha la competición", text: "Crea la primera actividad deportiva y después podrás organizar participantes y resultados.", href: "crear.html" }
+                        : workspaceState.type === "study" && workspaceState.events === 0
+                            ? { title: "Crear la primera sesión", text: "Convierte el objetivo del workspace en una actividad concreta.", href: "crear-evento.html" }
+                            : workspaceState.events === 0
+                                ? { title: "Crear la primera actividad", text: "Un evento convierte la estructura del workspace en actividad real.", href: "crear-evento.html" }
                                 : workspaceState.memories === 0
-                            ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
-                            : null;
+                                    ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
+                                    : null;
         if (goal) {
             workspaceGoal.hidden = false;
             workspaceGoalTitle.textContent = goal.title;
