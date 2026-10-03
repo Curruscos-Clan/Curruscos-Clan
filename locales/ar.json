@@ -60,7 +60,8 @@
     "preparing": "قيد الإعداد",
     "cancelled": "ملغى",
     "finished": "انتهى",
-    "registrationOpen": "التسجيل مفتوح"
+    "registrationOpen": "التسجيل مفتوح",
+    "upcoming": "قادم"
   },
   "format": {
     "knockout": "إقصائي",
@@ -98,7 +99,12 @@
     "memberMany": "أعضاء",
     "viewEvent": "عرض الفعالية",
     "activity": "نشاط",
-    "context": "السياق"
+    "context": "السياق",
+    "matches": "المباريات",
+    "wins": "الانتصارات",
+    "losses": "الهزائم",
+    "points": "النقاط",
+    "followers": "المتابعون"
   },
   "explore": {
     "allActivities": "كل الأنشطة",
