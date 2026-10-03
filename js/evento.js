@@ -868,6 +868,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const completed = tasks.filter(task => task.completed).length;
         const taskPercent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
         const total = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+        const going = getGoingMembers();
 
         const people = document.getElementById("commandPeople");
         const taskEl = document.getElementById("commandTasks");
@@ -889,9 +890,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             } else if (tasks.length && taskPercent < 100) {
                 headline.textContent = "La asistencia está cerrada, pero aún quedan tareas.";
                 subline.textContent = completed + " de " + tasks.length + " tareas completadas.";
+            } else if (expenses.length && going.length) {
+                const balances = calculateBalances();
+                const unresolved = [...balances.values()].some(value => Math.abs(value) > 0.01);
+                headline.textContent = unresolved
+                    ? "Organización completa · queda liquidar gastos."
+                    : "Evento preparado y cuentas equilibradas.";
+                subline.textContent = unresolved
+                    ? "Hay " + expenses.length + " gasto" + (expenses.length === 1 ? "" : "s") + " y todavía hay pagos pendientes entre el grupo."
+                    : "Asistencia, tareas y gastos están organizados.";
             } else if (expenses.length) {
-                headline.textContent = "El plan ya está bastante definido.";
-                subline.textContent = "Hay " + expenses.length + " gasto" + (expenses.length === 1 ? "" : "s") + " registrado" + (expenses.length === 1 ? "" : "s") + ".";
+                headline.textContent = "Hay gastos registrados, pero falta asistencia.";
+                subline.textContent = "Confirma quién va para calcular el reparto.";
             } else {
                 headline.textContent = "El evento ya tiene una base sólida.";
                 subline.textContent = "Ahora podéis completar asistencia, tareas y presupuesto.";
