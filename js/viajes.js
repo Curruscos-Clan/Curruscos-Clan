@@ -18,6 +18,11 @@ function bindTripUi() {
     $("closeOptionModal").addEventListener("click", closeOptionModal);
     $("cancelOptionButton").addEventListener("click", closeOptionModal);
     $("addOptionButton").addEventListener("click", openOptionModal);
+    $("addItineraryButton")?.addEventListener("click", openItineraryModal);
+    $("closeItineraryModal")?.addEventListener("click", closeItineraryModal);
+    $("cancelItineraryButton")?.addEventListener("click", closeItineraryModal);
+    $("itineraryForm")?.addEventListener("submit", createItineraryItem);
+    $("itineraryModal")?.addEventListener("click", e => { if (e.target === $("itineraryModal")) closeItineraryModal(); });
     $("tripForm").addEventListener("submit", createTripFromForm);
     $("optionForm").addEventListener("submit", createOptionFromForm);
     $("optionCategory").addEventListener("change", renderOptionDetailsForm);
@@ -32,6 +37,8 @@ function openTripModal() { $("tripModal").hidden = false; setTimeout(() => $("tr
 function closeTripModal() { $("tripModal").hidden = true; $("tripForm").reset(); }
 function openOptionModal() { if (!activeTrip) return; $("optionModal").hidden = false; renderOptionDetailsForm(); setTimeout(() => $("optionTitle").focus(), 30); }
 function closeOptionModal() { $("optionModal").hidden = true; $("optionForm").reset(); }
+function openItineraryModal() { if (!activeTrip) return; $("itineraryModal").hidden = false; if ($("itineraryDate")) $("itineraryDate").value = activeTrip.start_date || ""; setTimeout(() => $("itineraryTitle").focus(), 30); }
+function closeItineraryModal() { if (!$("itineraryModal")) return; $("itineraryModal").hidden = true; $("itineraryForm").reset(); }
 
 async function loadTrips(selectId = null) {
     const group = await getCurrentGroup(true);
@@ -68,8 +75,12 @@ async function selectTrip(id) {
     activeTrip = trips.find(t => t.id === id) || null;
     renderTripList();
     if (!activeTrip) return;
-    const { data: options, error } = await supabaseClient.from("trip_options").select("*").eq("trip_id", id).order("created_at", { ascending: true });
-    if (error) { console.error(error); return; }
+    const [{ data: options, error: optionsError }, { data: itinerary, error: itineraryError }] = await Promise.all([
+        supabaseClient.from("trip_options").select("*").eq("trip_id", id).order("created_at", { ascending: true }),
+        supabaseClient.from("trip_itinerary_items").select("*").eq("trip_id", id).order("itinerary_date", { ascending: true, nullsFirst: false }).order("start_time", { ascending: true, nullsFirst: false }).order("sort_order", { ascending: true }).order("created_at", { ascending: true })
+    ]);
+    if (optionsError) { console.error(optionsError); return; }
+    if (itineraryError) { console.error("Error obteniendo itinerario:", itineraryError); return; }
     let votes = [];
     if ((options || []).length) {
         const { data: voteRows, error: voteError } = await supabaseClient
@@ -81,6 +92,7 @@ async function selectTrip(id) {
     }
     activeTrip.options = options || [];
     activeTrip.votes = votes || [];
+    activeTrip.itinerary = itinerary || [];
     renderActiveTrip();
 }
 
@@ -333,9 +345,83 @@ function renderActiveTrip() {
     $("activeTripVotesCount").textContent = activeTrip.votes.length;
     updateTripSearchLinks();
     renderOptions();
+    renderItinerary();
     renderDecisionSummary();
     loadTripParticipants();
     loadTripFinances();
+}
+
+function itineraryTypeLabel(type) {
+    return {travel:"Desplazamiento",stay:"Alojamiento",meal:"Comida",activity:"Actividad",place:"Lugar de interés",free:"Tiempo libre",other:"Otro"}[type] || "Plan";
+}
+
+function formatItineraryTime(item) {
+    if (item.start_time && item.end_time) return item.start_time.slice(0,5) + "–" + item.end_time.slice(0,5);
+    if (item.start_time) return item.start_time.slice(0,5);
+    return "Hora";
+}
+
+function formatItineraryDate(date) {
+    return date ? new Date(date + "T12:00:00").toLocaleDateString("es-ES", {weekday:"long",day:"numeric",month:"long"}) : "Sin fecha";
+}
+
+function renderItinerary() {
+    const root = $("tripItinerary");
+    if (!root) return;
+    const items = activeTrip?.itinerary || [];
+    $("itineraryEmpty").hidden = items.length > 0;
+    const days = new Map();
+    items.forEach(item => {
+        const key = item.itinerary_date || "undated";
+        if (!days.has(key)) days.set(key, []);
+        days.get(key).push(item);
+    });
+    root.innerHTML = [...days.entries()].map(([date, rows]) => {
+        const total = rows.reduce((sum, item) => sum + Number(item.estimated_cost || 0), 0);
+        return '<section class="itinerary-day"><div class="itinerary-day-head"><span>' + escapeHtml(date === "undated" ? "Fecha por decidir" : formatItineraryDate(date)) + '</span><strong>' + money(total) + ' previsto</strong></div><div class="itinerary-items">' +
+            rows.map(item => '<article class="itinerary-item"><div class="itinerary-time">' + escapeHtml(formatItineraryTime(item)) + '</div><div class="itinerary-copy"><span class="itinerary-type">' + escapeHtml(itineraryTypeLabel(item.item_type)) + '</span><strong>' + escapeHtml(item.title) + '</strong><p>' + escapeHtml((item.location || "") + (item.location && item.notes ? " · " : "") + (item.notes || "")) + '</p></div><div class="itinerary-actions">' + (item.estimated_cost != null ? '<span class="itinerary-cost">' + escapeHtml(money(item.estimated_cost)) + '</span>' : '') + (safeOptionUrl(item.url) ? '<a class="itinerary-link" target="_blank" rel="noopener" href="' + escapeHtml(safeOptionUrl(item.url)) + '">Abrir</a>' : '') + '<button class="itinerary-remove" type="button" data-itinerary-remove="' + escapeHtml(item.id) + '">Eliminar</button></div></article>').join("") +
+            '</div></section>';
+    }).join("");
+    root.querySelectorAll("[data-itinerary-remove]").forEach(btn => btn.addEventListener("click", () => deleteItineraryItem(btn.dataset.itineraryRemove)));
+    const projected = items.reduce((sum, item) => sum + Number(item.estimated_cost || 0), 0);
+    if ($("tripPlannedTotal")) $("tripPlannedTotal").textContent = projected ? money(projected) : "—";
+    if ($("tripPlannedDetail")) $("tripPlannedDetail").textContent = items.length ? items.length + (items.length === 1 ? " elemento previsto" : " elementos previstos") : "Sin partidas previstas";
+}
+
+async function createItineraryItem(e) {
+    e.preventDefault();
+    const user = await getCurrentUser();
+    if (!user || !activeTrip) return;
+    const rawUrl = $("itineraryUrl").value.trim();
+    const url = safeOptionUrl(rawUrl) || null;
+    if (rawUrl && !url) { alert("El enlace debe empezar por http:// o https://"); return; }
+    const payload = {
+        trip_id: activeTrip.id,
+        created_by: user.id,
+        itinerary_date: $("itineraryDate").value || null,
+        start_time: $("itineraryStart").value || null,
+        end_time: $("itineraryEnd").value || null,
+        item_type: $("itineraryType").value,
+        title: $("itineraryTitle").value.trim(),
+        location: $("itineraryLocation").value.trim() || null,
+        notes: $("itineraryNotes").value.trim() || null,
+        estimated_cost: $("itineraryCost").value ? Number($("itineraryCost").value) : null,
+        url,
+        sort_order: 0
+    };
+    if (!payload.title) return;
+    if (payload.start_time && payload.end_time && payload.end_time < payload.start_time) { alert("La hora de fin no puede ser anterior a la de inicio."); return; }
+    const { error } = await supabaseClient.from("trip_itinerary_items").insert(payload);
+    if (error) { console.error(error); alert("No se ha podido añadir al itinerario."); return; }
+    closeItineraryModal();
+    await selectTrip(activeTrip.id);
+}
+
+async function deleteItineraryItem(itemId) {
+    if (!activeTrip || !confirm("¿Eliminar este elemento del itinerario?")) return;
+    const { error } = await supabaseClient.from("trip_itinerary_items").delete().eq("id", itemId);
+    if (error) { console.error(error); alert("No se ha podido eliminar."); return; }
+    await selectTrip(activeTrip.id);
 }
 
 function formatTripDates(trip) {
