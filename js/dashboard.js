@@ -897,6 +897,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* =====================================================
        WORKSPACE CONTEXT — personaliza el dashboard según el tipo
        ===================================================== */
+    /* Workspace intelligence: el onboarding modifica prioridades visibles */
+    const onboarding = group.onboarding_profile || {};
+    const objective = String(onboarding.objective || "").trim();
+    const groupSize = onboarding.size || "";
+    const contextSignals = document.getElementById("autopilotSignals");
+    if (contextSignals && (objective || groupSize)) {
+        const contextPill = '<span class="autopilot-signal"><strong>Contexto</strong>' + escapeHtml(objective || groupSize) + '</span>';
+        contextSignals.insertAdjacentHTML("afterbegin", contextPill);
+    }
+
     const workspaceType = group.workspace_type || "community";
     const workspaceTitle = document.querySelector(".dashboard-welcome h1");
     const workspaceEyebrow = document.querySelector(".dashboard-welcome .dashboard-eyebrow");
