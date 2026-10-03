@@ -1253,8 +1253,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             action.hidden = false;
             action.textContent = label;
             action.onclick = () => {
+                if (target.startsWith("href:")) {
+                    window.location.href = target.slice(5);
+                    return;
+                }
+
                 const el = document.getElementById(target);
-                el?.scrollIntoView({ behavior: "smooth", block: "start" });
+                if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    if (target === "eventChatButton" && el instanceof HTMLAnchorElement) {
+                        el.click();
+                    }
+                }
             };
         };
 
@@ -1267,7 +1277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!members.length) {
                 headline.textContent = "El evento está listo para organizarse.";
                 subline.textContent = "Añade miembros al grupo para empezar a coordinarlo.";
-                setAction("Ir a miembros →", "participantsList");
+                setAction("Gestionar miembros →", "href:miembros.html");
             } else if (pending > 0) {
                 headline.textContent = pending + (pending === 1 ? " persona aún no ha respondido." : " personas aún no han respondido.");
                 subline.textContent = yes + " confirmadas · " + pending + " pendientes.";
