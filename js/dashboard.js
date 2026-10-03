@@ -258,16 +258,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         milestone: workspaceState.nextMilestoneDetail?.key || null
     });
     workspaceState.unlocks = {
-        collaborative: workspaceState.members > 1,
-        planning: workspaceState.events > 0 || workspaceState.planningTrips > 0,
-        operational: workspaceState.events > 0 && workspaceState.openTasks === 0,
-        memory: workspaceState.memories > 0,
-        decisions: workspaceState.members > 1,
-        history: workspaceState.events > 0,
-        travelPlanning: workspaceState.type === "travel" && Boolean(workspaceState.features.travel),
-        competition: workspaceState.type === "sports" && Boolean(workspaceState.features.competitions)
+        collaborative: workspaceState.members > 1 && Boolean(workspaceState.capabilities.collaboration),
+        planning: (workspaceState.events > 0 && Boolean(workspaceState.capabilities.events)) || (workspaceState.planningTrips > 0 && Boolean(workspaceState.capabilities.travel)),
+        operational: workspaceState.events > 0 && Boolean(workspaceState.capabilities.events) && workspaceState.openTasks === 0,
+        memory: workspaceState.memories > 0 && Boolean(workspaceState.capabilities.memories),
+        decisions: workspaceState.members > 1 && Boolean(workspaceState.capabilities.decisions),
+        history: workspaceState.events > 0 && Boolean(workspaceState.capabilities.history),
+        travelPlanning: workspaceState.type === "travel" && Boolean(workspaceState.capabilities.travel),
+        competition: workspaceState.type === "sports" && Boolean(workspaceState.capabilities.competitions)
     };
-    workspaceState.capabilities = [
+    workspaceState.unlockedCapabilities = [
         workspaceState.unlocks.collaborative ? "collaboration" : null,
         workspaceState.unlocks.planning ? "planning" : null,
         workspaceState.unlocks.operational ? "operations" : null,
