@@ -170,25 +170,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ? {href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", text:"Un evento convierte este workspace en actividad real."}
                         : {href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", text:"Revisa próximos planes, participantes y tareas."};
 
+        const actionPriority = (action) => {
+            let score = action.baseScore || 40;
+            if (action.urgent) score += 30;
+            if (action.contextMatch) score += 20;
+            if (action.done) score -= 35;
+            return score;
+        };
+
         const actions = [
-            primary,
-            {href:"miembros.html", icon:"◎", kicker:actionState(peopleState, false), title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace."},
+            { ...primary, baseScore: 95, contextMatch: true },
+            {href:"miembros.html", icon:"◎", kicker:actionState(peopleState, false), title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace.", baseScore:55, done:peopleState},
             type === "travel" && featureMap.travel
                 ? {href:"viajes.html", icon:"✈", kicker:actionState(tripState, tripState), title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
                 : type === "sports" && featureMap.competitions
                     ? {href:"competicion.html", icon:"◈", kicker:"COMPETICIÓN", title:"Centro competitivo", text:"Gestiona cuadros, partidos y resultados."}
                     : {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras."},
-            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos."},
-            {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo."},
-            {href:"perfil.html", icon:"○", kicker:"IDENTIDAD", title:"Completar tu perfil", text:"Haz que las personas del workspace sepan quién eres."}
+            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos.", baseScore:62, done:eventState},
+            {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo.", baseScore:35},
+            {href:"perfil.html", icon:"○", kicker:"IDENTIDAD", title:"Completar tu perfil", text:"Haz que las personas del workspace sepan quién eres.", baseScore:30}
         ];
         const seen = new Set();
-        const visible = actions.filter(action => {
-            const key = action.href + "|" + action.title;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-        }).slice(0, 6);
+        const visible = actions
+            .filter(action => {
+                const key = action.href + "|" + action.title;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+            .sort((a, b) => actionPriority(b) - actionPriority(a))
+            .slice(0, 6);
         actionGrid.innerHTML = visible.map((action,index) =>
             '<a class="quick-card ' + (index === 0 ? 'featured' : '') + '" href="' + escapeHtml(action.href) + '">' +
                 '<span class="action-hub-kicker">' + escapeHtml(action.kicker) + '</span>' +
