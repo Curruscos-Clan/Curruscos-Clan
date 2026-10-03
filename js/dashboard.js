@@ -894,6 +894,42 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    /* =====================================================
+       WORKSPACE CONTEXT — personaliza el dashboard según el tipo
+       ===================================================== */
+    const workspaceType = group.workspace_type || "community";
+    const workspaceTitle = document.querySelector(".dashboard-welcome h1");
+    const workspaceEyebrow = document.querySelector(".dashboard-welcome .dashboard-eyebrow");
+    const senseCard = document.querySelector(".autopilot-card");
+    const contextMap = {
+        sports: {eyebrow:"CURRUSCOS · EQUIPO", title:"El equipo, en movimiento.", pulse:"El siguiente partido, entrenamiento o plan.", quick:"Organizar competición"},
+        travel: {eyebrow:"CURRUSCOS · VIAJES", title:"El próximo destino empieza aquí.", pulse:"Todo el viaje, en un mismo espacio.", quick:"Planificar viaje"},
+        study: {eyebrow:"CURRUSCOS · ESTUDIO", title:"Organizad. Avanzad. Repetid.", pulse:"Lo que toca preparar a continuación.", quick:"Crear sesión"},
+        organization: {eyebrow:"CURRUSCOS · ORGANIZACIÓN", title:"La organización, en movimiento.", pulse:"Las próximas acciones del equipo.", quick:"Crear evento"},
+        community: {eyebrow:"CURRUSCOS · COMUNIDAD", title:"Lo que hacemos juntos.", pulse:"Lo que está pasando en el grupo.", quick:"Crear plan"},
+        other: {eyebrow:"CURRUSCOS · WORKSPACE", title:"El espacio, en movimiento.", pulse:"Lo que está pasando ahora.", quick:"Crear evento"}
+    };
+    const context = contextMap[workspaceType] || contextMap.community;
+    if (workspaceEyebrow) workspaceEyebrow.textContent = context.eyebrow;
+    if (workspaceTitle) workspaceTitle.innerHTML = escapeHtml(context.title).replace(" ", " ");
+    const pulseTitle = document.querySelector(".pulse-heading h2");
+    if (pulseTitle) pulseTitle.textContent = context.pulse;
+    if (senseCard) senseCard.dataset.workspaceType = workspaceType;
+
+    const quickLink = document.querySelector(".pulse-link");
+    if (quickLink) {
+        if (workspaceType === "travel") {
+            quickLink.href = "viajes.html";
+            quickLink.textContent = context.quick + " →";
+        } else if (workspaceType === "sports") {
+            quickLink.href = "competicion.html";
+            quickLink.textContent = context.quick + " →";
+        } else {
+            quickLink.href = "crear-evento.html";
+            quickLink.textContent = context.quick + " →";
+        }
+    }
+
     const profile =
         await getCurrentProfile();
 
