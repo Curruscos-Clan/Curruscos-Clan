@@ -259,8 +259,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         collaborative: workspaceState.members > 1,
         planning: workspaceState.events > 0 || workspaceState.planningTrips > 0,
         operational: workspaceState.events > 0 && workspaceState.openTasks === 0,
-        memory: workspaceState.memories > 0
+        memory: workspaceState.memories > 0,
+        decisions: workspaceState.members > 1,
+        history: workspaceState.events > 0,
+        travelPlanning: workspaceState.type === "travel" && Boolean(workspaceState.features.travel),
+        competition: workspaceState.type === "sports" && Boolean(workspaceState.features.competitions)
     };
+    workspaceState.capabilities = [
+        workspaceState.unlocks.collaborative ? "collaboration" : null,
+        workspaceState.unlocks.planning ? "planning" : null,
+        workspaceState.unlocks.operational ? "operations" : null,
+        workspaceState.unlocks.memory ? "memory" : null,
+        workspaceState.unlocks.decisions ? "decisions" : null,
+        workspaceState.unlocks.history ? "history" : null,
+        workspaceState.unlocks.travelPlanning ? "travel" : null,
+        workspaceState.unlocks.competition ? "competition" : null
+    ].filter(Boolean);
     workspaceState.nextUnlock = workspaceState.nextMilestoneDetail
         ? {
             key: workspaceState.nextMilestoneDetail.key,
@@ -416,15 +430,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         const actions = [
             { ...primary, baseScore: 95, contextMatch: true },
             {href:"miembros.html", icon:"◎", kicker:actionState(peopleState, false), title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace.", baseScore:55, done:peopleState},
-            type === "travel" && featureMap.travel
-                ? {href:"viajes.html", icon:"✈", kicker:actionState(tripState, tripState), title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
-                : type === "sports" && featureMap.competitions
-                    ? {href:"crear.html", icon:"◈", kicker:"COMPETICIÓN", title:"Abrir competición", text:"Crea una actividad deportiva y organiza el flujo desde su evento."}
-                    : {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras."},
-            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos.", baseScore:62, done:eventState},
-            {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo.", baseScore:35},
+            workspaceState.unlocks.travelPlanning
+                ? {href:"viajes.html", icon:"✈", kicker:actionState(tripState, tripState), title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios.", baseScore:72}
+                : workspaceState.unlocks.competition
+                    ? {href:"crear.html", icon:"◈", kicker:"COMPETICIÓN", title:"Abrir competición", text:"Crea una actividad deportiva y organiza el flujo desde su evento.", baseScore:72}
+                    : workspaceState.unlocks.decisions
+                        ? {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras.", baseScore:58}
+                        : {href:"miembros.html", icon:"◎", kicker:"SIGUIENTE", title:"Activar colaboración", text:"Invita a otra persona para desbloquear decisiones y herramientas de equipo.", baseScore:58},
+            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + ".", baseScore:62, done:eventState},
+            workspaceState.unlocks.history
+                ? {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo.", baseScore:48}
+                : null,
             {href:"perfil.html", icon:"○", kicker:"IDENTIDAD", title:"Completar tu perfil", text:"Haz que las personas del workspace sepan quién eres.", baseScore:30}
-        ];
+        ].filter(Boolean);
+
         const seen = new Set();
         const visible = actions
             .filter(action => {
