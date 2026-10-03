@@ -34,7 +34,10 @@
     "trips": "TRIPS",
     "discoverTitle": "Discover, join and organize. The rest depends on the event.",
     "cta": "Do you want to join or create something?",
-    "start": "Get started"
+    "start": "Get started",
+    "heroLine1": "Your people.",
+    "heroLine2": "Your plans.",
+    "heroLine3": "All here."
   },
   "common": {
     "loading": "Loading…",
