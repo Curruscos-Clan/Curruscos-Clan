@@ -29,6 +29,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("activityList");
     const invitationsEl =
         document.getElementById("invitationsContainer");
+
+    const usage = await getGroupUsage(group.id);
+    if (usage) {
+        const plan = usage.plan || {};
+        const current = usage.usage || {};
+        const planNameEl = document.getElementById("workspacePlanName");
+        if (planNameEl) planNameEl.textContent = plan.name || "Free";
+
+        const setUsage = (labelId, fillId, value, limit) => {
+            const label = document.getElementById(labelId);
+            const fill = document.getElementById(fillId);
+            const currentValue = Number(value || 0);
+            const maxValue = Number(limit || 0);
+            if (label) label.textContent = maxValue > 0
+                ? currentValue + " / " + maxValue
+                : String(currentValue);
+            if (fill) fill.style.width = (maxValue > 0
+                ? Math.min(100, currentValue / maxValue * 100)
+                : 0) + "%";
+        };
+
+        setUsage("usageMembersLabel","usageMembersFill",current.members,plan.max_members);
+        setUsage("usageEventsLabel","usageEventsFill",current.events_this_month,plan.max_events_per_month);
+        setUsage("usageTripsLabel","usageTripsFill",current.trips,plan.max_trips);
+    }
     const statusEl =
         document.getElementById("organizationStatus");
     const descriptionEl =
