@@ -41,7 +41,7 @@ function bindSaveButtons(root){
        savedEventIds.delete(String(id));button.textContent="＋ Guardar";button.classList.remove("saved");
      }else{
        const ins=await supabaseClient.from("saved_events").insert({event_id:id,user_id:user.id});if(ins.error&&ins.error.code!=="23505")throw ins.error;
-       savedEventIds.add(String(id));button.textContent="✓ Guardado";button.classList.add("saved");
+       savedEventIds.add(String(id));button.textContent="✓ Guardado";button.classList.add("saved");await logActivitySignal("save",id,null,null,{source:"explore"});
      }
      applyAndRender();
    }catch(err){console.error(err);alert("No se ha podido actualizar el guardado.");}finally{button.disabled=false;}

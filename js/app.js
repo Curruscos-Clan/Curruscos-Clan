@@ -442,6 +442,8 @@ function notificationIcon(type) {
             return "✉️";
         case "member":
             return "👤";
+        case "social":
+            return "↗";
         default:
             return "🔔";
     }
@@ -500,6 +502,10 @@ function notificationTarget(notification) {
 
     if (notification.type === "member") {
         return "miembros.html";
+    }
+
+    if (notification.type === "social" && notification.reference_id) {
+        return "perfil-publico.html?id=" + encodeURIComponent(notification.reference_id);
     }
 
     return null;
