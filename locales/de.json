@@ -60,7 +60,8 @@
     "preparing": "Vorbereitung",
     "cancelled": "Abgesagt",
     "finished": "Beendet",
-    "registrationOpen": "Anmeldung offen"
+    "registrationOpen": "Anmeldung offen",
+    "upcoming": "Demnächst"
   },
   "format": {
     "knockout": "K.-o.",
@@ -98,7 +99,12 @@
     "memberMany": "Mitglieder",
     "viewEvent": "Event ansehen",
     "activity": "Aktivität",
-    "context": "Kontext"
+    "context": "Kontext",
+    "matches": "Spiele",
+    "wins": "Siege",
+    "losses": "Niederlagen",
+    "points": "Punkte",
+    "followers": "Follower"
   },
   "explore": {
     "allActivities": "Alle Aktivitäten",
