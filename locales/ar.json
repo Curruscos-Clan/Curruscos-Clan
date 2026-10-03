@@ -448,6 +448,7 @@
     "answerInvitationsCount": "الرد على {{count}} من الدعوات",
     "communitySignal": "إشارة المجتمع",
     "communityTitle": "رؤية ما يحدث",
-    "communityReason": "هناك نشاط حديث حول {{event}}."
+    "communityReason": "هناك نشاط حديث حول {{event}}.",
+    "tripsInMotion": "لا توجد فعاليات قادمة، لكن هناك {{count}} من الرحلات قيد التنفيذ."
   }
 }
