@@ -249,7 +249,12 @@
     "creatingAccount": "正在创建账户…",
     "accountCreated": "账户已创建，正在登录…",
     "confirmEmail": "账户已创建，请检查邮箱完成确认。",
-    "registerError": "无法创建账户。"
+    "registerError": "无法创建账户。",
+    "email": "邮箱",
+    "emailPlaceholder": "you@email.com",
+    "password": "密码",
+    "passwordPlaceholder": "至少 6 个字符",
+    "loginButton": "登录"
   },
   "createEvent": {
     "adapts": "对于{{type}}，Curruscos 会根据所选格式调整组织方式。",
@@ -282,6 +287,11 @@
   "group": {
     "group": "群组",
     "namePrompt": "新群组名称：",
-    "descriptionPrompt": "群组描述（可选）："
+    "descriptionPrompt": "群组描述（可选）：",
+    "name": "群组名称",
+    "namePlaceholder": "例如 Curruscos Clan",
+    "description": "描述",
+    "descriptionPlaceholder": "你们是什么类型的群组？",
+    "createButton": "创建我的群组"
   }
 }
