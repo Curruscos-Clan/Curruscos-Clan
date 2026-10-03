@@ -466,6 +466,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    function balancesForDisplay(expenseList, goingMembers) {
+        const balances = new Map();
+
+        goingMembers.forEach(member => balances.set(String(member.user_id), 0));
+
+        expenseList.forEach(expense => {
+            const payer = String(expense.paid_by || "");
+            const savedSplits = expenseSplits.get(String(expense.id)) || [];
+            const splits = savedSplits.length
+                ? savedSplits
+                : goingMembers.map(member => ({
+                    user_id: member.user_id,
+                    amount: Number(expense.amount || 0) / goingMembers.length
+                }));
+
+            if (balances.has(payer)) {
+                balances.set(payer, balances.get(payer) + Number(expense.amount || 0));
+            }
+
+            splits.forEach(split => {
+                const userId = String(split.user_id);
+                if (balances.has(userId)) {
+                    balances.set(userId, balances.get(userId) - Number(split.amount || 0));
+                }
+            });
+        });
+
+        return balances;
+    }
+
     function calculateBalances() {
         const going = getGoingMembers();
         const balances = new Map();
@@ -554,10 +584,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             (sum, expense) => sum + Number(expense.amount || 0), 0
         );
 
-        const defaultShare = total / going.length;
         const hasSavedSplits = expenses.some(
             expense => (expenseSplits.get(String(expense.id)) || []).length
         );
+
+        const currentUserBalance =
+            balancesForDisplay(expenses, going).get(String(currentUser.id)) || 0;
 
         const heading = document.createElement("div");
         heading.className = "expense-split-title";
@@ -574,6 +606,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         const transfers = buildSettlementTransfers();
 
         const balances = calculateBalances();
+        if (Math.abs(currentUserBalance) > 0.01) {
+            const own = document.createElement("div");
+            own.className = "expense-own-balance " +
+                (currentUserBalance > 0 ? "expense-balance-positive" : "expense-balance-negative");
+            own.textContent = currentUserBalance > 0
+                ? "Tu saldo: te deben " + formatMoney(currentUserBalance)
+                : "Tu saldo: debes " + formatMoney(Math.abs(currentUserBalance));
+            container.appendChild(own);
+        } else if (going.some(member => String(member.user_id) === String(currentUser.id))) {
+            const own = document.createElement("div");
+            own.className = "expense-own-balance expense-balance-zero";
+            own.textContent = "Tu saldo está equilibrado.";
+            container.appendChild(own);
+        }
+
         const balanceTitle = document.createElement("div");
         balanceTitle.className = "expense-settlement-title";
         balanceTitle.textContent = "Balance por persona";
