@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!value) return "";
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return "";
-        return date.toLocaleDateString("es-ES", {
+        return date.toLocaleDateString(getLanguage(), {
             day: "numeric",
             month: "short"
         });
