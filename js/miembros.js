@@ -234,6 +234,30 @@ document.addEventListener("DOMContentLoaded", async () => {
        AJUSTES
        ===================================================== */
 
+    const usage = await getGroupUsage(group.id);
+    if (usage) {
+        const plan = usage.plan || {};
+        const current = usage.usage || {};
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+        setText("settingsPlanName", plan.name || "Free");
+        setText("settingsPlanDescription", "Tu espacio incluye las herramientas disponibles en este plan.");
+        setText("settingsPlanStatus", "ACTIVO");
+        setText("settingsPlanMembers", current.members || 0);
+        setText("settingsUsageMembers", String(current.members || 0) + " / " + String(plan.max_members || "∞"));
+        setText("settingsUsageEvents", String(current.events_this_month || 0) + " / " + String(plan.max_events_per_month || "∞"));
+        setText("settingsUsageTrips", String(current.trips || 0) + " / " + String(plan.max_trips || "∞"));
+        const featureList = document.getElementById("workspaceFeatureList");
+        if (featureList) {
+            featureList.innerHTML = Object.entries(plan.features || {})
+                .filter(([, enabled]) => enabled)
+                .map(([feature]) => '<span class="workspace-feature">' + feature.replaceAll("_"," ") + "</span>")
+                .join("");
+        }
+    }
+
     const isOwner =
         group.role === "owner";
 
