@@ -93,7 +93,12 @@
     "noVisibleMembers": "No visible members.",
     "noPublicEvents": "There are no public team participations yet.",
     "notFound": "Team not found.",
-    "notAvailable": "This team is not publicly available."
+    "notAvailable": "This team is not publicly available.",
+    "memberOne": "member",
+    "memberMany": "members",
+    "viewEvent": "View event",
+    "activity": "Activity",
+    "context": "Context"
   },
   "explore": {
     "allActivities": "All activities",
@@ -105,7 +110,18 @@
     "noResults": "No results",
     "noPeople": "No active public profiles found.",
     "noTeams": "There are no public teams to show yet.",
-    "saveError": "Could not update the saved status."
+    "saveError": "Could not update the saved status.",
+    "memberOne": "member",
+    "memberMany": "members",
+    "spotOne": "free spot",
+    "spotMany": "free spots",
+    "registeredOne": "registered",
+    "registeredMany": "registered",
+    "until": "Until {{date}}",
+    "eventOne": "event available",
+    "eventMany": "events available",
+    "resultOne": "1 result",
+    "resultMany": "{{count}} results"
   },
   "notifications": {
     "title": "Notifications",
@@ -123,5 +139,15 @@
   "travel": {
     "newTrip": "＋ New trip",
     "createTrip": "Create trip"
+  },
+  "social": {
+    "teamWin": "Won against",
+    "teamLoss": "Lost to",
+    "teamDraw": "Drew with",
+    "teamMember": "Added",
+    "teamJoin": "Joined",
+    "personJoin": "Joined",
+    "personOrganize": "Organized",
+    "team": "Team"
   }
 }
