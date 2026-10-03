@@ -353,7 +353,8 @@
     "nameRequired": "Inserisci un nome per il gruppo.",
     "creating": "Creazione del tuo spazio...",
     "createError": "Impossibile creare il gruppo.",
-    "created": "Gruppo creato. Accesso..."
+    "created": "Gruppo creato. Accesso...",
+    "planFree": "Free"
   },
   "profile": {
     "saving": "Salvataggio...",
