@@ -22,6 +22,7 @@ function bindTripUi() {
     $("optionForm").addEventListener("submit", createOptionFromForm);
     $("optionCategory").addEventListener("change", renderOptionDetailsForm);
     $("optionFilter")?.addEventListener("change", renderOptions);
+    $("optionSort")?.addEventListener("change", renderOptions);
 
     $("tripModal").addEventListener("click", e => { if (e.target === $("tripModal")) closeTripModal(); });
     $("optionModal").addEventListener("click", e => { if (e.target === $("optionModal")) closeOptionModal(); });
@@ -309,6 +310,16 @@ async function loadTripFinances() {
     }
 }
 
+function updateTripSearchLinks() {
+    const destination = String(activeTrip?.destination || "").trim();
+    const encoded = encodeURIComponent(destination);
+    const flight = $("flightSearchLink");
+    const hotel = $("hotelSearchLink");
+    const map = $("mapSearchLink");
+    if (flight) flight.href = destination ? "https://www.google.com/travel/flights?q=" + encoded : "https://www.google.com/travel/flights";
+    if (hotel) hotel.href = destination ? "https://www.google.com/travel/hotels?q=" + encoded : "https://www.google.com/travel/hotels";
+    if (map) map.href = destination ? "https://www.google.com/maps/search/" + encoded : "https://www.google.com/maps";
+}
 function renderActiveTrip() {
     $("tripEmptyState").hidden = true;
     $("tripWorkspaceContent").hidden = false;
@@ -320,6 +331,7 @@ function renderActiveTrip() {
     $("activeTripBudget").textContent = activeTrip.budget_per_person != null ? money(activeTrip.budget_per_person) : "Sin definir";
     $("activeTripOptionsCount").textContent = activeTrip.options.length;
     $("activeTripVotesCount").textContent = activeTrip.votes.length;
+    updateTripSearchLinks();
     renderOptions();
     renderDecisionSummary();
     loadTripParticipants();
@@ -502,7 +514,9 @@ function renderOptions() {
     const container = $("tripOptions");
     const filter = $("optionFilter")?.value || "all";
     const allOptions = activeTrip.options || [];
-    const options = allOptions.filter(option => filter === "all" || option.category === filter);
+    let options = allOptions.filter(option => filter === "all" || option.category === filter);
+    const sort = $("optionSort")?.value || "votes";
+    options = [...options].sort((a,b) => { if(sort === "price") return Number(a.price_per_person ?? a.price ?? Infinity) - Number(b.price_per_person ?? b.price ?? Infinity); if(sort === "newest") return new Date(b.created_at || 0) - new Date(a.created_at || 0); return activeTrip.votes.filter(v=>v.option_id===b.id).length - activeTrip.votes.filter(v=>v.option_id===a.id).length; });
     $("optionsEmpty").hidden = options.length > 0;
     container.innerHTML = options.map(option => {
         const count = activeTrip.votes.filter(v => v.option_id === option.id).length;
