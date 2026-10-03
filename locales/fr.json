@@ -93,7 +93,12 @@
     "noVisibleMembers": "Aucun membre visible.",
     "noPublicEvents": "Aucune participation publique de l'équipe pour le moment.",
     "notFound": "Équipe introuvable.",
-    "notAvailable": "Cette équipe n'est pas disponible publiquement."
+    "notAvailable": "Cette équipe n'est pas disponible publiquement.",
+    "memberOne": "membre",
+    "memberMany": "membres",
+    "viewEvent": "Voir l’événement",
+    "activity": "Activité",
+    "context": "Contexte"
   },
   "explore": {
     "allActivities": "Toutes les activités",
@@ -105,7 +110,18 @@
     "noResults": "Aucun résultat",
     "noPeople": "Aucun profil public actif trouvé.",
     "noTeams": "Aucune équipe publique à afficher pour le moment.",
-    "saveError": "Impossible de mettre à jour l'enregistrement."
+    "saveError": "Impossible de mettre à jour l'enregistrement.",
+    "memberOne": "membre",
+    "memberMany": "membres",
+    "spotOne": "place libre",
+    "spotMany": "places libres",
+    "registeredOne": "inscrit",
+    "registeredMany": "inscrits",
+    "until": "Jusqu’au {{date}}",
+    "eventOne": "événement disponible",
+    "eventMany": "événements disponibles",
+    "resultOne": "1 résultat",
+    "resultMany": "{{count}} résultats"
   },
   "notifications": {
     "title": "Notifications",
@@ -123,5 +139,15 @@
   "travel": {
     "newTrip": "＋ Nouveau voyage",
     "createTrip": "Créer le voyage"
+  },
+  "social": {
+    "teamWin": "A gagné contre",
+    "teamLoss": "A perdu contre",
+    "teamDraw": "A fait match nul avec",
+    "teamMember": "A ajouté",
+    "teamJoin": "S’est inscrit à",
+    "personJoin": "S’est inscrit à",
+    "personOrganize": "A organisé",
+    "team": "Équipe"
   }
 }
