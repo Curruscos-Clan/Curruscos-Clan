@@ -65,66 +65,270 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded",async()=>{
- const grid=document.getElementById("teamsGrid"),message=document.getElementById("teamsMessage"),form=document.getElementById("teamCreateForm"),user=await getCurrentUser();
- if(!user){message.innerHTML='Necesitas iniciar sesión para gestionar equipos. <a href="login.html">Entrar</a>';form.style.display="none";return;}
- const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
- const activity=v=>({padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otro"}[v]||"Actividad");
- const date=(d,t)=>{if(!d)return "";const x=new Date(d+"T"+(t||"00:00"));return x.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"});};
- let teamState={};
- function memberRow(p,teamId){
-   const name=esc(p.display_name||p.username||"Usuario"),username=p.username?"@"+esc(p.username):"";
-   const canRemove=p.role!=="owner";
-   return '<div class="member-row"><div class="member-left"><span class="member-avatar">'+esc((p.display_name||p.username||"U").charAt(0).toUpperCase())+'</span><span class="member-copy"><strong>'+name+'</strong><small>'+(p.role==="owner"?"Propietario · ":"")+(username||"Perfil público")+'</small></span></div>'+(canRemove?'<button type="button" class="button button-small remove-member danger" data-team="'+esc(teamId)+'" data-user="'+esc(p.user_id||p.id||"")+'">Quitar</button>':"")+'</div>';
- }
- function pendingRow(i){
-   return '<div class="member-row"><div class="member-left"><span class="member-avatar">'+esc((i.invitee_name||i.invitee_username||"U").charAt(0).toUpperCase())+'</span><span class="member-copy"><strong>'+esc(i.invitee_name||"Usuario")+'</strong><small>'+(i.invitee_username?"@"+esc(i.invitee_username)+" · ":"")+'pendiente</small></span></div><button type="button" class="button button-small cancel-invite danger" data-invite="'+esc(i.invitation_id)+'">Cancelar</button></div>';
- }
- function renderTeam(t,members,events,pending){
-   const owner=t.role==="owner";
-   const memberRows=(members||[]).map(p=>memberRow(p,t.team_id)).join("");
-   const pendingRows=(pending||[]).map(pendingRow).join("");
-   const eventRows=(events||[]).map(e=>'<a class="event-row" href="evento-publico.html?id='+encodeURIComponent(e.event_id)+'"><span class="event-copy"><strong>'+esc(e.title)+'</strong><small>'+esc(activity(e.event_type))+(e.location?" · "+esc(e.location):"")+'</small></span><span class="event-date">'+esc(date(e.event_date,e.event_time))+'</span></a>').join("");
-   const pendingBadge=(owner&&pendingRows)?'<span class="team-pill">'+pending.length+' invitación'+(pending.length===1?"":"es")+' pendiente'+(pending.length===1?"":"s")+'</span>':"";
-   const actions='<a class="button button-small" href="equipo-publico.html?id='+encodeURIComponent(t.team_id)+'">Ver equipo</a><a class="button button-small" href="chat.html?team='+encodeURIComponent(t.team_id)+'">Chat</a>'+(owner?'<button type="button" class="button button-primary button-small manage-team">Gestionar</button>':"");
-   let manageHtml="";
-   if(owner){
-     const membersHtml=memberRows||'<div class="manage-empty">Aún no hay miembros.</div>';
-     const pendingHtml=pendingRows||'<div class="manage-empty">No hay invitaciones pendientes.</div>';
-     const eventsHtml=eventRows||'<div class="manage-empty">Todavía no hay participaciones públicas.</div>';
-     manageHtml='<div class="team-manage"><div class="manage-grid"><section class="manage-section"><h3>Plantilla</h3><div class="members-list">'+membersHtml+'</div></section><section class="manage-section"><h3>Invitar personas</h3><div class="invite-box"><input class="person-search" placeholder="Busca por nombre o @usuario..." autocomplete="off"><div class="people-results"></div><div class="invite-status"></div></div><div style="margin-top:14px"><h3>Invitaciones pendientes</h3><div class="members-list pending-invites">'+pendingHtml+'</div></div></section></div><section class="manage-section" style="margin-top:20px"><h3>Actividad pública</h3><div class="event-list">'+eventsHtml+'</div></section></div>';
-   }
-   return '<article class="team-card" data-team="'+esc(t.team_id)+'"><div class="team-main"><span class="team-kicker">'+(owner?"PROPIETARIO":"MIEMBRO")+' · EQUIPO PERSISTENTE</span><h2>'+esc(t.name)+'</h2><p class="team-desc">'+esc(t.description||"Sin descripción.")+'</p><div class="team-meta"><span class="team-pill">'+Number(t.member_count||0)+' miembros</span><span class="team-pill">'+Number((events||[]).length)+' eventos públicos</span>'+pendingBadge+'</div><div class="team-actions">'+actions+'</div></div>'+manageHtml+'</article>';
- }
- async function load(){
-   const teams=await getMyTeams();
-   if(!teams.length){grid.innerHTML='<article class="team-card"><div class="team-main"><h2>Aún no tienes equipos.</h2><p class="team-desc">Crea el primero y podrás reutilizarlo en tus próximos eventos.</p></div></article>';return;}
-   const data=await Promise.all(teams.map(async t=>{
-     const results=t.role==="owner"
-       ?await Promise.all([getPersistentTeamMembers(t.team_id),getPublicPersistentTeamEvents(t.team_id),getPersistentTeamPendingInvitations(t.team_id)])
-       :await Promise.all([getPersistentTeamMembers(t.team_id),getPublicPersistentTeamEvents(t.team_id),Promise.resolve([])]);
-     return {t,members:results[0]||[],events:results[1]||[],pending:results[2]||[]};
-   }));
-   teamState={};data.forEach(x=>teamState[x.t.team_id]=x);
-   grid.innerHTML=data.map(x=>renderTeam(x.t,x.members,x.events,x.pending)).join("");
- }
- form.addEventListener("submit",async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;message.textContent="Creando equipo…";try{const id=await createPersistentTeam(document.getElementById("teamName").value,document.getElementById("teamDescription").value);if(!id)throw new Error("No se ha podido crear.");form.reset();message.textContent="Equipo creado.";await load();}catch(err){message.textContent=err.message||"No se ha podido crear el equipo.";}finally{b.disabled=false;}});
- let searchTimer;
- grid.addEventListener("click",async e=>{
-   const manage=e.target.closest(".manage-team");
-   if(manage){manage.closest(".team-card").querySelector(".team-manage")?.classList.toggle("open");return;}
-   const cancel=e.target.closest(".cancel-invite");
-   if(cancel){if(!confirm("¿Cancelar esta invitación?"))return;cancel.disabled=true;try{await cancelPersistentTeamInvitation(cancel.dataset.invite);message.textContent="Invitación cancelada.";await load();}catch(err){message.textContent=err.message||"No se ha podido cancelar la invitación.";}finally{cancel.disabled=false;}return;}
-   const remove=e.target.closest(".remove-member");
-   if(remove){const teamId=remove.dataset.team,userId=remove.dataset.user;if(userId===user.id)return;if(!confirm("¿Quitar a esta persona del equipo?"))return;remove.disabled=true;try{await removePersistentTeamMember(teamId,userId);message.textContent="Miembro eliminado.";await load();}catch(err){message.textContent=err.message||"No se ha podido quitar al miembro.";}finally{remove.disabled=false;}return;}
-   const result=e.target.closest(".person-result");
-   if(result){const card=result.closest(".team-card"),teamId=card.dataset.team,userId=result.dataset.user,status=card.querySelector(".invite-status");result.disabled=true;status.textContent="Enviando invitación…";try{await sendPersistentTeamInvitation(userId,teamId);status.textContent="Invitación enviada.";card.querySelector(".person-search").value="";card.querySelector(".people-results").innerHTML="";window.dispatchEvent(new Event("curruscos:new-notification"));await load();card.querySelector(".team-manage")?.classList.add("open");}catch(err){status.textContent=err.message||"No se ha podido enviar la invitación.";}finally{result.disabled=false;}return;}
- });
- grid.addEventListener("input",e=>{
-   const input=e.target.closest(".person-search");if(!input)return;clearTimeout(searchTimer);const card=input.closest(".team-card"),box=card.querySelector(".people-results"),status=card.querySelector(".invite-status");status.textContent="";searchTimer=setTimeout(async()=>{const q=input.value.trim();if(q.length<2){box.innerHTML="";return;}box.innerHTML='<div class="manage-empty">Buscando…</div>';const state=teamState[card.dataset.team],memberIds=new Set((state?.members||[]).map(m=>m.user_id)),people=await getChatPeople(q),filtered=(people||[]).filter(p=>p.id!==user.id&&!memberIds.has(p.id));box.innerHTML=filtered.slice(0,8).map(p=>'<button type="button" class="person-result" data-user="'+esc(p.id)+'"><strong>'+esc(p.display_name||p.username||"Usuario")+'</strong><small>'+(p.username?"@"+esc(p.username):"")+" · Invitar</small></button>').join("")||'<div class="manage-empty">No hay personas disponibles.</div>';},250);
- });
- await load();
- document.getElementById("menuButton")?.addEventListener("click",()=>document.getElementById("mainNav")?.classList.toggle("mobile-open"));
+document.addEventListener("DOMContentLoaded", function () {
+  init();
 });
+
+async function init() {
+  var grid = document.getElementById("teamsGrid");
+  var message = document.getElementById("teamsMessage");
+  var form = document.getElementById("teamCreateForm");
+  var user = await getCurrentUser();
+
+  if (!user) {
+    message.innerHTML = 'Necesitas iniciar sesión para gestionar equipos. <a href="login.html">Entrar</a>';
+    form.style.display = "none";
+    return;
+  }
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (m) {
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];
+    });
+  }
+
+  function activityLabel(value) {
+    var labels = {padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otro"};
+    return labels[value] || "Actividad";
+  }
+
+  function formatDate(dateValue, timeValue) {
+    if (!dateValue) return "";
+    var value = dateValue + "T" + (timeValue || "00:00");
+    return new Date(value).toLocaleDateString("es-ES", {day:"numeric", month:"short", year:"numeric"});
+  }
+
+  function memberMarkup(member, teamId) {
+    var name = member.display_name || member.username || "Usuario";
+    var userId = member.user_id || member.id || "";
+    var suffix = member.username ? "@" + esc(member.username) : "Perfil público";
+    var remove = member.role === "owner" ? "" :
+      '<button type="button" class="button button-small remove-member danger" data-team="' + esc(teamId) + '" data-user="' + esc(userId) + '">Quitar</button>';
+    return '<div class="member-row"><div class="member-left"><span class="member-avatar">' +
+      esc(name.charAt(0).toUpperCase()) + '</span><span class="member-copy"><strong>' +
+      esc(name) + '</strong><small>' + (member.role === "owner" ? "Propietario · " : "") +
+      suffix + '</small></span></div>' + remove + '</div>';
+  }
+
+  function pendingMarkup(item) {
+    var name = item.invitee_name || item.invitee_username || "Usuario";
+    return '<div class="member-row"><div class="member-left"><span class="member-avatar">' +
+      esc(name.charAt(0).toUpperCase()) + '</span><span class="member-copy"><strong>' +
+      esc(name) + '</strong><small>' + (item.invitee_username ? "@" + esc(item.invitee_username) + " · " : "") +
+      'pendiente</small></span></div><button type="button" class="button button-small cancel-invite danger" data-invite="' +
+      esc(item.invitation_id) + '">Cancelar</button></div>';
+  }
+
+  function eventMarkup(item) {
+    return '<a class="event-row" href="evento-publico.html?id=' + encodeURIComponent(item.event_id) +
+      '"><span class="event-copy"><strong>' + esc(item.title) + '</strong><small>' +
+      esc(activityLabel(item.event_type)) + (item.location ? " · " + esc(item.location) : "") +
+      '</small></span><span class="event-date">' + esc(formatDate(item.event_date, item.event_time)) +
+      '</span></a>';
+  }
+
+  function renderTeam(data) {
+    var team = data.team;
+    var owner = team.role === "owner";
+    var members = data.members || [];
+    var pending = data.pending || [];
+    var events = data.events || [];
+
+    var card = document.createElement("article");
+    card.className = "team-card";
+    card.dataset.team = team.team_id;
+
+    var meta = '<span class="team-pill">' + Number(team.member_count || 0) + ' miembros</span>' +
+      '<span class="team-pill">' + events.length + ' eventos públicos</span>';
+    if (owner && pending.length) {
+      meta += '<span class="team-pill">' + pending.length + ' invitación' +
+        (pending.length === 1 ? "" : "es") + ' pendiente' + (pending.length === 1 ? "" : "s") + '</span>';
+    }
+
+    var memberHtml = members.map(function (member) { return memberMarkup(member, team.team_id); }).join("");
+    if (!memberHtml) memberHtml = '<div class="manage-empty">Aún no hay miembros.</div>';
+
+    var pendingHtml = pending.map(pendingMarkup).join("");
+    if (!pendingHtml) pendingHtml = '<div class="manage-empty">No hay invitaciones pendientes.</div>';
+
+    var eventHtml = events.map(eventMarkup).join("");
+    if (!eventHtml) eventHtml = '<div class="manage-empty">Todavía no hay participaciones públicas.</div>';
+
+    var actions = '<a class="button button-small" href="equipo-publico.html?id=' + encodeURIComponent(team.team_id) +
+      '">Ver equipo</a><a class="button button-small" href="chat.html?team=' + encodeURIComponent(team.team_id) +
+      '">Chat</a>';
+    if (owner) {
+      actions += '<button type="button" class="button button-primary button-small manage-team">Gestionar</button>';
+    }
+
+    var manage = "";
+    if (owner) {
+      manage = '<div class="team-manage"><div class="manage-grid">' +
+        '<section class="manage-section"><h3>Plantilla</h3><div class="members-list">' + memberHtml + '</div></section>' +
+        '<section class="manage-section"><h3>Invitar personas</h3><div class="invite-box">' +
+        '<input class="person-search" placeholder="Busca por nombre o @usuario..." autocomplete="off">' +
+        '<div class="people-results"></div><div class="invite-status"></div></div>' +
+        '<div style="margin-top:14px"><h3>Invitaciones pendientes</h3><div class="members-list">' +
+        pendingHtml + '</div></div></section></div>' +
+        '<section class="manage-section" style="margin-top:20px"><h3>Actividad pública</h3><div class="event-list">' +
+        eventHtml + '</div></section></div>';
+    }
+
+    card.innerHTML = '<div class="team-main"><span class="team-kicker">' +
+      (owner ? "PROPIETARIO" : "MIEMBRO") + ' · EQUIPO PERSISTENTE</span><h2>' + esc(team.name) +
+      '</h2><p class="team-desc">' + esc(team.description || "Sin descripción.") +
+      '</p><div class="team-meta">' + meta + '</div><div class="team-actions">' + actions +
+      '</div></div>' + manage;
+
+    return card;
+  }
+
+  async function load() {
+    grid.innerHTML = '<article class="team-card"><div class="team-main"><p class="team-desc">Cargando tus equipos…</p></div></article>';
+    var teams = await getMyTeams();
+
+    if (!teams.length) {
+      grid.innerHTML = '<article class="team-card"><div class="team-main"><h2>Aún no tienes equipos.</h2>' +
+        '<p class="team-desc">Crea el primero y podrás reutilizarlo en tus próximos eventos.</p></div></article>';
+      return;
+    }
+
+    var data = await Promise.all(teams.map(async function (team) {
+      var members = await getPersistentTeamMembers(team.team_id);
+      var events = await getPublicPersistentTeamEvents(team.team_id);
+      var pending = team.role === "owner" ? await getPersistentTeamPendingInvitations(team.team_id) : [];
+      return {team:team, members:members || [], events:events || [], pending:pending || []};
+    }));
+
+    grid.replaceChildren();
+    data.forEach(function (item) { grid.appendChild(renderTeam(item)); });
+    window.teamManagementData = data;
+  }
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    var button = event.submitter;
+    button.disabled = true;
+    message.textContent = "Creando equipo…";
+    try {
+      var id = await createPersistentTeam(
+        document.getElementById("teamName").value,
+        document.getElementById("teamDescription").value
+      );
+      if (!id) throw new Error("No se ha podido crear el equipo.");
+      form.reset();
+      message.textContent = "Equipo creado.";
+      await load();
+    } catch (error) {
+      message.textContent = error.message || "No se ha podido crear el equipo.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  var searchTimer = null;
+
+  grid.addEventListener("click", async function (event) {
+    var manage = event.target.closest(".manage-team");
+    if (manage) {
+      var panel = manage.closest(".team-card").querySelector(".team-manage");
+      if (panel) panel.classList.toggle("open");
+      return;
+    }
+
+    var remove = event.target.closest(".remove-member");
+    if (remove) {
+      if (!confirm("¿Quitar a esta persona del equipo?")) return;
+      remove.disabled = true;
+      try {
+        await removePersistentTeamMember(remove.dataset.team, remove.dataset.user);
+        message.textContent = "Miembro eliminado.";
+        await load();
+      } catch (error) {
+        message.textContent = error.message || "No se ha podido quitar al miembro.";
+        remove.disabled = false;
+      }
+      return;
+    }
+
+    var cancel = event.target.closest(".cancel-invite");
+    if (cancel) {
+      if (!confirm("¿Cancelar esta invitación?")) return;
+      cancel.disabled = true;
+      try {
+        await cancelPersistentTeamInvitation(cancel.dataset.invite);
+        message.textContent = "Invitación cancelada.";
+        await load();
+      } catch (error) {
+        message.textContent = error.message || "No se ha podido cancelar la invitación.";
+        cancel.disabled = false;
+      }
+      return;
+    }
+
+    var person = event.target.closest(".person-result");
+    if (person) {
+      var card = person.closest(".team-card");
+      var status = card.querySelector(".invite-status");
+      person.disabled = true;
+      status.textContent = "Enviando invitación…";
+      try {
+        await sendPersistentTeamInvitation(person.dataset.user, card.dataset.team);
+        status.textContent = "Invitación enviada.";
+        card.querySelector(".person-search").value = "";
+        card.querySelector(".people-results").innerHTML = "";
+        await load();
+      } catch (error) {
+        status.textContent = error.message || "No se ha podido enviar la invitación.";
+        person.disabled = false;
+      }
+      return;
+    }
+  });
+
+  grid.addEventListener("input", function (event) {
+    var input = event.target.closest(".person-search");
+    if (!input) return;
+
+    clearTimeout(searchTimer);
+    var card = input.closest(".team-card");
+    var box = card.querySelector(".people-results");
+    var status = card.querySelector(".invite-status");
+    status.textContent = "";
+
+    searchTimer = setTimeout(async function () {
+      var query = input.value.trim();
+      if (query.length < 2) {
+        box.innerHTML = "";
+        return;
+      }
+
+      box.innerHTML = '<div class="manage-empty">Buscando…</div>';
+      var current = (window.teamManagementData || []).find(function (item) {
+        return item.team.team_id === card.dataset.team;
+      });
+      var memberIds = new Set((current ? current.members : []).map(function (item) { return item.user_id; }));
+      var people = await getChatPeople(query);
+      var available = (people || []).filter(function (person) {
+        return person.id !== user.id && !memberIds.has(person.id);
+      });
+
+      box.innerHTML = available.slice(0, 8).map(function (person) {
+        return '<button type="button" class="person-result" data-user="' + esc(person.id) + '">' +
+          '<strong>' + esc(person.display_name || person.username || "Usuario") + '</strong><small>' +
+          (person.username ? "@" + esc(person.username) : "Perfil público") + ' · Invitar</small></button>';
+      }).join("") || '<div class="manage-empty">No hay personas disponibles.</div>';
+    }, 250);
+  });
+
+  await load();
+  var menuButton = document.getElementById("menuButton");
+  if (menuButton) {
+    menuButton.addEventListener("click", function () {
+      var nav = document.getElementById("mainNav");
+      if (nav) nav.classList.toggle("mobile-open");
+    });
+  }
+}
 </script>
 </body></html>
