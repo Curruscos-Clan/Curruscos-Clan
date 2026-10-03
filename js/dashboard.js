@@ -77,6 +77,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         getMyInvitations()
     ]);
 
+    const { data: trips, error: tripsError } = await supabaseClient
+        .from("trips")
+        .select("id, title, destination, status, start_date, end_date")
+        .eq("group_id", group.id)
+        .in("status", ["planning", "confirmed"])
+        .order("created_at", { ascending: false });
+
+    if (tripsError) {
+        console.error(t("dashboard.tripsLoadError"), tripsError);
+    }
+
     /* =====================================================
        WORKSPACE START — activación contextual del espacio
        ===================================================== */
@@ -86,10 +97,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (startList) {
         const hasMembers = members?.length > 1;
         const hasEvent = events?.length > 0;
-        const hasProfile = Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type);
+        const hasTrip = (trips || []).some(trip => trip.status === "planning");
         const type = group.workspace_type || "community";
-        const type = group.workspace_type || "community";
-        const hasTrip = false;
+        const hasProfile = Boolean(group.onboarding_profile?.completed_at || (group.description && group.description.trim()));
         const contextStep = type === "sports"
             ? { done: hasEvent, title: "Activar competición", text: hasEvent ? "Ya tienes actividad deportiva sobre la que trabajar." : "Crea el primer evento o competición del espacio.", href: "crear.html" }
             : type === "travel"
@@ -108,15 +118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         startList.innerHTML = steps.map(step => '<a class="workspace-start-item '+(step.done ? 'done' : '')+'" href="'+step.href+'"><span class="workspace-start-check">'+(step.done ? '✓' : '→')+'</span><span class="workspace-start-copy"><strong>'+escapeHtml(step.title)+'</strong><small>'+escapeHtml(step.text)+'</small></span></a>').join("");
     }
 
-    const { data: trips, error: tripsError } = await supabaseClient
-        .from("trips")
-        .select("id, title, destination, status, start_date, end_date")
-        .eq("group_id", group.id)
-        .in("status", ["planning", "confirmed"])
-        .order("created_at", { ascending: false });
-
-    if (tripsError) {
-        console.error(t("dashboard.tripsLoadError"), tripsError);
     }
 
 
