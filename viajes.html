@@ -78,7 +78,7 @@
         </div>
 
         <div class="trip-section">
-          <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="transport">Transporte</option><option value="other">Otros</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
+          <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="place">Lugares</option><option value="transport">Transporte</option><option value="other">Otros</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
           <div id="tripCompareSummary" class="trip-compare-summary" hidden></div>
           <div id="tripOptions" class="trip-options"></div>
           <div id="optionsEmpty" class="trip-empty">Guardad aquí un vuelo, hotel, destino o actividad que estéis considerando.</div>
@@ -103,7 +103,7 @@
             <article class="trip-finance-card"><span>POR PERSONA</span><strong id="tripSpentPerPerson">—</strong><small id="tripFinancePeople">Participantes confirmados</small></article>
           </div>
           <div id="tripFinanceProgress" class="trip-finance-progress" hidden><div><span>Uso del presupuesto</span><strong id="tripFinancePercent">0%</strong></div><div class="trip-finance-bar"><span id="tripFinanceBarFill"></span></div></div>
-          <div id="tripFinanceEvents" class="trip-finance-events"></div>
+          <div id="tripFinanceEvents" class="trip-finance-events"></div><div id="tripLinkedEvents" class="trip-linked-events"></div>
           <div id="tripFinanceSettlement" class="trip-finance-settlement" hidden></div>
         </div>
 
@@ -153,7 +153,7 @@
   <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="optionModalTitle">
     <div class="modal-header"><div><span>COMPARADOR</span><h2 id="optionModalTitle">Guardar opción</h2></div><button class="modal-close" id="closeOptionModal" aria-label="Cerrar">×</button></div>
     <form id="optionForm">
-      <label>Tipo<select id="optionCategory"><option value="destination">Destino</option><option value="flight">Vuelo</option><option value="hotel">Hotel</option><option value="activity">Actividad</option><option value="transport">Transporte</option><option value="other">Otro</option></select></label>
+      <label>Tipo<select id="optionCategory"><option value="destination">Destino</option><option value="flight">Vuelo</option><option value="hotel">Hotel</option><option value="activity">Actividad</option><option value="place">Lugar de interés</option><option value="transport">Transporte</option><option value="other">Otro</option></select></label>
       <label>Nombre<input id="optionTitle" maxlength="160" required placeholder="Ej. Vuelo Madrid → Roma"></label>
       <div class="form-grid-2"><label>Precio total<input id="optionPrice" type="number" min="0" step="0.01" placeholder="320"></label><label>Precio / persona<input id="optionPricePerson" type="number" min="0" step="0.01" placeholder="40"></label></div>
       <label>Proveedor<input id="optionProvider" maxlength="100" placeholder="Aerolínea, hotel, web…"></label>
