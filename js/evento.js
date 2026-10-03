@@ -853,6 +853,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    function setupEventDeletion() {
+        const button = document.getElementById("deleteEventButton");
+        if (!button || !currentEvent) return;
+
+        button.hidden = !canManageEvent();
+
+        if (!canManageEvent()) return;
+
+        button.addEventListener("click", async () => {
+            const confirmed = confirm(
+                "¿Eliminar «" + (currentEvent.title || "este evento") + "»? Esta acción no se puede deshacer."
+            );
+            if (!confirmed) return;
+
+            button.disabled = true;
+            button.textContent = "Eliminando…";
+
+            const deleted = await deleteGroupEvent(currentEvent.id);
+
+            if (!deleted) {
+                button.disabled = false;
+                button.textContent = "Eliminar evento";
+                alert("No se ha podido eliminar el evento.");
+                return;
+            }
+
+            window.location.href = "eventos.html";
+        });
+    }
+
     async function setupHistoryButton() {
         const button = document.getElementById("saveToHistoryButton");
         if (!button || !currentEvent) return;
@@ -1222,6 +1252,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         setupTaskFilters();
         await setupHistoryButton();
         await setupEventShare();
+        setupEventDeletion();
     }
 
     function setupForms() {
