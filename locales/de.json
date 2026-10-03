@@ -34,7 +34,10 @@
     "trips": "REISEN",
     "discoverTitle": "Entdecke, nimm teil und organisiere. Der Rest hängt vom Event ab.",
     "cta": "Möchtest du teilnehmen oder etwas erstellen?",
-    "start": "Loslegen"
+    "start": "Loslegen",
+    "heroLine1": "Deine Leute.",
+    "heroLine2": "Deine Pläne.",
+    "heroLine3": "Alles hier."
   },
   "common": {
     "loading": "Laden…",
