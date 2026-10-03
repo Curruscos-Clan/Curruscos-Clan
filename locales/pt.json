@@ -297,5 +297,28 @@
     "creating": "A criar o vosso espaço...",
     "createError": "Não foi possível criar o grupo.",
     "created": "Grupo criado. A entrar..."
+  },
+  "profile": {
+    "saving": "A guardar...",
+    "save": "Guardar perfil",
+    "saved": "Perfil guardado com sucesso.",
+    "saveError": "Não foi possível atualizar o perfil.",
+    "saveInterests": "Guardar interesses",
+    "interestsSaved": "{{count}} interesses guardados.",
+    "interestsUpdated": "Interesses atualizados.",
+    "interestsError": "Não foi possível guardar os interesses.",
+    "events": "Eventos",
+    "upcoming": "Próximos",
+    "matches": "Partidas",
+    "wins": "Vitórias",
+    "draws": "Empates",
+    "losses": "Derrotas",
+    "teams": "Equipas",
+    "eventTeam": "Equipa do evento",
+    "activity": "Atividade",
+    "noActivity": "Ainda não participaste em nenhuma atividade.",
+    "organizedOne": "evento organizado",
+    "organizedMany": "eventos organizados",
+    "round": "Ronda"
   }
 }
