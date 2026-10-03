@@ -358,7 +358,7 @@
     "communitySignal": "SEÑAL DE COMUNIDAD",
     "communityTitle": "Ver qué está pasando",
     "communityReason": "Hay actividad reciente alrededor de {{event}}.",
-    "tripsInMotion": {}
+    "tripsInMotion": "No hay eventos próximos, pero ya hay {{count}} viaje(s) en movimiento."
   },
   "legacy": {
     "No se ha podido guardar el recuerdo.": "No se ha podido guardar el recuerdo.",
