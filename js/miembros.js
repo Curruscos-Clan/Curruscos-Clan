@@ -461,59 +461,86 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     /* =====================================================
-       INVITAR
+       INVITAR / INVITACIONES PENDIENTES
        ===================================================== */
 
-    if (!canManage) {
-        inviteButton.hidden =
-            true;
-    } else if (inviteButton) {
-        inviteButton.addEventListener(
-            "click",
-            async () => {
-                const username =
-                    prompt(
-                        "Introduce el nombre de usuario que quieres invitar:"
-                    );
+    const invitePanel = document.getElementById("workspaceInvitePanel");
+    const inviteInput = document.getElementById("workspaceInviteUsername");
+    const inviteSend = document.getElementById("workspaceInviteSend");
+    const inviteMessage = document.getElementById("workspaceInviteMessage");
+    const pendingPanel = document.getElementById("workspacePendingInvites");
 
-                if (
-                    !username ||
-                    !username.trim()
-                ) {
-                    return;
-                }
+    async function renderPendingWorkspaceInvitations() {
+        if (!pendingPanel || !canManage) return;
+        const pending = await getGroupPendingInvitations(group.id);
+        pendingPanel.innerHTML = "";
+        pendingPanel.hidden = !pending.length;
+        if (!pending.length) return;
 
-                inviteButton.disabled =
-                    true;
+        const title = document.createElement("div");
+        title.className = "pending-title";
+        title.textContent = "INVITACIONES PENDIENTES";
+        pendingPanel.appendChild(title);
 
-                inviteButton.textContent =
-                    "Enviando...";
-
+        pending.forEach(invitation => {
+            const card = document.createElement("div");
+            card.className = "pending-card";
+            const copy = document.createElement("div");
+            const name = document.createElement("strong");
+            name.textContent = invitation.invited_display_name || invitation.invited_username || "Usuario";
+            const meta = document.createElement("small");
+            meta.textContent = invitation.invited_username ? "@" + invitation.invited_username : "Invitación pendiente";
+            copy.append(name, meta);
+            const cancel = document.createElement("button");
+            cancel.type = "button";
+            cancel.textContent = "Cancelar";
+            cancel.addEventListener("click", async () => {
+                cancel.disabled = true;
                 try {
-                    await inviteUserByUsername(
-                        group.id,
-                        username.trim()
-                    );
-
-                    alert(
-                        "Invitación enviada correctamente."
-                    );
+                    await cancelGroupInvitation(invitation.id);
+                    await renderPendingWorkspaceInvitations();
                 } catch (error) {
-                    alert(
-                        getSupabaseErrorMessage(
-                            error,
-                            "No se ha podido enviar la invitación."
-                        )
-                    );
-                } finally {
-                    inviteButton.disabled =
-                        false;
-
-                    inviteButton.textContent =
-                        "+ Invitar miembro";
+                    cancel.disabled = false;
+                    alert(getSupabaseErrorMessage(error, "No se ha podido cancelar la invitación."));
                 }
+            });
+            card.append(copy, cancel);
+            pendingPanel.appendChild(card);
+        });
+    }
+
+    if (canManage) {
+        if (invitePanel) invitePanel.hidden = false;
+        if (inviteButton) inviteButton.hidden = true;
+        await renderPendingWorkspaceInvitations();
+    } else if (inviteButton) {
+        inviteButton.hidden = true;
+    }
+
+    if (canManage && inviteSend) {
+        inviteSend.addEventListener("click", async () => {
+            const username = String(inviteInput?.value || "").trim().replace(/^@/, "");
+            if (!username) {
+                if (inviteMessage) inviteMessage.textContent = "Escribe un nombre de usuario.";
+                inviteInput?.focus();
+                return;
             }
-        );
+            inviteSend.disabled = true;
+            if (inviteMessage) inviteMessage.textContent = "Enviando invitación…";
+            try {
+                await inviteUserByUsername(group.id, username);
+                if (inviteInput) inviteInput.value = "";
+                if (inviteMessage) inviteMessage.textContent = "Invitación enviada correctamente.";
+                await renderPendingWorkspaceInvitations();
+            } catch (error) {
+                if (inviteMessage) inviteMessage.textContent = getSupabaseErrorMessage(error, "No se ha podido enviar la invitación.");
+            } finally {
+                inviteSend.disabled = false;
+            }
+        });
+        inviteInput?.addEventListener("keydown", event => {
+            if (event.key === "Enter") inviteSend.click();
+        });
     }
 
     /* =====================================================
