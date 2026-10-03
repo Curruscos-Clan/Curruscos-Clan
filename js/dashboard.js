@@ -189,6 +189,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+    const workspaceGoal = document.getElementById("workspaceGoal");
+    const workspaceGoalTitle = document.getElementById("workspaceGoalTitle");
+    const workspaceGoalText = document.getElementById("workspaceGoalText");
+    const workspaceGoalAction = document.getElementById("workspaceGoalAction");
+    if (workspaceGoal && workspaceGoalTitle && workspaceGoalText && workspaceGoalAction) {
+        const goal = workspaceState.openTasks > 0
+            ? { title: "Cerrar los pendientes", text: "Resolver las tareas abiertas aumentará la capacidad operativa del workspace.", href: "eventos.html" }
+            : workspaceState.members <= 1
+                ? { title: "Traer a la primera persona", text: "Un workspace empieza a cobrar vida cuando deja de depender de una sola persona.", href: "miembros.html" }
+                : workspaceState.events === 0
+                    ? { title: "Crear la primera actividad", text: "Un evento convierte la estructura del workspace en actividad real.", href: "crear-evento.html" }
+                    : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
+                        ? { title: "Abrir el primer viaje", text: "El siguiente salto para este workspace es convertir una idea en un viaje planificado.", href: "viajes.html" }
+                        : workspaceState.memories === 0
+                            ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
+                            : null;
+        if (goal) {
+            workspaceGoal.hidden = false;
+            workspaceGoalTitle.textContent = goal.title;
+            workspaceGoalText.textContent = goal.text;
+            workspaceGoalAction.href = goal.href;
+        } else {
+            workspaceGoal.hidden = true;
+        }
+    }
+
     const actionGrid = document.getElementById("adaptiveActionGrid");
     const actionHubEyebrow = document.getElementById("actionHubEyebrow");
     const actionHubTitle = document.getElementById("actionHubTitle");
