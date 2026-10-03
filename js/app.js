@@ -411,6 +411,19 @@ async function initGroupSelector(access) {
    NOTIFICACIONES
    ========================================================= */
 
+async function updateSavedNavigation(userId){
+    const links=[...document.querySelectorAll('a[href="guardados.html"]')];
+    if(!links.length||!userId)return;
+    const {count,error}=await supabaseClient.from("saved_events").select("*",{count:"exact",head:true}).eq("user_id",userId);
+    if(error)return;
+    links.forEach(link=>{
+        let badge=link.querySelector(".nav-badge");
+        if(!badge){badge=document.createElement("span");badge.className="nav-badge";link.appendChild(badge);}
+        badge.textContent=count>99?"99+":String(count);
+        badge.hidden=!count;
+    });
+}
+
 function notificationIcon(type) {
     switch (type) {
         case "event":
@@ -1121,7 +1134,7 @@ async function loadEvents() {
     });
 }
 
-function setupEventForm() {
+async function setupEventForm() {
     const form =
         document.getElementById("eventForm");
 
@@ -1267,6 +1280,7 @@ document.addEventListener(
         window.curruscosCurrentAccess = access;
 
         await initPrivateShell(access);
+        await updateSavedNavigation(access.user.id);
 
         if (page === "eventos.html") {
             await loadEvents();
