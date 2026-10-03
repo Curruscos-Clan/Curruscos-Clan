@@ -671,11 +671,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const planFeatureEnabled = planFeatures[profile.feature] !== false;
         const contextNeedsAction = workspaceDecision.key !== "next";
         const hasActiveTrip = (trips || []).some(trip => trip.status === "planning");
-        const contextNeedsAction = workspaceType === "sports"
-            ? !nextEvent
-            : workspaceType === "travel"
-                ? !hasActiveTrip
-                : !nextEvent;
         if (planFeatureEnabled && contextNeedsAction) {
             ranked.push({
                 score: profile.score,
