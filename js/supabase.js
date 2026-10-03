@@ -278,6 +278,13 @@ async function getGroupPlanAccess(groupId, forceRefresh = false) {
     };
 }
 
+async function getGroupFeatureAccess(groupId, feature) {
+    if (!groupId || !feature) return false;
+    const access = await getGroupPlanAccess(groupId);
+    const features = access?.plan?.features || {};
+    return features[feature] === true;
+}
+
 async function checkGroupPlanCapacity(groupId, resource) {
     const access = await getGroupPlanAccess(groupId);
     if (!access) return { allowed: true };
