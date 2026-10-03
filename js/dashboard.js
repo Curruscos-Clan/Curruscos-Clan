@@ -907,6 +907,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         contextSignals.insertAdjacentHTML("afterbegin", contextPill);
     }
 
+    const planFeatures = (await getGroupPlanAccess(group.id))?.plan?.features || {};
+    const featureHints = document.getElementById("autopilotSignals");
+    if (featureHints) {
+        const enabled = Object.entries(planFeatures).filter(([,v]) => v === true).map(([k]) => k.replaceAll("_"," "));
+        if (enabled.length) {
+            const planPill = '<span class="autopilot-signal"><strong>Herramientas</strong>' + escapeHtml(enabled.slice(0,3).join(" · ")) + '</span>';
+            featureHints.insertAdjacentHTML("beforeend", planPill);
+        }
+    }
+
     const workspaceType = group.workspace_type || "community";
     const workspaceTitle = document.querySelector(".dashboard-welcome h1");
     const workspaceEyebrow = document.querySelector(".dashboard-welcome .dashboard-eyebrow");
