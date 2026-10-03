@@ -411,6 +411,17 @@
     "locationReason": "للفعالية تاريخ ولكن لم يُحدد مكانها بعد.",
     "pollReason": "هناك استطلاعات مفتوحة تنتظر رد المجموعة.",
     "invitationReason": "هناك مجموعات تنتظر ردك.",
-    "noPlanPrompt": "لا توجد خطة قادمة بعد. هذا وقت مناسب لإنشاء واحدة."
+    "noPlanPrompt": "لا توجد خطة قادمة بعد. هذا وقت مناسب لإنشاء واحدة.",
+    "closeAttendanceCount": "إغلاق حضور {{count}} شخص/أشخاص",
+    "attendanceReason": "لا تزال هناك ردود حضور ناقصة في {{event}}.",
+    "resolveTasksCount": "إنهاء {{count}} من المهام المعلقة",
+    "decideLocation": "تحديد مكان {{event}}",
+    "advanceTripsCount": "تطوير {{count}} من الرحلات",
+    "tripsPlanningReason": "لا تزال {{count}} من الرحلات قيد التخطيط.",
+    "resolveDecisionsCount": "حسم {{count}} من القرارات",
+    "answerInvitationsCount": "الرد على {{count}} من الدعوات",
+    "communitySignal": "إشارة المجتمع",
+    "communityTitle": "رؤية ما يحدث",
+    "communityReason": "هناك نشاط حديث حول {{event}}."
   }
 }
