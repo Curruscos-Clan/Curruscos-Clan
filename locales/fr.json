@@ -1,0 +1,159 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "explore": "Explorer",
+    "myEvents": "Mes événements",
+    "rankings": "Classements",
+    "create": "Créer",
+    "login": "Se connecter",
+    "saved": "Enregistrés",
+    "trips": "Voyages",
+    "members": "Membres",
+    "history": "Histoire",
+    "memories": "Souvenirs",
+    "events": "Événements",
+    "chat": "Chat",
+    "notifications": "Notifications"
+  },
+  "community": {
+    "activePeople": "Personnes actives"
+  },
+  "landing": {
+    "exploreEvents": "Explorer les événements"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "searching": "Recherche...",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "cancel": "Annuler",
+    "send": "Envoyer",
+    "close": "Fermer",
+    "add": "Ajouter",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "viewProfile": "Voir le profil",
+    "private": "Privé",
+    "participant": "Participant",
+    "loadingGroup": "Chargement du groupe..."
+  },
+  "activity": {
+    "padel": "Padel",
+    "futbol": "Football",
+    "baloncesto": "Basket-ball",
+    "tenis": "Tennis",
+    "ajedrez": "Échecs",
+    "gaming": "Gaming",
+    "running": "Running",
+    "other": "Autre",
+    "otherPlural": "Autres"
+  },
+  "category": {
+    "tournament": "Tournoi",
+    "sport": "Sport",
+    "social": "Social",
+    "activity": "Activité"
+  },
+  "status": {
+    "live": "En direct",
+    "preparing": "Préparation",
+    "cancelled": "Annulé",
+    "finished": "Terminé",
+    "registrationOpen": "Inscriptions ouvertes",
+    "upcoming": "À venir"
+  },
+  "format": {
+    "knockout": "Élimination",
+    "roundRobin": "Ligue",
+    "swiss": "Suisse",
+    "race": "Course",
+    "custom": "Personnalisé"
+  },
+  "event": {
+    "registrationClosed": "Inscriptions fermées",
+    "noSpots": "Complet",
+    "free": "Gratuit",
+    "locationTbd": "Lieu à définir",
+    "descriptionTbd": "Pas encore de description.",
+    "organizes": "Organisé par",
+    "event": "Événement",
+    "context": "Contexte",
+    "events": "Événements"
+  },
+  "team": {
+    "viewTeam": "Voir l'équipe →",
+    "follow": "Suivre l'équipe",
+    "unfollow": "Ne plus suivre",
+    "owner": "Propriétaire",
+    "team": "Équipe",
+    "persistent": "Équipe persistante",
+    "squad": "Effectif",
+    "history": "Historique",
+    "members": "Membres",
+    "noVisibleMembers": "Aucun membre visible.",
+    "noPublicEvents": "Aucune participation publique de l'équipe pour le moment.",
+    "notFound": "Équipe introuvable.",
+    "notAvailable": "Cette équipe n'est pas disponible publiquement.",
+    "memberOne": "membre",
+    "memberMany": "membres",
+    "viewEvent": "Voir l’événement",
+    "activity": "Activité",
+    "context": "Contexte",
+    "matches": "Matchs",
+    "wins": "Victoires",
+    "losses": "Défaites",
+    "points": "Points",
+    "followers": "Abonnés"
+  },
+  "explore": {
+    "allActivities": "Toutes les activités",
+    "noEvents": "Aucun événement trouvé.",
+    "tryFilters": "Essayez une autre recherche ou modifiez les filtres.",
+    "notInterested": "Pas intéressé",
+    "activeFilters": "Filtres actifs · effacez-les en un geste.",
+    "autoUpdate": "Les résultats publics se mettent à jour automatiquement.",
+    "noResults": "Aucun résultat",
+    "noPeople": "Aucun profil public actif trouvé.",
+    "noTeams": "Aucune équipe publique à afficher pour le moment.",
+    "saveError": "Impossible de mettre à jour l'enregistrement.",
+    "memberOne": "membre",
+    "memberMany": "membres",
+    "spotOne": "place libre",
+    "spotMany": "places libres",
+    "registeredOne": "inscrit",
+    "registeredMany": "inscrits",
+    "until": "Jusqu’au {{date}}",
+    "eventOne": "événement disponible",
+    "eventMany": "événements disponibles",
+    "resultOne": "1 résultat",
+    "resultMany": "{{count}} résultats"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Tout marquer comme lu"
+  },
+  "chat": {
+    "newConversation": "＋ Nouvelle conversation",
+    "conversations": "Conversations",
+    "searchPeople": "Rechercher des personnes…",
+    "selectConversation": "Sélectionnez une conversation",
+    "messagesHere": "Vos messages apparaissent ici.",
+    "writeMessage": "Écrire un message…",
+    "communityHere": "Votre communauté, ici."
+  },
+  "travel": {
+    "newTrip": "＋ Nouveau voyage",
+    "createTrip": "Créer le voyage"
+  },
+  "social": {
+    "teamWin": "A gagné contre",
+    "teamLoss": "A perdu contre",
+    "teamDraw": "A fait match nul avec",
+    "teamMember": "A ajouté",
+    "teamJoin": "S’est inscrit à",
+    "personJoin": "S’est inscrit à",
+    "personOrganize": "A organisé",
+    "team": "Équipe"
+  }
+}
