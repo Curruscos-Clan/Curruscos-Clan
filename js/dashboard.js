@@ -156,6 +156,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         const featureMap = usage?.plan?.features || {};
         const openTasks = tasks?.filter(task => !task.completed).length || 0;
         const planningTrips = (trips || []).filter(trip => trip.status === "planning").length;
+        const actionState = (done, active) => done ? "COMPLETADO" : active ? "EN CURSO" : "SIGUIENTE";
+        const eventState = events.length > 0;
+        const peopleState = members.length > 1;
+        const tripState = planningTrips > 0;
         const primary = type === "sports" && featureMap.competitions
             ? {href:"competicion.html", icon:"◆", kicker:"DEPORTE", title:"Activa la competición", text:"Equipos, formato y partidos en un mismo flujo."}
             : type === "travel" && featureMap.travel && planningTrips === 0
@@ -168,13 +172,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const actions = [
             primary,
-            {href:"miembros.html", icon:"◎", kicker:"PERSONAS", title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace."},
+            {href:"miembros.html", icon:"◎", kicker:actionState(peopleState, false), title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace."},
             type === "travel" && featureMap.travel
-                ? {href:"viajes.html", icon:"✈", kicker:"TRAVEL", title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
+                ? {href:"viajes.html", icon:"✈", kicker:actionState(tripState, tripState), title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
                 : type === "sports" && featureMap.competitions
                     ? {href:"competicion.html", icon:"◈", kicker:"COMPETICIÓN", title:"Centro competitivo", text:"Gestiona cuadros, partidos y resultados."}
                     : {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras."},
-            {href:"eventos.html", icon:"□", kicker:"CALENDARIO", title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos."},
+            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos."},
             {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo."},
             {href:"perfil.html", icon:"○", kicker:"IDENTIDAD", title:"Completar tu perfil", text:"Haz que las personas del workspace sepan quién eres."}
         ];
