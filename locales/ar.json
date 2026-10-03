@@ -54,7 +54,8 @@
     "viewProfile": "عرض الملف الشخصي",
     "private": "خاص",
     "participant": "مشارك",
-    "loadingGroup": "جارٍ تحميل المجموعة..."
+    "loadingGroup": "جارٍ تحميل المجموعة...",
+    "creating": "جارٍ الإنشاء…"
   },
   "activity": {
     "padel": "بادل",
@@ -266,5 +267,21 @@
     "publishing": "جارٍ النشر…",
     "publishError": "تعذر نشر الفعالية. تحقق من البيانات.",
     "publish": "نشر الفعالية"
+  },
+  "roles": {
+    "owner": "المالك",
+    "admin": "المسؤول",
+    "member": "عضو"
+  },
+  "date": {
+    "undefined": "التاريخ غير محدد"
+  },
+  "time": {
+    "undefined": "الوقت غير محدد"
+  },
+  "group": {
+    "group": "مجموعة",
+    "namePrompt": "اسم المجموعة الجديدة:",
+    "descriptionPrompt": "وصف المجموعة (اختياري):"
   }
 }
