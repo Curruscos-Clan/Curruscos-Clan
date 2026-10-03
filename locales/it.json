@@ -55,7 +55,9 @@
     "private": "Privato",
     "participant": "Partecipante",
     "loadingGroup": "Caricamento gruppo...",
-    "creating": "Creazione..."
+    "creating": "Creazione...",
+    "viewEvent": "Vedi evento",
+    "remove": "Rimuovi"
   },
   "activity": {
     "padel": "Padel",
@@ -98,7 +100,10 @@
     "organizes": "Organizzato da",
     "event": "Evento",
     "context": "Contesto",
-    "events": "Eventi"
+    "events": "Eventi",
+    "generic": "Evento",
+    "spots": "posti",
+    "open": "Evento aperto"
   },
   "team": {
     "viewTeam": "Vedi squadra →",
@@ -343,5 +348,22 @@
     "organizedOne": "evento organizzato",
     "organizedMany": "eventi organizzati",
     "round": "Turno"
+  },
+  "saved": {
+    "loadError": "Impossibile caricare gli eventi salvati.",
+    "retry": "Riprova tra pochi secondi.",
+    "eventsError": "Impossibile caricare gli eventi.",
+    "loginTitle": "Salva i tuoi prossimi programmi.",
+    "loginText": "Accedi per creare la tua raccolta personale di eventi.",
+    "noMatch": "Nessun elemento salvato corrisponde.",
+    "empty": "Non hai ancora salvato eventi.",
+    "tryOther": "Prova un altro termine.",
+    "exploreHint": "Esplora gli eventi, salva quelli che ti interessano e torna quando vuoi.",
+    "removeError": "Impossibile rimuovere l’evento.",
+    "generic": "Evento",
+    "spots": "posti",
+    "open": "Evento aperto",
+    "viewEvent": "Vedi evento",
+    "remove": "Rimuovi"
   }
 }
