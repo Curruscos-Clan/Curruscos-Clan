@@ -17,8 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const group = access.currentGroup;
     const members = await getGroupMembers(group.id);
     const collaborationReady = members.length > 1;
-    const createPanel = document.getElementById("createPanel");
-    const focusCreateButton = document.getElementById("focusCreateButton");
     if (!collaborationReady) {
         if (createPanel) {
             createPanel.innerHTML =
