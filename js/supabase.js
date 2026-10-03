@@ -1793,7 +1793,7 @@ async function cancelPersistentTeamInvitation(invitationId){const {data,error}=a
 async function getPublicPersistentTeamEvents(teamId){const {data,error}=await supabaseClient.rpc("get_public_persistent_team_events",{target_team_id:teamId});if(error){console.error("Error cargando eventos del equipo:",error);return [];}return data||[];}
 async function getPersistentTeamEventReadiness(eventId,teamId){const {data,error}=await supabaseClient.rpc("get_persistent_team_event_readiness",{target_event_id:eventId,target_team_id:teamId});if(error){console.error("Error comprobando equipo para evento:",error);return null;}return data?.[0]||null;}
 async function invitePersistentTeamToEvent(eventId,teamId){const {data,error}=await supabaseClient.rpc("invite_persistent_team_to_event",{target_event_id:eventId,target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se han podido enviar las invitaciones."));return Number(data||0);}
-(eventId){const {data,error}=await supabaseClient.rpc("get_my_teams_for_event",{target_event_id:eventId});if(error){console.error("Error obteniendo equipos para evento:",error);return [];}return data||[];}
+async function getMyTeamsForEvent(eventId){const {data,error}=await supabaseClient.rpc("get_my_teams_for_event",{target_event_id:eventId});if(error){console.error("Error obteniendo equipos para evento:",error);return [];}return data||[];}
 async function registerPersistentTeamForEvent(eventId,teamId){const {data,error}=await supabaseClient.rpc("register_persistent_team_for_event",{target_event_id:eventId,target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido registrar el equipo."));return data;}
 
 async function getPublicEventTeams(eventId) {
