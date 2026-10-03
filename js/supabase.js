@@ -350,27 +350,25 @@ async function createGroupEvent(eventData) {
         return null;
     }
 
-    const { data, error } = await supabaseClient
-        .from("events")
-        .insert({
-            group_id: group.id,
-            created_by: user.id,
-            title: eventData.title,
-            description: eventData.description,
-            date: eventData.date,
-            time: eventData.time,
-            location: eventData.location,
-            trip_id: eventData.trip_id || null
-        })
-        .select()
-        .single();
+    const { data, error } = await supabaseClient.rpc(
+        "create_group_event",
+        {
+            target_group_id: group.id,
+            event_title: eventData.title,
+            event_description: eventData.description || null,
+            event_date: eventData.date || null,
+            event_time: eventData.time || null,
+            event_location: eventData.location || null,
+            event_trip_id: eventData.trip_id || null
+        }
+    );
 
     if (error) {
         console.error("Error creando evento:", error);
-        return null;
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido crear el evento."));
     }
 
-    return data;
+    return data || null;
 }
 
 
