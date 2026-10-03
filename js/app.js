@@ -1291,13 +1291,16 @@ document.addEventListener(
         const page =
             getCurrentPage();
 
-        if (!PRIVATE_PAGES.has(page)) {
+        const protectedPage = PRIVATE_PAGES.has(page) || AUTH_ONLY_PAGES.has(page);
+
+        if (!protectedPage) {
             resolveCurruscosReady(null);
             return;
         }
 
-        const access =
-            await requirePrivatePage();
+        const access = AUTH_ONLY_PAGES.has(page)
+            ? await requireAuthPage()
+            : await requirePrivatePage();
 
         if (!access) {
             resolveCurruscosReady(null);
@@ -1306,7 +1309,9 @@ document.addEventListener(
 
         window.curruscosCurrentAccess = access;
 
-        await initPrivateShell(access);
+        if (!AUTH_ONLY_PAGES.has(page)) {
+            await initPrivateShell(access);
+        }
         await updateSavedNavigation(access.user.id);
 
         if (page === "eventos.html") {
