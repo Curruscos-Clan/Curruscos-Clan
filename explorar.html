@@ -26,7 +26,33 @@
 .explore-toolbar{padding:0 3px}.explore-note{padding-left:3px}
 @media(max-width:650px){.explore-page{padding-top:42px}.explore-top h1{font-size:clamp(48px,15vw,68px)}.explore-section{margin-top:42px}.explore-section-head h2{font-size:28px}.explore-filters{margin-top:26px}}
 </style>
-</head>
+<style id="curruscos-explore-v4">
+/* SOCIAL DISCOVERY V4 — activity as context, not clutter */
+.explore-page{max-width:1320px!important}
+.explore-page .hero h1{font-weight:950;letter-spacing:-.075em}
+.social-feed-section{position:relative;overflow:hidden}
+.social-feed-section::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(500px 180px at 0 0,rgba(255,255,255,.045),transparent 70%)}
+.social-feed-section .section-header{position:relative}
+.social-feed-section .section-header h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.06em}
+.social-feed{position:relative;display:grid;gap:8px}
+.social-feed-item{position:relative;display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:13px;padding:14px 15px!important;border-radius:17px!important;background:rgba(255,255,255,.025)!important;border:1px solid rgba(255,255,255,.07)!important;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.social-feed-item:hover{transform:translateX(3px);background:rgba(255,255,255,.05)!important;border-color:rgba(255,255,255,.15)!important}
+.social-feed-avatar{width:42px!important;height:42px!important;border-radius:50%!important;background:linear-gradient(145deg,#262626,#0d0d0d)!important;border:1px solid rgba(255,255,255,.12)}
+.social-feed-item strong{font-weight:800}
+.social-feed-item small,.social-feed-time{color:var(--muted)!important}
+.social-feed-item a{color:inherit}
+.community-context{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.community-context span{padding:6px 9px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.025);font-size:10px;color:var(--muted)}
+.discovery-priority{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin:14px 0 30px}
+.discovery-priority-card{position:relative;overflow:hidden;min-height:180px;padding:24px;border:1px solid rgba(255,255,255,.09);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.015));box-shadow:0 24px 75px rgba(0,0,0,.14)}
+.discovery-priority-card.primary{background:linear-gradient(135deg,#171717,#0c0c0c);color:#fff}
+.discovery-priority-card h3{margin:8px 0;font-size:27px;line-height:.98;letter-spacing:-.05em}
+.discovery-priority-card p{max-width:560px;color:var(--muted);font-size:12px;line-height:1.6}
+.discovery-priority-card.primary p{color:#aaa}
+.discovery-priority-card .micro{font-size:9px;font-weight:900;letter-spacing:.16em;opacity:.58}
+.discovery-priority-card a{display:inline-flex;margin-top:10px;padding:10px 13px;border-radius:11px;background:#fff;color:#111;text-decoration:none;font-size:11px;font-weight:850}
+@media(max-width:760px){.discovery-priority{grid-template-columns:1fr}.social-feed-item{grid-template-columns:38px 1fr}.social-feed-time{grid-column:2}.social-feed-avatar{width:38px!important;height:38px!important}}
+</style></head>
 <body>
 <header class="navbar">
 <a href="index.html" class="logo">CURRUSCOS.</a>
@@ -38,7 +64,21 @@
 <div class="explore-filters"><input id="eventSearch" type="search" placeholder="Buscar por nombre, lugar u organizador..."><select id="eventType"><option value="all">Todas las actividades</option><option value="padel">Pádel</option><option value="futbol">Fútbol</option><option value="baloncesto">Baloncesto</option><option value="tenis">Tenis</option><option value="ajedrez">Ajedrez</option><option value="gaming">Gaming</option><option value="running">Running</option><option value="otro">Otros</option></select><select id="eventCategory"><option value="all">Todas las categorías</option><option value="tournament">Torneos</option><option value="sport">Deporte</option><option value="gaming">Gaming</option><option value="social">Social</option><option value="activity">Actividades</option><option value="other">Otros</option></select><select id="eventSort"><option value="date">Más próximos</option><option value="newest">Más recientes</option><option value="capacity">Más participantes</option></select></div>
 <div id="exploreChips" class="explore-chips"><button class="explore-chip active" data-filter="all">Todo</button><button class="explore-chip" data-filter="open">Con plazas</button><button class="explore-chip" data-filter="soon">Próximos</button><button class="explore-chip" data-filter="live">En directo</button></div>
 <div class="explore-toolbar"><div id="exploreSummary" class="explore-summary"></div><button id="clearExploreFilters" class="explore-clear" type="button">Limpiar filtros</button></div><div id="exploreHint" class="explore-note">Los resultados públicos se actualizan automáticamente.</div>
-<section id="recommendationsSection" class="explore-section" style="display:none"><div class="explore-section-head"><div><span class="eyebrow">PERSONALIZADO</span><h2>Para ti</h2><p>Eventos seleccionados según tu actividad y tu red.</p></div></div><div id="recommendationsGrid" class="public-events-grid"></div></section><section id="socialFeedSection" class="explore-section" style="display:none"><div class="explore-section-head"><div><span class="eyebrow">COMUNIDAD</span><h2>Tu comunidad</h2><p>Actividad reciente de personas que ya están conectadas con Curruscos.</p></div><a class="pub-back" href="notificaciones.html">Ver avisos</a></div><div id="socialFeed" class="people-grid"></div></section><section id="peopleSection" class="explore-section"><div class="explore-section-head"><div><h2>Personas activas</h2><p>Gente que ya está participando u organizando actividades públicas.</p></div><a class="pub-back" href="perfil-publico.html">Ver perfiles</a></div><div id="peopleGrid" class="people-grid"></div></section>
+<section id="recommendationsSection" class="explore-section" style="display:none"><div class="explore-section-head"><div><span class="eyebrow">PERSONALIZADO</span><h2>Para ti</h2><p>Eventos seleccionados según tu actividad y tu red.</p></div></div><div id="recommendationsGrid" class="public-events-grid"></div></section><!-- CURRUSCOS-DISCOVERY-PRIORITY -->
+<section class="discovery-priority" aria-label="Tu contexto">
+  <article class="discovery-priority-card primary">
+    <span class="micro">TU SIGUIENTE DESCUBRIMIENTO</span>
+    <h3>Lo que ocurre a tu alrededor, primero.</h3>
+    <p>La exploración prioriza actividad de tu comunidad, eventos próximos y señales que pueden ayudarte a decidir qué hacer después.</p>
+    <a href="#socialFeedSection">Ver actividad →</a>
+  </article>
+  <article class="discovery-priority-card">
+    <span class="micro">DISEÑO CON INTENCIÓN</span>
+    <h3>Menos ruido. Más contexto.</h3>
+    <p>Las opciones secundarias quedan detrás de la exploración principal para que puedas reconocer rápidamente lo relevante.</p>
+  </article>
+</section>
+<section id="socialFeedSection" class="explore-section" style="display:none"><div class="explore-section-head"><div><span class="eyebrow">COMUNIDAD</span><h2>Tu comunidad</h2><p>Actividad reciente de personas que ya están conectadas con Curruscos.</p></div><a class="pub-back" href="notificaciones.html">Ver avisos</a></div><div id="socialFeed" class="people-grid"></div></section><section id="peopleSection" class="explore-section"><div class="explore-section-head"><div><h2>Personas activas</h2><p>Gente que ya está participando u organizando actividades públicas.</p></div><a class="pub-back" href="perfil-publico.html">Ver perfiles</a></div><div id="peopleGrid" class="people-grid"></div></section>
 <section id="teamsSection" class="explore-section"><div class="explore-section-head"><div><h2>Equipos activos</h2><p>Equipos que ya están compitiendo en actividades públicas.</p></div></div><div id="teamsGrid" class="people-grid"></div></section><section id="featuredSection" class="explore-section"><div class="explore-section-head"><div><h2>Destacados</h2><p>Eventos con actividad y fechas cercanas.</p></div></div><div id="featuredEventsGrid" class="public-events-grid"></div></section>
 <section class="explore-section"><div class="explore-section-head"><div><h2>Todos los eventos</h2><p id="allEventsLabel"></p></div></div><div id="publicEventsGrid" class="public-events-grid"></div></section>
 </main>
