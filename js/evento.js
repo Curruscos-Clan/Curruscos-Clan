@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let expenses = [];
     let expenseSplits = new Map();
     let relatedTrip = null;
+    let taskFilter = "all";
 
     const params =
         new URLSearchParams(
@@ -246,13 +247,70 @@ document.addEventListener("DOMContentLoaded", async () => {
         const container = document.getElementById("tasksList");
         container.innerHTML = "";
 
+        const titleEl = document.getElementById("taskListTitle");
+        const metaEl = document.getElementById("taskListMeta");
+        const filters = document.querySelectorAll("[data-task-filter]");
+
+        const filtered = tasks.filter(task => {
+            if (taskFilter === "mine") {
+                return String(task.assigned_to || "") === String(currentUser.id);
+            }
+            if (taskFilter === "pending") {
+                return !task.completed;
+            }
+            if (taskFilter === "done") {
+                return Boolean(task.completed);
+            }
+            return true;
+        });
+
+        const pendingCount = tasks.filter(task => !task.completed).length;
+        const mineCount = tasks.filter(task =>
+            String(task.assigned_to || "") === String(currentUser.id) && !task.completed
+        ).length;
+
+        if (titleEl) {
+            titleEl.textContent = taskFilter === "mine"
+                ? "Tus tareas"
+                : taskFilter === "pending"
+                    ? "Pendientes"
+                    : taskFilter === "done"
+                        ? "Completadas"
+                        : "Preparación";
+        }
+
+        if (metaEl) {
+            metaEl.textContent = tasks.length
+                ? tasks.length + (tasks.length === 1 ? " tarea" : " tareas") +
+                    " · " + pendingCount + " pendientes" +
+                    (mineCount ? " · " + mineCount + " para ti" : "")
+                : "Organizad lo que queda por hacer.";
+        }
+
+        filters.forEach(button => {
+            const active = button.dataset.taskFilter === taskFilter;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-pressed", String(active));
+        });
+
         if (!tasks.length) {
             container.innerHTML =
                 '<div class="task-empty">Todavía no hay tareas. Crea la primera para repartir la preparación.</div>';
             return;
         }
 
-        const ordered = [...tasks].sort((a, b) =>
+        if (!filtered.length) {
+            const emptyText = taskFilter === "mine"
+                ? "No tienes tareas asignadas ahora mismo."
+                : taskFilter === "pending"
+                    ? "No quedan tareas pendientes."
+                    : "Todavía no hay tareas completadas.";
+            container.innerHTML =
+                '<div class="task-empty">' + emptyText + '</div>';
+            return;
+        }
+
+        const ordered = [...filtered].sort((a, b) =>
             Number(Boolean(a.completed)) - Number(Boolean(b.completed))
         );
 
@@ -747,6 +805,54 @@ document.addEventListener("DOMContentLoaded", async () => {
         container.appendChild(controls);
     }
 
+    function setupTaskFilters() {
+        const filters = document.querySelectorAll("[data-task-filter]");
+        filters.forEach(button => {
+            button.addEventListener("click", () => {
+                taskFilter = button.dataset.taskFilter || "all";
+                renderTasks();
+            });
+        });
+    }
+
+    async function setupEventShare() {
+        const button = document.getElementById("shareEventButton");
+        if (!button || !currentEvent) return;
+
+        button.addEventListener("click", async () => {
+            const url = window.location.href;
+            const shareData = {
+                title: currentEvent.title || "Evento de Curruscos",
+                text: "Mira este evento en Curruscos.",
+                url
+            };
+
+            button.disabled = true;
+
+            try {
+                if (navigator.share) {
+                    await navigator.share(shareData);
+                    button.textContent = "✓ Compartido";
+                } else if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(url);
+                    button.textContent = "✓ Enlace copiado";
+                } else {
+                    window.prompt("Copia el enlace del evento:", url);
+                    button.textContent = "✓ Enlace listo";
+                }
+            } catch (error) {
+                if (error?.name !== "AbortError") {
+                    alert("No se ha podido compartir el evento.");
+                }
+            } finally {
+                setTimeout(() => {
+                    button.disabled = false;
+                    button.textContent = "↗ Compartir evento";
+                }, 1800);
+            }
+        });
+    }
+
     async function setupHistoryButton() {
         const button = document.getElementById("saveToHistoryButton");
         if (!button || !currentEvent) return;
@@ -1095,7 +1201,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateCommandCenter();
 
         setupForms();
-        setupHistoryButton();
+        setupTaskFilters();
+        await setupHistoryButton();
+        await setupEventShare();
     }
 
     function setupForms() {
