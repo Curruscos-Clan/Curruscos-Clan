@@ -93,7 +93,12 @@
     "noVisibleMembers": "لا يوجد أعضاء ظاهرون.",
     "noPublicEvents": "لا توجد مشاركات عامة للفريق بعد.",
     "notFound": "لم يتم العثور على الفريق.",
-    "notAvailable": "هذا الفريق غير متاح للعامة."
+    "notAvailable": "هذا الفريق غير متاح للعامة.",
+    "memberOne": "عضو",
+    "memberMany": "أعضاء",
+    "viewEvent": "عرض الفعالية",
+    "activity": "نشاط",
+    "context": "السياق"
   },
   "explore": {
     "allActivities": "كل الأنشطة",
@@ -105,7 +110,18 @@
     "noResults": "لا توجد نتائج",
     "noPeople": "لم يتم العثور على ملفات عامة نشطة.",
     "noTeams": "لا توجد فرق عامة لعرضها بعد.",
-    "saveError": "تعذر تحديث الحفظ."
+    "saveError": "تعذر تحديث الحفظ.",
+    "memberOne": "عضو",
+    "memberMany": "أعضاء",
+    "spotOne": "مكان شاغر",
+    "spotMany": "أماكن شاغرة",
+    "registeredOne": "مشارك",
+    "registeredMany": "مشاركين",
+    "until": "حتى {{date}}",
+    "eventOne": "فعالية متاحة",
+    "eventMany": "فعاليات متاحة",
+    "resultOne": "نتيجة واحدة",
+    "resultMany": "{{count}} نتائج"
   },
   "notifications": {
     "title": "الإشعارات",
@@ -123,5 +139,15 @@
   "travel": {
     "newTrip": "＋ رحلة جديدة",
     "createTrip": "إنشاء رحلة"
+  },
+  "social": {
+    "teamWin": "فاز على",
+    "teamLoss": "خسر أمام",
+    "teamDraw": "تعادل مع",
+    "teamMember": "أضاف عضوًا",
+    "teamJoin": "سجّل في",
+    "personJoin": "انضم إلى",
+    "personOrganize": "نظّم",
+    "team": "فريق"
   }
 }
