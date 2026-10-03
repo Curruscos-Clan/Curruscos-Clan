@@ -207,7 +207,8 @@ async function renderPublicEvent(){
     const root=document.getElementById("publicEventRoot");
     const id=new URLSearchParams(location.search).get("id");
     if(!id){root.innerHTML='<div class="empty-state">Evento no encontrado.</div>';return;}
-    const event=await getPublicEvent(id);\n    trackEventView(event);
+    const event=await getPublicEvent(id);
+    trackEventView(event);
     if(!event){root.innerHTML='<div class="empty-state">Este evento no existe o ya no está publicado.</div>';return;}
 
     const user=await getCurrentUser();
@@ -222,7 +223,8 @@ async function renderPublicEvent(){
     const closed=event.status!=="published"||deadlinePassed;
     const fee=Number(event.entry_fee||0);
     const isOrganizer=!!user&&event.created_by===user.id;
-    const relatedEvents=await getPublicRelatedEvents(id);\n    const activePeople=(event.event_type?await getPublicActivePeople("",event.event_type):[]).filter(p=>!participants.some(x=>x.user_id===p.user_id)).slice(0,6);
+    const relatedEvents=await getPublicRelatedEvents(id);
+    const activePeople=(event.event_type?await getPublicActivePeople("",event.event_type):[]).filter(p=>!participants.some(x=>x.user_id===p.user_id)).slice(0,6);
     const participantDashboard=renderParticipantDashboard(event,teams,teamMembers,matches,user,mine);
     const participantActions=renderParticipantActions(event,user,mine,isOrganizer);
     const eventContext=renderEventContext(event,yes);
