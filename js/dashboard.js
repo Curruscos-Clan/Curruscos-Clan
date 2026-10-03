@@ -489,7 +489,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
         const profile = senseProfile[workspaceType] || senseProfile.community;
         const planFeatureEnabled = planFeatures[profile.feature] !== false;
-        if (planFeatureEnabled && (!nextEvent || workspaceType === "sports" || workspaceType === "travel")) {
+        const hasActiveTrip = (trips || []).some(trip => trip.status === "planning");
+        const contextNeedsAction = workspaceType === "sports"
+            ? !nextEvent
+            : workspaceType === "travel"
+                ? !hasActiveTrip
+                : !nextEvent;
+        if (planFeatureEnabled && contextNeedsAction) {
             ranked.push({
                 score: profile.score,
                 label: profile.label,
