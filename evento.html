@@ -1231,6 +1231,7 @@
                     <span class="event-command-kicker">RESUMEN DEL PLAN</span>
                     <strong id="eventCommandHeadline">Preparando el evento...</strong>
                     <span id="eventCommandSubline">Cargando participantes, tareas y gastos.</span>
+                    <button id="eventCommandAction" type="button" class="event-command-action" hidden>Ver siguiente paso →</button>
                 </div>
                 <div class="event-command-stats">
                     <div><strong id="commandPeople">0/0</strong><span>van</span></div>
@@ -1979,4 +1980,5 @@
 .expense-split-input-row{display:grid;grid-template-columns:minmax(0,1fr) 100px;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
 .expense-split-input-row input{width:100%;box-sizing:border-box;min-height:36px;padding:0 9px}
 .expense-split-save{justify-self:end;min-height:36px;padding:0 12px;border:0;border-radius:9px;background:var(--text);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
-@media(max-width:600px){.expense-split-input-row{grid-template-columns:minmax(0,1fr) 90px}.expense-settlement-row{font-size:12px}}
+@media(max-width:600px){.expense-split-input-row{grid-template-columns:minmax(0,1fr) 90px}.expense-settlement-row{font-size:12px}}.event-command-action{width:max-content;margin-top:10px;padding:7px 10px;border:1px solid rgba(0,0,0,.12);border-radius:9px;background:#fff;color:#111;font-size:10px;font-weight:800;cursor:pointer}.event-command-action:hover{background:#f2f2f2}.event-command-action[hidden]{display:none}
+
