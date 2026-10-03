@@ -4213,3 +4213,17 @@ textarea:focus {
     border: 1px solid var(--border);
 }
 
+
+/* ---------- Conversion screens polish ---------- */
+.public-create-page,.pub-profile{position:relative}
+.public-create-card,.pub-card{background:rgba(255,255,255,.80)!important;border:1px solid var(--border)!important;border-radius:28px!important;box-shadow:var(--shadow-md)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.public-create-page>h1,.pub-head h1{letter-spacing:-.085em!important}
+.create-progress-step{border:1px solid var(--border);background:rgba(255,255,255,.60)!important;transition:.2s}.create-progress-step.active{background:var(--text)!important;color:#fff}
+.create-section-label{color:var(--accent)!important;letter-spacing:.13em}
+.create-note{background:var(--accent-soft)!important;border:1px solid rgba(255,77,46,.08)}
+.smart-format-help{background:rgba(241,242,245,.82)!important;border:1px solid var(--border)}
+.event-live-preview{position:relative;overflow:hidden;border-radius:19px!important;background:radial-gradient(circle at 90% 0,rgba(255,77,46,.3),transparent 15rem),linear-gradient(135deg,#191b20,#08090b)!important;box-shadow:0 16px 35px rgba(17,19,24,.14)}
+.pub-top{padding-bottom:6px}.pub-avatar{background:linear-gradient(135deg,#191b20,#07080a)!important;box-shadow:0 12px 25px rgba(17,19,24,.12)}
+.pub-badge{background:var(--accent-soft)!important;color:var(--accent)!important}
+.pub-stat,.pub-record-item,.pub-activity-item,.pub-team-item{background:rgba(242,243,246,.72)!important}
+.pub-activity-item:hover,.pub-team-item:hover{background:#fff!important;box-shadow:var(--shadow-sm)}
