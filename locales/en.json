@@ -57,7 +57,8 @@
     "loadingGroup": "Loading group...",
     "creating": "Creating...",
     "viewEvent": "View event",
-    "remove": "Remove"
+    "remove": "Remove",
+    "manage": "Manage"
   },
   "activity": {
     "padel": "Padel",
@@ -82,7 +83,8 @@
     "cancelled": "Cancelled",
     "finished": "Finished",
     "registrationOpen": "Registration open",
-    "upcoming": "Upcoming"
+    "upcoming": "Upcoming",
+    "published": "Publicado"
   },
   "format": {
     "knockout": "Knockout",
@@ -365,5 +367,18 @@
     "open": "Open event",
     "viewEvent": "View event",
     "remove": "Remove"
+  },
+  "myEvents": {
+    "upcoming": "Upcoming",
+    "participating": "Participating",
+    "organizing": "Organizing",
+    "finished": "Finished",
+    "noUpcoming": "You have no upcoming events.",
+    "noOrganizing": "You aren't organizing any events yet.",
+    "noParticipating": "You aren't participating in any events yet.",
+    "noFinished": "You don't have an event history yet.",
+    "explore": "Explore events",
+    "create": "Create an event",
+    "find": "Find a plan"
   }
 }
