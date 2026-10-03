@@ -1999,3 +1999,17 @@ function startGlobalActivityBadges(){
     window.addEventListener("curruscos:chat-updated",updateGlobalActivityBadges);
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startGlobalActivityBadges);else startGlobalActivityBadges();
+
+
+async function getGroupUsage(groupId) {
+    if (!groupId) return null;
+    const { data, error } = await supabaseClient.rpc(
+        "get_group_usage",
+        { target_group_id: groupId }
+    );
+    if (error) {
+        console.error("Error obteniendo uso del workspace:", error);
+        return null;
+    }
+    return data || null;
+}
