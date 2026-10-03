@@ -227,7 +227,7 @@ async function loadTripParticipants() {
 }
 
 
-async function loadTripFinances() {
+async async function loadTripFinances() {
     if (!activeTrip) return;
 
     const eventResult = await supabaseClient
