@@ -1,4 +1,53 @@
 <!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Equipo · Curruscos</title><meta name="description" content="Perfil público de un equipo de Curruscos."><link rel="stylesheet" href="css/style.css"><style>
 .team-page{max-width:980px;margin:auto;padding:70px 24px 100px}.team-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.team-back{color:var(--muted);text-decoration:none;font-size:12px;font-weight:800}.team-card,.team-section{border:1px solid var(--border);border-radius:28px;background:var(--surface);padding:30px;box-shadow:var(--shadow-sm)}.team-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-end}.team-kicker{color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.team-head h1{font-size:clamp(44px,7vw,72px);letter-spacing:-.07em;line-height:.9;margin:8px 0}.team-head p{color:var(--muted);margin:0;font-size:13px}.team-record{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:22px}.team-stat{padding:16px;border:1px solid var(--border);border-radius:17px;background:var(--background)}.team-stat span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em}.team-stat strong{display:block;margin-top:6px;font-size:23px}.team-section{margin-top:14px}.team-section h2{margin:5px 0 15px;font-size:28px;letter-spacing:-.04em}.team-members{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.team-member{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid var(--border);border-radius:15px;text-decoration:none;color:inherit;background:var(--background)}.team-member:hover{background:var(--surface);transform:translateY(-1px)}.team-avatar{width:38px;height:38px;border-radius:12px;background:var(--text);color:var(--surface);display:grid;place-items:center;font-weight:900}.team-member strong{font-size:12px}.team-member small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.team-event{display:flex;justify-content:space-between;gap:15px;padding:14px 0;border-bottom:1px solid var(--border);text-decoration:none;color:inherit}.team-event:last-child{border-bottom:0}.team-event strong{font-size:13px}.team-event small{color:var(--muted);font-size:10px}.team-empty{padding:60px 10px;text-align:center;color:var(--muted)}@media(max-width:650px){.team-page{padding:45px 16px 75px}.team-card,.team-section{padding:22px}.team-head{display:block}.team-record{grid-template-columns:repeat(2,1fr)}.team-members{grid-template-columns:1fr}.team-stat:last-child{grid-column:1/-1}}
 </style><style>.nav-badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--text);color:var(--surface);font-size:8px;font-weight:900;line-height:1;vertical-align:middle}</style><script src="js/i18n.js"></script>
-</head><body><header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"><a href="explorar.html">Explorar</a><a href="mis-eventos.html">Mis eventos</a><a href="rankings.html">Rankings</a><a href="crear.html">Crear</a><a href="login.html">Entrar</a><a href="guardados.html">Guardados</a><a href="viajes.html">Viajes</a></nav><button id="menuButton" class="menu-button" aria-label="Menú">☰</button></header><main class="team-page"><div class="team-top"><span class="eyebrow">EQUIPO</span><a class="team-back" href="explorar.html">← Explorar</a></div><div id="teamRoot" class="team-empty">Cargando equipo...</div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/equipo-publico.js"></script></body></html>
+
+<style id="curruscos-identity-v3">
+/* CURRUSCOS IDENTITY SYSTEM — social perception + visual hierarchy */
+.pub-profile,.team-page{position:relative;isolation:isolate}
+.pub-profile::before,.team-page::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(700px 420px at 12% 8%,rgba(255,255,255,.055),transparent 68%),radial-gradient(620px 420px at 88% 30%,rgba(255,255,255,.035),transparent 70%)}
+.pub-profile::after,.team-page::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
+.pub-top,.team-top{min-height:34px}
+.pub-back,.team-back{transition:color .2s ease,transform .2s ease}
+.pub-back:hover,.team-back:hover{color:var(--text);transform:translateX(2px)}
+.pub-card,.team-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));border-color:rgba(255,255,255,.11);box-shadow:0 30px 100px rgba(0,0,0,.25)}
+.pub-card::before,.team-card::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);opacity:.7}
+.pub-head{align-items:flex-start;position:relative}
+.pub-avatar{position:relative;width:96px;height:96px;border-radius:30px;background:linear-gradient(145deg,#242424,#0c0c0c);border:1px solid rgba(255,255,255,.14);box-shadow:0 16px 40px rgba(0,0,0,.3);font-size:34px}
+.pub-avatar::after{content:"";position:absolute;right:-4px;bottom:-4px;width:12px;height:12px;border-radius:50%;background:#f5f5f5;border:3px solid #111}
+.pub-head h1,.team-head h1{font-weight:950;text-wrap:balance}
+.pub-stats{gap:8px}
+.pub-stat,.team-stat{position:relative;overflow:hidden;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.pub-stat:hover,.team-stat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.045)}
+.pub-stat strong,.team-stat strong{font-variant-numeric:tabular-nums}
+.pub-stat span,.pub-record-item span,.team-stat span{letter-spacing:.12em}
+.pub-record{margin-top:12px}
+.pub-record-item{background:rgba(255,255,255,.018)}
+.pub-activity-section,.team-section{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border-color:rgba(255,255,255,.09);box-shadow:0 20px 65px rgba(0,0,0,.16)}
+.pub-section-head{margin-bottom:18px}
+.pub-section-head h2,.team-section h2{font-size:32px;font-weight:900}
+.pub-section-head>span{padding:6px 9px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.025)}
+.pub-activity-list{position:relative;gap:8px}
+.pub-activity-list::before{content:"";position:absolute;left:18px;top:12px;bottom:12px;width:1px;background:linear-gradient(var(--border),transparent)}
+.pub-activity-item{position:relative;padding:16px 16px 16px 42px;background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075)}
+.pub-activity-item::before{content:"";position:absolute;left:13px;top:21px;width:10px;height:10px;border-radius:50%;background:#151515;border:2px solid #777;box-shadow:0 0 0 4px #111}
+.pub-activity-item:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.16);transform:translateX(3px)}
+.pub-team-list{gap:8px}
+.pub-team-item{background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075);transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.pub-team-item:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.16);transform:translateX(3px)}
+.profile-invite-box{background:rgba(255,255,255,.022);border-color:rgba(255,255,255,.1)}
+.profile-invite-row select{background:#111;border-color:var(--border)}
+.team-head{align-items:flex-start}
+.team-kicker{letter-spacing:.16em}
+.team-head h1{max-width:760px}
+.team-record{grid-template-columns:repeat(6,1fr)}
+.team-member{background:rgba(255,255,255,.018);border-color:rgba(255,255,255,.075);transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.team-member:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.16);transform:translateX(3px)}
+.team-avatar{border:1px solid rgba(255,255,255,.12);background:linear-gradient(145deg,#252525,#0d0d0d)}
+.team-event{padding:16px 4px;border-color:rgba(255,255,255,.08);transition:padding .18s ease,color .18s ease}
+.team-event:hover{padding-left:10px}
+.team-event strong{font-size:14px}
+.team-section .eyebrow{letter-spacing:.14em}
+@media(max-width:800px){.team-record{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:650px){.pub-profile,.team-page{padding-top:42px}.pub-avatar{width:76px;height:76px;border-radius:24px;font-size:28px}.pub-card,.team-card{border-radius:24px}.pub-section-head h2,.team-section h2{font-size:27px}.team-record{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"><a href="explorar.html">Explorar</a><a href="mis-eventos.html">Mis eventos</a><a href="rankings.html">Rankings</a><a href="crear.html">Crear</a><a href="login.html">Entrar</a><a href="guardados.html">Guardados</a><a href="viajes.html">Viajes</a></nav><button id="menuButton" class="menu-button" aria-label="Menú">☰</button></header><main class="team-page"><div class="team-top"><span class="eyebrow">EQUIPO</span><a class="team-back" href="explorar.html">← Explorar</a></div><div id="teamRoot" class="team-empty">Cargando equipo...</div></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/equipo-publico.js"></script></body></html>
