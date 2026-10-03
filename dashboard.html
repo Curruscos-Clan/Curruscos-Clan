@@ -462,6 +462,19 @@
 
 
 
+        .workspace-health-card { margin-top:18px; }
+        .workspace-health-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
+        .workspace-health-head span { font-size:9px; font-weight:800; letter-spacing:1.5px; color:#999; }
+        .workspace-health-head h2 { margin:6px 0 0; font-size:24px; }
+        #workspaceHealthScore { font-size:28px; letter-spacing:-1px; }
+        .workspace-health-track { height:8px; margin-top:18px; background:#eee; border-radius:999px; overflow:hidden; }
+        #workspaceHealthFill { display:block; width:0; height:100%; background:#111; border-radius:999px; transition:width .5s ease; }
+        #workspaceHealthText { margin:12px 0 0; color:#777; font-size:13px; }
+        .workspace-health-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:16px; }
+        .workspace-health-metric { padding:11px 12px; border:1px solid #eee; border-radius:12px; background:#fafafa; }
+        .workspace-health-metric strong { display:block; font-size:16px; }
+        .workspace-health-metric span { display:block; margin-top:3px; font-size:9px; color:#999; text-transform:uppercase; letter-spacing:.8px; }
+        @media(max-width:600px){ .workspace-health-metrics{grid-template-columns:repeat(2,1fr);} .workspace-health-head h2{font-size:20px;} }
         .action-hub-header { display:flex; align-items:end; justify-content:space-between; gap:20px; }
         .action-hub-meta { color:#999; font-size:12px; }
         .adaptive-action-grid .quick-card { min-height:150px; position:relative; overflow:hidden; }
@@ -1148,6 +1161,16 @@
                 <div class="workspace-start-head"><div><span>PRIMEROS PASOS</span><h2>Haz que este espacio empiece a moverse.</h2></div><strong id="workspaceStartProgress" class="workspace-start-progress">0 / 4</strong></div>
                 <div class="workspace-start-bar"><span id="workspaceStartFill"></span></div>
                 <div id="workspaceStartList" class="workspace-start-list"></div>
+            </section>
+
+            <section class="workspace-health-card dashboard-card" aria-label="Estado del workspace">
+                <div class="workspace-health-head">
+                    <div><span>ESTADO DEL WORKSPACE</span><h2 id="workspaceHealthTitle">En construcción.</h2></div>
+                    <strong id="workspaceHealthScore">0%</strong>
+                </div>
+                <div class="workspace-health-track"><span id="workspaceHealthFill"></span></div>
+                <p id="workspaceHealthText">Estamos midiendo cuánto del espacio ya está listo para funcionar.</p>
+                <div class="workspace-health-metrics" id="workspaceHealthMetrics"></div>
             </section>
 
             <section class="autopilot-card dashboard-card" aria-label="Curruscos Sense">
