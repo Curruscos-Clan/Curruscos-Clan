@@ -390,126 +390,69 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        expenses.forEach(
-            expense => {
-                const card =
-                    document.createElement("article");
+        expenses.forEach(expense => {
+            const card = document.createElement("article");
+            card.className = "expense-card";
 
-                card.className =
-                    "expense-card";
+            const info = document.createElement("div");
+            info.className = "expense-info";
 
-                const info =
-                    document.createElement("div");
+            const title = document.createElement("strong");
+            title.textContent = expense.title || "Gasto";
 
-                info.className =
-                    "expense-info";
+            const meta = document.createElement("span");
+            meta.textContent = "Pagado por " + memberName(expense.paid_by);
 
-                const title =
-                    document.createElement("strong");
+            const saved = expenseSplits.get(String(expense.id)) || [];
+            const going = getGoingMembers();
+            const isCustom = saved.length > 0;
+            const splitHint = document.createElement("small");
+            splitHint.className = "expense-split-status";
+            splitHint.textContent = isCustom
+                ? "✓ Reparto personalizado"
+                : going.length
+                    ? "Reparto igual entre quienes van"
+                    : "Pendiente de asistencia";
 
-                title.textContent =
-                    expense.title || "Gasto";
+            info.append(title, meta, splitHint);
 
-                const meta =
-                    document.createElement("span");
+            const right = document.createElement("div");
+            right.className = "expense-card-right";
 
-                meta.textContent =
-                    "Pagado por " +
-                    memberName(
-                        expense.paid_by
-                    );
+            const amount = document.createElement("strong");
+            amount.className = "expense-card-amount";
+            amount.textContent = formatMoney(expense.amount);
+            right.appendChild(amount);
 
-                info.append(
-                    title,
-                    meta
-                );
+            if (canManageGroup() || expense.created_by === currentUser.id) {
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "expense-remove-button";
+                remove.textContent = "Eliminar";
+                remove.addEventListener("click", async () => {
+                    if (!confirm("¿Eliminar este gasto?")) return;
 
-                const right =
-                    document.createElement("div");
+                    remove.disabled = true;
+                    const deleted = await deleteEventExpense(expense.id);
 
-                right.className =
-                    "expense-card-right";
+                    if (!deleted) {
+                        remove.disabled = false;
+                        alert("No se ha podido eliminar el gasto.");
+                        return;
+                    }
 
-                const amount =
-                    document.createElement("strong");
-
-                amount.textContent =
-                    formatMoney(
-                        expense.amount
-                    );
-
-                right.appendChild(
-                    amount
-                );
-
-                if (
-                    canManageGroup() ||
-                    expense.created_by ===
-                        currentUser.id
-                ) {
-                    const remove =
-                        document.createElement("button");
-
-                    remove.type =
-                        "button";
-
-                    remove.className =
-                        "expense-remove-button";
-
-                    remove.textContent =
-                        "Eliminar";
-
-                    remove.addEventListener(
-                        "click",
-                        async () => {
-                            if (
-                                !confirm(
-                                    "¿Eliminar este gasto?"
-                                )
-                            ) {
-                                return;
-                            }
-
-                            remove.disabled =
-                                true;
-
-                            const deleted =
-                                await deleteEventExpense(
-                                    expense.id
-                                );
-
-                            if (!deleted) {
-                                remove.disabled =
-                                    false;
-
-                                alert(
-                                    "No se ha podido eliminar el gasto."
-                                );
-                                return;
-                            }
-
-                            expenses = expenses.filter(item => String(item.id) !== String(expense.id));
-                            expenseSplits.delete(String(expense.id));
-
-                            renderExpenses();
-                        }
-                    );
-
-                    right.appendChild(
-                        remove
-                    );
-                }
-
-                card.append(
-                    info,
-                    right
-                );
-
-                container.appendChild(
-                    card
-                );
+                    expenses = expenses.filter(item => String(item.id) !== String(expense.id));
+                    expenseSplits.delete(String(expense.id));
+                    renderExpenses();
+                    updateProgress();
+                    updateStatus();
+                });
+                right.appendChild(remove);
             }
-        );
+
+            card.append(info, right);
+            container.appendChild(card);
+        });
 
         renderExpenseSplit();
     }
