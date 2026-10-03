@@ -292,6 +292,10 @@
     "namePlaceholder": "例如 Curruscos Clan",
     "description": "描述",
     "descriptionPlaceholder": "你们是什么类型的群组？",
-    "createButton": "创建我的群组"
+    "createButton": "创建我的群组",
+    "nameRequired": "请输入群组名称。",
+    "creating": "正在创建你的空间……",
+    "createError": "无法创建群组。",
+    "created": "群组已创建。正在进入……"
   }
 }
