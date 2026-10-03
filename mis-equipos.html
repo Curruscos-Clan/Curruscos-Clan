@@ -102,14 +102,19 @@ async function init() {
     var name = member.display_name || member.username || "Usuario";
     var userId = member.user_id || member.id || "";
     var suffix = member.username ? "@" + esc(member.username) : "Perfil público";
-    var remove = member.role === "owner" ? "" :
-      '<button type="button" class="button button-small remove-member danger" data-team="' + esc(teamId) + '" data-user="' + esc(userId) + '">Quitar</button>';
+    var action = "";
+    if (member.role === "owner") {
+      action = "";
+    } else if (userId === user.id) {
+      action = '<button type="button" class="button button-small leave-team danger" data-team="' + esc(teamId) + '">Salir</button>';
+    } else {
+      action = '<button type="button" class="button button-small remove-member danger" data-team="' + esc(teamId) + '" data-user="' + esc(userId) + '">Quitar</button>';
+    }
     return '<div class="member-row"><div class="member-left"><span class="member-avatar">' +
       esc(name.charAt(0).toUpperCase()) + '</span><span class="member-copy"><strong>' +
       esc(name) + '</strong><small>' + (member.role === "owner" ? "Propietario · " : "") +
-      suffix + '</small></span></div>' + remove + '</div>';
+      suffix + '</small></span></div>' + action + '</div>';
   }
-
   function pendingMarkup(item) {
     var name = item.invitee_name || item.invitee_username || "Usuario";
     return '<div class="member-row"><div class="member-left"><span class="member-avatar">' +
@@ -236,7 +241,22 @@ async function init() {
       return;
     }
 
-    var remove = event.target.closest(".remove-member");
+    var leave = event.target.closest(".leave-team");
+   if (leave) {
+     if (!confirm("¿Salir de este equipo?")) return;
+     leave.disabled = true;
+     try {
+       await leavePersistentTeam(leave.dataset.team);
+       message.textContent = "Has salido del equipo.";
+       await load();
+     } catch (error) {
+       message.textContent = error.message || "No se ha podido salir del equipo.";
+       leave.disabled = false;
+     }
+     return;
+   }
+
+   var remove = event.target.closest(".remove-member");
     if (remove) {
       if (!confirm("¿Quitar a esta persona del equipo?")) return;
       remove.disabled = true;
