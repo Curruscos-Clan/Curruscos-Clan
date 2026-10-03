@@ -840,7 +840,53 @@
 </style>
 
 <script src="js/i18n.js"></script>
-</head>
+<style id="curruscos-dashboard-v3">
+/* DASHBOARD V3 — one visual language for group, activity and Sense */
+.dashboard{max-width:1280px;padding-top:64px}
+.dashboard::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(760px 460px at 8% 7%,rgba(255,255,255,.055),transparent 68%),radial-gradient(680px 440px at 92% 22%,rgba(255,255,255,.035),transparent 70%)}
+.dashboard-welcome{margin-bottom:32px}
+.dashboard-eyebrow{color:var(--muted);letter-spacing:.16em}
+.dashboard-welcome h1{font-weight:950;letter-spacing:-.07em;font-size:clamp(44px,6vw,76px)}
+.dashboard-welcome h1 span{color:#777}
+.dashboard-welcome p{color:var(--muted)}
+.dashboard-card,.quick-card,.dashboard-invitations,.invitation-card{background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.015))!important;border-color:rgba(255,255,255,.09)!important;box-shadow:0 24px 80px rgba(0,0,0,.16)!important}
+.dashboard-card{border-radius:26px}
+.next-event-card{min-height:280px}
+.next-event-label,.group-card-title,.dashboard-section-header span{color:var(--muted)}
+.next-event-title{font-size:clamp(30px,4vw,44px);font-weight:900;letter-spacing:-.055em}
+.next-event-location{color:var(--muted)}
+.next-event-button,.dashboard-cta a{border-radius:13px}
+.mini-stat{background:rgba(255,255,255,.035)!important;border:1px solid rgba(255,255,255,.07);transition:transform .18s ease,border-color .18s ease}
+.mini-stat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.15)}
+.quick-grid{gap:10px}
+.quick-card{border-radius:19px;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.quick-card:hover{background:rgba(255,255,255,.065)!important;border-color:rgba(255,255,255,.16)!important;transform:translateY(-3px)}
+.quick-icon{filter:grayscale(1);opacity:.8}
+.quick-card span,.activity-text span,.upcoming-event-info span,.empty-dashboard{color:var(--muted)}
+.activity-layout{gap:14px}
+.activity-item{padding:15px 0;border-color:rgba(255,255,255,.08)}
+.activity-icon{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.activity-text strong,.activity-main strong{font-weight:800}
+.activity-date{color:var(--muted)!important}
+.organization-progress{background:rgba(255,255,255,.08)}
+.organization-progress-fill{background:#f5f5f5}
+.upcoming-event{border-color:rgba(255,255,255,.08)}
+.dashboard-cta{margin-top:44px;border:1px solid rgba(255,255,255,.1);background:linear-gradient(135deg,#151515,#0b0b0b);box-shadow:0 30px 100px rgba(0,0,0,.25)}
+.dashboard-section{margin-top:42px}
+/* Sense becomes the visual command layer */
+.autopilot-card{border-radius:28px!important;padding:28px!important;background:linear-gradient(135deg,#171717,#0c0c0c)!important;box-shadow:0 30px 110px rgba(0,0,0,.3)!important}
+.autopilot-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,rgba(255,255,255,.045),transparent 42%)}
+.autopilot-top{margin-bottom:28px}
+.autopilot-top h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.06em;font-weight:900}
+.autopilot-orb{box-shadow:0 0 0 1px rgba(255,255,255,.16),0 15px 40px rgba(0,0,0,.3);transition:transform .3s ease}
+.autopilot-action{border-radius:12px!important;background:#fff!important;color:#111!important;font-weight:850!important}
+.autopilot-signals{gap:7px!important}
+.autopilot-signal{border-color:rgba(255,255,255,.1)!important;background:rgba(255,255,255,.045)!important;border-radius:999px!important}
+.autopilot-suggestion:hover{background:rgba(255,255,255,.1)!important}
+.sense-health{border-color:rgba(255,255,255,.1)!important;background:rgba(255,255,255,.035)!important;border-radius:18px!important}
+.sense-health-fill{background:#f5f5f5!important}
+@media(max-width:700px){.dashboard{padding-top:42px}.dashboard-card,.autopilot-card{border-radius:21px!important}.autopilot-body{grid-template-columns:48px 1fr!important}.autopilot-orb{width:48px;height:48px}.autopilot-action{grid-column:1/-1;width:100%}}
+</style></head>
 
 
 <body>
