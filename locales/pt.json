@@ -54,7 +54,8 @@
     "viewProfile": "Ver perfil",
     "private": "Privado",
     "participant": "Participante",
-    "loadingGroup": "A carregar grupo..."
+    "loadingGroup": "A carregar grupo...",
+    "creating": "A criar..."
   },
   "activity": {
     "padel": "Padel",
@@ -266,5 +267,21 @@
     "publishing": "A publicar...",
     "publishError": "Não foi possível publicar o evento. Verifica os dados.",
     "publish": "Publicar evento"
+  },
+  "roles": {
+    "owner": "Proprietário",
+    "admin": "Administrador",
+    "member": "Membro"
+  },
+  "date": {
+    "undefined": "Data por definir"
+  },
+  "time": {
+    "undefined": "Hora por definir"
+  },
+  "group": {
+    "group": "Grupo",
+    "namePrompt": "Nome do novo grupo:",
+    "descriptionPrompt": "Descrição do grupo (opcional):"
   }
 }
