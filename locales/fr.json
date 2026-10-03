@@ -261,5 +261,33 @@
     "Todavía no participas en ningún evento.": "Vous ne participez encore à aucun événement.",
     "Todavía no tienes historial de eventos.": "Vous n’avez encore aucun historique d’événements.",
     "Encontrar un plan →": "Trouver un plan →"
+  },
+  "auth": {
+    "completeLogin": "Saisissez votre e-mail et votre mot de passe.",
+    "loggingIn": "Connexion...",
+    "loginError": "Impossible de se connecter.",
+    "enterCredentials": "Saisissez un e-mail et un mot de passe.",
+    "passwordMin": "Le mot de passe doit contenir au moins 6 caractères.",
+    "creatingAccount": "Création du compte...",
+    "accountCreated": "Compte créé. Connexion...",
+    "confirmEmail": "Compte créé. Consultez votre e-mail pour confirmer votre compte.",
+    "registerError": "Impossible de créer le compte."
+  },
+  "createEvent": {
+    "adapts": "Pour {{type}}, Curruscos adaptera l’organisation au format choisi.",
+    "previewTitle": "Votre événement apparaîtra ici",
+    "dateTbd": "Date à définir",
+    "autoScoring": "Automatique",
+    "loginRequired": "Connectez-vous pour publier un événement.",
+    "publicNote": "Votre événement sera public et pourra apparaître dans Explorer.",
+    "required": "Complétez le nom et la date de l’événement.",
+    "futureDate": "La date de l’événement doit être future.",
+    "deadlineBefore": "La clôture des inscriptions doit précéder le début de l’événement.",
+    "capacityInvalid": "Le nombre de places doit être un entier supérieur à 0.",
+    "feeInvalid": "Le prix ne peut pas être négatif.",
+    "teamSizeInvalid": "Indiquez au moins 2 joueurs par équipe.",
+    "publishing": "Publication...",
+    "publishError": "Impossible de publier l’événement. Vérifiez les données.",
+    "publish": "Publier l’événement"
   }
 }
