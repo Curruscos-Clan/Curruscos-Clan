@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ranked.push({
                     score: 95 + Math.min(unanswered, 10),
                     label: t("dashboard.frictionDetected"),
-                    title: "Cerrar la asistencia de " + unanswered + (unanswered === 1 ? " persona" : " personas"),
+                    title: t("dashboard.closeAttendanceCount",{count:unanswered}),
                     reason: t("dashboard.attendanceReason",{event:nextEvent.title}),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "?"
@@ -491,7 +491,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ranked.push({
                     score: nextEvent ? 63 : 88,
                     label: t("dashboard.planInProgress"),
-                    title: "Avanzar " + (activeTrips.length === 1 ? "el viaje" : "los viajes"),
+                    title: t("dashboard.advanceTripsCount",{count:activeTrips.length}),
                     reason: t("dashboard.tripsPlanningReason",{count:activeTrips.length}),
                     href: "viajes.html",
                     icon: "↗"
