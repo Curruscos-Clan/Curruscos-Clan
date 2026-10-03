@@ -78,7 +78,7 @@
         </div>
 
         <div class="trip-section">
-          <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="place">Lugares</option><option value="transport">Transporte</option><option value="other">Otros</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
+          <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="place">Lugares</option><option value="transport">Transporte</option><option value="other">Otros</option></select><select id="optionSort" class="trip-compare-filter"><option value="votes">Más votadas</option><option value="price">Menor precio</option><option value="newest">Más recientes</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
           <div id="tripCompareSummary" class="trip-compare-summary" hidden></div>
           <div id="tripOptions" class="trip-options"></div>
           <div id="optionsEmpty" class="trip-empty">Guardad aquí un vuelo, hotel, destino o actividad que estéis considerando.</div>
@@ -111,17 +111,17 @@
           <article class="trip-tool">
             <span>✈️ VUELOS</span><h3>Buscar fuera de Curruscos</h3>
             <p>Usad un comparador externo y guardad después la opción que os interese.</p>
-            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/travel/flights">Comparar vuelos</a></div>
+            <div class="trip-tool-actions"><a class="button secondary trip-search-link" id="flightSearchLink" target="_blank" rel="noopener" href="https://www.google.com/travel/flights">Comparar vuelos</a></div>
           </article>
           <article class="trip-tool">
             <span>🏨 ALOJAMIENTO</span><h3>Encontrar dónde dormir</h3>
             <p>Comparad alojamientos y volved aquí para que el grupo vote entre las opciones finales.</p>
-            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/travel/hotels">Comparar hoteles</a></div>
+            <div class="trip-tool-actions"><a class="button secondary trip-search-link" id="hotelSearchLink" target="_blank" rel="noopener" href="https://www.google.com/travel/hotels">Comparar hoteles</a></div>
           </article>
           <article class="trip-tool">
             <span>📍 LUGARES</span><h3>Descubrir qué hacer</h3>
             <p>Buscad lugares de interés y añadid las actividades que queráis meter en el plan.</p>
-            <div class="trip-tool-actions"><a class="button secondary" target="_blank" rel="noopener" href="https://www.google.com/maps">Abrir mapa</a></div>
+            <div class="trip-tool-actions"><a class="button secondary trip-search-link" id="mapSearchLink" target="_blank" rel="noopener" href="https://www.google.com/maps">Abrir mapa</a></div>
           </article>
         </div>
 
