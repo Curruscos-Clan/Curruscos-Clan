@@ -255,6 +255,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         reason: workspaceDecision.reason,
         milestone: workspaceState.nextMilestoneDetail?.key || null
     });
+    workspaceState.unlocks = {
+        collaborative: workspaceState.members > 1,
+        planning: workspaceState.events > 0 || workspaceState.planningTrips > 0,
+        operational: workspaceState.events > 0 && workspaceState.openTasks === 0,
+        memory: workspaceState.memories > 0
+    };
+    workspaceState.nextUnlock = workspaceState.nextMilestoneDetail
+        ? {
+            key: workspaceState.nextMilestoneDetail.key,
+            label: workspaceState.nextMilestoneDetail.label,
+            action: workspaceState.nextMilestoneDetail.action,
+            instruction: workspaceState.nextMilestoneDetail.instruction,
+            unlock: workspaceState.nextMilestoneDetail.unlock
+        }
+        : null;
     workspaceState.readiness = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     workspaceState.needsAttention = workspaceState.openTasks > 0 || workspaceState.members <= 1 ||
         (workspaceState.type === "travel" && workspaceState.features.travel && workspaceState.planningTrips === 0) ||
@@ -314,7 +329,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const goal = nextMilestone
             ? {
                 title: "Completar " + nextMilestone.label,
-                text: "Hazlo desde aquí y desbloquea: " + nextMilestone.unlock,
+                text: nextMilestone.instruction + " Al completarlo: " + nextMilestone.unlock,
                 href: nextMilestone.action
             }
             : workspaceDecision.key !== "next"
@@ -721,6 +736,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const serverSense = await getServerSense();
         const ranked = [];
+        if (workspaceState.nextUnlock) {
+            ranked.push({
+                score: workspaceState.needsAttention ? 94 : 78,
+                label: t("dashboard.nextUnlock") || "SIGUIENTE DESBLOQUEO",
+                title: workspaceState.nextUnlock.label,
+                reason: workspaceState.nextUnlock.instruction + " " + workspaceState.nextUnlock.unlock,
+                href: workspaceState.nextUnlock.action,
+                icon: "→"
+            });
+        }
 
         const healthEl = document.getElementById("senseHealthValue");
         const healthFillEl = document.getElementById("senseHealthFill");
