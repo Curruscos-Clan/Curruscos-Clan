@@ -261,5 +261,33 @@
     "Todavía no participas en ningún evento.": "You are not participating in any events yet.",
     "Todavía no tienes historial de eventos.": "You have no event history yet.",
     "Encontrar un plan →": "Find a plan →"
+  },
+  "auth": {
+    "completeLogin": "Enter your email and password.",
+    "loggingIn": "Signing in...",
+    "loginError": "Could not sign in.",
+    "enterCredentials": "Enter an email and password.",
+    "passwordMin": "The password must contain at least 6 characters.",
+    "creatingAccount": "Creating account...",
+    "accountCreated": "Account created. Signing in...",
+    "confirmEmail": "Account created. Check your email to confirm your account.",
+    "registerError": "Could not create the account."
+  },
+  "createEvent": {
+    "adapts": "For {{type}}, Curruscos will adapt the organization to the selected format.",
+    "previewTitle": "Your event will appear here",
+    "dateTbd": "Date to be decided",
+    "autoScoring": "Automatic",
+    "loginRequired": "Sign in to publish an event.",
+    "publicNote": "Your event will be public and may appear in Explore.",
+    "required": "Complete the event name and date.",
+    "futureDate": "The event date must be in the future.",
+    "deadlineBefore": "Registration closing must be before the event starts.",
+    "capacityInvalid": "Capacity must be a whole number greater than 0.",
+    "feeInvalid": "The price cannot be negative.",
+    "teamSizeInvalid": "Enter at least 2 players per team.",
+    "publishing": "Publishing...",
+    "publishError": "Could not publish the event. Check the details.",
+    "publish": "Publish event"
   }
 }
