@@ -434,6 +434,17 @@
     "locationReason": "L’événement a une date mais pas encore de lieu.",
     "pollReason": "Des votes sont ouverts et attendent une réponse du groupe.",
     "invitationReason": "Des groupes attendent votre réponse.",
-    "noPlanPrompt": "Aucun plan à venir pour le moment. C’est le bon moment pour en créer un."
+    "noPlanPrompt": "Aucun plan à venir pour le moment. C’est le bon moment pour en créer un.",
+    "closeAttendanceCount": "Clôturer les présences de {{count}} personne(s)",
+    "attendanceReason": "{{event}} n’a pas encore toutes les réponses de présence.",
+    "resolveTasksCount": "Résoudre {{count}} tâche(s) en attente",
+    "decideLocation": "Décider où aura lieu {{event}}",
+    "advanceTripsCount": "Faire avancer {{count}} voyage(s)",
+    "tripsPlanningReason": "{{count}} voyage(s) sont encore en préparation.",
+    "resolveDecisionsCount": "Résoudre {{count}} décision(s)",
+    "answerInvitationsCount": "Répondre à {{count}} invitation(s)",
+    "communitySignal": "SIGNAL DE COMMUNAUTÉ",
+    "communityTitle": "Voir ce qui se passe",
+    "communityReason": "Il y a une activité récente autour de {{event}}."
   }
 }
