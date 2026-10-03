@@ -198,6 +198,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     workspaceState.milestones = workspaceMilestones;
     workspaceState.activationScore = workspaceActivationScore;
+    workspaceState.completedMilestones = milestoneChecks.filter(([, done]) => done).length;
+    workspaceState.totalMilestones = milestoneChecks.length;
+    workspaceState.nextMilestone = milestoneChecks.find(([, done]) => !done)?.[0] || null;
+    workspaceState.readiness = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
+    workspaceState.needsAttention = workspaceState.openTasks > 0 || workspaceState.members <= 1 ||
+        (workspaceState.type === "travel" && workspaceState.features.travel && workspaceState.planningTrips === 0) ||
+        (workspaceState.events === 0);
 
     const workspaceDecision = (() => {
         const type = workspaceState.type;
@@ -210,7 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (workspaceState.events === 0) return { key:"event", href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", reason:"Un evento convierte la estructura del workspace en actividad real." };
         return { key:"next", href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", reason:"Revisa próximos planes, participantes y tareas." };
     })();
-    document.documentElement.dataset.workspaceHealth = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
+    document.documentElement.dataset.workspaceHealth = workspaceState.readiness;
     const healthScoreEl = document.getElementById("workspaceHealthScore");
     const healthFillEl = document.getElementById("workspaceHealthFill");
     const healthTitleEl = document.getElementById("workspaceHealthTitle");
@@ -221,8 +228,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         : workspaceActivationScore >= 40
             ? ["Workspace en construcción.", "Ya hay actividad; completa los puntos que faltan para convertirlo en un centro operativo."]
             : ["Workspace en activación.", "Empieza por personas, actividad y contexto para que Sense pueda ayudarte mejor."];
-    if (healthScoreEl) healthScoreEl.textContent = workspaceActivationScore + "%";
-    if (healthFillEl) healthFillEl.style.width = workspaceActivationScore + "%";
+    if (healthScoreEl) healthScoreEl.textContent = workspaceState.activationScore + "%";
+    if (healthFillEl) healthFillEl.style.width = workspaceState.activationScore + "%";
     if (healthTitleEl) healthTitleEl.textContent = healthCopy[0];
     if (healthTextEl) healthTextEl.textContent = healthCopy[1];
     if (healthMetricsEl) {
