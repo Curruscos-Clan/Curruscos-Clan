@@ -293,6 +293,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    const workspaceMilestonesEl = document.getElementById("workspaceMilestones");
+    const workspaceMilestonesListEl = document.getElementById("workspaceMilestonesList");
+    const workspaceMilestonesMetaEl = document.getElementById("workspaceMilestonesMeta");
+    if (workspaceMilestonesEl && workspaceMilestonesListEl) {
+        const milestones = Object.values(workspaceState.milestones || {});
+        workspaceMilestonesMetaEl.textContent =
+            workspaceState.completedMilestones + " / " + workspaceState.totalMilestones + " completados";
+        workspaceMilestonesListEl.innerHTML = milestones.map(milestone => {
+            const state = milestone.done ? "done" : milestone.key === workspaceState.nextMilestone ? "next" : "";
+            const marker = milestone.done ? "✓" : milestone.key === workspaceState.nextMilestone ? "→" : "·";
+            const action = milestone.done ? "Desbloqueado" : "Hacerlo →";
+            return '<a class="workspace-milestone ' + state + '" href="' + escapeHtml(milestone.action) + '">' +
+                '<span class="workspace-milestone-marker">' + marker + '</span>' +
+                '<span class="workspace-milestone-copy"><strong>' + escapeHtml(milestone.label) + '</strong><span>' +
+                (milestone.done ? milestone.unlock : "Completa este paso para avanzar.") + '</span></span>' +
+                '<span class="workspace-milestone-action">' + action + '</span>' +
+            '</a>';
+        }).join("");
+    }
+
     const actionGrid = document.getElementById("adaptiveActionGrid");
     const actionHubEyebrow = document.getElementById("actionHubEyebrow");
     const actionHubTitle = document.getElementById("actionHubTitle");
