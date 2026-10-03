@@ -23,9 +23,12 @@ document.addEventListener("DOMContentLoaded",async function(){
 
   if(!team){root.innerHTML="Este equipo no está disponible públicamente.";return;}
 
-  var members=await getPersistentTeamMembers(id);
-  if(!persistent){
+  var members=[];
+  if(persistent){
     members=await getPersistentTeamMembers(id);
+  }else{
+    var publicMembers=await getPublicEventTeamMembers(team.event_id);
+    members=(publicMembers||[]).filter(function(member){return member.team_id===id;}).map(function(member){return {user_id:member.user_id,display_name:member.display_name,username:member.username,role:"member"};});
   }
 
   var memberHtml=(members||[]).map(function(member){
