@@ -21,12 +21,7 @@ const PRIVATE_PAGES = new Set([
     "evento.html",
     "viajes.html",
     "decisiones.html",
-    "perfil.html",
-    "mis-eventos.html",
-    "mis-equipos.html",
-    "guardados.html",
-    "notificaciones.html",
-    "chat.html"
+    "perfil.html"
 ]);
 
 let resolveCurruscosReady;
@@ -120,7 +115,7 @@ function formatEventDate(event, options = {}) {
 }
 
 function formatEventTime(event) {
-    return event?.time ? event.time : "Hora sin definir";
+    return event?.time ? event.time : t("time.undefined");
 }
 
 /* =========================================================
