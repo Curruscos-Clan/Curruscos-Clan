@@ -803,11 +803,16 @@ async function createTripFromForm(e) {
     e.preventDefault();
     const user = await getCurrentUser(), group = await getCurrentGroup();
     if (!user || !group) return;
-    const payload = {group_id:group.id,created_by:user.id,title:$("tripTitle").value.trim(),destination:$("tripDestination").value.trim()||null,start_date:$("tripStartDate").value||null,end_date:$("tripEndDate").value||null,budget_per_person:$("tripBudget").value?Number($("tripBudget").value):null,description:$("tripDescription").value.trim()||null,search_preferences:{}};
+    const payload = {title:$("tripTitle").value.trim(),destination:$("tripDestination").value.trim()||null,start_date:$("tripStartDate").value||null,end_date:$("tripEndDate").value||null,budget_per_person:$("tripBudget").value?Number($("tripBudget").value):null,description:$("tripDescription").value.trim()||null,search_preferences:{}};
     if (!payload.title) return;
-    const {data,error}=await supabaseClient.from("trips").insert(payload).select().single();
-    if(error){alert("No se ha podido crear el viaje.");console.error(error);return;}
-    closeTripModal(); await loadTrips(data.id);
+    try {
+        const data = await createGroupTrip(payload);
+        if (!data) return;
+        closeTripModal(); await loadTrips(data.id);
+    } catch (error) {
+        alert(error.message || "No se ha podido crear el viaje.");
+        console.error(error);
+    }
 }
 
 async function createOptionFromForm(e) {
