@@ -109,7 +109,9 @@ async function getUserGroups(forceRefresh = false) {
             groups (
                 id,
                 name,
-                description
+                description,
+                workspace_type,
+                onboarding_profile
             )
         `)
         .eq("user_id", user.id)
