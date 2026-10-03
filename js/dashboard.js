@@ -389,6 +389,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         const serverSense = await getServerSense();
         const ranked = [];
 
+        const healthEl = document.getElementById("senseHealthValue");
+        const healthFillEl = document.getElementById("senseHealthFill");
+        const healthTextEl = document.getElementById("senseHealthText");
+
+        if (serverSense?.health) {
+            const health = Math.max(0, Math.min(100, Number(serverSense.health.score || 0)));
+            if (healthEl) healthEl.textContent = health + "%";
+            if (healthFillEl) healthFillEl.style.width = health + "%";
+            if (healthTextEl) healthTextEl.textContent =
+                serverSense.health.text ||
+                "Midiendo cuánto está preparado el grupo para su próximo movimiento.";
+        }
+
         if (serverSense) {
             ranked.push({
                 score: Number(serverSense.score || 0),
