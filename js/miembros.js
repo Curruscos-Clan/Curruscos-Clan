@@ -261,9 +261,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const isOwner =
         group.role === "owner";
 
-    const canManage =
-        group.role === "owner" ||
-        group.role === "admin";
+    const canManage = workspaceCanManage();
 
     /* El workspace central es la fuente de verdad para las acciones de equipo. */
     if (inviteButton && !workspaceHasCapability("collaboration")) {
@@ -528,7 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    if (canManage) {
+    if (canManage && workspaceHasCapability("collaboration")) {
         if (invitePanel) invitePanel.hidden = false;
         if (inviteButton) inviteButton.hidden = true;
         await renderPendingWorkspaceInvitations();
