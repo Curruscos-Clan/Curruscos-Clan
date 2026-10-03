@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
+    await window.curruscosI18n?.ready;
     const access = await window.curruscosReady;
 
     if (!access) {
