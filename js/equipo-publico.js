@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded",async function(){
   if(!team){root.innerHTML="Este equipo no está disponible públicamente.";return;}
 
   var currentUser=await getCurrentUser();
-  var followStatus=await getTeamFollowStatus(id);
+  var followStatus=persistent?await getTeamFollowStatus(id):null;
   var members=[];
   if(persistent){
     members=await getPersistentTeamMembers(id);
@@ -78,10 +78,10 @@ document.addEventListener("DOMContentLoaded",async function(){
   root.innerHTML='<section class="team-card"><div class="team-head"><div><span class="team-kicker">'+escTeam(activity)+'</span><h1>'+
     escTeam(title)+'</h1><p>'+(persistent?"Un equipo que conserva su identidad, miembros e historial entre eventos.":'<a class="team-back" href="evento-publico.html?id='+encodeURIComponent(team.event_id)+'">'+escTeam(team.event_title||"Ver evento")+'</a>')+
     '</p></div>' + (persistent ? "" : '<div><span class="team-kicker">'+escTeam(teamStatus(team.event_status||team.status))+'</span></div>') + '</div><div class="team-record">'+statsHtml+'</div></section>'+
-    '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button id="teamFollowButton" class="button button-primary" type="button">'+(currentUser&&currentUser.id!==team.owner_id?(followStatus&&followStatus.is_following?"Dejar de seguir":"Seguir equipo"):"")+'</button><a class="button button-primary" href="chat.html?team='+encodeURIComponent(id)+'">Chat del equipo</a></div>'+
+    '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button id="teamFollowButton" class="button button-primary" type="button">'+(persistent&&currentUser&&currentUser.id!==team.owner_id?(followStatus&&followStatus.is_following?"Dejar de seguir":"Seguir equipo"):"")+'</button><a class="button button-primary" href="chat.html?team='+encodeURIComponent(id)+'">Chat del equipo</a></div>'+
     '<section class="team-section"><span class="eyebrow">PLANTILLA</span><h2>Miembros</h2><div class="team-members">'+memberHtml+'</div></section>'+
     '<section class="team-section"><span class="eyebrow">HISTORIAL</span><h2>Eventos</h2><div>'+eventRows+'</div></section>'+
     eventContext;
-  var followButton=document.getElementById("teamFollowButton");if(followButton&&currentUser&&currentUser.id!==team.owner_id){followButton.addEventListener("click",async function(){followButton.disabled=true;var following=followButton.textContent.trim()==="Dejar de seguir";var ok=following?await unfollowTeam(id):await followTeam(id);if(ok){followButton.textContent=following?"Seguir equipo":"Dejar de seguir";var next=await getTeamFollowStatus(id);var stat=document.querySelectorAll(".team-stat strong");if(stat.length)stat[stat.length-1].textContent=Number(next&&next.follower_count||0);}followButton.disabled=false;});}else if(followButton){followButton.style.display="none";}
+  var followButton=document.getElementById("teamFollowButton");if(followButton&&persistent&&currentUser&&currentUser.id!==team.owner_id){followButton.addEventListener("click",async function(){followButton.disabled=true;var following=followButton.textContent.trim()==="Dejar de seguir";var ok=following?await unfollowTeam(id):await followTeam(id);if(ok){followButton.textContent=following?"Seguir equipo":"Dejar de seguir";var next=await getTeamFollowStatus(id);var stat=document.querySelectorAll(".team-stat strong");if(stat.length)stat[stat.length-1].textContent=Number(next&&next.follower_count||0);}followButton.disabled=false;});}else if(followButton){followButton.style.display="none";}
 
 });
