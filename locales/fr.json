@@ -272,7 +272,12 @@
     "creatingAccount": "Création du compte...",
     "accountCreated": "Compte créé. Connexion...",
     "confirmEmail": "Compte créé. Consultez votre e-mail pour confirmer votre compte.",
-    "registerError": "Impossible de créer le compte."
+    "registerError": "Impossible de créer le compte.",
+    "email": "E-mail",
+    "emailPlaceholder": "vous@email.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "6 caractères minimum",
+    "loginButton": "Se connecter"
   },
   "createEvent": {
     "adapts": "Pour {{type}}, Curruscos adaptera l’organisation au format choisi.",
@@ -305,6 +310,11 @@
   "group": {
     "group": "Groupe",
     "namePrompt": "Nom du nouveau groupe :",
-    "descriptionPrompt": "Description du groupe (facultatif) :"
+    "descriptionPrompt": "Description du groupe (facultatif) :",
+    "name": "Nom du groupe",
+    "namePlaceholder": "Ex. Curruscos Clan",
+    "description": "Description",
+    "descriptionPlaceholder": "Quel type de groupe êtes-vous ?",
+    "createButton": "Créer mon groupe"
   }
 }
