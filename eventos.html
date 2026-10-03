@@ -68,6 +68,20 @@
                     <h2>Eventos</h2>
                 </div>
 
+                <div class="events-toolbar">
+                    <label class="events-search">
+                        <span>Buscar</span>
+                        <input id="eventsSearch" type="search" placeholder="Buscar por nombre o lugar..." autocomplete="off">
+                    </label>
+                    <div class="events-filters" id="eventsFilters" role="group" aria-label="Filtrar eventos">
+                        <button type="button" class="events-filter active" data-event-filter="upcoming">Próximos</button>
+                        <button type="button" class="events-filter" data-event-filter="all">Todos</button>
+                        <button type="button" class="events-filter" data-event-filter="past">Pasados</button>
+                    </div>
+                </div>
+
+                <div id="eventsResultsMeta" class="events-results-meta"></div>
+
                 <div id="eventsList" class="events-list"></div>
 
             </div>
@@ -194,6 +208,19 @@
 
     </main>
 
+
+<style>
+.events-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}
+.events-search{display:grid;gap:5px;flex:1;max-width:420px}
+.events-search span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#888}
+.events-search input{height:42px;box-sizing:border-box;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;font:inherit;font-size:13px;outline:none}
+.events-search input:focus{border-color:#111}
+.events-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.events-filter{min-height:34px;padding:0 11px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}
+.events-filter.active{border-color:#111;background:#111;color:#fff}
+.events-results-meta{min-height:16px;margin:0 0 9px;color:#888;font-size:10px;font-weight:700}
+@media(max-width:650px){.events-toolbar{align-items:stretch;flex-direction:column}.events-search{max-width:none}.events-filters{justify-content:flex-start}}
+</style>
 
     <footer class="footer">
 
