@@ -55,7 +55,9 @@
     "private": "Privado",
     "participant": "Participante",
     "loadingGroup": "A carregar grupo...",
-    "creating": "A criar..."
+    "creating": "A criar...",
+    "viewEvent": "Ver evento",
+    "remove": "Remover"
   },
   "activity": {
     "padel": "Padel",
@@ -98,7 +100,10 @@
     "organizes": "Organizado por",
     "event": "Evento",
     "context": "Contexto",
-    "events": "Eventos"
+    "events": "Eventos",
+    "generic": "Evento",
+    "spots": "lugares",
+    "open": "Evento aberto"
   },
   "team": {
     "viewTeam": "Ver equipa →",
@@ -320,5 +325,22 @@
     "organizedOne": "evento organizado",
     "organizedMany": "eventos organizados",
     "round": "Ronda"
+  },
+  "saved": {
+    "loadError": "Não foi possível carregar os eventos guardados.",
+    "retry": "Tenta novamente em alguns segundos.",
+    "eventsError": "Não foi possível carregar os eventos.",
+    "loginTitle": "Guarda os teus próximos planos.",
+    "loginText": "Inicia sessão para criares a tua coleção pessoal de eventos.",
+    "noMatch": "Nenhum guardado corresponde.",
+    "empty": "Ainda não guardaste nenhum evento.",
+    "tryOther": "Experimenta outro termo.",
+    "exploreHint": "Explora eventos, guarda os que te interessam e volta quando quiseres.",
+    "removeError": "Não foi possível remover o evento.",
+    "generic": "Evento",
+    "spots": "lugares",
+    "open": "Evento aberto",
+    "viewEvent": "Ver evento",
+    "remove": "Remover"
   }
 }
