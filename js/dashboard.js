@@ -528,6 +528,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (next) {
         const event = next.event;
 
+        const myStatus = participantMap.get(String(user.id));
+        const myTasks = nextTasks.filter(
+            task => String(task.assigned_to || "") === String(user.id)
+        );
+        const openMyTasks = myTasks.filter(task => !task.completed).length;
+        const myStatusClass = myStatus === "yes"
+            ? "is-going"
+            : myStatus === "no"
+                ? "is-not-going"
+                : "is-pending";
+        const myStatusText = myStatus === "yes"
+            ? (openMyTasks
+                ? "✓ Vas · " + openMyTasks + (openMyTasks === 1 ? " tarea para ti" : " tareas para ti")
+                : "✓ Has confirmado que vas")
+            : myStatus === "no"
+                ? "No vas a este evento"
+                : "Tu asistencia está pendiente";
+
         nextEl.innerHTML =
             '<div class="next-event-date">📅 ' +
             escapeHtml(
@@ -536,6 +554,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     { weekday: true }
                 )
             ) +
+            '</div>' +
+            '<div class="next-event-my-status ' + myStatusClass + '">' +
+                escapeHtml(myStatusText) +
             '</div>' +
             '<h2 class="next-event-title">' +
             escapeHtml(
@@ -670,30 +691,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                   ).length /
                   nextTasks.length
                 : null;
-
-        const myStatusEl = document.getElementById("nextEventMyStatus");
-        if (myStatusEl) {
-            myStatusEl.hidden = false;
-            const myStatus = participantMap.get(String(user.id));
-            const myTasks = nextTasks.filter(
-                task => String(task.assigned_to || "") === String(user.id)
-            );
-            const openMyTasks = myTasks.filter(task => !task.completed).length;
-
-            myStatus.className = "next-event-my-status";
-            if (myStatus === "yes") {
-                myStatus.classList.add("is-going");
-                myStatus.textContent = openMyTasks
-                    ? "✓ Vas · " + openMyTasks + (openMyTasks === 1 ? " tarea para ti" : " tareas para ti")
-                    : "✓ Has confirmado que vas";
-            } else if (myStatus === "no") {
-                myStatus.classList.add("is-not-going");
-                myStatus.textContent = "No vas a este evento";
-            } else {
-                myStatus.classList.add("is-pending");
-                myStatus.textContent = "Tu asistencia está pendiente";
-            }
-        }
 
         const components = [
             attendanceProgress
