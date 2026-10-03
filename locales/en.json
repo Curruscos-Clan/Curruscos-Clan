@@ -320,5 +320,28 @@
     "creating": "Creating your space...",
     "createError": "Could not create the group.",
     "created": "Group created. Entering..."
+  },
+  "profile": {
+    "saving": "Saving...",
+    "save": "Save profile",
+    "saved": "Profile saved successfully.",
+    "saveError": "Could not update the profile.",
+    "saveInterests": "Save interests",
+    "interestsSaved": "Saved {{count}} interests.",
+    "interestsUpdated": "Interests updated.",
+    "interestsError": "Could not save interests.",
+    "events": "Events",
+    "upcoming": "Upcoming",
+    "matches": "Matches",
+    "wins": "Wins",
+    "draws": "Draws",
+    "losses": "Losses",
+    "teams": "Teams",
+    "eventTeam": "Event team",
+    "activity": "Activity",
+    "noActivity": "You haven't participated in any activities yet.",
+    "organizedOne": "organized event",
+    "organizedMany": "organized events",
+    "round": "Round"
   }
 }
