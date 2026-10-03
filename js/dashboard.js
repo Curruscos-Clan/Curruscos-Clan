@@ -118,10 +118,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         startList.innerHTML = steps.map(step => '<a class="workspace-start-item '+(step.done ? 'done' : '')+'" href="'+step.href+'"><span class="workspace-start-check">'+(step.done ? '✓' : '→')+'</span><span class="workspace-start-copy"><strong>'+escapeHtml(step.title)+'</strong><small>'+escapeHtml(step.text)+'</small></span></a>').join("");
     }
 
-    }
-
-
-
     const pulseEventEl = document.getElementById("pulseEvent");
     const pulseMembersEl = document.getElementById("pulseMembers");
     const pulseTripsEl = document.getElementById("pulseTrips");
@@ -275,11 +271,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const workspaceGoalText = document.getElementById("workspaceGoalText");
     const workspaceGoalAction = document.getElementById("workspaceGoalAction");
     if (workspaceGoal && workspaceGoalTitle && workspaceGoalText && workspaceGoalAction) {
-        const goal = workspaceDecision.key !== "next"
-            ? { title: workspaceDecision.title, text: workspaceDecision.reason, href: workspaceDecision.href }
-            : workspaceState.memories === 0
-                ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
-                : null;
+        const nextMilestone = workspaceState.nextMilestoneDetail;
+        const goal = nextMilestone
+            ? {
+                title: "Completar " + nextMilestone.label,
+                text: "Hazlo desde aquí y desbloquea: " + nextMilestone.unlock,
+                href: nextMilestone.action
+            }
+            : workspaceDecision.key !== "next"
+                ? { title: workspaceDecision.title, text: workspaceDecision.reason, href: workspaceDecision.href }
+                : workspaceState.memories === 0
+                    ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
+                    : null;
         if (goal) {
             workspaceGoal.hidden = false;
             workspaceGoalTitle.textContent = goal.title;
