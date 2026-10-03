@@ -2,7 +2,7 @@
    CURRUSCOS — LOGIN / REGISTRO
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async () => {\n    await window.curruscosI18n?.ready;
     const form =
         document.getElementById("loginForm");
 
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (!email || !password) {
                 message.textContent =
-                    "Completa el correo y la contraseña.";
+                    t("auth.completeLogin");
                 return;
             }
 
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             button.disabled = true;
             registerButton.disabled = true;
             message.textContent =
-                "Entrando...";
+                t("auth.loggingIn");
 
             try {
                 const {
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 message.textContent =
                     getSupabaseErrorMessage(
                         error,
-                        "No se ha podido iniciar sesión."
+                        t("auth.loginError")
                     );
             } finally {
                 button.disabled = false;
@@ -126,13 +126,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (!email || !password) {
                 message.textContent =
-                    "Escribe un correo y una contraseña.";
+                    t("auth.enterCredentials");
                 return;
             }
 
             if (password.length < 6) {
                 message.textContent =
-                    "La contraseña debe tener al menos 6 caracteres.";
+                    t("auth.passwordMin");
                 return;
             }
 
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             ).disabled = true;
 
             message.textContent =
-                "Creando cuenta...";
+                t("auth.creatingAccount");
 
             try {
                 const {
@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (data?.session) {
                     message.textContent =
-                        "Cuenta creada. Entrando...";
+                        t("auth.accountCreated");
 
                     const groups =
                         await getUserGroups(
@@ -179,12 +179,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 message.textContent =
-                    "Cuenta creada. Revisa tu correo para confirmar la cuenta.";
+                    t("auth.confirmEmail");
             } catch (error) {
                 message.textContent =
                     getSupabaseErrorMessage(
                         error,
-                        "No se ha podido crear la cuenta."
+                        t("auth.registerError")
                     );
             } finally {
                 registerButton.disabled = false;
