@@ -13,7 +13,12 @@ const PRIVATE_PAGES = new Set([
     "evento.html",
     "viajes.html",
     "decisiones.html",
-    "perfil.html"
+    "perfil.html",
+    "mis-eventos.html",
+    "mis-equipos.html",
+    "guardados.html",
+    "notificaciones.html",
+    "chat.html"
 ]);
 
 let resolveCurruscosReady;
@@ -46,11 +51,11 @@ function escapeHtml(value) {
 function roleLabel(role) {
     switch (role) {
         case "owner":
-            return "Propietario";
+            return t("roles.owner");
         case "admin":
-            return "Administrador";
+            return t("roles.admin");
         default:
-            return "Miembro";
+            return t("roles.member");
     }
 }
 
@@ -65,7 +70,7 @@ function formatDate(dateString) {
         return "";
     }
 
-    return date.toLocaleDateString("es-ES", {
+    return date.toLocaleDateString(getLanguage(), {
         day: "numeric",
         month: "long",
         year: "numeric"
@@ -92,7 +97,7 @@ function formatEventDate(event, options = {}) {
     const date = getEventDate(event);
 
     if (!date) {
-        return "Fecha sin definir";
+        return t("date.undefined");
     }
 
     return date.toLocaleDateString(
@@ -182,7 +187,7 @@ function setupMobileMenu() {
             !nav.contains(event.target) &&
             event.target !== menuButton
         ) {
-            nav.classList.remove("open");
+            nav.classList.remove("mobile-open");
             menuButton.setAttribute(
                 "aria-expanded",
                 "false"
@@ -295,7 +300,7 @@ async function initGroupSelector(access) {
     } = selector;
 
     name.textContent =
-        access.currentGroup.name || "Grupo";
+        access.currentGroup.name || t("group.group");
 
     list.innerHTML = "";
 
@@ -314,7 +319,7 @@ async function initGroupSelector(access) {
             document.createElement("strong");
 
         strong.textContent =
-            group.name || "Grupo";
+            group.name || t("group.group");
 
         const span =
             document.createElement("span");
@@ -367,7 +372,7 @@ async function initGroupSelector(access) {
             event.stopPropagation();
 
             const name =
-                prompt("Nombre del nuevo grupo:");
+                prompt(t("group.namePrompt"));
 
             if (!name || !name.trim()) {
                 return;
@@ -375,7 +380,7 @@ async function initGroupSelector(access) {
 
             const description =
                 prompt(
-                    "Descripción del grupo (opcional):"
+                    t("group.descriptionPrompt")
                 );
 
             create.disabled = true;
@@ -383,7 +388,7 @@ async function initGroupSelector(access) {
                 create.textContent;
 
             create.textContent =
-                "Creando...";
+                t("common.creating");
 
             const newGroup =
                 await createGroup(
