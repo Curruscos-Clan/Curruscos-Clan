@@ -470,6 +470,11 @@
         .adaptive-action-grid .quick-card.featured { background:#111; color:#fff; border-color:#111; }
         .adaptive-action-grid .quick-card.featured span { color:#aaa; }
         .adaptive-action-grid .quick-card.featured::after { color:#fff; }
+        html[data-workspace-health="starting"] .dashboard-welcome::after { content:"Workspace en activación"; }
+        html[data-workspace-health="building"] .dashboard-welcome::after { content:"Workspace en construcción"; }
+        html[data-workspace-health="active"] .dashboard-welcome::after { content:"Workspace activo"; }
+        .dashboard-welcome::after { display:inline-block; margin-top:8px; font-size:9px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; color:#999; }
+
         .action-hub-kicker { display:inline-block; margin-bottom:10px; font-size:10px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase; color:#999; }
         @media (max-width:600px){ .action-hub-header{align-items:flex-start; flex-direction:column; gap:8px;} .action-hub-meta{font-size:11px;} }
 
