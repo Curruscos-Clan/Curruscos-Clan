@@ -19,7 +19,25 @@
     "activePeople": "Aktive Personen"
   },
   "landing": {
-    "exploreEvents": "Events entdecken"
+    "exploreEvents": "Events entdecken",
+    "eyebrow": "EVENTS · GRUPPEN · TEAMS · REISEN",
+    "heroTitle": "Deine Leute.\\nDeine Pläne.\\nAlles hier.",
+    "heroText": "Entdecke Events, lerne Leute kennen, erstelle Teams und verwandle jede Idee in einen echten Plan.",
+    "createSomething": "Etwas erstellen",
+    "proof1": "Für echte Gruppen gemacht",
+    "proof2": "Ein Konto · viele Pläne",
+    "discover": "ENTDECKEN",
+    "happening": "WAS GERADE PASSIERT",
+    "nextPlan": "Finde deinen nächsten Plan.",
+    "featured": "HIGHLIGHT-EVENT",
+    "community": "COMMUNITY",
+    "trips": "REISEN",
+    "discoverTitle": "Entdecke, nimm teil und organisiere. Der Rest hängt vom Event ab.",
+    "cta": "Möchtest du teilnehmen oder etwas erstellen?",
+    "start": "Loslegen",
+    "heroLine1": "Deine Leute.",
+    "heroLine2": "Deine Pläne.",
+    "heroLine3": "Alles hier."
   },
   "common": {
     "loading": "Laden…",

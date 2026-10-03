@@ -19,7 +19,25 @@
     "activePeople": "Active people"
   },
   "landing": {
-    "exploreEvents": "Explore events"
+    "exploreEvents": "Explore events",
+    "eyebrow": "EVENTS · GROUPS · TEAMS · TRIPS",
+    "heroTitle": "Your people.\\nYour plans.\\nAll here.",
+    "heroText": "Discover events, meet people, create teams, organize with your group and turn any idea into a real plan.",
+    "createSomething": "Create something",
+    "proof1": "Built for real groups",
+    "proof2": "One account · many plans",
+    "discover": "DISCOVER",
+    "happening": "WHAT'S HAPPENING",
+    "nextPlan": "Find your next plan.",
+    "featured": "FEATURED EVENT",
+    "community": "COMMUNITY",
+    "trips": "TRIPS",
+    "discoverTitle": "Discover, join and organize. The rest depends on the event.",
+    "cta": "Do you want to join or create something?",
+    "start": "Get started",
+    "heroLine1": "Your people.",
+    "heroLine2": "Your plans.",
+    "heroLine3": "All here."
   },
   "common": {
     "loading": "Loading…",

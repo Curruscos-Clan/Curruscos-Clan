@@ -19,7 +19,25 @@
     "activePeople": "活跃用户"
   },
   "landing": {
-    "exploreEvents": "探索活动"
+    "exploreEvents": "探索活动",
+    "eyebrow": "活动 · 群组 · 团队 · 旅行",
+    "heroTitle": "你的人。\\n你的计划。\\n尽在这里。",
+    "heroText": "发现活动、认识新朋友、创建团队，与群组一起把任何想法变成真正的计划。",
+    "createSomething": "创建内容",
+    "proof1": "为真实群组打造",
+    "proof2": "一个账户 · 多个计划",
+    "discover": "发现",
+    "happening": "正在发生什么",
+    "nextPlan": "找到你的下一个计划。",
+    "featured": "精选活动",
+    "community": "社区",
+    "trips": "旅行",
+    "discoverTitle": "发现、参与、组织。其余取决于活动本身。",
+    "cta": "想要参与或创建内容？",
+    "start": "开始",
+    "heroLine1": "你的人。",
+    "heroLine2": "你的计划。",
+    "heroLine3": "尽在这里。"
   },
   "common": {
     "loading": "加载中…",
