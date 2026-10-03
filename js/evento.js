@@ -531,7 +531,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         expenses.forEach(expense => {
             const payer = String(expense.paid_by || "");
-            const splits = expenseSplits.get(String(expense.id)) || [];
+            const savedSplits = expenseSplits.get(String(expense.id)) || [];
+            const splits = savedSplits.length
+                ? savedSplits
+                : going.map(member => ({
+                    user_id: member.user_id,
+                    amount: Number(expense.amount || 0) / going.length
+                }));
 
             if (balances.has(payer)) {
                 balances.set(
@@ -624,31 +630,32 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const transfers = buildSettlementTransfers();
 
-        if (!hasSavedSplits) {
-            going.forEach(member => {
-                const row = document.createElement("div");
-                row.className = "expense-person-row";
-                const name = document.createElement("span");
-                name.textContent = memberName(member.user_id);
-                const result = document.createElement("strong");
-                const paid = expenses
-                    .filter(expense => String(expense.paid_by) === String(member.user_id))
-                    .reduce((sum, expense) => sum + Number(expense.amount || 0), 0);
-                const balance = paid - defaultShare;
-                result.textContent = balance > 0.01
-                    ? "A favor " + formatMoney(balance)
-                    : balance < -0.01
-                        ? "Debe " + formatMoney(Math.abs(balance))
-                        : "Equilibrado";
-                result.className = balance > 0.01
-                    ? "expense-balance-positive"
-                    : balance < -0.01
-                        ? "expense-balance-negative"
-                        : "expense-balance-neutral";
-                row.append(name, result);
-                container.appendChild(row);
-            });
-        }
+        const balances = calculateBalances();
+        const balanceTitle = document.createElement("div");
+        balanceTitle.className = "expense-settlement-title";
+        balanceTitle.textContent = "Balance por persona";
+        container.appendChild(balanceTitle);
+
+        going.forEach(member => {
+            const row = document.createElement("div");
+            row.className = "expense-person-row";
+            const name = document.createElement("span");
+            name.textContent = memberName(member.user_id);
+            const result = document.createElement("strong");
+            const balance = balances.get(String(member.user_id)) || 0;
+            result.textContent = balance > 0.01
+                ? "A favor " + formatMoney(balance)
+                : balance < -0.01
+                    ? "Debe " + formatMoney(Math.abs(balance))
+                    : "Equilibrado";
+            result.className = balance > 0.01
+                ? "expense-balance-positive"
+                : balance < -0.01
+                    ? "expense-balance-negative"
+                    : "expense-balance-neutral";
+            row.append(name, result);
+            container.appendChild(row);
+        });
 
         if (transfers.length) {
             const title = document.createElement("div");
