@@ -52,7 +52,22 @@
 .trip-tool h3{font-size:18px!important}
 .trip-empty-state{border:1px dashed rgba(255,255,255,.15)!important;border-radius:24px!important;background:rgba(255,255,255,.018)!important;padding:70px 30px!important}
 .trip-empty-icon{filter:grayscale(1);opacity:.75}
-.trip-search-link{border-radius:12px!important}
+.trip-search-link{border-radius:12px!important}.trip-option-card.comparison-selected{border-color:rgba(255,77,46,.5)!important;background:rgba(255,77,46,.045)!important}
+.trip-option-compare-badge{padding:5px 7px;border-radius:999px;background:#17171b;color:#fff;font-size:8px;font-weight:900;letter-spacing:.08em}
+.trip-compare-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.trip-compare-head>div{display:grid;gap:4px}
+.trip-compare-head span{font-size:9px;font-weight:900;letter-spacing:.14em;color:var(--muted)}
+.trip-compare-head strong{font-size:16px}
+.trip-compare-clear,.trip-compare-remove{border:1px solid rgba(20,20,24,.1);background:#fff;border-radius:9px;padding:7px 9px;font:inherit;font-size:10px;font-weight:800;cursor:pointer}
+.trip-compare-remove{display:block;margin-top:6px;color:#777;font-size:9px}
+.trip-compare-scroll{overflow-x:auto;border:1px solid rgba(20,20,24,.08);border-radius:15px;background:#fff}
+.trip-compare-table{width:100%;min-width:620px;border-collapse:collapse;font-size:11px}
+.trip-compare-table th,.trip-compare-table td{padding:11px 12px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}
+.trip-compare-table th:first-child{width:120px;background:#fafafa;font-weight:800}
+.trip-compare-table thead th{font-size:12px}
+.trip-compare-selected-title{display:block;max-width:180px}
+.trip-compare-button.active{background:#17171b!important;color:#fff!important;border-color:#17171b!important}
+.trip-compare-hint{margin:-3px 0 10px;color:var(--muted);font-size:10px;line-height:1.5}
 @media(max-width:900px){.trip-layout{grid-template-columns:1fr}.trip-sidebar{position:static}.trip-hero{display:block}.trip-hero .button{margin-top:24px}.trip-hero::after{display:none}}
 @media(max-width:600px){.trip-page{padding:42px 16px 80px}.trip-hero{padding:30px 0 38px}.trip-hero h1{font-size:52px}.trip-section,.trip-header-card{padding:19px!important;border-radius:20px!important}.trip-summary-grid{grid-template-columns:1fr 1fr!important}.trip-section-head{display:block}.trip-section-head-actions{margin-top:12px;display:flex;flex-wrap:wrap}.trip-section-head-actions>*{max-width:100%}}
 </style>
@@ -240,6 +255,7 @@
 
         <div class="trip-section">
           <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="place">Lugares</option><option value="transport">Transporte</option><option value="other">Otros</option></select><select id="optionSort" class="trip-compare-filter"><option value="votes">Más votadas</option><option value="price">Menor precio</option><option value="newest">Más recientes</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
+          <div class="trip-compare-hint">Seleccionad 2–4 opciones para compararlas cara a cara. La selección se mantiene mientras exploráis este viaje.</div>
           <div id="tripCompareSummary" class="trip-compare-summary" hidden></div>
           <div id="tripOptions" class="trip-options"></div>
           <div id="optionsEmpty" class="trip-empty">Guardad aquí un vuelo, hotel, destino o actividad que estéis considerando.</div>
