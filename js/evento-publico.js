@@ -5,7 +5,7 @@ const PUBLIC_SCORING_LABELS={win_draw_loss:"Victoria · 3 pts / empate · 1",che
 const PUBLIC_CATEGORY_LABELS={tournament:"Torneo",sport:"Deporte",gaming:"Gaming",social:"Social",activity:"Actividad",other:"Otro"};
 const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación directa",round_robin:"Liga / todos contra todos",swiss:"Sistema suizo",race:"Carrera / clasificación",custom:"Formato personalizado"};
 
-function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
+function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString(getLanguage(),{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
 function renderParticipantDashboard(event,teams,teamMembers,matches,user,mine){
     if(!user||mine?.status!=="yes")return "";
@@ -294,4 +294,4 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
     btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";logActivitySignal("join",id,event.event_type,null,{source:"event_button"});const joined=await joinPublicEvent(id);if(!joined){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent="No se ha podido completar la inscripción.";return;}await renderPublicEvent();});
 }
 
-document.addEventListener("DOMContentLoaded",renderPublicEvent);
+document.addEventListener("DOMContentLoaded",async()=>{await window.curruscosI18n?.ready;await renderPublicEvent();});
