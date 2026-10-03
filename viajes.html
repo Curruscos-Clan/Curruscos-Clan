@@ -90,6 +90,45 @@
 .trip-smart-disclaimer{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.5}
 @media(max-width:1000px){.trip-smart-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.trip-smart-grid{grid-template-columns:1fr}.trip-smart-card{grid-template-columns:1fr}.trip-smart-links{justify-content:flex-start}.trip-smart-badge{display:none}}
+</style><style id="curruscos-input-v4">
+/* Travel input system — softer, editorial, touch-first */
+.trip-smart-form input,.trip-smart-form select,.trip-smart-form textarea,
+#tripForm input,#tripForm select,#tripForm textarea,
+#optionForm input,#optionForm select,#optionForm textarea,
+#itineraryForm input,#itineraryForm select,#itineraryForm textarea{
+  appearance:none;-webkit-appearance:none;border:1px solid rgba(20,20,24,.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,247,249,.96));
+  color:var(--text);border-radius:15px;padding:13px 14px;min-height:46px;
+  font:inherit;font-size:13px;line-height:1.35;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 14px rgba(20,20,24,.035);
+  transition:border-color .18s,box-shadow .18s,transform .18s,background .18s;
+}
+.trip-smart-form textarea,#tripForm textarea,#optionForm textarea,#itineraryForm textarea{min-height:92px;resize:vertical}
+.trip-smart-form input::placeholder,#tripForm input::placeholder,#optionForm input::placeholder,#itineraryForm input::placeholder,
+.trip-smart-form textarea::placeholder,#tripForm textarea::placeholder,#optionForm textarea::placeholder,#itineraryForm textarea::placeholder{color:#9a9aa2;opacity:1}
+.trip-smart-form input:hover,.trip-smart-form select:hover,.trip-smart-form textarea:hover,
+#tripForm input:hover,#tripForm select:hover,#tripForm textarea:hover,#optionForm input:hover,#optionForm select:hover,#optionForm textarea:hover,#itineraryForm input:hover,#itineraryForm select:hover,#itineraryForm textarea:hover{border-color:rgba(20,20,24,.15);background:#fff}
+.trip-smart-form input:focus,.trip-smart-form select:focus,.trip-smart-form textarea:focus,
+#tripForm input:focus,#tripForm select:focus,#tripForm textarea:focus,#optionForm input:focus,#optionForm select:focus,#optionForm textarea:focus,#itineraryForm input:focus,#itineraryForm select:focus,#itineraryForm textarea:focus{
+  outline:none;border-color:rgba(20,20,24,.28);background:#fff;box-shadow:0 0 0 4px rgba(20,20,24,.055),0 8px 24px rgba(20,20,24,.06);transform:translateY(-1px)
+}
+.trip-smart-form label,#tripForm label,#optionForm label,#itineraryForm label{font-size:10px;letter-spacing:.02em;color:#6f7078}
+.trip-smart-form label>input,.trip-smart-form label>select,.trip-smart-form label>textarea,
+#tripForm label>input,#tripForm label>select,#tripForm label>textarea,#optionForm label>input,#optionForm label>select,#optionForm label>textarea,#itineraryForm label>input,#itineraryForm label>select,#itineraryForm label>textarea{margin-top:1px}
+.trip-smart-form .trip-smart-preferences{padding:15px 16px;border:1px solid rgba(20,20,24,.07);border-radius:17px;background:rgba(255,255,255,.5)}
+.trip-smart-form .trip-interest-chips span{background:#fff;border-color:rgba(20,20,24,.08);color:#777780;box-shadow:0 3px 10px rgba(20,20,24,.025)}
+.trip-smart-form .trip-interest-chips input:checked+span{background:#17171b;color:#fff;border-color:#17171b;box-shadow:0 5px 15px rgba(20,20,24,.14)}
+.trip-smart-form .trip-smart-actions{padding-top:2px}
+.trip-smart-form .trip-smart-actions .button{min-height:46px;padding:0 18px;border-radius:14px;box-shadow:0 8px 20px rgba(20,20,24,.1)}
+.trip-smart-form .trip-smart-actions small{font-size:10px}
+#tripForm,#optionForm,#itineraryForm{gap:14px}
+.modal-card{border-radius:25px!important;box-shadow:0 24px 70px rgba(10,10,15,.18)!important;border:1px solid rgba(20,20,24,.08)!important}
+.modal-header{margin-bottom:20px}
+.modal-close{width:38px!important;height:38px!important;border-radius:12px!important;background:#f4f4f6!important;border:0!important}
+@media(max-width:600px){
+ .trip-smart-form input,.trip-smart-form select,.trip-smart-form textarea{min-height:50px}
+ .trip-smart-form .trip-smart-actions .button{width:100%}
+ .trip-smart-form .trip-smart-actions{align-items:stretch}
+}
 </style></head>
 <body>
 <header class="navbar">
