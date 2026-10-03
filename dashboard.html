@@ -461,6 +461,19 @@
         }
 
 
+
+        .action-hub-header { display:flex; align-items:end; justify-content:space-between; gap:20px; }
+        .action-hub-meta { color:#999; font-size:12px; }
+        .adaptive-action-grid .quick-card { min-height:150px; position:relative; overflow:hidden; }
+        .adaptive-action-grid .quick-card::after { content:"→"; position:absolute; right:20px; bottom:18px; font-size:20px; color:#aaa; transition:.2s; }
+        .adaptive-action-grid .quick-card:hover::after { transform:translateX(4px); color:#111; }
+        .adaptive-action-grid .quick-card.featured { background:#111; color:#fff; border-color:#111; }
+        .adaptive-action-grid .quick-card.featured span { color:#aaa; }
+        .adaptive-action-grid .quick-card.featured::after { color:#fff; }
+        .action-hub-kicker { display:inline-block; margin-bottom:10px; font-size:10px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase; color:#999; }
+        @media (max-width:600px){ .action-hub-header{align-items:flex-start; flex-direction:column; gap:8px;} .action-hub-meta{font-size:11px;} }
+
+
         /* =====================================================
            RESPONSIVE
         ===================================================== */
@@ -1264,148 +1277,15 @@
                  ACCESOS RÁPIDOS
             ================================================= -->
 
-            <section class="dashboard-section">
-
-                <div class="dashboard-section-header">
-
-                    <span>
-                        TU CLAN
-                    </span>
-
-                    <h2>
-                        ¿Qué quieres hacer?
-                    </h2>
-
+                        <section class="dashboard-section">
+                <div class="dashboard-section-header action-hub-header">
+                    <div>
+                        <span id="actionHubEyebrow">TU WORKSPACE</span>
+                        <h2 id="actionHubTitle">Siguiente movimiento</h2>
+                    </div>
+                    <span id="actionHubMeta" class="action-hub-meta">Acciones adaptadas a tu grupo</span>
                 </div>
-
-
-                <div class="quick-grid">
-
-
-                    <a
-                        href="eventos.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">
-                            📅
-                        </div>
-
-                        <strong>
-                            Eventos
-                        </strong>
-
-                        <span>
-                            Organiza planes, tareas y participantes.
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="miembros.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">
-                            👥
-                        </div>
-
-                        <strong>
-                            Miembros
-                        </strong>
-
-                        <span>
-                            Conoce y gestiona a todo el clan.
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="recuerdos.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">
-                            📸
-                        </div>
-
-                        <strong>
-                            Recuerdos
-                        </strong>
-
-                        <span>
-                            Guarda los momentos que no queréis olvidar.
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="viajes.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">✈️</div>
-
-                        <strong>Viajes</strong>
-
-                        <span>
-                            Comparad destinos, vuelos, hoteles y planes juntos.
-                        </span>
-
-                    </a>
-
-                    <a href="guardados.html" class="quick-card">
-                        <div class="quick-icon">♡</div>
-                        <strong>Guardados</strong>
-                        <span>Revisa los eventos que te interesan y vuelve a ellos cuando quieras.</span>
-                    </a>
-
-
-                    <a
-                        href="decisiones.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">
-                            🗳️
-                        </div>
-
-                        <strong>
-                            Decisiones
-                        </strong>
-
-                        <span>
-                            Votad juntos y cerrad decisiones del grupo.
-                        </span>
-
-                    </a>
-
-
-                    <a
-                        href="historia.html"
-                        class="quick-card"
-                    >
-
-                        <div class="quick-icon">
-                            📖
-                        </div>
-
-                        <strong>
-                            Historia
-                        </strong>
-
-                        <span>
-                            Construid juntos la historia del grupo.
-                        </span>
-
-                    </a>
-
-
-                </div>
-
+                <div id="adaptiveActionGrid" class="quick-grid adaptive-action-grid"></div>
             </section>
 
 
