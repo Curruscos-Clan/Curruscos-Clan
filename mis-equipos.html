@@ -169,6 +169,7 @@ async function init() {
     var manage = "";
     if (owner) {
       manage = '<div class="team-manage"><div class="manage-grid">' +
+        '<section class="manage-section" style="margin-bottom:20px"><h3>Identidad</h3><form class="team-edit-form"><div style="display:grid;grid-template-columns:1.2fr 2fr auto;gap:8px"><input class="edit-team-name" maxlength="80" value="'+esc(team.name)+'" required><input class="edit-team-description" maxlength="300" value="'+esc(team.description||"")+'" placeholder="Descripción (opcional)"><button class="button button-small" type="submit">Guardar</button></div><div class="invite-status edit-team-status"></div></form></section>' +
         '<section class="manage-section"><h3>Plantilla</h3><div class="members-list">' + memberHtml + '</div></section>' +
         '<section class="manage-section"><h3>Invitar personas</h3><div class="invite-box">' +
         '<input class="person-search" placeholder="Busca por nombre o @usuario..." autocomplete="off">' +
@@ -252,6 +253,26 @@ async function init() {
      } catch (error) {
        message.textContent = error.message || "No se ha podido salir del equipo.";
        leave.disabled = false;
+     }
+     return;
+   }
+
+   var editForm = event.target.closest(".team-edit-form");
+   if (editForm) {
+     event.preventDefault();
+     var editCard = editForm.closest(".team-card");
+     var editButton = editForm.querySelector("button");
+     var editStatus = editForm.querySelector(".edit-team-status");
+     editButton.disabled = true;
+     editStatus.textContent = "Guardando…";
+     try {
+       await updatePersistentTeam(editCard.dataset.team, editForm.querySelector(".edit-team-name").value, editForm.querySelector(".edit-team-description").value);
+       message.textContent = "Equipo actualizado.";
+       await load();
+     } catch (error) {
+       editStatus.textContent = error.message || "No se ha podido actualizar el equipo.";
+     } finally {
+       editButton.disabled = false;
      }
      return;
    }
