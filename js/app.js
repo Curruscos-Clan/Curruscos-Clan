@@ -314,6 +314,16 @@ async function initGroupSelector(access) {
     name.textContent =
         access.currentGroup.name || t("group.group");
 
+    const planBadge =
+        selector.button.querySelector(".group-plan-badge") ||
+        document.createElement("span");
+    planBadge.className = "group-plan-badge";
+    planBadge.textContent =
+        access.currentGroup.plan_name || t("group.planFree");
+    if (!planBadge.parentElement) {
+        selector.button.appendChild(planBadge);
+    }
+
     list.innerHTML = "";
 
     access.groups.forEach(group => {
@@ -341,6 +351,13 @@ async function initGroupSelector(access) {
 
         option.appendChild(strong);
         option.appendChild(span);
+
+        const plan =
+            document.createElement("em");
+        plan.className = "group-option-plan";
+        plan.textContent =
+            group.plan_name || t("group.planFree");
+        option.appendChild(plan);
 
         option.addEventListener(
             "click",
