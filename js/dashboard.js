@@ -147,6 +147,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     /* =====================================================
        ADAPTIVE ACTION HUB — acciones según estado + tipo + plan
        ===================================================== */
+    const workspaceState = {
+        type: group.workspace_type || "community",
+        members: members.length,
+        events: events.length,
+        openTasks: tasks.filter(task => !task.completed).length,
+        planningTrips: (trips || []).filter(trip => trip.status === "planning").length,
+        memories: memories.length,
+        hasProfile: Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type),
+        features: usage?.plan?.features || {}
+    };
+    const workspaceActivationScore = Math.round([
+        workspaceState.members > 1,
+        workspaceState.events > 0,
+        workspaceState.hasProfile,
+        workspaceState.type === "travel" ? workspaceState.planningTrips > 0 : true,
+        workspaceState.memories > 0
+    ].filter(Boolean).length / 5 * 100);
+    document.documentElement.dataset.workspaceHealth = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
+
     const actionGrid = document.getElementById("adaptiveActionGrid");
     const actionHubEyebrow = document.getElementById("actionHubEyebrow");
     const actionHubTitle = document.getElementById("actionHubTitle");
