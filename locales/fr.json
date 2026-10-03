@@ -19,7 +19,22 @@
     "activePeople": "Personnes actives"
   },
   "landing": {
-    "exploreEvents": "Explorer les événements"
+    "exploreEvents": "Explorer les événements",
+    "eyebrow": "ÉVÉNEMENTS · GROUPES · ÉQUIPES · VOYAGES",
+    "heroTitle": "Votre communauté.\\nVos plans.\\nTout ici.",
+    "heroText": "Découvrez des événements, rencontrez des personnes, créez des équipes et transformez vos idées en vrais plans.",
+    "createSomething": "Créer quelque chose",
+    "proof1": "Pensé pour les vrais groupes",
+    "proof2": "Un compte · plein de plans",
+    "discover": "DÉCOUVRIR",
+    "happening": "CE QUI SE PASSE",
+    "nextPlan": "Trouvez votre prochain plan.",
+    "featured": "ÉVÉNEMENT À LA UNE",
+    "community": "COMMUNAUTÉ",
+    "trips": "VOYAGES",
+    "discoverTitle": "Découvrez, participez et organisez. Le reste dépend de l’événement.",
+    "cta": "Vous voulez participer ou créer quelque chose ?",
+    "start": "Commencer"
   },
   "common": {
     "loading": "Chargement…",
