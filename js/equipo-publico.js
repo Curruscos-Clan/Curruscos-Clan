@@ -75,8 +75,7 @@ document.addEventListener("DOMContentLoaded",async function(){
 
   root.innerHTML='<section class="team-card"><div class="team-head"><div><span class="team-kicker">'+escTeam(activity)+'</span><h1>'+
     escTeam(title)+'</h1><p>'+(persistent?"Un equipo que conserva su identidad, miembros e historial entre eventos.":'<a class="team-back" href="evento-publico.html?id='+encodeURIComponent(team.event_id)+'">'+escTeam(team.event_title||"Ver evento")+'</a>')+
-    '</p></div><div><span class="team-kicker">'+escTeam(teamStatus(team.event_status||team.status))+
-    '</span></div></div><div class="team-record">'+statsHtml+'</div></section>'+
+    '</p></div>' + (persistent ? "" : '<div><span class="team-kicker">'+escTeam(teamStatus(team.event_status||team.status))+'</span></div>') + '</div><div class="team-record">'+statsHtml+'</div></section>'+
     '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="button button-primary" href="chat.html?team='+encodeURIComponent(id)+'">Chat del equipo</a></div>'+
     '<section class="team-section"><span class="eyebrow">PLANTILLA</span><h2>Miembros</h2><div class="team-members">'+memberHtml+'</div></section>'+
     '<section class="team-section"><span class="eyebrow">HISTORIAL</span><h2>Eventos</h2><div>'+eventRows+'</div></section>'+
