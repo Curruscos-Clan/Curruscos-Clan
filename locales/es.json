@@ -173,5 +173,33 @@
     "personJoin": "Se ha apuntado a",
     "personOrganize": "Ha organizado",
     "team": "Equipo"
+  },
+  "auth": {
+    "completeLogin": "Completa el correo y la contraseña.",
+    "loggingIn": "Entrando...",
+    "loginError": "No se ha podido iniciar sesión.",
+    "enterCredentials": "Escribe un correo y una contraseña.",
+    "passwordMin": "La contraseña debe tener al menos 6 caracteres.",
+    "creatingAccount": "Creando cuenta...",
+    "accountCreated": "Cuenta creada. Entrando...",
+    "confirmEmail": "Cuenta creada. Revisa tu correo para confirmar la cuenta.",
+    "registerError": "No se ha podido crear la cuenta."
+  },
+  "createEvent": {
+    "adapts": "Para {{type}}, Curruscos adaptará la organización al formato elegido.",
+    "previewTitle": "Tu evento aparecerá aquí",
+    "dateTbd": "Fecha por definir",
+    "autoScoring": "Automática",
+    "loginRequired": "Inicia sesión para publicar un evento.",
+    "publicNote": "Tu evento será público y podrá aparecer en Explorar.",
+    "required": "Completa el nombre y la fecha del evento.",
+    "futureDate": "La fecha del evento debe ser futura.",
+    "deadlineBefore": "El cierre de inscripciones debe ser anterior al inicio del evento.",
+    "capacityInvalid": "Las plazas deben ser un número entero mayor que 0.",
+    "feeInvalid": "El precio no puede ser negativo.",
+    "teamSizeInvalid": "Indica al menos 2 jugadores por equipo.",
+    "publishing": "Publicando...",
+    "publishError": "No se ha podido publicar el evento. Revisa los datos.",
+    "publish": "Publicar evento"
   }
 }
