@@ -353,7 +353,8 @@
     "nameRequired": "Gib einen Gruppennamen ein.",
     "creating": "Euer Bereich wird erstellt...",
     "createError": "Die Gruppe konnte nicht erstellt werden.",
-    "created": "Gruppe erstellt. Weiter..."
+    "created": "Gruppe erstellt. Weiter...",
+    "planFree": "Free"
   },
   "profile": {
     "saving": "Speichern...",
