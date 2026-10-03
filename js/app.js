@@ -51,6 +51,40 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
+/* =========================================================
+   CONTEXTO DEL WORKSPACE — fuente única para toda la app
+   ========================================================= */
+
+function buildWorkspaceCapabilities(group, usage = null) {
+    const type = group?.workspace_type || "community";
+    const planFeatures = usage?.plan?.features || group?.features || {};
+
+    return {
+        collaboration: true,
+        events: true,
+        memories: true,
+        decisions: true,
+        travel: Boolean(planFeatures.travel || type === "travel"),
+        competitions: Boolean(planFeatures.competitions || type === "sports"),
+        tasks: true,
+        history: true,
+        study: type === "study",
+        workspaceType: type
+    };
+}
+
+function workspaceHasCapability(name) {
+    return Boolean(
+        window.curruscosWorkspace?.capabilities?.[name]
+    );
+}
+
+function workspaceIsType(type) {
+    return (
+        window.curruscosWorkspace?.type === type
+    );
+}
+
 function roleLabel(role) {
     switch (role) {
         case "owner":
@@ -1341,16 +1375,22 @@ document.addEventListener(
         }
 
         window.curruscosCurrentAccess = access;
+
+        const workspaceUsage = await getGroupUsage(access.currentGroup.id);
+
         window.curruscosWorkspace = {
             id: access.currentGroup.id,
             type: access.currentGroup.workspace_type || "community",
             role: access.currentGroup.role || "member",
-            plan: access.currentGroup.plan_name || "Free",
-            features: access.currentGroup.features || {},
+            plan: workspaceUsage?.plan?.name || access.currentGroup.plan_name || "Free",
+            features: workspaceUsage?.plan?.features || access.currentGroup.features || {},
+            capabilities: buildWorkspaceCapabilities(access.currentGroup, workspaceUsage),
             canManage: access.currentGroup.role === "owner" || access.currentGroup.role === "admin"
         };
+
         document.body.dataset.workspaceType = window.curruscosWorkspace.type;
         document.body.dataset.workspaceRole = window.curruscosWorkspace.role;
+        document.body.dataset.workspacePlan = window.curruscosWorkspace.plan;
 
         if (!AUTH_ONLY_PAGES.has(page)) {
             await initPrivateShell(access);
