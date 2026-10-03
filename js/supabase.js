@@ -238,14 +238,17 @@ function setCurrentGroup(groupId) {
 }
 
 
-async function createGroup(name, description) {
+async function createGroup(name, description, type = "community", size = "small", objective = "") {
 
     const { data, error } =
         await supabaseClient.rpc(
             "create_group",
             {
                 group_name: name,
-                group_description: description || null
+                group_description: description || null,
+                group_type: type || "community",
+                group_size: size || "small",
+                group_objective: objective || null
             }
         );
 
