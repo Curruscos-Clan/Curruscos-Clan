@@ -968,20 +968,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function renderRelatedTrip() {
         const container = document.getElementById("eventTripContext");
-
-        if (!container) {
-            return;
-        }
+        if (!container) return;
 
         if (!relatedTrip) {
-            container.hidden = true;
-            container.innerHTML = "";
+            if (!canManageEvent()) {
+                container.hidden = true;
+                container.innerHTML = "";
+                return;
+            }
+
+            container.hidden = false;
+            container.innerHTML =
+                '<div class="event-trip-context-inner">' +
+                    '<div>' +
+                        '<span class="event-trip-kicker">VIAJE</span>' +
+                        '<strong>Planificad el viaje del evento.</strong>' +
+                        '<span>Podéis comparar opciones, votar y repartir el presupuesto.</span>' +
+                    '</div>' +
+                    '<button id="createTripFromEventButton" type="button" class="button button-secondary">＋ Crear viaje</button>' +
+                '</div>';
+
+            const button = document.getElementById("createTripFromEventButton");
+            if (button) {
+                button.addEventListener("click", async () => {
+                    button.disabled = true;
+                    button.textContent = "Creando…";
+                    const tripId = await createTripForEvent(currentEvent.id);
+                    if (!tripId) {
+                        button.disabled = false;
+                        button.textContent = "＋ Crear viaje";
+                        alert("No se ha podido crear el viaje.");
+                        return;
+                    }
+                    relatedTrip = await getTripForEvent(tripId);
+                    renderRelatedTrip();
+                });
+            }
             return;
         }
 
         const dates = relatedTrip.start_date
-            ? relatedTrip.start_date +
-              (relatedTrip.end_date ? " → " + relatedTrip.end_date : "")
+            ? relatedTrip.start_date + (relatedTrip.end_date ? " → " + relatedTrip.end_date : "")
             : "Fechas por definir";
 
         container.hidden = false;
@@ -989,16 +1016,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             '<div class="event-trip-context-inner">' +
                 '<div>' +
                     '<span class="event-trip-kicker">PARTE DE UN VIAJE</span>' +
-                    '<strong>' +
-                        escapeHtml(relatedTrip.title || "Viaje") +
-                    '</strong>' +
-                    '<span>' +
-                        escapeHtml(
-                            (relatedTrip.destination || "Destino por definir") +
-                            " · " +
-                            dates
-                        ) +
-                    '</span>' +
+                    '<strong>' + escapeHtml(relatedTrip.title || "Viaje") + '</strong>' +
+                    '<span>' + escapeHtml((relatedTrip.destination || "Destino por definir") + " · " + dates) + '</span>' +
                 '</div>' +
                 '<a href="viajes.html" class="button button-secondary">Abrir Viajes →</a>' +
             '</div>';
