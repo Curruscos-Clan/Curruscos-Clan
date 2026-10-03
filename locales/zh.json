@@ -329,7 +329,8 @@
     "nameRequired": "请输入群组名称。",
     "creating": "正在创建你的空间……",
     "createError": "无法创建群组。",
-    "created": "群组已创建。正在进入……"
+    "created": "群组已创建。正在进入……",
+    "planFree": "免费"
   },
   "profile": {
     "saving": "保存中…",
