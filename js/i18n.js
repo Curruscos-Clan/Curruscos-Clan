@@ -39,7 +39,23 @@ function applyAttributeTranslations(root){const scope=root||document;scope.query
 let i18nObserver=null;
 function languageLabel(){const labels={es:"Idioma",en:"Language",fr:"Langue",de:"Sprache",it:"Lingua",pt:"Idioma",zh:"语言",ar:"اللغة"};return labels[getLanguage()]||"Language";}
 function installI18nObserver(){if(i18nObserver||!document.body)return;i18nObserver=new MutationObserver(mutations=>{let target=null;for(const mutation of mutations){if(mutation.type==="childList"){target=mutation.target;break;}if(mutation.type==="characterData"){target=mutation.target.parentElement;break;}}if(target)applyLegacyTextTranslations(target);});i18nObserver.observe(document.body,{subtree:true,childList:true,characterData:true});}
+function translateRuntimeText(value){
+  const original=String(value??"");
+  const legacy=window.curruscosTranslations?.legacy||{};
+  const key=LEGACY_TEXT_KEYS[original];
+  if(key){
+    const translated=t(key);
+    if(translated&&translated!==key)return translated;
+  }
+  return legacy[original]||original;
+}
+let nativeAlert=null;
+function installRuntimeTranslations(){
+  if(nativeAlert)return;
+  nativeAlert=window.alert;
+  window.alert=(message)=>nativeAlert.call(window,translateRuntimeText(message));
+}
 function installLanguageSelector(){if(document.querySelector(".i18n-control"))return;const header=document.querySelector(".navbar,.landing-header");if(!header)return;const control=document.createElement("div");control.className="i18n-control";const select=document.createElement("select");select.className="i18n-select";select.setAttribute("aria-label",languageLabel());Object.entries(I18N_SUPPORTED_LANGUAGES).forEach(([code,info])=>{const option=document.createElement("option");option.value=code;option.textContent=info.native;select.appendChild(option);});select.value=getLanguage();select.addEventListener("change",()=>{localStorage.setItem(I18N_STORAGE_KEY,normalizeLanguage(select.value)||I18N_DEFAULT_LANGUAGE);window.location.reload();});control.appendChild(select);const menuButton=header.querySelector("#menuButton");const landingNav=header.querySelector(".landing-nav");if(landingNav)landingNav.prepend(control);else if(menuButton)header.insertBefore(control,menuButton);else header.appendChild(control);}
-async function applyI18n(root){const language=getLanguage();window.curruscosTranslations=await loadLocale(language);document.documentElement.lang=language;document.documentElement.dir=I18N_SUPPORTED_LANGUAGES[language]?.dir||"ltr";document.documentElement.dataset.language=language;applyAttributeTranslations(root||document);applyLegacyTextTranslations(root||document);const title=document.querySelector("title");if(title){const key=LEGACY_TEXT_KEYS[title.textContent.trim()];if(key)title.textContent=t(key);}document.querySelectorAll("meta[name=description][data-i18n]").forEach(meta=>meta.setAttribute("content",t(meta.dataset.i18n)));installLanguageSelector();installI18nObserver();window.dispatchEvent(new CustomEvent("curruscos:language-changed",{detail:{language}}));}
+async function applyI18n(root){const language=getLanguage();window.curruscosTranslations=await loadLocale(language);document.documentElement.lang=language;document.documentElement.dir=I18N_SUPPORTED_LANGUAGES[language]?.dir||"ltr";document.documentElement.dataset.language=language;applyAttributeTranslations(root||document);applyLegacyTextTranslations(root||document);const title=document.querySelector("title");if(title){const key=LEGACY_TEXT_KEYS[title.textContent.trim()];if(key)title.textContent=t(key);}document.querySelectorAll("meta[name=description][data-i18n]").forEach(meta=>meta.setAttribute("content",t(meta.dataset.i18n)));installLanguageSelector();installI18nObserver();installRuntimeTranslations();window.dispatchEvent(new CustomEvent("curruscos:language-changed",{detail:{language}}));}
 window.curruscosI18n={supported:I18N_SUPPORTED_LANGUAGES,getLanguage,setLanguage(language){const normalized=normalizeLanguage(language);if(!normalized)return false;localStorage.setItem(I18N_STORAGE_KEY,normalized);window.location.reload();return true;},t,date:localeDate,number:localeNumber,currency:localeCurrency,ready:null};
 window.curruscosI18n.ready=new Promise(resolve=>{const start=()=>applyI18n(document).then(()=>resolve(window.curruscosI18n)).catch(()=>resolve(window.curruscosI18n));if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();});
