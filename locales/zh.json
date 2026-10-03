@@ -55,7 +55,9 @@
     "private": "私密",
     "participant": "参与者",
     "loadingGroup": "正在加载群组...",
-    "creating": "正在创建…"
+    "creating": "正在创建…",
+    "viewEvent": "查看活动",
+    "remove": "移除"
   },
   "activity": {
     "padel": "板式网球",
@@ -98,7 +100,10 @@
     "organizes": "主办方",
     "event": "活动",
     "context": "背景",
-    "events": "活动"
+    "events": "活动",
+    "generic": "活动",
+    "spots": "名额",
+    "open": "开放活动"
   },
   "team": {
     "viewTeam": "查看队伍 →",
@@ -320,5 +325,22 @@
     "organizedOne": "个已组织活动",
     "organizedMany": "个已组织活动",
     "round": "轮"
+  },
+  "saved": {
+    "loadError": "无法加载已保存的活动。",
+    "retry": "请稍后重试。",
+    "eventsError": "无法加载活动。",
+    "loginTitle": "保存你的下一项计划。",
+    "loginText": "登录以建立你的个人活动收藏。",
+    "noMatch": "没有匹配的收藏。",
+    "empty": "你还没有保存任何活动。",
+    "tryOther": "尝试其他关键词。",
+    "exploreHint": "探索活动，保存感兴趣的内容，随时回来查看。",
+    "removeError": "无法移除活动。",
+    "generic": "活动",
+    "spots": "名额",
+    "open": "开放活动",
+    "viewEvent": "查看活动",
+    "remove": "移除"
   }
 }
