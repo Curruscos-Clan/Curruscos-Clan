@@ -311,6 +311,26 @@ async function checkGroupPlanCapacity(groupId, resource) {
     return { allowed: true, access };
 }
 
+async function createGroupTrip(tripData) {
+    const group = await getCurrentGroup();
+    if (!group) return null;
+    const { data, error } = await supabaseClient.rpc("create_trip", {
+        target_group_id: group.id,
+        trip_title: tripData.title,
+        trip_destination: tripData.destination || null,
+        trip_start_date: tripData.start_date || null,
+        trip_end_date: tripData.end_date || null,
+        trip_budget: tripData.budget_per_person ?? null,
+        trip_description: tripData.description || null,
+        trip_search_preferences: tripData.search_preferences || {}
+    });
+    if (error) {
+        console.error("Error creando viaje:", error);
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido crear el viaje."));
+    }
+    return data || null;
+}
+
 async function requestWorkspacePlan(groupId, planCode) {
     if (!groupId || !planCode) return null;
     const { data, error } = await supabaseClient.rpc("request_workspace_plan", {
