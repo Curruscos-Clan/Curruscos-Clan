@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ]);
 
     /* =====================================================
-       WORKSPACE START — activación del espacio
+       WORKSPACE START — activación contextual del espacio
        ===================================================== */
     const startList = document.getElementById("workspaceStartList");
     const startProgress = document.getElementById("workspaceStartProgress");
@@ -86,20 +86,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (startList) {
         const hasMembers = members?.length > 1;
         const hasEvent = events?.length > 0;
-        const hasTrip = false; // trips se consulta justo después y se recalcula abajo
-        const hasProfile = Boolean(group.description || group.workspace_type || group.onboarding_profile?.objective);
+        const hasProfile = Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type);
+        const type = group.workspace_type || "community";
+        const contextStep = type === "sports"
+            ? { done: false, title: "Activar competición", text: "Prepara equipos, formato y partidos.", href: "competicion.html" }
+            : type === "travel"
+                ? { done: false, title: "Planificar el viaje", text: "Convierte el destino en un itinerario.", href: "viajes.html" }
+                : type === "study"
+                    ? { done: hasEvent, title: "Crear sesión de estudio", text: hasEvent ? "Ya tienes una actividad creada." : "Convierte el objetivo en una sesión concreta.", href: "crear-evento.html" }
+                    : { done: hasEvent, title: "Crear el primer plan", text: hasEvent ? "Ya existe actividad en el workspace." : "Crea una actividad para empezar.", href: "crear-evento.html" };
         const steps = [
-            {done: hasMembers, title: "Invitar al equipo", text: hasMembers ? "El workspace ya tiene más de una persona." : "Añade a las primeras personas.", href: "miembros.html"},
-            {done: hasEvent, title: "Crear un evento", text: hasEvent ? "Ya existe actividad en el calendario." : "Crea el primer plan.", href: "eventos.html"},
-            {done: hasProfile, title: "Definir el espacio", text: hasProfile ? "La identidad del workspace está configurada." : "Completa su contexto.", href: "miembros.html"},
-            {done: false, title: "Planificar un viaje", text: "Descubre destinos, opciones e itinerarios.", href: "viajes.html"}
+            {done: hasMembers, title: "Invitar al equipo", text: hasMembers ? "Ya hay más de una persona en el workspace." : "Añade a las primeras personas.", href: "miembros.html"},
+            contextStep,
+            {done: hasProfile, title: "Definir el espacio", text: hasProfile ? "La identidad del workspace está configurada." : "Completa su contexto.", href: "miembros.html"}
         ];
         const done = steps.filter(step => step.done).length;
         startProgress.textContent = done + " / " + steps.length;
         startFill.style.width = Math.round(done / steps.length * 100) + "%";
         startList.innerHTML = steps.map(step => '<a class="workspace-start-item '+(step.done ? 'done' : '')+'" href="'+step.href+'"><span class="workspace-start-check">'+(step.done ? '✓' : '→')+'</span><span class="workspace-start-copy"><strong>'+escapeHtml(step.title)+'</strong><small>'+escapeHtml(step.text)+'</small></span></a>').join("");
     }
-
 
     const { data: trips, error: tripsError } = await supabaseClient
         .from("trips")
