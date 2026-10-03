@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     score: 95 + Math.min(unanswered, 10),
                     label: t("dashboard.frictionDetected"),
                     title: "Cerrar la asistencia de " + unanswered + (unanswered === 1 ? " persona" : " personas"),
-                    reason: nextEvent.title + " todavía no tiene una respuesta de todo el grupo.",
+                    reason: t("dashboard.attendanceReason",{event:nextEvent.title}),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "?"
                 });
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ranked.push({
                     score: 82 + Math.min(incompleteTasks.length, 10),
                     label: t("dashboard.frictionDetected"),
-                    title: "Resolver " + incompleteTasks.length + (incompleteTasks.length === 1 ? " tarea pendiente" : " tareas pendientes"),
+                    title: t("dashboard.resolveTasksCount",{count:incompleteTasks.length}),
                     reason: t("dashboard.tasksReason"),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "✓"
@@ -477,7 +477,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ranked.push({
                     score: 78,
                     label: t("dashboard.detailOpen"),
-                    title: "Decidir dónde será " + nextEvent.title,
+                    title: t("dashboard.decideLocation",{event:nextEvent.title}),
                     reason: t("dashboard.locationReason"),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "⌖"
@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     score: nextEvent ? 63 : 88,
                     label: t("dashboard.planInProgress"),
                     title: "Avanzar " + (activeTrips.length === 1 ? "el viaje" : "los viajes"),
-                    reason: activeTrips.length + (activeTrips.length === 1 ? " viaje sigue en planificación." : " viajes siguen en planificación."),
+                    reason: t("dashboard.tripsPlanningReason",{count:activeTrips.length}),
                     href: "viajes.html",
                     icon: "↗"
                 });
@@ -507,7 +507,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ranked.push({
                         score: nextEvent ? 68 : 91,
                         label: t("dashboard.openDecision"),
-                        title: "Resolver " + (openPolls.length === 1 ? "una decisión" : openPolls.length + " decisiones"),
+                        title: t("dashboard.resolveDecisionsCount",{count:openPolls.length}),
                         reason: t("dashboard.pollReason"),
                         href: "decisiones.html",
                         icon: "?"
@@ -522,11 +522,31 @@ document.addEventListener("DOMContentLoaded", async () => {
             ranked.push({
                 score: 92,
                 label: t("dashboard.pendingEntry"),
-                title: "Responder a " + (invitations.length === 1 ? "una invitación" : invitations.length + " invitaciones"),
+                title: t("dashboard.answerInvitationsCount",{count:invitations.length}),
                 reason: t("dashboard.invitationReason"),
                 href: "#dashboardInvitationsSection",
                 icon: "✉"
             });
+        }
+
+        try {
+            if (typeof getSocialActivity === "function") {
+                const community = await getSocialActivity();
+                if (Array.isArray(community) && community.length) {
+                    const latest = community[0];
+                    const eventTitle = latest.event_title || t("event.event");
+                    ranked.push({
+                        score: nextEvent ? 38 : 72,
+                        label: t("dashboard.communitySignal"),
+                        title: t("dashboard.communityTitle"),
+                        reason: t("dashboard.communityReason",{event:eventTitle}),
+                        href: latest.event_id ? "evento-publico.html?id=" + encodeURIComponent(latest.event_id) : "explorar.html#socialFeedSection",
+                        icon: "↗"
+                    });
+                }
+            }
+        } catch (error) {
+            console.debug("Curruscos Sense: community signal unavailable", error);
         }
 
         if (!ranked.length) {
