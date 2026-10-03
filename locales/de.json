@@ -55,7 +55,9 @@
     "private": "Privat",
     "participant": "Teilnehmer",
     "loadingGroup": "Gruppe wird geladen...",
-    "creating": "Wird erstellt..."
+    "creating": "Wird erstellt...",
+    "viewEvent": "Veranstaltung ansehen",
+    "remove": "Entfernen"
   },
   "activity": {
     "padel": "Padel",
@@ -98,7 +100,10 @@
     "organizes": "Organisiert von",
     "event": "Event",
     "context": "Kontext",
-    "events": "Events"
+    "events": "Events",
+    "generic": "Veranstaltung",
+    "spots": "Plätze",
+    "open": "Offene Veranstaltung"
   },
   "team": {
     "viewTeam": "Team ansehen →",
@@ -343,5 +348,22 @@
     "organizedOne": "organisierte Veranstaltung",
     "organizedMany": "organisierte Veranstaltungen",
     "round": "Runde"
+  },
+  "saved": {
+    "loadError": "Gespeicherte Veranstaltungen konnten nicht geladen werden.",
+    "retry": "Versuche es in wenigen Sekunden erneut.",
+    "eventsError": "Veranstaltungen konnten nicht geladen werden.",
+    "loginTitle": "Speichere deine nächsten Pläne.",
+    "loginText": "Melde dich an, um deine persönliche Veranstaltungssammlung aufzubauen.",
+    "noMatch": "Keine gespeicherten Elemente passen.",
+    "empty": "Du hast noch keine Veranstaltungen gespeichert.",
+    "tryOther": "Versuche einen anderen Begriff.",
+    "exploreHint": "Entdecke Veranstaltungen, speichere Interessantes und komm jederzeit zurück.",
+    "removeError": "Veranstaltung konnte nicht entfernt werden.",
+    "generic": "Veranstaltung",
+    "spots": "Plätze",
+    "open": "Offene Veranstaltung",
+    "viewEvent": "Veranstaltung ansehen",
+    "remove": "Entfernen"
   }
 }
