@@ -1,1 +1,5 @@
--- Team follow mutations are authenticated-only.\nREVOKE EXECUTE ON FUNCTION public.follow_team(uuid) FROM PUBLIC, anon;\nGRANT EXECUTE ON FUNCTION public.follow_team(uuid) TO authenticated;\nREVOKE EXECUTE ON FUNCTION public.unfollow_team(uuid) FROM PUBLIC, anon;\nGRANT EXECUTE ON FUNCTION public.unfollow_team(uuid) TO authenticated;\n
+-- Team follow mutations are authenticated-only.
+REVOKE EXECUTE ON FUNCTION public.follow_team(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.follow_team(uuid) TO authenticated;
+REVOKE EXECUTE ON FUNCTION public.unfollow_team(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.unfollow_team(uuid) TO authenticated;
