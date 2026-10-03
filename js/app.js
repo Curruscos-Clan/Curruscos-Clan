@@ -8,7 +8,8 @@ const AUTH_ONLY_PAGES = new Set([
     "mis-eventos.html",
     "guardados.html",
     "notificaciones.html",
-    "chat.html"
+    "chat.html",
+    "mis-equipos.html"
 ]);
 
 const PRIVATE_PAGES = new Set([
