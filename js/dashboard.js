@@ -117,6 +117,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error(t("dashboard.tripsLoadError"), tripsError);
     }
 
+
+
+    const pulseEventEl = document.getElementById("pulseEvent");
+    const pulseMembersEl = document.getElementById("pulseMembers");
+    const pulseTripsEl = document.getElementById("pulseTrips");
+    const pulseMemoriesEl = document.getElementById("pulseMemories");
+    const pulseMessageEl = document.getElementById("pulseMessage");
+
+    if (pulseEventEl) {
+        pulseEventEl.textContent = t("dashboard.loading");
+    }
+    if (pulseMembersEl) {
+        pulseMembersEl.textContent = members.length;
+    }
+    if (pulseTripsEl) {
+        pulseTripsEl.textContent = (trips || []).length;
+    }
+    if (pulseMemoriesEl) {
+        pulseMemoriesEl.textContent = memories.length;
+    }
+
+    const eventIds =
+        events.map(event => event.id);
+
+    const tasks =
+        await getTasksForEvents(eventIds);
+
     /* =====================================================
        ADAPTIVE ACTION HUB — acciones según estado + tipo + plan
        ===================================================== */
@@ -170,32 +197,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (actionHubTitle) actionHubTitle.textContent = "Qué hacer ahora";
         if (actionHubMeta) actionHubMeta.textContent = "Seleccionado según el estado actual del grupo";
     }
-
-    const pulseEventEl = document.getElementById("pulseEvent");
-    const pulseMembersEl = document.getElementById("pulseMembers");
-    const pulseTripsEl = document.getElementById("pulseTrips");
-    const pulseMemoriesEl = document.getElementById("pulseMemories");
-    const pulseMessageEl = document.getElementById("pulseMessage");
-
-    if (pulseEventEl) {
-        pulseEventEl.textContent = t("dashboard.loading");
-    }
-    if (pulseMembersEl) {
-        pulseMembersEl.textContent = members.length;
-    }
-    if (pulseTripsEl) {
-        pulseTripsEl.textContent = (trips || []).length;
-    }
-    if (pulseMemoriesEl) {
-        pulseMemoriesEl.textContent = memories.length;
-    }
-
-    const eventIds =
-        events.map(event => event.id);
-
-    const tasks =
-        await getTasksForEvents(eventIds);
-
     membersEl.textContent =
         String(members.length);
 
