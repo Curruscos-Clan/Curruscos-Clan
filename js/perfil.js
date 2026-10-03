@@ -46,17 +46,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         btn.addEventListener("click",()=>btn.setAttribute("aria-pressed",btn.getAttribute("aria-pressed")==="true"?"false":"true"));
     });
     interestSave.addEventListener("click",async()=>{
-        interestSave.disabled=true; interestSave.textContent="Guardando..."; interestMessage.textContent="";
+        interestSave.disabled=true; interestSave.textContent=t("profile.saving"); interestMessage.textContent="";
         try{
             const selected=[...interestGrid.querySelectorAll('[aria-pressed="true"]')].map(x=>x.dataset.interest);
             await setMyInterests(selected);
-            interestMessage.textContent=selected.length ? ("Guardados "+selected.length+" intereses.") : "Intereses actualizados.";
-        }catch(error){interestMessage.textContent=getSupabaseErrorMessage(error,"No se han podido guardar los intereses.");}
-        finally{interestSave.disabled=false;interestSave.textContent="Guardar intereses";}
+            interestMessage.textContent=selected.length ? t("profile.interestsSaved",{count:selected.length}) : t("profile.interestsUpdated");
+        }catch(error){interestMessage.textContent=getSupabaseErrorMessage(error,t("profile.interestsError"));}
+        finally{interestSave.disabled=false;interestSave.textContent=t("profile.saveInterests");}
     });
 
 
-    const activity=await getMyEventActivity();const stats=document.getElementById("profileActivityStats");const teamsRoot=document.getElementById("profileTeams");const resultsRoot=document.getElementById("profileResults");const finished=activity.matches||[];const teamIds=new Set(activity.teams.map(t=>t.id));let wins=0,draws=0,losses=0;finished.forEach(m=>{const mineHome=teamIds.has(m.home_team_id),mineAway=teamIds.has(m.away_team_id);if(!mineHome&&!mineAway)return;const hs=Number(m.home_score),as=Number(m.away_score);if(hs===as)draws++;else if((mineHome&&hs>as)||(mineAway&&as>hs))wins++;else losses++;});const upcoming=activity.participating.filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;const typeLabels={padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otros"};stats.innerHTML=`<div class="profile-activity-card"><span>Eventos</span><strong>${activity.participating.length}</strong></div><div class="profile-activity-card"><span>Próximos</span><strong>${upcoming}</strong></div><div class="profile-activity-card"><span>Partidos</span><strong>${finished.length}</strong></div><div class="profile-activity-card"><span>Victorias</span><strong>${wins}</strong></div><div class="profile-activity-card"><span>Empates</span><strong>${draws}</strong></div><div class="profile-activity-card"><span>Derrotas</span><strong>${losses}</strong></div>`;teamsRoot.innerHTML=activity.teams.length?`<strong>Equipos</strong>${activity.teams.map(t=>`<div>${String(t.name).replace(/</g,"&lt;")}<small>Equipo de evento</small></div>`).join("")}`:"";const types=activity.activityTypes||[];resultsRoot.innerHTML=`<strong>Actividad</strong><div>${types.length?types.map(t=>typeLabels[t]||t).join(" · "):"Todavía no has participado en actividades."}<small>${activity.organizing.length} evento${activity.organizing.length===1?"":"s"} organizado${activity.organizing.length===1?"":"s"}</small></div>`+(finished.length?finished.slice(0,5).map(m=>`<div>Ronda ${m.round_number}<small>${m.home_score} : ${m.away_score}</small></div>`).join(""):"");
+    const activity=await getMyEventActivity();const stats=document.getElementById("profileActivityStats");const teamsRoot=document.getElementById("profileTeams");const resultsRoot=document.getElementById("profileResults");const finished=activity.matches||[];const teamIds=new Set(activity.teams.map(t=>t.id));let wins=0,draws=0,losses=0;finished.forEach(m=>{const mineHome=teamIds.has(m.home_team_id),mineAway=teamIds.has(m.away_team_id);if(!mineHome&&!mineAway)return;const hs=Number(m.home_score),as=Number(m.away_score);if(hs===as)draws++;else if((mineHome&&hs>as)||(mineAway&&as>hs))wins++;else losses++;});const upcoming=activity.participating.filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;const typeLabels={padel:t("activity.padel"),futbol:t("activity.futbol"),baloncesto:t("activity.baloncesto"),tenis:t("activity.tenis"),ajedrez:t("activity.ajedrez"),gaming:t("activity.gaming"),running:t("activity.running"),otro:t("activity.otherPlural")};stats.innerHTML=`<div class="profile-activity-card"><span>${t("profile.events")}</span><strong>${activity.participating.length}</strong></div><div class="profile-activity-card"><span>${t("profile.upcoming")}</span><strong>${upcoming}</strong></div><div class="profile-activity-card"><span>${t("profile.matches")}</span><strong>${finished.length}</strong></div><div class="profile-activity-card"><span>${t("profile.wins")}</span><strong>${wins}</strong></div><div class="profile-activity-card"><span>${t("profile.draws")}</span><strong>${draws}</strong></div><div class="profile-activity-card"><span>${t("profile.losses")}</span><strong>${losses}</strong></div>`;teamsRoot.innerHTML=activity.teams.length?`<strong>${t("profile.teams")}</strong>${activity.teams.map(t=>`<div>${String(t.name).replace(/</g,"&lt;")}<small>${t("profile.eventTeam")}</small></div>`).join("")}`:"";const types=activity.activityTypes||[];resultsRoot.innerHTML=`<strong>${t("profile.activity")}</strong><div>${types.length?types.map(t=>typeLabels[t]||t).join(" · "):t("profile.noActivity")}<small>${activity.organizing.length} evento${activity.organizing.length===1?"":"s"} organizado${activity.organizing.length===1?"":"s"}</small></div>`+(finished.length?finished.slice(0,5).map(m=>`<div>Ronda ${m.round_number}<small>${m.home_score} : ${m.away_score}</small></div>`).join(""):"");
 
     const form =
         document.getElementById(
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 message.textContent =
                     getSupabaseErrorMessage(
                         error,
-                        "No se ha podido actualizar el perfil."
+                        t("profile.saveError")
                     );
             } finally {
                 button.disabled =
