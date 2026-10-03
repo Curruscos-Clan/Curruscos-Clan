@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
 
-    const activity=await getMyEventActivity();const stats=document.getElementById("profileActivityStats");const teamsRoot=document.getElementById("profileTeams");const resultsRoot=document.getElementById("profileResults");const finished=activity.matches||[];const teamIds=new Set(activity.teams.map(t=>t.id));let wins=0,draws=0,losses=0;finished.forEach(m=>{const mineHome=teamIds.has(m.home_team_id),mineAway=teamIds.has(m.away_team_id);if(!mineHome&&!mineAway)return;const hs=Number(m.home_score),as=Number(m.away_score);if(hs===as)draws++;else if((mineHome&&hs>as)||(mineAway&&as>hs))wins++;else losses++;});const upcoming=activity.participating.filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;const typeLabels={padel:t("activity.padel"),futbol:t("activity.futbol"),baloncesto:t("activity.baloncesto"),tenis:t("activity.tenis"),ajedrez:t("activity.ajedrez"),gaming:t("activity.gaming"),running:t("activity.running"),otro:t("activity.otherPlural")};stats.innerHTML=`<div class="profile-activity-card"><span>${t("profile.events")}</span><strong>${activity.participating.length}</strong></div><div class="profile-activity-card"><span>${t("profile.upcoming")}</span><strong>${upcoming}</strong></div><div class="profile-activity-card"><span>${t("profile.matches")}</span><strong>${finished.length}</strong></div><div class="profile-activity-card"><span>${t("profile.wins")}</span><strong>${wins}</strong></div><div class="profile-activity-card"><span>${t("profile.draws")}</span><strong>${draws}</strong></div><div class="profile-activity-card"><span>${t("profile.losses")}</span><strong>${losses}</strong></div>`;teamsRoot.innerHTML=activity.teams.length?`<strong>${t("profile.teams")}</strong>${activity.teams.map(t=>`<div>${String(t.name).replace(/</g,"&lt;")}<small>${t("profile.eventTeam")}</small></div>`).join("")}`:"";const types=activity.activityTypes||[];resultsRoot.innerHTML=`<strong>${t("profile.activity")}</strong><div>${types.length?types.map(t=>typeLabels[t]||t).join(" · "):t("profile.noActivity")}<small>${activity.organizing.length} evento${activity.organizing.length===1?"":"s"} organizado${activity.organizing.length===1?"":"s"}</small></div>`+(finished.length?finished.slice(0,5).map(m=>`<div>Ronda ${m.round_number}<small>${m.home_score} : ${m.away_score}</small></div>`).join(""):"");
+    const activity=await getMyEventActivity();const stats=document.getElementById("profileActivityStats");const teamsRoot=document.getElementById("profileTeams");const resultsRoot=document.getElementById("profileResults");const finished=activity.matches||[];const teamIds=new Set(activity.teams.map(t=>t.id));let wins=0,draws=0,losses=0;finished.forEach(m=>{const mineHome=teamIds.has(m.home_team_id),mineAway=teamIds.has(m.away_team_id);if(!mineHome&&!mineAway)return;const hs=Number(m.home_score),as=Number(m.away_score);if(hs===as)draws++;else if((mineHome&&hs>as)||(mineAway&&as>hs))wins++;else losses++;});const upcoming=activity.participating.filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;const typeLabels={padel:t("activity.padel"),futbol:t("activity.futbol"),baloncesto:t("activity.baloncesto"),tenis:t("activity.tenis"),ajedrez:t("activity.ajedrez"),gaming:t("activity.gaming"),running:t("activity.running"),otro:t("activity.otherPlural")};stats.innerHTML=`<div class="profile-activity-card"><span>${t("profile.events")}</span><strong>${activity.participating.length}</strong></div><div class="profile-activity-card"><span>${t("profile.upcoming")}</span><strong>${upcoming}</strong></div><div class="profile-activity-card"><span>${t("profile.matches")}</span><strong>${finished.length}</strong></div><div class="profile-activity-card"><span>${t("profile.wins")}</span><strong>${wins}</strong></div><div class="profile-activity-card"><span>${t("profile.draws")}</span><strong>${draws}</strong></div><div class="profile-activity-card"><span>${t("profile.losses")}</span><strong>${losses}</strong></div>`;teamsRoot.innerHTML=activity.teams.length?`<strong>${t("profile.teams")}</strong>${activity.teams.map(team=>`<div>${String(team.name).replace(/</g,"&lt;")}<small>${t("profile.eventTeam")}</small></div>`).join("")}`:"";const types=activity.activityTypes||[];resultsRoot.innerHTML=`<strong>${t("profile.activity")}</strong><div>${types.length?types.map(t=>typeLabels[t]||t).join(" · "):t("profile.noActivity")}<small>${activity.organizing.length} evento${activity.organizing.length===1?"":"s"} organizado${activity.organizing.length===1?"":"s"}</small></div>`+(finished.length?finished.slice(0,5).map(m=>`<div>${t("profile.round")} ${m.round_number}<small>${m.home_score} : ${m.away_score}</small></div>`).join(""):"");
 
     const form =
         document.getElementById(
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 true;
 
             button.textContent =
-                "Guardando...";
+                t("profile.saving");
 
             message.textContent =
                 "";
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     .toUpperCase();
 
                 message.textContent =
-                    "Perfil guardado correctamente.";
+                    t("profile.saved");
 
                 setTimeout(
                     () => {
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     false;
 
                 button.textContent =
-                    "Guardar perfil";
+                    t("profile.save");
             }
         }
     );
