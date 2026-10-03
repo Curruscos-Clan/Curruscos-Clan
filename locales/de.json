@@ -434,6 +434,17 @@
     "locationReason": "Das Event hat ein Datum, aber noch keinen Ort.",
     "pollReason": "Es gibt offene Abstimmungen, die auf eine Antwort warten.",
     "invitationReason": "Gruppen warten auf deine Antwort.",
-    "noPlanPrompt": "Noch kein kommender Plan. Jetzt ist ein guter Zeitpunkt, einen zu erstellen."
+    "noPlanPrompt": "Noch kein kommender Plan. Jetzt ist ein guter Zeitpunkt, einen zu erstellen.",
+    "closeAttendanceCount": "Teilnahme für {{count}} Person(en) abschließen",
+    "attendanceReason": "Bei {{event}} fehlen noch Antworten zur Teilnahme.",
+    "resolveTasksCount": "{{count}} offene Aufgabe(n) erledigen",
+    "decideLocation": "Ort für {{event}} festlegen",
+    "advanceTripsCount": "{{count}} Reise(n) voranbringen",
+    "tripsPlanningReason": "{{count}} Reise(n) werden noch geplant.",
+    "resolveDecisionsCount": "{{count}} Entscheidung(en) klären",
+    "answerInvitationsCount": "{{count}} Einladung(en) beantworten",
+    "communitySignal": "COMMUNITY-SIGNAL",
+    "communityTitle": "Sehen, was passiert",
+    "communityReason": "Rund um {{event}} gibt es neue Aktivitäten."
   }
 }
