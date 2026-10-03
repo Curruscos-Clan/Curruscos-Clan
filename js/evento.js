@@ -636,12 +636,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             card.className = "expense-card";
 
             const info = document.createElement("div");
-            info.className = "expense-info";
+            info.className = "expense-information";
 
             const title = document.createElement("strong");
             title.textContent = expense.title || "Gasto";
 
             const meta = document.createElement("span");
+            meta.className = "expense-payer";
             meta.textContent = "Pagado por " + memberName(expense.paid_by);
 
             const saved = expenseSplits.get(String(expense.id)) || [];
@@ -668,7 +669,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (canManageGroup() || expense.created_by === currentUser.id) {
                 const remove = document.createElement("button");
                 remove.type = "button";
-                remove.className = "expense-remove-button";
+                remove.className = "expense-delete";
                 remove.textContent = "Eliminar";
                 remove.addEventListener("click", async () => {
                     if (!confirm("¿Eliminar este gasto?")) return;
