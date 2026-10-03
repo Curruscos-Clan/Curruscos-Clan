@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hasProfile = Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type);
         const type = group.workspace_type || "community";
         const type = group.workspace_type || "community";
-        const hasTrip = (trips || []).some(trip => ["planning", "confirmed"].includes(trip.status));
+        const hasTrip = false;
         const contextStep = type === "sports"
             ? { done: hasEvent, title: "Activar competición", text: hasEvent ? "Ya tienes actividad deportiva sobre la que trabajar." : "Crea el primer evento o competición del espacio.", href: "crear.html" }
             : type === "travel"
