@@ -55,7 +55,9 @@
     "private": "Private",
     "participant": "Participant",
     "loadingGroup": "Loading group...",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "viewEvent": "View event",
+    "remove": "Remove"
   },
   "activity": {
     "padel": "Padel",
@@ -98,7 +100,10 @@
     "organizes": "Organized by",
     "event": "Event",
     "context": "Context",
-    "events": "Events"
+    "events": "Events",
+    "generic": "Event",
+    "spots": "spots",
+    "open": "Open event"
   },
   "team": {
     "viewTeam": "View team →",
@@ -343,5 +348,22 @@
     "organizedOne": "organized event",
     "organizedMany": "organized events",
     "round": "Round"
+  },
+  "saved": {
+    "loadError": "We couldn't load your saved events.",
+    "retry": "Try again in a few seconds.",
+    "eventsError": "We couldn't load the events.",
+    "loginTitle": "Save your next plans.",
+    "loginText": "Sign in to build your personal event collection.",
+    "noMatch": "No saved item matches.",
+    "empty": "You haven't saved any events yet.",
+    "tryOther": "Try another term.",
+    "exploreHint": "Explore events, save what interests you, and come back anytime.",
+    "removeError": "Couldn't remove the event.",
+    "generic": "Event",
+    "spots": "spots",
+    "open": "Open event",
+    "viewEvent": "View event",
+    "remove": "Remove"
   }
 }
