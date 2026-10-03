@@ -320,5 +320,28 @@
     "creating": "Création de votre espace...",
     "createError": "Impossible de créer le groupe.",
     "created": "Groupe créé. Entrée en cours..."
+  },
+  "profile": {
+    "saving": "Enregistrement...",
+    "save": "Enregistrer le profil",
+    "saved": "Profil enregistré.",
+    "saveError": "Impossible de mettre à jour le profil.",
+    "saveInterests": "Enregistrer les centres d’intérêt",
+    "interestsSaved": "{{count}} centres d’intérêt enregistrés.",
+    "interestsUpdated": "Centres d’intérêt mis à jour.",
+    "interestsError": "Impossible d’enregistrer les centres d’intérêt.",
+    "events": "Événements",
+    "upcoming": "À venir",
+    "matches": "Matchs",
+    "wins": "Victoires",
+    "draws": "Matchs nuls",
+    "losses": "Défaites",
+    "teams": "Équipes",
+    "eventTeam": "Équipe de l’événement",
+    "activity": "Activité",
+    "noActivity": "Vous n’avez encore participé à aucune activité.",
+    "organizedOne": "événement organisé",
+    "organizedMany": "événements organisés",
+    "round": "Manche"
   }
 }
