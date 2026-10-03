@@ -1781,6 +1781,7 @@ async function leavePublicEvent(eventId) {
     return true;
 }
 
+async function sendPersistentTeamInvitation(userId,teamId){const {data,error}=await supabaseClient.rpc("send_persistent_team_invitation",{target_user_id:userId,target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido enviar la invitación."));return data;}
 async function getPersistentTeamMembers(teamId){const {data,error}=await supabaseClient.rpc("get_persistent_team_members",{target_team_id:teamId});if(error){console.error("Error obteniendo miembros:",error);return [];}return data||[];}
 async function addPersistentTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("add_persistent_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido añadir al miembro."));return data;}
 async function removePersistentTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("remove_persistent_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido quitar al miembro."));return data;}
