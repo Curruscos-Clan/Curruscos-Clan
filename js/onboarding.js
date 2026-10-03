@@ -61,13 +61,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (!name) {
                 message.textContent =
-                    "Escribe un nombre para el grupo.";
+                    t("group.nameRequired");
                 return;
             }
 
             button.disabled = true;
             message.textContent =
-                "Creando vuestro espacio...";
+                t("group.creating");
 
             try {
                 const group =
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 if (!group) {
                     throw new Error(
-                        "No se ha podido crear el grupo."
+                        t("group.createError")
                     );
                 }
 
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
 
                 message.textContent =
-                    "Grupo creado. Entrando...";
+                    t("group.created");
 
                 window.location.replace(
                     "dashboard.html"
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 message.textContent =
                     getSupabaseErrorMessage(
                         error,
-                        "No se ha podido crear el grupo."
+                        t("group.createError")
                     );
                 button.disabled = false;
             }
