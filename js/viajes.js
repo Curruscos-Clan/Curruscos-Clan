@@ -120,6 +120,7 @@ async function loadTripParticipants() {
     const members = await getGroupMembers(activeTrip.group_id);
     if (!members.length) {
         container.innerHTML = '<div class="trip-participants-empty">Todavía no hay miembros en este grupo.</div>';
+        if ($("tripParticipantsMeta")) $("tripParticipantsMeta").textContent = "Sin miembros";
         return;
     }
 
@@ -137,66 +138,86 @@ async function loadTripParticipants() {
     const participation = new Map(
         (rows || []).map(row => [String(row.user_id), row.status])
     );
+
     const currentUserId = window.curruscosCurrentUserId;
+    const confirmedCount = members.filter(
+        member => participation.get(String(member.user_id)) === "confirmed"
+    ).length;
+    const declinedCount = members.filter(
+        member => participation.get(String(member.user_id)) === "declined"
+    ).length;
+    const pendingCount = members.length - confirmedCount - declinedCount;
+
+    if ($("tripParticipantsMeta")) {
+        $("tripParticipantsMeta").textContent =
+            confirmedCount + " van · " +
+            pendingCount + " pendientes · " +
+            declinedCount + " no van";
+    }
 
     container.innerHTML = members.map(member => {
         const userId = String(member.user_id);
-        const confirmed = participation.get(userId) === "confirmed";
+        const status = participation.get(userId) || "pending";
         const isCurrentUser = userId === String(currentUserId || "");
         const name = member.display_name || member.username || "Miembro";
         const initial = escapeHtml(name.charAt(0).toUpperCase());
+
+        const statusText =
+            status === "confirmed"
+                ? "Va"
+                : status === "declined"
+                    ? "No va"
+                    : "Pendiente";
+
+        if (!isCurrentUser) {
+            return '<article class="trip-participant">' +
+                '<div class="trip-participant-main">' +
+                    '<span class="trip-participant-avatar">' + initial + '</span>' +
+                    '<div><span class="trip-participant-name">' + escapeHtml(name) + '</span>' +
+                    '<span class="trip-participant-status">' + statusText + '</span></div>' +
+                '</div>' +
+            '</article>';
+        }
 
         return '<article class="trip-participant">' +
             '<div class="trip-participant-main">' +
                 '<span class="trip-participant-avatar">' + initial + '</span>' +
                 '<div><span class="trip-participant-name">' + escapeHtml(name) + '</span>' +
-                '<span class="trip-participant-status">' + (confirmed ? "Va" : "No va") + '</span></div>' +
+                '<span class="trip-participant-status">Tu respuesta · ' + statusText + '</span></div>' +
             '</div>' +
-            '<button type="button" class="trip-participant-button ' + (confirmed ? "active" : "") + '" data-participant-id="' + escapeHtml(userId) + '">' +
-                (isCurrentUser ? (confirmed ? "✓ Voy" : "Apuntarme") : (confirmed ? "Confirmado" : "No participa")) +
-            '</button>' +
+            '<div class="trip-participant-actions">' +
+                '<button type="button" class="trip-participant-button ' + (status === "confirmed" ? "active" : "") + '" data-trip-answer="confirmed">' +
+                    '✓ Voy' +
+                '</button>' +
+                '<button type="button" class="trip-participant-button decline ' + (status === "declined" ? "active" : "") + '" data-trip-answer="declined">' +
+                    'No voy' +
+                '</button>' +
+            '</div>' +
         '</article>';
     }).join("");
 
-    container.querySelectorAll(".trip-participant-button").forEach(button => {
-        const userId = button.dataset.participantId;
-        const isCurrentUser = userId === String(currentUserId || "");
-        if (!isCurrentUser) {
-            button.disabled = true;
-            return;
-        }
-
+    container.querySelectorAll("[data-trip-answer]").forEach(button => {
         button.addEventListener("click", async () => {
-            button.disabled = true;
-            const confirmed = participation.get(userId) === "confirmed";
+            const nextStatus = button.dataset.tripAnswer;
+            container.querySelectorAll("[data-trip-answer]").forEach(item => item.disabled = true);
 
-            if (confirmed) {
-                const { error: updateError } = await supabaseClient
-                    .from("trip_participants")
-                    .update({ status: "declined", updated_at: new Date().toISOString() })
-                    .eq("trip_id", activeTrip.id)
-                    .eq("user_id", userId);
+            const { error: answerError } = await supabaseClient
+                .from("trip_participants")
+                .upsert(
+                    {
+                        trip_id: activeTrip.id,
+                        user_id: currentUserId,
+                        status: nextStatus,
+                        updated_at: new Date().toISOString()
+                    },
+                    { onConflict: "trip_id,user_id" }
+                );
 
-                if (updateError) {
-                    console.error(updateError);
-                    button.disabled = false;
-                    alert("No se ha podido actualizar tu participación.");
-                    return;
-                }
-            } else {
-                const { error: insertError } = await supabaseClient
-                    .from("trip_participants")
-                    .upsert(
-                        { trip_id: activeTrip.id, user_id: userId, status: "confirmed", updated_at: new Date().toISOString() },
-                        { onConflict: "trip_id,user_id" }
-                    );
-
-                if (insertError) {
-                    console.error(insertError);
-                    button.disabled = false;
-                    alert("No se ha podido apuntarte al viaje.");
-                    return;
-                }
+            if (answerError) {
+                console.error(answerError);
+                container.querySelectorAll("[data-trip-answer]").forEach(item => item.disabled = false);
+                alert("No se ha podido actualizar tu participación.");
+                return;
             }
 
             await loadTripParticipants();
@@ -204,6 +225,7 @@ async function loadTripParticipants() {
         });
     });
 }
+
 
 async function loadTripFinances() {
     if (!activeTrip) return;
