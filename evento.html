@@ -124,6 +124,9 @@
     background: white;
     color: #111;
 }
+.event-actions{display:flex;flex-wrap:wrap;gap:8px}
+.event-actions .edit-event-button{text-decoration:none}
+@media(max-width:600px){.event-actions .edit-event-button{justify-content:center;width:100%;box-sizing:border-box}}
 
 
 /* FORMULARIO */
@@ -975,6 +978,9 @@
             <button type="button" id="saveToHistoryButton" class="edit-event-button">
                 📖 Guardar en historia
             </button>
+            <a id="eventChatButton" class="edit-event-button" href="chat.html">
+                💬 Chat del evento
+            </a>
         </div>
 
     </div>
