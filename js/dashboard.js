@@ -88,10 +88,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const hasEvent = events?.length > 0;
         const hasProfile = Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type);
         const type = group.workspace_type || "community";
+        const type = group.workspace_type || "community";
+        const hasTrip = (trips || []).some(trip => ["planning", "confirmed"].includes(trip.status));
         const contextStep = type === "sports"
-            ? { done: false, title: "Activar competición", text: "Prepara equipos, formato y partidos.", href: "competicion.html" }
+            ? { done: hasEvent, title: "Activar competición", text: hasEvent ? "Ya tienes actividad deportiva sobre la que trabajar." : "Crea el primer evento o competición del espacio.", href: "crear.html" }
             : type === "travel"
-                ? { done: false, title: "Planificar el viaje", text: "Convierte el destino en un itinerario.", href: "viajes.html" }
+                ? { done: hasTrip, title: "Planificar el viaje", text: hasTrip ? "Ya hay un viaje en planificación." : "Convierte el destino en un itinerario.", href: "viajes.html" }
                 : type === "study"
                     ? { done: hasEvent, title: "Crear sesión de estudio", text: hasEvent ? "Ya tienes una actividad creada." : "Convierte el objetivo en una sesión concreta.", href: "crear-evento.html" }
                     : { done: hasEvent, title: "Crear el primer plan", text: hasEvent ? "Ya existe actividad en el workspace." : "Crea una actividad para empezar.", href: "crear-evento.html" };
@@ -157,13 +159,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         hasProfile: Boolean(group.onboarding_profile?.completed_at || group.description || group.workspace_type),
         features: usage?.plan?.features || {}
     };
-    const workspaceActivationScore = Math.round([
-        workspaceState.members > 1,
-        workspaceState.events > 0,
-        workspaceState.hasProfile,
-        workspaceState.type === "travel" ? workspaceState.planningTrips > 0 : true,
-        workspaceState.memories > 0
-    ].filter(Boolean).length / 5 * 100);
+    const milestoneChecks = workspaceState.type === "sports"
+        ? [
+            ["personas", workspaceState.members > 1, 25],
+            ["actividad", workspaceState.events > 0, 30],
+            ["contexto", workspaceState.hasProfile, 15],
+            ["organización", workspaceState.openTasks === 0, 15],
+            ["historial", workspaceState.memories > 0, 15]
+        ]
+        : workspaceState.type === "travel"
+            ? [
+                ["personas", workspaceState.members > 1, 20],
+                ["contexto", workspaceState.hasProfile, 15],
+                ["viaje", workspaceState.planningTrips > 0, 35],
+                ["actividad", workspaceState.events > 0, 15],
+                ["organización", workspaceState.openTasks === 0, 15]
+            ]
+            : workspaceState.type === "study"
+                ? [
+                    ["personas", workspaceState.members > 1, 25],
+                    ["contexto", workspaceState.hasProfile, 20],
+                    ["actividad", workspaceState.events > 0, 30],
+                    ["organización", workspaceState.openTasks === 0, 25]
+                ]
+                : [
+                    ["personas", workspaceState.members > 1, 25],
+                    ["actividad", workspaceState.events > 0, 30],
+                    ["contexto", workspaceState.hasProfile, 20],
+                    ["organización", workspaceState.openTasks === 0, 15],
+                    ["historial", workspaceState.memories > 0, 10]
+                ];
+    const workspaceActivationScore = milestoneChecks.reduce(
+        (score, [, done, weight]) => score + (done ? weight : 0),
+        0
+    );
     document.documentElement.dataset.workspaceHealth = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     const healthScoreEl = document.getElementById("workspaceHealthScore");
     const healthFillEl = document.getElementById("workspaceHealthFill");
@@ -200,9 +229,13 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? { title: "Traer a la primera persona", text: "Un workspace empieza a cobrar vida cuando deja de depender de una sola persona.", href: "miembros.html" }
                 : workspaceState.events === 0
                     ? { title: "Crear la primera actividad", text: "Un evento convierte la estructura del workspace en actividad real.", href: "crear-evento.html" }
-                    : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
+        : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
                         ? { title: "Abrir el primer viaje", text: "El siguiente salto para este workspace es convertir una idea en un viaje planificado.", href: "viajes.html" }
-                        : workspaceState.memories === 0
+                        : workspaceState.type === "sports" && workspaceState.events === 0 && workspaceState.features.competitions
+                            ? { title: "Poner en marcha la competición", text: "Crea la primera actividad deportiva y después podrás organizar participantes y resultados.", href: "crear.html" }
+                            : workspaceState.type === "study" && workspaceState.events === 0
+                                ? { title: "Crear la primera sesión", text: "Convierte el objetivo del workspace en una actividad concreta.", href: "crear-evento.html" }
+                                : workspaceState.memories === 0
                             ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
                             : null;
         if (goal) {
@@ -229,7 +262,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const peopleState = members.length > 1;
         const tripState = planningTrips > 0;
         const primary = type === "sports" && featureMap.competitions
-            ? {href:"competicion.html", icon:"◆", kicker:"DEPORTE", title:"Activa la competición", text:"Equipos, formato y partidos en un mismo flujo."}
+            ? {href:"crear.html", icon:"◆", kicker:"DEPORTE", title:"Activa la competición", text:"Crea la actividad deportiva y entra después en su organización."}
             : type === "travel" && featureMap.travel && planningTrips === 0
                 ? {href:"viajes.html", icon:"↗", kicker:"VIAJE", title:"Planifica el próximo viaje", text:"Destino, opciones e itinerario desde un solo espacio."}
                 : openTasks > 0
@@ -258,7 +291,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             type === "travel" && featureMap.travel
                 ? {href:"viajes.html", icon:"✈", kicker:actionState(tripState, tripState), title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
                 : type === "sports" && featureMap.competitions
-                    ? {href:"competicion.html", icon:"◈", kicker:"COMPETICIÓN", title:"Centro competitivo", text:"Gestiona cuadros, partidos y resultados."}
+                    ? {href:"crear.html", icon:"◈", kicker:"COMPETICIÓN", title:"Abrir competición", text:"Crea una actividad deportiva y organiza el flujo desde su evento."}
                     : {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras."},
             {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos.", baseScore:62, done:eventState},
             {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo.", baseScore:35},
