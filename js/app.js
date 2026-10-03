@@ -220,7 +220,7 @@ function createGroupSelectorMarkup() {
 
     wrapper.innerHTML =
         '<button type="button" class="current-group-button" id="currentGroupButton">' +
-            '<span id="currentGroupName">Grupo</span>' +
+            '<span class="group-current-copy"><span id="currentGroupName">Grupo</span><small id="currentGroupType">WORKSPACE</small></span>' +
             '<span class="group-selector-arrow">▾</span>' +
         '</button>' +
         '<div id="groupMenu" class="group-menu" hidden>' +
@@ -247,6 +247,7 @@ function ensureGroupSelector() {
         return {
             button,
             name: document.getElementById("currentGroupName"),
+            type: document.getElementById("currentGroupType"),
             menu: document.getElementById("groupMenu"),
             list: document.getElementById("groupList"),
             create: document.getElementById("createGroupButton")
@@ -314,6 +315,18 @@ async function initGroupSelector(access) {
     name.textContent =
         access.currentGroup.name || t("group.group");
 
+    const workspaceTypeLabels = {
+        community: "COMUNIDAD",
+        sports: "DEPORTE",
+        travel: "VIAJE",
+        study: "ESTUDIO",
+        organization: "ORGANIZACIÓN",
+        other: "WORKSPACE"
+    };
+    if (selector.type) {
+        selector.type.textContent = workspaceTypeLabels[access.currentGroup.workspace_type || "community"] || "WORKSPACE";
+    }
+
     const planBadge =
         selector.button.querySelector(".group-plan-badge") ||
         document.createElement("span");
@@ -351,6 +364,11 @@ async function initGroupSelector(access) {
 
         option.appendChild(strong);
         option.appendChild(span);
+
+        const type = document.createElement("small");
+        type.className = "group-option-type";
+        type.textContent = workspaceTypeLabels[group.workspace_type || "community"] || "WORKSPACE";
+        option.appendChild(type);
 
         const plan =
             document.createElement("em");
