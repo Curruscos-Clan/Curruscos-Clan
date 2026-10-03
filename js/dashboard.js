@@ -347,6 +347,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    const workspaceUnlockBanner = document.getElementById("workspaceUnlockBanner");
+    const workspaceUnlockTitle = document.getElementById("workspaceUnlockTitle");
+    const workspaceUnlockText = document.getElementById("workspaceUnlockText");
+    const workspaceUnlockAction = document.getElementById("workspaceUnlockAction");
+    if (workspaceUnlockBanner && workspaceState.nextUnlock) {
+        workspaceUnlockBanner.hidden = false;
+        workspaceUnlockTitle.textContent = workspaceState.nextUnlock.label;
+        workspaceUnlockText.textContent = workspaceState.nextUnlock.instruction + " Al completarlo: " + workspaceState.nextUnlock.unlock;
+        workspaceUnlockAction.href = workspaceState.nextUnlock.action;
+    }
+
     const workspaceMilestonesEl = document.getElementById("workspaceMilestones");
     const workspaceMilestonesListEl = document.getElementById("workspaceMilestonesList");
     const workspaceMilestonesMetaEl = document.getElementById("workspaceMilestonesMeta");
