@@ -320,5 +320,28 @@
     "creating": "Euer Bereich wird erstellt...",
     "createError": "Die Gruppe konnte nicht erstellt werden.",
     "created": "Gruppe erstellt. Weiter..."
+  },
+  "profile": {
+    "saving": "Speichern...",
+    "save": "Profil speichern",
+    "saved": "Profil erfolgreich gespeichert.",
+    "saveError": "Profil konnte nicht aktualisiert werden.",
+    "saveInterests": "Interessen speichern",
+    "interestsSaved": "{{count}} Interessen gespeichert.",
+    "interestsUpdated": "Interessen aktualisiert.",
+    "interestsError": "Interessen konnten nicht gespeichert werden.",
+    "events": "Veranstaltungen",
+    "upcoming": "Bevorstehend",
+    "matches": "Spiele",
+    "wins": "Siege",
+    "draws": "Unentschieden",
+    "losses": "Niederlagen",
+    "teams": "Teams",
+    "eventTeam": "Event-Team",
+    "activity": "Aktivität",
+    "noActivity": "Du hast noch an keiner Aktivität teilgenommen.",
+    "organizedOne": "organisierte Veranstaltung",
+    "organizedMany": "organisierte Veranstaltungen",
+    "round": "Runde"
   }
 }
