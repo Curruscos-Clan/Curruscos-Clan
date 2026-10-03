@@ -34,7 +34,10 @@
     "trips": "旅行",
     "discoverTitle": "发现、参与、组织。其余取决于活动本身。",
     "cta": "想要参与或创建内容？",
-    "start": "开始"
+    "start": "开始",
+    "heroLine1": "你的人。",
+    "heroLine2": "你的计划。",
+    "heroLine3": "尽在这里。"
   },
   "common": {
     "loading": "加载中…",
