@@ -154,7 +154,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         planningTrips: (trips || []).filter(trip => trip.status === "planning").length,
         memories: memories.length,
         hasProfile: Boolean(group.onboarding_profile?.completed_at || (group.description && group.description.trim())),
-        features: usage?.plan?.features || {}
+        features: usage?.plan?.features || {},
+        capabilities: window.curruscosWorkspace?.capabilities || {},
+        canManage: workspaceCanManage()
     };
     const milestoneChecks = workspaceState.type === "sports"
         ? [
@@ -286,13 +288,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         : null;
     workspaceState.readiness = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     workspaceState.needsAttention = workspaceState.openTasks > 0 || workspaceState.members <= 1 ||
-        (workspaceState.type === "travel" && workspaceState.features.travel && workspaceState.planningTrips === 0) ||
+        (workspaceState.type === "travel" && featureMap.travel && workspaceState.planningTrips === 0) ||
         (workspaceState.events === 0);
 
     const workspaceDecision = (() => {
         const type = workspaceState.type;
         const nextMilestone = workspaceState.nextMilestoneDetail;
-        const featureMap = workspaceState.features || {};
+        const featureMap = workspaceState.capabilities || {};
         if (workspaceState.openTasks > 0) return { key:"tasks", href:"eventos.html", icon:"✓", kicker:"ORGANIZACIÓN", title:"Resolver tareas pendientes", reason: workspaceState.openTasks + " tarea" + (workspaceState.openTasks === 1 ? "" : "s") + " todavía requiere" + (workspaceState.openTasks === 1 ? "" : "n") + " atención." };
         if (workspaceState.members <= 1) return { key:"members", href:"miembros.html", icon:"◎", kicker:"EQUIPO", title:"Traer a la primera persona", reason:"Un workspace empieza a cobrar vida cuando deja de depender de una sola persona." };
         if (type === "travel" && featureMap.travel && workspaceState.planningTrips === 0) return { key:"travel", href:"viajes.html", icon:"↗", kicker:"VIAJE", title:"Planificar el próximo viaje", reason:"Destino, opciones e itinerario desde un solo espacio." };
@@ -398,7 +400,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const actionHubMeta = document.getElementById("actionHubMeta");
     if (actionGrid) {
         const type = workspaceState.type;
-        const featureMap = workspaceState.features;
+        const featureMap = workspaceState.capabilities;
         const openTasks = workspaceState.openTasks;
         const planningTrips = workspaceState.planningTrips;
         const actionState = (done, active) => done ? "COMPLETADO" : active ? "EN CURSO" : "SIGUIENTE";
