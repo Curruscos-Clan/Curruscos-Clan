@@ -55,7 +55,9 @@
     "private": "Privado",
     "participant": "Participante",
     "loadingGroup": "Cargando grupo...",
-    "creating": "Creando..."
+    "creating": "Creando...",
+    "viewEvent": "Ver evento",
+    "remove": "Quitar"
   },
   "activity": {
     "padel": "Pádel",
@@ -98,7 +100,10 @@
     "organizes": "Organiza",
     "event": "Evento",
     "context": "Contexto",
-    "events": "Eventos"
+    "events": "Eventos",
+    "generic": "Evento",
+    "spots": "plazas",
+    "open": "Evento abierto"
   },
   "team": {
     "viewTeam": "Ver equipo →",
@@ -255,5 +260,22 @@
     "organizedOne": "evento organizado",
     "organizedMany": "eventos organizados",
     "round": "Ronda"
+  },
+  "saved": {
+    "loadError": "No hemos podido cargar tus guardados.",
+    "retry": "Vuelve a intentarlo en unos segundos.",
+    "eventsError": "No hemos podido cargar los eventos.",
+    "loginTitle": "Guarda tus próximos planes.",
+    "loginText": "Entra en tu cuenta para crear tu colección personal de eventos.",
+    "noMatch": "No coincide ningún guardado.",
+    "empty": "Todavía no has guardado ningún evento.",
+    "tryOther": "Prueba con otro término.",
+    "exploreHint": "Explora eventos, guarda los que te interesen y vuelve aquí cuando quieras.",
+    "removeError": "No se ha podido quitar el evento.",
+    "generic": "Evento",
+    "spots": "plazas",
+    "open": "Evento abierto",
+    "viewEvent": "Ver evento",
+    "remove": "Quitar"
   }
 }
