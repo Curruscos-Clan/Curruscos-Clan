@@ -15,6 +15,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     const errorEl = document.getElementById("formError");
 
     const group = access.currentGroup;
+
+    if (!workspaceHasCapability("decisions")) {
+        const panel = document.getElementById("createPanel");
+        if (panel) {
+            panel.innerHTML =
+                '<span class="decisions-eyebrow">FUNCIÓN NO DISPONIBLE</span>' +
+                '<h2>Decisiones no está activa en este workspace.</h2>' +
+                '<p>Esta herramienta depende de las capacidades del workspace actual.</p>';
+        }
+        return;
+    }
+
     const members = await getGroupMembers(group.id);
     const collaborationReady = members.length > 1;
     if (!collaborationReady) {
