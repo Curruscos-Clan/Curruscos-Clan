@@ -287,6 +287,8 @@ function ensureGroupSelector() {
             selector.querySelector("#currentGroupButton"),
         name:
             selector.querySelector("#currentGroupName"),
+        type:
+            selector.querySelector("#currentGroupType"),
         menu:
             selector.querySelector("#groupMenu"),
         list:
