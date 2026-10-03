@@ -448,6 +448,7 @@
     "answerInvitationsCount": "回复 {{count}} 个邀请",
     "communitySignal": "社区动态",
     "communityTitle": "看看正在发生什么",
-    "communityReason": "{{event}} 周围有新的社区活动。"
+    "communityReason": "{{event}} 周围有新的社区活动。",
+    "tripsInMotion": "暂无即将开始的活动，但已有 {{count}} 次旅行在进行中。"
   }
 }
