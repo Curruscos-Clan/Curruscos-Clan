@@ -192,6 +192,7 @@ async function loadTripFinances() {
     }
 
     const events = eventResult.data || [];
+    renderLinkedEvents(events);
     const eventIds = events.map(event => event.id);
     let expenses = [];
     let splits = [];
@@ -348,6 +349,33 @@ function safeOptionUrl(value) {
     }
 }
 
+function renderLinkedEvents(events) {
+    const root = $("tripLinkedEvents");
+    if (!root) return;
+    root.innerHTML = "";
+    if (!events.length) return;
+    const heading = document.createElement("div");
+    heading.className = "trip-panel-title";
+    heading.style.marginTop = "14px";
+    heading.innerHTML = "<span>PLAN DEL VIAJE</span><strong>" + events.length + (events.length === 1 ? " evento" : " eventos") + "</strong>";
+    root.appendChild(heading);
+    events.forEach(event => {
+        const link = document.createElement("a");
+        link.className = "trip-linked-event";
+        link.href = "evento.html?id=" + encodeURIComponent(event.id);
+        const left = document.createElement("span");
+        const title = document.createElement("strong");
+        title.textContent = event.title || "Evento";
+        const meta = document.createElement("small");
+        meta.textContent = (event.location || "Sin lugar") + " · " + (event.status || "");
+        left.append(title, meta);
+        const right = document.createElement("small");
+        right.className = "trip-linked-event-date";
+        right.textContent = event.date ? new Date(event.date + "T" + (event.time || "00:00")).toLocaleDateString("es-ES", {day:"numeric",month:"short",year:"numeric"}) : "Fecha por definir";
+        link.append(left, right);
+        root.appendChild(link);
+    });
+}
 function optionDetailConfig(category) {
     const common = {
         destination: [
@@ -373,6 +401,7 @@ function optionDetailConfig(category) {
             ["breakfast","Desayuno","Ej. Incluido","text"],
             ["distance","Distancia","Ej. 1,2 km del centro","text"]
         ],
+        place: [["place_type","Tipo","Ej. museo, mirador o estadio","text"],["area","Zona","Ej. centro histórico","text"],["duration","Duración","Ej. 2 h","text"],["opening_hours","Horario","Ej. 09:00–20:00","text"],["booking","Reserva","Ej. gratuita / reservar","text"]],
         activity: [
             ["area","Zona","Ej. Centro","text"],
             ["duration","Duración","Ej. 3 h","text"],
@@ -466,7 +495,7 @@ function renderCompareSummary(options) {
     root.innerHTML='<table class="trip-compare-table"><thead><tr><th>Característica</th>'+header+'</tr></thead><tbody><tr><th>Precio</th>'+price+'</tr>'+details+'</tbody></table>';
 }
 function categoryLabel(category) {
-    return {destination:"Destino",flight:"Vuelo",hotel:"Hotel",activity:"Actividad",transport:"Transporte",other:"Otro"}[category] || "Opción";
+    return {destination:"Destino",flight:"Vuelo",hotel:"Hotel",activity:"Actividad",place:"Lugar de interés",transport:"Transporte",other:"Otro"}[category] || "Opción";
 }
 
 function renderOptions() {
