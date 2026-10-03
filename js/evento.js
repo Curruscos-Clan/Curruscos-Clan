@@ -323,13 +323,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             checkbox.type = "checkbox";
             checkbox.checked = Boolean(task.completed);
 
-            const canEdit =
+            const canComplete =
                 canManageGroup() ||
                 task.created_by === currentUser.id ||
                 task.assigned_to === currentUser.id;
 
-            checkbox.disabled = !canEdit;
-            checkbox.setAttribute("aria-label",
+            checkbox.disabled = !canComplete;
+            checkbox.setAttribute(
+                "aria-label",
                 (task.completed ? "Reabrir " : "Completar ") + (task.title || "tarea")
             );
 
@@ -337,16 +338,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const next = checkbox.checked;
                 checkbox.disabled = true;
                 const updated = await updateEventTask(task.id, next);
+
                 if (!updated) {
                     checkbox.checked = !next;
-                    checkbox.disabled = !canEdit;
+                    checkbox.disabled = !canComplete;
                     alert("No se ha podido actualizar la tarea.");
                     return;
                 }
-                task.completed = updated.completed;
+
+                Object.assign(task, updated);
                 renderTasks();
                 updateProgress();
                 updateStatus();
+                updateCommandCenter();
             });
 
             const copy = document.createElement("div");
@@ -364,7 +368,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             state.className = "task-state";
             state.textContent = task.completed
                 ? "Completada"
-                : task.assigned_to === currentUser.id
+                : String(task.assigned_to || "") === String(currentUser.id)
                     ? "Te corresponde"
                     : "Pendiente";
 
@@ -373,24 +377,123 @@ document.addEventListener("DOMContentLoaded", async () => {
             const right = document.createElement("div");
             right.className = "task-actions";
 
-            if (canManageGroup() || task.created_by === currentUser.id) {
+            const canEditDetails =
+                canManageGroup() ||
+                task.created_by === currentUser.id;
+
+            if (canEditDetails) {
+                const edit = document.createElement("button");
+                edit.type = "button";
+                edit.className = "task-edit-button";
+                edit.textContent = "Editar";
+                edit.addEventListener("click", () => {
+                    const editor = document.createElement("div");
+                    editor.className = "task-edit-form";
+
+                    const titleInput = document.createElement("input");
+                    titleInput.type = "text";
+                    titleInput.maxLength = 100;
+                    titleInput.value = task.title || "";
+                    titleInput.setAttribute("aria-label", "Título de la tarea");
+
+                    const assigneeSelect = document.createElement("select");
+                    assigneeSelect.setAttribute("aria-label", "Responsable de la tarea");
+
+                    const none = document.createElement("option");
+                    none.value = "";
+                    none.textContent = "Sin responsable";
+                    assigneeSelect.appendChild(none);
+
+                    members.forEach(member => {
+                        const option = document.createElement("option");
+                        option.value = member.user_id;
+                        option.textContent = memberName(member.user_id);
+                        assigneeSelect.appendChild(option);
+                    });
+
+                    assigneeSelect.value = task.assigned_to || "";
+
+                    const controls = document.createElement("div");
+                    controls.className = "task-edit-controls";
+
+                    const save = document.createElement("button");
+                    save.type = "button";
+                    save.className = "task-edit-save";
+                    save.textContent = "Guardar";
+
+                    const cancel = document.createElement("button");
+                    cancel.type = "button";
+                    cancel.className = "task-edit-cancel";
+                    cancel.textContent = "Cancelar";
+
+                    controls.append(save, cancel);
+                    editor.append(titleInput, assigneeSelect, controls);
+                    copy.replaceChildren(editor);
+
+                    titleInput.focus();
+                    titleInput.select();
+
+                    cancel.addEventListener("click", () => renderTasks());
+
+                    save.addEventListener("click", async () => {
+                        const nextTitle = titleInput.value.trim();
+                        if (!nextTitle) {
+                            titleInput.focus();
+                            return;
+                        }
+
+                        save.disabled = true;
+                        cancel.disabled = true;
+                        save.textContent = "Guardando…";
+
+                        const updated = await updateEventTask(
+                            task.id,
+                            task.completed,
+                            {
+                                title: nextTitle,
+                                assigned_to: assigneeSelect.value || null
+                            }
+                        );
+
+                        if (!updated) {
+                            save.disabled = false;
+                            cancel.disabled = false;
+                            save.textContent = "Guardar";
+                            alert("No se ha podido editar la tarea.");
+                            return;
+                        }
+
+                        Object.assign(task, updated);
+                        renderTasks();
+                        updateProgress();
+                        updateStatus();
+                        updateCommandCenter();
+                    });
+                });
+
+                right.appendChild(edit);
+
                 const remove = document.createElement("button");
                 remove.type = "button";
                 remove.className = "task-remove-button";
                 remove.textContent = "Eliminar";
                 remove.addEventListener("click", async () => {
                     if (!confirm("¿Eliminar esta tarea?")) return;
+
                     remove.disabled = true;
                     const deleted = await deleteEventTask(task.id);
+
                     if (!deleted) {
                         remove.disabled = false;
                         alert("No se ha podido eliminar la tarea.");
                         return;
                     }
+
                     tasks = tasks.filter(item => String(item.id) !== String(task.id));
                     renderTasks();
                     updateProgress();
                     updateStatus();
+                    updateCommandCenter();
                 });
                 right.appendChild(remove);
             }
