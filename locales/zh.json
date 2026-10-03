@@ -57,7 +57,8 @@
     "loadingGroup": "正在加载群组...",
     "creating": "正在创建…",
     "viewEvent": "查看活动",
-    "remove": "移除"
+    "remove": "移除",
+    "manage": "管理"
   },
   "activity": {
     "padel": "板式网球",
@@ -82,7 +83,8 @@
     "cancelled": "已取消",
     "finished": "已结束",
     "registrationOpen": "报名开放",
-    "upcoming": "即将开始"
+    "upcoming": "即将开始",
+    "published": "Publicado"
   },
   "format": {
     "knockout": "淘汰赛",
@@ -342,5 +344,18 @@
     "open": "开放活动",
     "viewEvent": "查看活动",
     "remove": "移除"
+  },
+  "myEvents": {
+    "upcoming": "即将到来",
+    "participating": "我参加的",
+    "organizing": "我组织的",
+    "finished": "已结束",
+    "noUpcoming": "你没有即将开始的活动。",
+    "noOrganizing": "你还没有组织任何活动。",
+    "noParticipating": "你还没有参加任何活动。",
+    "noFinished": "你还没有活动记录。",
+    "explore": "探索活动",
+    "create": "创建活动",
+    "find": "寻找计划"
   }
 }
