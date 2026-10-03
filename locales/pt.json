@@ -34,7 +34,10 @@
     "trips": "VIAGENS",
     "discoverTitle": "Descobre, participa e organiza. O resto depende do evento.",
     "cta": "Queres participar ou criar algo?",
-    "start": "Começar"
+    "start": "Começar",
+    "heroLine1": "A tua gente.",
+    "heroLine2": "Os teus planos.",
+    "heroLine3": "Tudo aqui."
   },
   "common": {
     "loading": "A carregar…",
