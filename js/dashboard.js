@@ -254,10 +254,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const actionHubTitle = document.getElementById("actionHubTitle");
     const actionHubMeta = document.getElementById("actionHubMeta");
     if (actionGrid) {
-        const type = group.workspace_type || "community";
-        const featureMap = usage?.plan?.features || {};
-        const openTasks = tasks?.filter(task => !task.completed).length || 0;
-        const planningTrips = (trips || []).filter(trip => trip.status === "planning").length;
+        const type = workspaceState.type;
+        const featureMap = workspaceState.features;
+        const openTasks = workspaceState.openTasks;
+        const planningTrips = workspaceState.planningTrips;
         const actionState = (done, active) => done ? "COMPLETADO" : active ? "EN CURSO" : "SIGUIENTE";
         const eventState = events.length > 0;
         const peopleState = members.length > 1;
@@ -270,11 +270,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             text: workspaceDecision.reason
         };
 
-        if (openTasks > 0) {
+        if (workspaceDecision.key === "tasks") {
             primary.urgent = true;
-            primary.baseScore = Math.max(primary.baseScore || 0, 88);
+            primary.baseScore = 95;
         }
-        if (events.length === 0) primary.contextMatch = true;
+        primary.contextMatch = workspaceDecision.key !== "next";
 
         const actionPriority = (action) => {
             let score = action.baseScore || 40;
@@ -668,7 +668,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             title: workspaceDecision.title,
             reason: workspaceDecision.reason
         };
-        const planFeatureEnabled = planFeatures[profile.feature] !== false;
+        const planFeatureEnabled = workspaceState.features[profile.feature] !== false;
         const contextNeedsAction = workspaceDecision.key !== "next";
         const hasActiveTrip = (trips || []).some(trip => trip.status === "planning");
         if (planFeatureEnabled && contextNeedsAction) {
