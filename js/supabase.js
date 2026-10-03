@@ -1908,6 +1908,10 @@ async function sendChatMessage(roomId,body){const user=await getCurrentUser();if
 function subscribeToChat(roomId,callback){return supabaseClient.channel("chat-"+roomId).on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages",filter:"room_id=eq."+roomId},payload=>callback?.(payload.new)).subscribe();}
 function unsubscribeFromChat(channel){if(channel)return supabaseClient.removeChannel(channel);}
 
+async function getTeamFollowStatus(teamId){const {data,error}=await supabaseClient.rpc("get_team_follow_status",{target_team_id:teamId});if(error){console.error("Error obteniendo seguimiento del equipo:",error);return null;}return data?.[0]||null;}
+async function followTeam(teamId){const {data,error}=await supabaseClient.rpc("follow_team",{target_team_id:teamId});if(error){console.error("Error siguiendo equipo:",error);return false;}return data===true;}
+async function unfollowTeam(teamId){const {data,error}=await supabaseClient.rpc("unfollow_team",{target_team_id:teamId});if(error){console.error("Error dejando de seguir equipo:",error);return false;}return data===true;}
+
 async function getPublicActiveTeams(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_active_teams",{search_text:String(search||"").trim()||null,target_event_type:eventType||"all"});if(error){console.error("Error obteniendo equipos públicos:",error);return [];}return data||[];}
 
 async function getPublicTeam(teamId){const {data,error}=await supabaseClient.rpc("get_public_team",{target_team_id:teamId});if(error){console.error("Error obteniendo equipo público:",error);return null;}return data?.[0]||null;}
