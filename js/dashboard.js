@@ -165,6 +165,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         workspaceState.memories > 0
     ].filter(Boolean).length / 5 * 100);
     document.documentElement.dataset.workspaceHealth = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
+    const healthScoreEl = document.getElementById("workspaceHealthScore");
+    const healthFillEl = document.getElementById("workspaceHealthFill");
+    const healthTitleEl = document.getElementById("workspaceHealthTitle");
+    const healthTextEl = document.getElementById("workspaceHealthText");
+    const healthMetricsEl = document.getElementById("workspaceHealthMetrics");
+    const healthCopy = workspaceActivationScore >= 80
+        ? ["Workspace activo.", "La base ya está montada. Ahora toca sacarle rendimiento."]
+        : workspaceActivationScore >= 40
+            ? ["Workspace en construcción.", "Ya hay actividad; completa los puntos que faltan para convertirlo en un centro operativo."]
+            : ["Workspace en activación.", "Empieza por personas, actividad y contexto para que Sense pueda ayudarte mejor."];
+    if (healthScoreEl) healthScoreEl.textContent = workspaceActivationScore + "%";
+    if (healthFillEl) healthFillEl.style.width = workspaceActivationScore + "%";
+    if (healthTitleEl) healthTitleEl.textContent = healthCopy[0];
+    if (healthTextEl) healthTextEl.textContent = healthCopy[1];
+    if (healthMetricsEl) {
+        healthMetricsEl.innerHTML = [
+            ["Personas", workspaceState.members],
+            ["Actividad", workspaceState.events],
+            ["Pendientes", workspaceState.openTasks],
+            ["Viajes", workspaceState.planningTrips]
+        ].map(([label,value]) => '<div class="workspace-health-metric"><strong>' + escapeHtml(String(value)) + '</strong><span>' + escapeHtml(label) + '</span></div>').join("");
+    }
+
 
     const actionGrid = document.getElementById("adaptiveActionGrid");
     const actionHubEyebrow = document.getElementById("actionHubEyebrow");
