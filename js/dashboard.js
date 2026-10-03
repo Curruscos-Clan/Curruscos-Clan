@@ -543,7 +543,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             signal("tareas abiertas", tasks.filter(task => !task.completed).length),
             signal("viajes", (trips || []).length)
         ];
-        signalsEl.innerHTML = compactSignals.join("");
+
+        const secondary = ranked
+            .filter(item => item !== top)
+            .slice(0, 2)
+            .map(item => '<a class="autopilot-signal autopilot-suggestion" href="' +
+                escapeHtml(item.href) + '">' +
+                escapeHtml(item.title) + ' →</a>');
+
+        signalsEl.innerHTML = compactSignals.join("") + secondary.join("");
 
         if (top.score >= 90) {
             orbEl.style.transform = "scale(1.03)";
