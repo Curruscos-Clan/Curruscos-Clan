@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 : "Faltan " + days + " días para " + (next.event.title || "el próximo plan") + "." + tripText;
         } else {
             pulseMessageEl.textContent = (trips || []).length
-                ? "No hay eventos próximos, pero ya hay " + (trips || []).length + " viaje" + ((trips || []).length === 1 ? "" : "s") + " en movimiento."
+                ? t("dashboard.tripsInMotion",{count:(trips||[]).length})
                 : t("dashboard.noPlanPrompt");
         }
     }
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
         nextEl.innerHTML =
             '<div class="no-event">' +
-                'Todavía no hay ningún evento próximo.' +
+                t("dashboard.noUpcoming") +
                 '<br><br>' +
                 '<a href="eventos.html">Crear un evento →</a>' +
             '</div>';
