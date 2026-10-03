@@ -193,6 +193,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         (score, [, done, weight]) => score + (done ? weight : 0),
         0
     );
+    const workspaceDecision = (() => {
+        const type = workspaceState.type;
+        const featureMap = workspaceState.features || {};
+        if (workspaceState.openTasks > 0) return { key:"tasks", href:"eventos.html", icon:"✓", kicker:"ORGANIZACIÓN", title:"Resolver tareas pendientes", reason: workspaceState.openTasks + " tarea" + (workspaceState.openTasks === 1 ? "" : "s") + " todavía requiere" + (workspaceState.openTasks === 1 ? "" : "n") + " atención." };
+        if (workspaceState.members <= 1) return { key:"members", href:"miembros.html", icon:"◎", kicker:"EQUIPO", title:"Traer a la primera persona", reason:"Un workspace empieza a cobrar vida cuando deja de depender de una sola persona." };
+        if (type === "travel" && featureMap.travel && workspaceState.planningTrips === 0) return { key:"travel", href:"viajes.html", icon:"↗", kicker:"VIAJE", title:"Planificar el próximo viaje", reason:"Destino, opciones e itinerario desde un solo espacio." };
+        if (type === "sports" && featureMap.competitions && workspaceState.events === 0) return { key:"sports", href:"crear.html", icon:"◆", kicker:"DEPORTE", title:"Activar la competición", reason:"Crea la actividad deportiva y entra después en su organización." };
+        if (type === "study" && workspaceState.events === 0) return { key:"study", href:"crear-evento.html", icon:"→", kicker:"ESTUDIO", title:"Crear la primera sesión", reason:"Convierte el objetivo del workspace en una actividad concreta." };
+        if (workspaceState.events === 0) return { key:"event", href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", reason:"Un evento convierte la estructura del workspace en actividad real." };
+        return { key:"next", href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", reason:"Revisa próximos planes, participantes y tareas." };
+    })();
     document.documentElement.dataset.workspaceHealth = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     const healthScoreEl = document.getElementById("workspaceHealthScore");
     const healthFillEl = document.getElementById("workspaceHealthFill");
@@ -223,21 +234,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const workspaceGoalText = document.getElementById("workspaceGoalText");
     const workspaceGoalAction = document.getElementById("workspaceGoalAction");
     if (workspaceGoal && workspaceGoalTitle && workspaceGoalText && workspaceGoalAction) {
-        const goal = workspaceState.openTasks > 0
-            ? { title: "Cerrar los pendientes", text: "Resolver las tareas abiertas aumentará la capacidad operativa del workspace.", href: "eventos.html" }
-            : workspaceState.members <= 1
-                ? { title: "Traer a la primera persona", text: "Un workspace empieza a cobrar vida cuando deja de depender de una sola persona.", href: "miembros.html" }
-                : workspaceState.type === "travel" && workspaceState.planningTrips === 0 && workspaceState.features.travel
-                    ? { title: "Abrir el primer viaje", text: "El siguiente salto para este workspace es convertir una idea en un viaje planificado.", href: "viajes.html" }
-                    : workspaceState.type === "sports" && workspaceState.events === 0 && workspaceState.features.competitions
-                        ? { title: "Poner en marcha la competición", text: "Crea la primera actividad deportiva y después podrás organizar participantes y resultados.", href: "crear.html" }
-                        : workspaceState.type === "study" && workspaceState.events === 0
-                            ? { title: "Crear la primera sesión", text: "Convierte el objetivo del workspace en una actividad concreta.", href: "crear-evento.html" }
-                            : workspaceState.events === 0
-                                ? { title: "Crear la primera actividad", text: "Un evento convierte la estructura del workspace en actividad real.", href: "crear-evento.html" }
-                                : workspaceState.memories === 0
-                                    ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
-                                    : null;
+        const goal = workspaceDecision.key === "tasks" || workspaceDecision.key === "members" || workspaceDecision.key === "travel" || workspaceDecision.key === "sports" || workspaceDecision.key === "study" || workspaceDecision.key === "event"
+            ? { title: workspaceDecision.title, text: workspaceDecision.reason, href: workspaceDecision.href }
+            : workspaceState.memories === 0
+                ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
+                : null;
         if (goal) {
             workspaceGoal.hidden = false;
             workspaceGoalTitle.textContent = goal.title;
@@ -261,15 +262,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const eventState = events.length > 0;
         const peopleState = members.length > 1;
         const tripState = planningTrips > 0;
-        const primary = type === "sports" && featureMap.competitions
-            ? {href:"crear.html", icon:"◆", kicker:"DEPORTE", title:"Activa la competición", text:"Crea la actividad deportiva y entra después en su organización."}
-            : type === "travel" && featureMap.travel && planningTrips === 0
-                ? {href:"viajes.html", icon:"↗", kicker:"VIAJE", title:"Planifica el próximo viaje", text:"Destino, opciones e itinerario desde un solo espacio."}
-                : openTasks > 0
-                    ? {href:"eventos.html", icon:"✓", kicker:"ORGANIZACIÓN", title:"Resolver tareas pendientes", text:openTasks + " tarea" + (openTasks === 1 ? "" : "s") + " todavía requiere" + (openTasks === 1 ? "" : "n") + " atención."}
-                    : events.length === 0
-                        ? {href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", text:"Un evento convierte este workspace en actividad real."}
-                        : {href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", text:"Revisa próximos planes, participantes y tareas."};
+        const primary = {
+            href: workspaceDecision.href,
+            icon: workspaceDecision.icon,
+            kicker: workspaceDecision.kicker,
+            title: workspaceDecision.title,
+            text: workspaceDecision.reason
+        };
 
         if (openTasks > 0) {
             primary.urgent = true;
@@ -660,17 +659,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                     serverSense.action === "invitation" ? "✉" : "+"
             });
         }
-        const workspaceType = group.workspace_type || "community";
-        const senseProfile = {
-            sports: { feature: "competitions", href: "crear.html", score: 94, label: "COMPETICIÓN", title: "Pon el grupo en juego", reason: "Este workspace está orientado al deporte: la siguiente acción útil es activar la competición." },
-            travel: { feature: "travel", href: "viajes.html", score: 92, label: "VIAJE", title: "Convierte el plan en un itinerario", reason: "Este workspace está orientado a viajes: avanzar la planificación desbloquea el siguiente paso." },
-            study: { feature: "events", href: "crear-evento.html", score: 84, label: "ESTUDIO", title: "Organiza la próxima sesión", reason: "Este workspace está orientado al estudio: una actividad concreta convierte el plan en acción." },
-            organization: { feature: "events", href: "crear-evento.html", score: 84, label: "ORGANIZACIÓN", title: "Activa la próxima actividad", reason: "Este workspace está orientado a organizar personas y actividades." },
-            community: { feature: "events", href: "crear-evento.html", score: 76, label: "COMUNIDAD", title: "Crea el siguiente plan", reason: "Un primer plan ayuda a convertir el workspace en actividad." },
-            other: { feature: "events", href: "crear-evento.html", score: 76, label: "WORKSPACE", title: "Crea el siguiente plan", reason: "Un primer plan ayuda a convertir el workspace en actividad." }
+        const workspaceType = workspaceState.type;
+        const profile = {
+            feature: workspaceType === "sports" ? "competitions" : workspaceType === "travel" ? "travel" : "events",
+            href: workspaceDecision.href,
+            score: workspaceDecision.key === "next" ? 55 : 84,
+            label: workspaceDecision.kicker,
+            title: workspaceDecision.title,
+            reason: workspaceDecision.reason
         };
-        const profile = senseProfile[workspaceType] || senseProfile.community;
         const planFeatureEnabled = planFeatures[profile.feature] !== false;
+        const contextNeedsAction = workspaceDecision.key !== "next";
         const hasActiveTrip = (trips || []).some(trip => trip.status === "planning");
         const contextNeedsAction = workspaceType === "sports"
             ? !nextEvent
