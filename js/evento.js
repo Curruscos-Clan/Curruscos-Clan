@@ -1016,6 +1016,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             progress + "%";
 
         renderExpenseSplit();
+        updateCommandCenter();
     }
 
     function updateCommandCenter() {
@@ -1181,6 +1182,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderExpenses();
         updateProgress();
         updateStatus();
+        updateCommandCenter();
 
         setupForms();
         setupHistoryButton();
