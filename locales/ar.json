@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "explore": "استكشاف",
+    "myEvents": "فعالياتي",
+    "rankings": "التصنيفات",
+    "create": "إنشاء",
+    "login": "تسجيل الدخول",
+    "saved": "المحفوظات",
+    "trips": "الرحلات",
+    "members": "الأعضاء",
+    "history": "السجل",
+    "memories": "الذكريات",
+    "events": "الفعاليات",
+    "chat": "الدردشة",
+    "notifications": "الإشعارات"
+  },
+  "community": {
+    "activePeople": "أشخاص نشطون"
+  },
+  "landing": {
+    "exploreEvents": "استكشاف الفعاليات"
+  },
+  "common": {
+    "loading": "جارٍ التحميل…",
+    "searching": "جارٍ البحث...",
+    "save": "حفظ",
+    "saved": "محفوظ",
+    "cancel": "إلغاء",
+    "send": "إرسال",
+    "close": "إغلاق",
+    "add": "إضافة",
+    "create": "إنشاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "viewProfile": "عرض الملف الشخصي",
+    "private": "خاص",
+    "participant": "مشارك",
+    "loadingGroup": "جارٍ تحميل المجموعة..."
+  },
+  "activity": {
+    "padel": "بادل",
+    "futbol": "كرة القدم",
+    "baloncesto": "كرة السلة",
+    "tenis": "تنس",
+    "ajedrez": "شطرنج",
+    "gaming": "ألعاب",
+    "running": "جري",
+    "other": "أخرى",
+    "otherPlural": "أخرى"
+  },
+  "category": {
+    "tournament": "بطولة",
+    "sport": "رياضة",
+    "social": "اجتماعي",
+    "activity": "نشاط"
+  },
+  "status": {
+    "live": "مباشر",
+    "preparing": "قيد الإعداد",
+    "cancelled": "ملغى",
+    "finished": "انتهى",
+    "registrationOpen": "التسجيل مفتوح"
+  },
+  "format": {
+    "knockout": "إقصائي",
+    "roundRobin": "دوري",
+    "swiss": "سويسري",
+    "race": "سباق",
+    "custom": "مخصص"
+  },
+  "event": {
+    "registrationClosed": "أُغلق التسجيل",
+    "noSpots": "لا توجد أماكن",
+    "free": "مجاني",
+    "locationTbd": "الموقع سيحدد لاحقًا",
+    "descriptionTbd": "لا يوجد وصف بعد.",
+    "organizes": "ينظمه",
+    "event": "فعالية",
+    "context": "السياق",
+    "events": "الفعاليات"
+  },
+  "team": {
+    "viewTeam": "عرض الفريق →",
+    "follow": "متابعة الفريق",
+    "unfollow": "إلغاء متابعة الفريق",
+    "owner": "المالك",
+    "team": "فريق",
+    "persistent": "فريق دائم",
+    "squad": "التشكيلة",
+    "history": "السجل",
+    "members": "الأعضاء",
+    "noVisibleMembers": "لا يوجد أعضاء ظاهرون.",
+    "noPublicEvents": "لا توجد مشاركات عامة للفريق بعد.",
+    "notFound": "لم يتم العثور على الفريق.",
+    "notAvailable": "هذا الفريق غير متاح للعامة."
+  },
+  "explore": {
+    "allActivities": "كل الأنشطة",
+    "noEvents": "لم يتم العثور على فعاليات.",
+    "tryFilters": "جرّب بحثًا آخر أو غيّر عوامل التصفية.",
+    "notInterested": "غير مهتم",
+    "activeFilters": "عوامل تصفية نشطة · يمكنك مسحها بلمسة.",
+    "autoUpdate": "يتم تحديث النتائج العامة تلقائيًا.",
+    "noResults": "لا توجد نتائج",
+    "noPeople": "لم يتم العثور على ملفات عامة نشطة.",
+    "noTeams": "لا توجد فرق عامة لعرضها بعد.",
+    "saveError": "تعذر تحديث الحفظ."
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء"
+  },
+  "chat": {
+    "newConversation": "＋ محادثة جديدة",
+    "conversations": "المحادثات",
+    "searchPeople": "البحث عن أشخاص…",
+    "selectConversation": "اختر محادثة",
+    "messagesHere": "ستظهر رسائلك هنا.",
+    "writeMessage": "اكتب رسالة…",
+    "communityHere": "مجتمعك، هنا."
+  },
+  "travel": {
+    "newTrip": "＋ رحلة جديدة",
+    "createTrip": "إنشاء رحلة"
+  }
+}
