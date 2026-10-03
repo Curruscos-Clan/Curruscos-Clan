@@ -315,6 +315,10 @@
     "namePlaceholder": "z. B. Curruscos Clan",
     "description": "Beschreibung",
     "descriptionPlaceholder": "Was für eine Gruppe seid ihr?",
-    "createButton": "Meine Gruppe erstellen"
+    "createButton": "Meine Gruppe erstellen",
+    "nameRequired": "Gib einen Gruppennamen ein.",
+    "creating": "Euer Bereich wird erstellt...",
+    "createError": "Die Gruppe konnte nicht erstellt werden.",
+    "created": "Gruppe erstellt. Weiter..."
   }
 }
