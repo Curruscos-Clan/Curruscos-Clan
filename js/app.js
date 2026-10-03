@@ -1341,6 +1341,16 @@ document.addEventListener(
         }
 
         window.curruscosCurrentAccess = access;
+        window.curruscosWorkspace = {
+            id: access.currentGroup.id,
+            type: access.currentGroup.workspace_type || "community",
+            role: access.currentGroup.role || "member",
+            plan: access.currentGroup.plan_name || "Free",
+            features: access.currentGroup.features || {},
+            canManage: access.currentGroup.role === "owner" || access.currentGroup.role === "admin"
+        };
+        document.body.dataset.workspaceType = window.curruscosWorkspace.type;
+        document.body.dataset.workspaceRole = window.curruscosWorkspace.role;
 
         if (!AUTH_ONLY_PAGES.has(page)) {
             await initPrivateShell(access);
