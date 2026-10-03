@@ -2041,6 +2041,19 @@ function startGlobalActivityBadges(){
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startGlobalActivityBadges);else startGlobalActivityBadges();
 
 
+async function getGroupPendingInvitations(groupId) {
+    if (!groupId) return [];
+    const { data, error } = await supabaseClient.rpc("get_group_pending_invitations", { target_group_id: groupId });
+    if (error) { console.error("Error obteniendo invitaciones del workspace:", error); return []; }
+    return data || [];
+}
+
+async function cancelGroupInvitation(invitationId) {
+    const { data, error } = await supabaseClient.rpc("cancel_group_invitation", { target_invitation_id: invitationId });
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido cancelar la invitación."));
+    return !!data;
+}
+
 async function getGroupUsage(groupId) {
     if (!groupId) return null;
     const { data, error } = await supabaseClient.rpc(
