@@ -189,10 +189,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ["organización", tasks.length > 0 && workspaceState.openTasks === 0, 15],
                     ["historial", workspaceState.memories > 0, 10]
                 ];
+    const workspaceMilestones = Object.fromEntries(
+        milestoneChecks.map(([key, done, weight]) => [key, { done, weight }])
+    );
     const workspaceActivationScore = milestoneChecks.reduce(
         (score, [, done, weight]) => score + (done ? weight : 0),
         0
     );
+    workspaceState.milestones = workspaceMilestones;
+    workspaceState.activationScore = workspaceActivationScore;
+
     const workspaceDecision = (() => {
         const type = workspaceState.type;
         const featureMap = workspaceState.features || {};
@@ -234,7 +240,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const workspaceGoalText = document.getElementById("workspaceGoalText");
     const workspaceGoalAction = document.getElementById("workspaceGoalAction");
     if (workspaceGoal && workspaceGoalTitle && workspaceGoalText && workspaceGoalAction) {
-        const goal = workspaceDecision.key === "tasks" || workspaceDecision.key === "members" || workspaceDecision.key === "travel" || workspaceDecision.key === "sports" || workspaceDecision.key === "study" || workspaceDecision.key === "event"
+        const goal = workspaceDecision.key !== "next"
             ? { title: workspaceDecision.title, text: workspaceDecision.reason, href: workspaceDecision.href }
             : workspaceState.memories === 0
                 ? { title: "Crear la primera memoria", text: "Cuando el grupo empieza a guardar momentos, el workspace deja de ser solo operativo.", href: "recuerdos.html" }
