@@ -823,6 +823,11 @@
    PULSO DEL GRUPO
 ===================================================== */
 .group-pulse{margin-bottom:22px;padding:25px 28px!important}.pulse-heading{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:20px}.pulse-eyebrow{display:block;color:var(--accent);font-size:10px;font-weight:800;letter-spacing:2px}.pulse-heading h2{margin:7px 0 0;font-size:28px;letter-spacing:-1px}.pulse-link{font-size:12px;font-weight:700;color:var(--text);text-decoration:none}.pulse-link:hover{color:var(--accent)}.pulse-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.pulse-item{display:flex;align-items:center;gap:11px;padding:13px;border-radius:15px;background:var(--surface-soft)}.pulse-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--surface)}.pulse-item strong,.pulse-item span{display:block}.pulse-item strong{font-size:15px}.pulse-item div span{margin-top:3px;color:var(--muted);font-size:10px}.pulse-message{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}@media(max-width:700px){.pulse-grid{grid-template-columns:1fr 1fr}.pulse-heading{align-items:flex-start;flex-direction:column}}
+
+/* =====================================================
+   CURRUSCOS SENSE — SIGUIENTE MOVIMIENTO
+===================================================== */
+.autopilot-card{margin-bottom:22px;position:relative;overflow:hidden;background:#111!important;color:#fff!important;border-color:#111!important}.autopilot-card:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;right:-120px;top:-150px;background:radial-gradient(circle,rgba(255,255,255,.13),transparent 68%);pointer-events:none}.autopilot-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:25px}.autopilot-eyebrow{font-size:10px;font-weight:900;letter-spacing:2.2px;color:#fff;opacity:.55}.autopilot-top h2{font-size:28px;line-height:1.05;letter-spacing:-1.2px;margin:7px 0 0}.autopilot-live{font-size:9px;font-weight:800;letter-spacing:1.3px;opacity:.55;display:flex;align-items:center;gap:6px}.autopilot-live i{width:7px;height:7px;border-radius:50%;background:#7cff9a;display:block;box-shadow:0 0 0 4px rgba(124,255,154,.08)}.autopilot-body{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:17px;position:relative;z-index:1}.autopilot-orb{width:58px;height:58px;border-radius:18px;background:#fff;color:#111;display:grid;place-items:center;font-size:24px;font-weight:900;box-shadow:0 8px 25px rgba(0,0,0,.18)}.autopilot-label{font-size:9px;letter-spacing:1.6px;font-weight:900;opacity:.5}.autopilot-copy h3{font-size:21px;line-height:1.15;margin:4px 0 4px;letter-spacing:-.5px}.autopilot-copy p{margin:0;color:#aaa;font-size:12px;line-height:1.5;max-width:650px}.autopilot-action{padding:11px 16px;border-radius:11px;background:#fff;color:#111;text-decoration:none;font-size:12px;font-weight:800;white-space:nowrap}.autopilot-action:hover{transform:translateY(-1px)}.autopilot-signals{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.09);position:relative;z-index:1}.autopilot-signal{font-size:10px;color:#aaa;border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 9px}.autopilot-signal strong{color:#fff;margin-right:4px}@media(max-width:650px){.autopilot-body{grid-template-columns:46px 1fr}.autopilot-orb{width:46px;height:46px;border-radius:14px;font-size:19px}.autopilot-action{grid-column:2;width:max-content}.autopilot-top{align-items:flex-start}.autopilot-live{display:none}}
 </style>
 
 <script src="js/i18n.js"></script>
@@ -1031,6 +1036,26 @@
                     </div>
                 </div>
                 <div class="pulse-message" id="pulseMessage">Cargando el estado del grupo…</div>
+            </section>
+
+            <section class="autopilot-card dashboard-card" aria-label="Siguiente movimiento del grupo">
+                <div class="autopilot-top">
+                    <div>
+                        <span class="autopilot-eyebrow">CURRUSCOS SENSE</span>
+                        <h2>El siguiente movimiento.</h2>
+                    </div>
+                    <span class="autopilot-live"><i></i> EN TIEMPO REAL</span>
+                </div>
+                <div class="autopilot-body">
+                    <div class="autopilot-orb" id="autopilotOrb">↗</div>
+                    <div class="autopilot-copy">
+                        <span class="autopilot-label" id="autopilotLabel">ANALIZANDO</span>
+                        <h3 id="autopilotTitle">Leyendo el estado del grupo…</h3>
+                        <p id="autopilotReason">Conectando eventos, personas, tareas, decisiones y viajes.</p>
+                    </div>
+                    <a id="autopilotAction" class="autopilot-action" href="dashboard.html">Abrir →</a>
+                </div>
+                <div class="autopilot-signals" id="autopilotSignals"></div>
             </section>
 
             <!-- =================================================
