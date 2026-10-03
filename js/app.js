@@ -1052,184 +1052,171 @@ async function initPrivateShell(access) {
    ========================================================= */
 
 async function loadEvents() {
-    const container =
-        document.getElementById("eventsList");
+    const container = document.getElementById("eventsList");
+    if (!container) return;
 
-    if (!container) {
-        return;
-    }
+    const user = await getCurrentUser();
+    const group = await getCurrentGroup();
+    const events = await getGroupEvents();
 
-    const user =
-        await getCurrentUser();
+    let filter = "upcoming";
+    let query = "";
 
-    const group =
-        await getCurrentGroup();
+    const search = document.getElementById("eventsSearch");
+    const meta = document.getElementById("eventsResultsMeta");
+    const filters = document.querySelectorAll("[data-event-filter]");
 
-    const events =
-        await getGroupEvents();
+    const dateOf = event => getEventDate(event)?.getTime() || 0;
+    const now = Date.now();
 
-    const sorted =
-        [...events].sort((a, b) => {
-            const da = getEventDate(a)?.getTime() || 0;
-            const db = getEventDate(b)?.getTime() || 0;
-            return da - db;
-        });
+    const render = () => {
+        const normalized = query.trim().toLowerCase();
 
-    container.innerHTML = "";
+        const visible = events
+            .filter(event => {
+                const timestamp = dateOf(event);
+                const isPast = timestamp > 0 && timestamp < now;
 
-    if (!sorted.length) {
-        container.innerHTML =
-            '<div class="empty-state"><h3>No hay eventos todavía.</h3><p>Cread el primer plan del grupo.</p></div>';
-        return;
-    }
+                if (filter === "upcoming" && isPast) return false;
+                if (filter === "past" && !isPast) return false;
 
-    sorted.forEach(event => {
-        const card =
-            document.createElement("article");
+                if (normalized) {
+                    const haystack = [
+                        event.title,
+                        event.location,
+                        event.description
+                    ].filter(Boolean).join(" ").toLowerCase();
 
-        card.className =
-            "event-card";
+                    if (!haystack.includes(normalized)) return false;
+                }
 
-        const date =
-            getEventDate(event);
-
-        const isPast =
-            date &&
-            date < new Date();
-
-        if (isPast) {
-            card.classList.add("past");
-        }
-
-        const body =
-            document.createElement("div");
-
-        body.className =
-            "event-card-body";
-
-        const eyebrow =
-            document.createElement("span");
-
-        eyebrow.className =
-            "event-card-date";
-
-        eyebrow.textContent =
-            formatEventDate(event, {
-                weekday: true
+                return true;
+            })
+            .sort((a, b) => {
+                const da = dateOf(a);
+                const db = dateOf(b);
+                return filter === "past" ? db - da : da - db;
             });
 
-        const title =
-            document.createElement("h3");
+        filters.forEach(button => {
+            const active = button.dataset.eventFilter === filter;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-pressed", String(active));
+        });
 
-        title.textContent =
-            event.title || "Sin título";
+        if (meta) {
+            meta.textContent = visible.length
+                ? visible.length + (visible.length === 1 ? " evento" : " eventos")
+                : "Ningún evento coincide con la búsqueda.";
+        }
 
-        const meta =
-            document.createElement("p");
+        container.innerHTML = "";
 
-        const location =
-            event.location
-                ? "📍 " + event.location
-                : "";
+        if (!visible.length) {
+            container.innerHTML =
+                '<div class="empty-state"><h3>' +
+                (normalized || filter !== "upcoming"
+                    ? "No encontramos eventos con estos filtros."
+                    : "No hay próximos eventos todavía.") +
+                '</h3><p>' +
+                (normalized
+                    ? "Prueba con otro nombre o lugar."
+                    : filter === "past"
+                        ? "Los eventos anteriores aparecerán aquí."
+                        : "Cread el primer plan del grupo.") +
+                '</p></div>';
+            return;
+        }
 
-        const time =
-            event.time
-                ? " · " + event.time
-                : "";
+        visible.forEach(event => {
+            const card = document.createElement("article");
+            card.className = "event-card";
 
-        meta.textContent =
-            location + time;
+            const date = getEventDate(event);
+            const isPast = date && date.getTime() < now;
+            if (isPast) card.classList.add("past");
 
-        body.append(
-            eyebrow,
-            title,
-            meta
-        );
+            const body = document.createElement("div");
+            body.className = "event-card-body";
 
-        const actions =
-            document.createElement("div");
+            const eyebrow = document.createElement("span");
+            eyebrow.className = "event-card-date";
+            eyebrow.textContent = formatEventDate(event, { weekday: true });
 
-        actions.className =
-            "event-card-actions";
+            const title = document.createElement("h3");
+            title.textContent = event.title || "Sin título";
 
-        const view =
-            document.createElement("a");
+            const metaEl = document.createElement("p");
+            metaEl.textContent =
+                (event.location ? "📍 " + event.location : "") +
+                (event.time ? " · " + event.time : "");
 
-        view.href =
-            "evento.html?id=" +
-            encodeURIComponent(event.id);
+            body.append(eyebrow, title, metaEl);
 
-        view.className =
-            "button button-secondary";
+            const actions = document.createElement("div");
+            actions.className = "event-card-actions";
 
-        view.textContent =
-            "Ver evento →";
+            const view = document.createElement("a");
+            view.href = "evento.html?id=" + encodeURIComponent(event.id);
+            view.className = "button button-secondary";
+            view.textContent = "Ver evento →";
+            actions.appendChild(view);
 
-        actions.appendChild(view);
-
-        const canDelete =
-            group &&
-            user &&
-            (
+            const canDelete = group && user && (
                 group.role === "owner" ||
                 group.role === "admin" ||
                 event.created_by === user.id
             );
 
-        if (canDelete) {
-            const remove =
-                document.createElement("button");
+            if (canDelete) {
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "button button-ghost event-delete-button";
+                remove.textContent = "Eliminar";
 
-            remove.type = "button";
-            remove.className =
-                "button button-ghost event-delete-button";
-            remove.textContent =
-                "Eliminar";
-
-            remove.addEventListener(
-                "click",
-                async () => {
-                    const ok =
-                        confirm(
-                            '¿Eliminar el evento "' +
-                            (event.title || "Sin título") +
-                            '"?'
-                        );
-
-                    if (!ok) {
+                remove.addEventListener("click", async () => {
+                    if (!confirm('¿Eliminar el evento "' + (event.title || "Sin título") + '"?')) {
                         return;
                     }
 
                     remove.disabled = true;
 
-                    try {
-                        await deleteGroupEvent(
-                            event.id
-                        );
+                    const deleted = await deleteGroupEvent(event.id);
 
-                        card.remove();
-                    } catch (error) {
+                    if (!deleted) {
                         remove.disabled = false;
-                        alert(
-                            getSupabaseErrorMessage(
-                                error,
-                                "No se ha podido eliminar el evento."
-                            )
-                        );
+                        alert("No se ha podido eliminar el evento.");
+                        return;
                     }
-                }
-            );
 
-            actions.appendChild(remove);
-        }
+                    const index = events.findIndex(item => String(item.id) === String(event.id));
+                    if (index >= 0) events.splice(index, 1);
+                    render();
+                });
 
-        card.append(
-            body,
-            actions
-        );
+                actions.appendChild(remove);
+            }
 
-        container.appendChild(card);
+            card.append(body, actions);
+            container.appendChild(card);
+        });
+    };
+
+    filters.forEach(button => {
+        button.addEventListener("click", () => {
+            filter = button.dataset.eventFilter || "upcoming";
+            render();
+        });
     });
+
+    if (search) {
+        search.addEventListener("input", () => {
+            query = search.value;
+            render();
+        });
+    }
+
+    render();
 }
 
 async function setupEventForm() {
