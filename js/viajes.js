@@ -3,6 +3,7 @@ let activeTripId = null;
 let activeTrip = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await window.curruscosI18n?.ready;
     await window.curruscosReady;
     bindTripUi();
     await loadTrips();
