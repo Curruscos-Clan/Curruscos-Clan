@@ -347,7 +347,7 @@
     "pollReason": "Hay votaciones abiertas que están esperando una respuesta del grupo.",
     "invitationReason": "Hay grupos esperando una respuesta tuya.",
     "noPlanPrompt": "Todavía no hay ningún plan próximo. Este es un buen momento para crear uno.",
-    "closeAttendanceCount": "Cerrar la asistencia de {{count}} {{count,plural}}",
+    "closeAttendanceCount": "Cerrar la asistencia de {{count}} persona(s)",
     "attendanceReason": "{{event}} todavía no tiene una respuesta de todo el grupo.",
     "resolveTasksCount": "Resolver {{count}} tarea(s) pendiente(s)",
     "decideLocation": "Decidir dónde será {{event}}",
