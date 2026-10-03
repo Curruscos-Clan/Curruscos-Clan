@@ -249,7 +249,12 @@
     "creatingAccount": "جارٍ إنشاء الحساب…",
     "accountCreated": "تم إنشاء الحساب. جارٍ تسجيل الدخول…",
     "confirmEmail": "تم إنشاء الحساب. تحقق من بريدك الإلكتروني لتأكيد الحساب.",
-    "registerError": "تعذر إنشاء الحساب."
+    "registerError": "تعذر إنشاء الحساب.",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "you@email.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "6 أحرف على الأقل",
+    "loginButton": "تسجيل الدخول"
   },
   "createEvent": {
     "adapts": "بالنسبة إلى {{type}}، سيكيّف Curruscos التنظيم وفق التنسيق المختار.",
@@ -282,6 +287,11 @@
   "group": {
     "group": "مجموعة",
     "namePrompt": "اسم المجموعة الجديدة:",
-    "descriptionPrompt": "وصف المجموعة (اختياري):"
+    "descriptionPrompt": "وصف المجموعة (اختياري):",
+    "name": "اسم المجموعة",
+    "namePlaceholder": "مثال: Curruscos Clan",
+    "description": "الوصف",
+    "descriptionPlaceholder": "ما نوع مجموعتكم؟",
+    "createButton": "إنشاء مجموعتي"
   }
 }
