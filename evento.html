@@ -606,6 +606,15 @@
 
 /* ---------- TAREAS ---------- */
 
+.task-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
+.task-toolbar>div:first-child{display:grid;gap:3px}
+.task-toolbar strong{font-size:13px;color:#111}
+.task-toolbar span{font-size:10px;color:#888}
+.task-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.task-filter{min-height:32px;padding:0 10px;border:1px solid #e2e2e2;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}
+.task-filter.active{background:#111;border-color:#111;color:#fff}
+.task-filter:disabled{opacity:.5;cursor:default}
+
 .task-form {
     display: grid;
     grid-template-columns: 1fr 210px auto;
@@ -979,6 +988,9 @@
             </button>
             <button type="button" id="saveToHistoryButton" class="edit-event-button">
                 📖 Guardar en historia
+            </button>
+            <button type="button" id="shareEventButton" class="edit-event-button">
+                ↗ Compartir evento
             </button>
             <a id="eventChatButton" class="edit-event-button" href="chat.html">
                 💬 Chat del evento
@@ -1399,6 +1411,19 @@
 
                     </div>
 
+
+                    <div class="task-toolbar">
+                        <div>
+                            <strong id="taskListTitle">Preparación</strong>
+                            <span id="taskListMeta">Organizad lo que queda por hacer.</span>
+                        </div>
+                        <div class="task-filters" id="taskFilters" role="group" aria-label="Filtrar tareas">
+                            <button type="button" class="task-filter active" data-task-filter="all">Todas</button>
+                            <button type="button" class="task-filter" data-task-filter="mine">Mías</button>
+                            <button type="button" class="task-filter" data-task-filter="pending">Pendientes</button>
+                            <button type="button" class="task-filter" data-task-filter="done">Hechas</button>
+                        </div>
+                    </div>
 
                     <form
                         id="taskForm"
@@ -1865,6 +1890,9 @@
 
 
     @media (max-width: 600px) {
+
+        .task-toolbar{align-items:flex-start;flex-direction:column}
+        .task-filters{justify-content:flex-start}
 
         .expense-summary {
             grid-template-columns: 1fr 1fr;
