@@ -1,4 +1,17 @@
-function renderTeams(teams){const root=document.getElementById("teamsGrid");if(!root)return;if(!teams.length){root.innerHTML="<div class=\"explore-empty\">Todavía no hay equipos públicos que mostrar.</div>";return;}root.innerHTML=teams.map(t=>`<a class="team-discovery-card" href="equipo-publico.html?id=${encodeURIComponent(t.team_id)}"><span class="team-discovery-mark">${escapeHtml((t.team_name||"E").charAt(0).toUpperCase())}</span><span style="min-width:0;flex:1"><strong>${escapeHtml(t.team_name||"Equipo")}</strong><small>${escapeHtml(ACTIVITY_LABELS[t.event_type]||"Actividad")} · ${escapeHtml(t.event_title||"Evento")} · ${Number(t.member_count||0)} miembro${Number(t.member_count||0)===1?"":"s"}</small></span><small>Ver equipo →</small></a>`).join("");}\nfunction renderPeople(people){const root=document.getElementById("peopleGrid");if(!root)return;if(!people.length){root.innerHTML='<div class="explore-empty">Todavía no hay perfiles públicos activos que mostrar.</div>';return;}root.innerHTML=people.map(p=>{const name=escapeHtml(p.display_name||"Participante");const initial=escapeHtml((p.display_name||p.username||"?").charAt(0).toUpperCase());return '<a class="person-card" href="perfil-publico.html?id='+encodeURIComponent(p.user_id)+'"><span class="person-avatar">'+initial+'</span><span><strong>'+name+'</strong><span>@'+escapeHtml(p.username||"usuario")+'</span><small>'+Number(p.public_events||0)+' eventos · '+Number(p.public_teams||0)+' equipos</small></span></a>';}).join("");}
+function renderTeams(teams){
+ const root=document.getElementById("teamsGrid");
+ if(!root)return;
+ if(!teams.length){root.innerHTML="<div class=\"explore-empty\">Todavía no hay equipos públicos que mostrar.</div>";return;}
+ root.innerHTML=teams.map(function(t){
+   const name=escapeHtml(t.team_name||"Equipo");
+   const initial=escapeHtml((t.team_name||"E").charAt(0).toUpperCase());
+   const context=t.team_kind==="persistent"?"Equipo persistente":"En "+(t.event_title||"evento");
+   const detail=t.team_kind==="persistent"?context:(ACTIVITY_LABELS[t.event_type]||"Actividad")+" · "+context;
+   const count=Number(t.member_count||0);
+   return '<a class="team-discovery-card" href="equipo-publico.html?id='+encodeURIComponent(t.team_id)+'"><span class="team-discovery-mark">'+initial+'</span><span style="min-width:0;flex:1"><strong>'+name+'</strong><small>'+escapeHtml(detail)+' · '+count+' miembro'+(count===1?"":"s")+'</small></span><small>Ver equipo →</small></a>';
+ }).join("");
+}
+function renderPeople(people){const root=document.getElementById("peopleGrid");if(!root)return;if(!people.length){root.innerHTML='<div class="explore-empty">Todavía no hay perfiles públicos activos que mostrar.</div>';return;}root.innerHTML=people.map(p=>{const name=escapeHtml(p.display_name||"Participante");const initial=escapeHtml((p.display_name||p.username||"?").charAt(0).toUpperCase());return '<a class="person-card" href="perfil-publico.html?id='+encodeURIComponent(p.user_id)+'"><span class="person-avatar">'+initial+'</span><span><strong>'+name+'</strong><span>@'+escapeHtml(p.username||"usuario")+'</span><small>'+Number(p.public_events||0)+' eventos · '+Number(p.public_teams||0)+' equipos</small></span></a>';}).join("");}
 function escapeHtml(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
 const ACTIVITY_LABELS={padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otro"};
 const CATEGORY_LABELS={tournament:"Torneo",sport:"Deporte",gaming:"Gaming",social:"Social",activity:"Actividad",other:"Otro"};
