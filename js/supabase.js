@@ -1899,3 +1899,34 @@ async function getPublicProfileActivity(userId){
 async function getPublicRelatedEvents(eventId){const {data,error}=await supabaseClient.rpc("get_public_related_events",{target_event_id:eventId});if(error){console.error("Error obteniendo eventos relacionados:",error);return [];}return data||[];}
 
 async function getPublicActivePeople(search="",eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_active_people",{search_text:String(search||"").trim()||null,target_event_type:eventType||"all"});if(error){console.error("Error obteniendo personas públicas:",error);return [];}return data||[];}
+
+
+// ========================================
+// 🔔 BADGES GLOBALES DE ACTIVIDAD
+// ========================================
+async function updateGlobalActivityBadges(){
+    const user=await getCurrentUser();
+    if(!user)return;
+    const [notifications,invitations,chats]=await Promise.all([getUserNotifications(),getMySocialInvitations(),getMyChatRooms()]);
+    const unreadNotifications=(notifications||[]).filter(n=>!n.is_read).length;
+    const pendingInvitations=(invitations||[]).filter(i=>i.status==="pending").length;
+    const unreadChats=(chats||[]).reduce((sum,r)=>sum+Number(r.unread_count||0),0);
+    const nav=document.getElementById("mainNav");
+    if(!nav)return;
+    const apply=(href,count,label)=>{
+        const link=[...nav.querySelectorAll("a")].find(a=>a.getAttribute("href")===href);
+        if(!link)return;
+        link.querySelector(".nav-badge")?.remove();
+        if(count<=0)return;
+        const badge=document.createElement("span");badge.className="nav-badge";badge.textContent=count>99?"99+":String(count);badge.setAttribute("aria-label",count+" "+label);
+        link.appendChild(badge);
+    };
+    apply("notificaciones.html",unreadNotifications+pendingInvitations,"avisos pendientes");
+    apply("chat.html",unreadChats,"mensajes sin leer");
+}
+function startGlobalActivityBadges(){
+    updateGlobalActivityBadges();
+    window.addEventListener("curruscos:new-notification",updateGlobalActivityBadges);
+    window.addEventListener("curruscos:chat-updated",updateGlobalActivityBadges);
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startGlobalActivityBadges);else startGlobalActivityBadges();
