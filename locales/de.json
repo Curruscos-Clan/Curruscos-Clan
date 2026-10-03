@@ -472,6 +472,7 @@
     "answerInvitationsCount": "{{count}} Einladung(en) beantworten",
     "communitySignal": "COMMUNITY-SIGNAL",
     "communityTitle": "Sehen, was passiert",
-    "communityReason": "Rund um {{event}} gibt es neue Aktivitäten."
+    "communityReason": "Rund um {{event}} gibt es neue Aktivitäten.",
+    "tripsInMotion": "Keine kommenden Events, aber {{count}} Reise(n) sind bereits unterwegs."
   }
 }
