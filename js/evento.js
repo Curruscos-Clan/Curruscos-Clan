@@ -957,32 +957,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function updateStatus() {
-        const status =
-            document.getElementById(
-                "eventStatus"
-            );
+        const status = document.getElementById("eventStatus");
+        if (!status) return;
 
-        if (!tasks.length) {
-            status.textContent =
-                "🟡 Organización pendiente";
+        const answered = members.filter(member => {
+            const participant = participants.find(
+                item => String(item.user_id) === String(member.user_id)
+            );
+            return participant?.status === "yes" || participant?.status === "no";
+        }).length;
+
+        const pending = Math.max(0, members.length - answered);
+        const incompleteTasks = tasks.filter(task => !task.completed).length;
+
+        if (!members.length) {
+            status.textContent = "🟡 Añade miembros para organizar";
             return;
         }
 
-        const completed =
-            tasks.filter(
-                task => task.completed
-            ).length;
-
-        if (
-            completed ===
-            tasks.length
-        ) {
+        if (pending > 0) {
             status.textContent =
-                "🟢 Todo preparado";
-        } else {
-            status.textContent =
-                "🟠 En organización";
+                "🟡 Faltan " + pending + (pending === 1 ? " respuesta" : " respuestas");
+            return;
         }
+
+        if (incompleteTasks > 0) {
+            status.textContent =
+                "🟠 " + incompleteTasks + (incompleteTasks === 1 ? " tarea pendiente" : " tareas pendientes");
+            return;
+        }
+
+        if (!tasks.length) {
+            status.textContent = "🟡 Asistencia confirmada · sin tareas";
+            return;
+        }
+
+        status.textContent = "🟢 Todo preparado";
     }
 
     async function load() {
