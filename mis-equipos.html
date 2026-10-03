@@ -1,19 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mis equipos · Curruscos</title><link rel="stylesheet" href="css/style.css"><style>
-.teams-page{max-width:980px;margin:0 auto;padding:70px 24px 100px}.teams-head{display:flex;justify-content:space-between;gap:24px;align-items:end}.teams-head h1{font-size:clamp(48px,8vw,82px);line-height:.94;letter-spacing:-.07em;margin:12px 0}.teams-head p{max-width:560px;color:var(--muted);line-height:1.6}.teams-create{margin-top:30px;padding:22px;border:1px solid var(--border);border-radius:22px;background:var(--surface);display:flex;gap:10px}.teams-create input{flex:1}.teams-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}.team-card{padding:25px;border:1px solid var(--border);border-radius:24px;background:var(--surface);box-shadow:var(--shadow-sm)}.team-card h2{margin:8px 0;font-size:25px}.team-card p{color:var(--muted);line-height:1.5}.team-actions{display:flex;gap:8px;margin-top:18px}.team-meta{display:flex;gap:16px;color:var(--muted);font-size:12px}.teams-message{min-height:22px;margin:14px 0;color:var(--muted)}@media(max-width:700px){.teams-page{padding:48px 17px 80px}.teams-head{display:block}.teams-create{display:grid}.teams-grid{grid-template-columns:1fr}}
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mis equipos · Curruscos</title>
+<meta name="description" content="Gestiona tus equipos, miembros y participaciones en Curruscos.">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.teams-page{max-width:1080px;margin:0 auto;padding:70px 24px 110px}
+.teams-head{display:flex;justify-content:space-between;align-items:flex-end;gap:28px}
+.teams-head h1{font-size:clamp(48px,8vw,84px);line-height:.9;letter-spacing:-.075em;margin:12px 0}
+.teams-head p{max-width:650px;color:var(--muted);line-height:1.6;margin:0}
+.teams-create{margin-top:30px;padding:20px;border:1px solid var(--border);border-radius:24px;background:var(--surface);display:grid;grid-template-columns:1.2fr 1.6fr auto;gap:10px;box-shadow:var(--shadow-sm)}
+.teams-create input{min-width:0}
+.teams-message{min-height:22px;margin:14px 2px;color:var(--muted);font-size:12px}
+.teams-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
+.team-card{border:1px solid var(--border);border-radius:26px;background:var(--surface);box-shadow:var(--shadow-sm);overflow:hidden}
+.team-main{padding:25px 25px 21px}
+.team-kicker{color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.team-card h2{margin:8px 0;font-size:30px;letter-spacing:-.05em}
+.team-desc{color:var(--muted);line-height:1.55;margin:0;max-width:720px}
+.team-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.team-pill{border:1px solid var(--border);background:var(--background);border-radius:999px;padding:7px 10px;font-size:10px;color:var(--muted);font-weight:800}
+.team-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.team-manage{display:none;border-top:1px solid var(--border);padding:22px 25px;background:var(--background)}
+.team-manage.open{display:block}
+.manage-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:20px}
+.manage-section h3{margin:0 0 12px;font-size:18px;letter-spacing:-.03em}
+.members-list{display:grid;gap:8px}
+.member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid var(--border);border-radius:15px;background:var(--surface)}
+.member-left{display:flex;align-items:center;min-width:0;gap:10px}
+.member-avatar{width:35px;height:35px;border-radius:11px;background:var(--text);color:var(--surface);display:grid;place-items:center;font-size:12px;font-weight:900;flex:none}
+.member-copy{min-width:0}
+.member-copy strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.member-copy small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.invite-box{padding:15px;border:1px solid var(--border);border-radius:18px;background:var(--surface)}
+.invite-box input{width:100%}
+.people-results{display:grid;gap:6px;margin-top:8px}
+.person-result{width:100%;text-align:left;border:1px solid var(--border);background:var(--background);border-radius:12px;padding:10px 11px;cursor:pointer;color:inherit}
+.person-result:hover,.person-result.selected{background:var(--surface)}
+.person-result strong{font-size:11px}.person-result small{display:block;color:var(--muted);font-size:9px;margin-top:2px}
+.invite-status{min-height:17px;margin-top:8px;color:var(--muted);font-size:10px}
+.event-list{display:grid;gap:7px}
+.event-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--surface);text-decoration:none;color:inherit}
+.event-row:hover{transform:translateY(-1px)}
+.event-copy{min-width:0}.event-copy strong{display:block;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.event-copy small{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.event-date{color:var(--muted);font-size:9px;text-align:right;white-space:nowrap}
+.manage-empty{padding:25px 10px;color:var(--muted);font-size:11px;text-align:center;border:1px dashed var(--border);border-radius:15px}
+.danger{border-color:color-mix(in srgb,var(--accent) 30%,var(--border))}
+@media(max-width:800px){.teams-create{grid-template-columns:1fr}.manage-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.teams-page{padding:48px 17px 80px}.teams-head{display:block}.team-main,.team-manage{padding:21px}.team-actions .button{flex:1}.event-row{align-items:flex-start}}
 .nav-badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--text);color:var(--surface);font-size:8px;font-weight:900;line-height:1;vertical-align:middle}
-</style></head>
-<body><header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"><a href="explorar.html">Explorar</a><a href="mis-eventos.html">Mis eventos</a><a href="crear.html">Crear</a><a href="login.html">Entrar</a></nav><button id="menuButton" class="menu-button" aria-label="Menú">☰</button></header>
-<main class="teams-page"><span class="eyebrow">COMUNIDAD</span><div class="teams-head"><div><h1>Mis equipos.</h1><p>Construye identidades que puedan competir contigo en distintos eventos. El equipo conserva sus miembros y puede reutilizarse.</p></div></div>
-<form id="teamCreateForm" class="teams-create"><input id="teamName" maxlength="80" placeholder="Nombre del equipo" required><input id="teamDescription" maxlength="300" placeholder="Descripción (opcional)"><button class="button button-primary" type="submit">Crear equipo</button></form><p id="teamsMessage" class="teams-message"></p><section id="teamsGrid" class="teams-grid"></section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script>
-document.addEventListener("DOMContentLoaded",async()=>{const grid=document.getElementById("teamsGrid"),message=document.getElementById("teamsMessage"),form=document.getElementById("teamCreateForm"),user=await getCurrentUser();if(!user){message.innerHTML='Necesitas iniciar sesión para gestionar equipos. <a href="login.html">Entrar</a>';form.style.display="none";return;}
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-async function load(){const teams=await getMyTeams();grid.innerHTML=teams.length?teams.map(t=>'<article class="team-card"><span class="eyebrow">'+esc(t.role==="owner"?"PROPIETARIO":"MIEMBRO")+'</span><h2>'+esc(t.name)+'</h2><p>'+esc(t.description||"Sin descripción.")+'</p><div class="team-meta"><span>'+Number(t.member_count||0)+' miembros</span><span>Equipo persistente</span></div></article>').join(""):'<article class="team-card"><h2>Aún no tienes equipos.</h2><p>Crea el primero y podrás reutilizarlo en tus próximos eventos.</p></article>';}await load();
-form.addEventListener("submit",async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;message.textContent="Creando equipo…";try{const id=await createPersistentTeam(document.getElementById("teamName").value,document.getElementById("teamDescription").value);if(!id)throw new Error("No se ha podido crear.");form.reset();message.textContent="Equipo creado.";await load();}catch(err){message.textContent=err.message||"No se ha podido crear el equipo.";}b.disabled=false;});
+</style>
+</head>
+<body>
+<header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"><a href="explorar.html">Explorar</a><a href="mis-eventos.html">Mis eventos</a><a href="rankings.html">Rankings</a><a href="crear.html">Crear</a><a href="login.html">Entrar</a></nav><button id="menuButton" class="menu-button" aria-label="Menú">☰</button></header>
+<main class="teams-page">
+<span class="eyebrow">COMUNIDAD</span>
+<div class="teams-head"><div><h1>Mis equipos.</h1><p>Construye identidades persistentes que puedan competir contigo en distintos eventos. Los miembros, la actividad y el historial acompañan al equipo.</p></div></div>
+<form id="teamCreateForm" class="teams-create"><input id="teamName" maxlength="80" placeholder="Nombre del equipo" required><input id="teamDescription" maxlength="300" placeholder="Descripción (opcional)"><button class="button button-primary" type="submit">Crear equipo</button></form>
+<p id="teamsMessage" class="teams-message"></p>
+<section id="teamsGrid" class="teams-grid"></section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded",async()=>{
+ const grid=document.getElementById("teamsGrid"),message=document.getElementById("teamsMessage"),form=document.getElementById("teamCreateForm"),user=await getCurrentUser();
+ if(!user){message.innerHTML='Necesitas iniciar sesión para gestionar equipos. <a href="login.html">Entrar</a>';form.style.display="none";return;}
+ const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+ const activity=v=>({padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis",ajedrez:"Ajedrez",gaming:"Gaming",running:"Running",otro:"Otro"}[v]||"Actividad");
+ const date=(d,t)=>{if(!d)return "";const x=new Date(d+"T"+(t||"00:00"));return x.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"});};
+ let teamState={};
 
-async function invite(teamId){const people=await getChatPeople("");const options=people.map(p=>'<option value="'+p.id+'">'+esc(p.display_name||p.username||"Usuario")+(p.username?' · @'+esc(p.username):"")+'</option>').join("");if(!options){alert("No hay personas disponibles para invitar.");return;}const who=prompt("Escribe el nombre de la persona a la que quieres invitar:\n\n"+people.slice(0,15).map(p=>(p.display_name||p.username)).join("\n"));if(!who)return;const person=people.find(p=>String(p.display_name||p.username).toLowerCase()===who.trim().toLowerCase())||people.find(p=>String(p.username||"").toLowerCase()===who.trim().toLowerCase());if(!person){alert("No se ha encontrado esa persona.");return;}await sendPersistentTeamInvitation(person.id,teamId);alert("Invitación enviada.");}
-document.addEventListener("click",async e=>{const b=e.target.closest(".invite-team");if(!b)return;b.disabled=true;try{await invite(decodeURIComponent(b.dataset.team));}catch(err){alert(err.message||"No se ha podido enviar la invitación.");}finally{b.disabled=false;}});
-document.getElementById("menuButton")?.addEventListener("click",()=>document.getElementById("mainNav")?.classList.toggle("mobile-open"));});
-</script></body></html>
+ function personHtml(p){const n=esc(p.display_name||p.username||"Usuario"),u=p.username?("@"+esc(p.username)):"";return '<div class="member-row"><div class="member-left"><span class="member-avatar">'+esc((p.display_name||p.username||"U").charAt(0).toUpperCase())+'</span><span class="member-copy"><strong>'+n+'</strong><small>'+(p.role==="owner"?"Propietario · ":"")+u+'</small></span></div>'+(p.role==="owner"?"":'<button type="button" class="button button-small remove-member danger" data-team="'+esc(p.team_id||"")+'" data-user="'+esc(p.user_id||p.id||"")+'">Quitar</button>')+'</div>'; }
+
+ function renderTeam(t,members,events,pending){
+   const owner=t.role==="owner";
+   const memberRows=(members||[]).map(p=>personHtml({...p,team_id:t.team_id})).join("");
+   const eventRows=(events||[]).map(e=>'<a class="event-row" href="evento-publico.html?id='+encodeURIComponent(e.event_id)+'"><span class="event-copy"><strong>'+esc(e.title)+'</strong><small>'+esc(activity(e.event_type))+(e.location?" · "+esc(e.location):"")+'</small></span><span class="event-date">'+esc(date(e.event_date,e.event_time))+'</span></a>').join("");
+   return '<article class="team-card" data-team="'+esc(t.team_id)+'"><div class="team-main"><span class="team-kicker">'+(owner?"PROPIETARIO":"MIEMBRO")+' · EQUIPO PERSISTENTE</span><h2>'+esc(t.name)+'</h2><p class="team-desc">'+esc(t.description||"Sin descripción.")+'</p><div class="team-meta"><span class="team-pill">'+Number(t.member_count||0)+' miembros</span><span class="team-pill">'+Number((events||[]).length)+' eventos públicos</span>'+(pending?"<span class=\"team-pill\">"+pending+" invitación"+(pending===1?"":"es")+" pendiente"+(pending===1?"":"s")+"</span>":"")+'</div><div class="team-actions"><a class="button button-small" href="equipo-publico.html?id='+encodeURIComponent(t.team_id)+'">Ver equipo</a><a class="button button-small" href="chat.html?team='+encodeURIComponent(t.team_id)+'">Chat</a>'+(owner?'<button type="button" class="button button-primary button-small manage-team">Gestionar</button>':"")+'</div></div>'+(owner?'<div class="team-manage"><div class="manage-grid"><section class="manage-section"><h3>Plantilla</h3><div class="members-list">'+(memberRows||'<div class="manage-empty">Aún no hay miembros.</div>')+'</div></section><section class="manage-section"><h3>Invitar</h3><div class="invite-box"><input class="person-search" placeholder="Buscar persona..." autocomplete="off"><div class="people-results"></div><div class="invite-status"></div></div></section></div><section class="manage-section" style="margin-top:20px"><h3>Actividad</h3><div class="event-list">'+(eventRows||'<div class="manage-empty">Todavía no hay participaciones públicas.</div>')+'</div></section></div>':"")+'</article>';
+ }
+ async function load(){
+   const teams=await getMyTeams();
+   if(!teams.length){grid.innerHTML='<article class="team-card"><div class="team-main"><h2>Aún no tienes equipos.</h2><p class="team-desc">Crea el primero y podrás reutilizarlo en tus próximos eventos.</p></div></article>';return;}
+   const invites=await getMySocialInvitations();
+   const data=await Promise.all(teams.map(async t=>{const [members,events]=await Promise.all([getPersistentTeamMembers(t.team_id),getPublicPersistentTeamEvents(t.team_id)]);const pending=(invites||[]).filter(i=>i.kind==="team"&&i.team_id===t.team_id&&i.status==="pending").length;return {t,members,events,pending};}));
+   teamState={};data.forEach(x=>{teamState[x.t.team_id]=x;});
+   grid.innerHTML=data.map(x=>renderTeam(x.t,x.members,x.events,x.pending)).join("");
+ }
+ form.addEventListener("submit",async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;message.textContent="Creando equipo…";try{const id=await createPersistentTeam(document.getElementById("teamName").value,document.getElementById("teamDescription").value);if(!id)throw new Error("No se ha podido crear.");form.reset();message.textContent="Equipo creado.";await load();}catch(err){message.textContent=err.message||"No se ha podido crear el equipo.";}finally{b.disabled=false;}});
+ grid.addEventListener("click",async e=>{
+   const manage=e.target.closest(".manage-team");
+   if(manage){manage.closest(".team-card").querySelector(".team-manage")?.classList.toggle("open");return;}
+   const remove=e.target.closest(".remove-member");
+   if(remove){const teamId=remove.dataset.team,userId=remove.dataset.user;if(userId===user.id)return;if(!confirm("¿Quitar a esta persona del equipo?"))return;remove.disabled=true;try{await removePersistentTeamMember(teamId,userId);message.textContent="Miembro eliminado.";await load();}catch(err){message.textContent=err.message||"No se ha podido quitar al miembro.";}finally{remove.disabled=false;}return;}
+   const result=e.target.closest(".person-result");
+   if(result){const card=result.closest(".team-card");card.dataset.selectedUser=result.dataset.user;card.querySelectorAll(".person-result").forEach(x=>x.classList.remove("selected"));result.classList.add("selected");}
+ });
+ let searchTimer;
+ grid.addEventListener("input",e=>{
+   const input=e.target.closest(".person-search");if(!input)return;clearTimeout(searchTimer);const card=input.closest(".team-card"),box=card.querySelector(".people-results"),status=card.querySelector(".invite-status");status.textContent="";card.dataset.selectedUser="";searchTimer=setTimeout(async()=>{const q=input.value.trim();if(q.length<2){box.innerHTML="";return;}box.innerHTML='<div class="manage-empty">Buscando…</div>';const people=await getChatPeople(q);const state=teamState[card.dataset.team];const memberIds=new Set((state?.members||[]).map(m=>m.user_id));const filtered=(people||[]).filter(p=>p.id!==user.id&&!memberIds.has(p.id));box.innerHTML=filtered.slice(0,8).map(p=>'<button type="button" class="person-result" data-user="'+esc(p.id)+'"><strong>'+esc(p.display_name||p.username||"Usuario")+'</strong><small>'+(p.username?"@"+esc(p.username):"")+" · Seleccionar</small></button>").join("")||'<div class="manage-empty">No hay personas disponibles.</div>';},250);
+ });
+ grid.addEventListener("click",async e=>{
+   const result=e.target.closest(".person-result");if(!result)return;const card=result.closest(".team-card"),teamId=card.dataset.team,selected=result.dataset.user,status=card.querySelector(".invite-status"),btn=result; 
+   if(!selected)return;btn.disabled=true;status.textContent="Enviando…";try{await sendPersistentTeamInvitation(selected,teamId);status.textContent="Invitación enviada.";card.querySelector(".person-search").value="";card.querySelector(".people-results").innerHTML="";card.dataset.selectedUser="";window.dispatchEvent(new Event("curruscos:new-notification"));}catch(err){status.textContent=err.message||"No se ha podido enviar la invitación.";}finally{btn.disabled=false;}
+ });
+ await load();
+ document.getElementById("menuButton")?.addEventListener("click",()=>document.getElementById("mainNav")?.classList.toggle("mobile-open"));
+});
+</script>
+</body></html>
