@@ -478,6 +478,28 @@ document.addEventListener("DOMContentLoaded", async () => {
                     serverSense.action === "invitation" ? "✉" : "+"
             });
         }
+        const workspaceType = group.workspace_type || "community";
+        const senseProfile = {
+            sports: { feature: "competitions", href: "competicion.html", score: 94, label: "COMPETICIÓN", title: "Pon el grupo en juego", reason: "Este workspace está orientado al deporte: la siguiente acción útil es activar la competición." },
+            travel: { feature: "travel", href: "viajes.html", score: 92, label: "VIAJE", title: "Convierte el plan en un itinerario", reason: "Este workspace está orientado a viajes: avanzar la planificación desbloquea el siguiente paso." },
+            study: { feature: "events", href: "crear-evento.html", score: 84, label: "ESTUDIO", title: "Organiza la próxima sesión", reason: "Este workspace está orientado al estudio: una actividad concreta convierte el plan en acción." },
+            organization: { feature: "events", href: "crear-evento.html", score: 84, label: "ORGANIZACIÓN", title: "Activa la próxima actividad", reason: "Este workspace está orientado a organizar personas y actividades." },
+            community: { feature: "events", href: "crear-evento.html", score: 76, label: "COMUNIDAD", title: "Crea el siguiente plan", reason: "Un primer plan ayuda a convertir el workspace en actividad." },
+            other: { feature: "events", href: "crear-evento.html", score: 76, label: "WORKSPACE", title: "Crea el siguiente plan", reason: "Un primer plan ayuda a convertir el workspace en actividad." }
+        };
+        const profile = senseProfile[workspaceType] || senseProfile.community;
+        const planFeatureEnabled = planFeatures[profile.feature] !== false;
+        if (planFeatureEnabled && (!nextEvent || workspaceType === "sports" || workspaceType === "travel")) {
+            ranked.push({
+                score: profile.score,
+                label: profile.label,
+                title: profile.title,
+                reason: profile.reason,
+                href: profile.href,
+                icon: workspaceType === "sports" ? "◆" : workspaceType === "travel" ? "↗" : "→"
+            });
+        }
+
         const nextEvent = upcoming[0]?.event || null;
 
         if (!nextEvent) {
