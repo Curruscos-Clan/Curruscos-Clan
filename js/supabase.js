@@ -262,6 +262,43 @@ async function createGroup(name, description) {
     return data;
 
 }
+async function getGroupPlanAccess(groupId, forceRefresh = false) {
+    if (!groupId) return null;
+    const usage = await getGroupUsage(groupId);
+    if (!usage) return null;
+    return {
+        plan: usage.plan || {},
+        usage: usage.usage || {},
+        period_start: usage.period_start || null
+    };
+}
+
+async function checkGroupPlanCapacity(groupId, resource) {
+    const access = await getGroupPlanAccess(groupId);
+    if (!access) return { allowed: true };
+
+    const limits = access.plan || {};
+    const usage = access.usage || {};
+    const map = {
+        events: ["events_this_month", "max_events_per_month"],
+        trips: ["trips", "max_trips"]
+    };
+    const pair = map[resource];
+    if (!pair) return { allowed: true };
+
+    const value = Number(usage[pair[0]] || 0);
+    const limit = Number(limits[pair[1]] || 0);
+    if (limit > 0 && value >= limit) {
+        return {
+            allowed: false,
+            reason: "PLAN_LIMIT_" + resource.toUpperCase(),
+            plan: limits.name || "Free",
+            limit
+        };
+    }
+    return { allowed: true, access };
+}
+
 // ========================================
 // EVENTOS
 // ========================================
