@@ -104,211 +104,114 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function renderParticipants() {
-        const container =
-            document.getElementById(
-                "participantsList"
-            );
-
+        const container = document.getElementById("participantsList");
         container.innerHTML = "";
 
         let yes = 0;
         let no = 0;
         let pending = 0;
 
-        members.forEach(member => {
-            const participant =
-                participants.find(
-                    item =>
-                        String(item.user_id) ===
-                        String(member.user_id)
-                );
-
-            const status =
-                participant?.status || "pending";
-
-            if (status === "yes") {
-                yes++;
-            } else if (status === "no") {
-                no++;
-            } else {
-                pending++;
-            }
-
-            const row =
-                document.createElement("div");
-
-            row.className =
-                "participant-row";
-
-            const info =
-                document.createElement("div");
-
-            info.className =
-                "participant-info";
-
-            const avatar =
-                document.createElement("div");
-
-            avatar.className =
-                "participant-avatar";
-
-            avatar.textContent =
-                memberName(
-                    member.user_id
-                ).charAt(0).toUpperCase();
-
-            const copy =
-                document.createElement("div");
-
-            copy.className =
-                "participant-copy";
-
-            const strong =
-                document.createElement("strong");
-
-            strong.textContent =
-                memberName(
-                    member.user_id
-                );
-
-            const badge =
-                document.createElement("span");
-
-            badge.className =
-                "participant-status " +
-                statusClass(status);
-
-            badge.textContent =
-                statusLabel(status);
-
-            copy.append(
-                strong,
-                badge
-            );
-
-            info.append(
-                avatar,
-                copy
-            );
-
-            const actions =
-                document.createElement("div");
-
-            actions.className =
-                "participant-actions";
-
-            [
-                ["yes", "Voy"],
-                ["pending", "Pendiente"],
-                ["no", "No voy"]
-            ].forEach(
-                pair => {
-                    const button =
-                        document.createElement("button");
-
-                    button.type =
-                        "button";
-
-                    button.className =
-                        "participant-choice";
-
-                    button.textContent =
-                        pair[1];
-
-                    if (status === pair[0]) {
-                        button.classList.add(
-                            "selected"
-                        );
-                    }
-
-                    const canEdit =
-                        canManageGroup() ||
-                        String(member.user_id) ===
-                            String(currentUser.id);
-
-                    button.disabled =
-                        !canEdit;
-
-                    if (canEdit) {
-                        button.addEventListener(
-                            "click",
-                            async () => {
-                                button.disabled =
-                                    true;
-
-                                const updated =
-                                    await setEventParticipant(
-                                        currentEvent.id,
-                                        member.user_id,
-                                        pair[0]
-                                    );
-
-                                button.disabled =
-                                    false;
-
-                                if (!updated) {
-                                    alert(
-                                        "No se ha podido actualizar la participación."
-                                    );
-                                    return;
-                                }
-
-                                participants =
-                                    participants.filter(
-                                        item =>
-                                            String(
-                                                item.user_id
-                                            ) !==
-                                            String(
-                                                member.user_id
-                                            )
-                                    );
-
-                                participants.push(
-                                    updated
-                                );
-
-                                renderParticipants();
-                                updateProgress();
-                                updateStatus();
-                            }
-                        );
-                    }
-
-                    actions.appendChild(
-                        button
-                    );
-                }
-            );
-
-            row.append(
-                info,
-                actions
-            );
-
-            container.appendChild(
-                row
-            );
+        const orderedMembers = [...members].sort((a, b) => {
+            const rank = status => status === "pending" ? 0 : status === "yes" ? 1 : 2;
+            const sa = participants.find(item => String(item.user_id) === String(a.user_id))?.status || "pending";
+            const sb = participants.find(item => String(item.user_id) === String(b.user_id))?.status || "pending";
+            return rank(sa) - rank(sb);
         });
 
-        document.getElementById(
-            "participantsYes"
-        ).textContent =
-            String(yes);
+        orderedMembers.forEach(member => {
+            const participant = participants.find(
+                item => String(item.user_id) === String(member.user_id)
+            );
+            const status = participant?.status || "pending";
 
-        document.getElementById(
-            "participantsPending"
-        ).textContent =
-            String(pending);
+            if (status === "yes") yes++;
+            else if (status === "no") no++;
+            else pending++;
 
-        document.getElementById(
-            "participantsNo"
-        ).textContent =
-            String(no);
+            const row = document.createElement("div");
+            row.className = "participant-card";
+
+            const info = document.createElement("div");
+            info.className = "participant-main";
+
+            const avatar = document.createElement("div");
+            avatar.className = "participant-avatar";
+            avatar.textContent = memberName(member.user_id).charAt(0).toUpperCase();
+
+            const copy = document.createElement("div");
+            copy.className = "participant-information";
+
+            const strong = document.createElement("strong");
+            strong.className = "participant-name";
+            strong.textContent = memberName(member.user_id);
+
+            const badge = document.createElement("span");
+            badge.className = "participant-status-text";
+            badge.textContent = statusLabel(status);
+
+            copy.append(strong, badge);
+            info.append(avatar, copy);
+
+            const actions = document.createElement("div");
+            actions.className = "participant-actions";
+
+            [["yes", "Voy"], ["pending", "Pendiente"], ["no", "No voy"]].forEach(([value, label]) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "participant-choice";
+                button.textContent = label;
+                button.title = "Marcar: " + label;
+                button.setAttribute("aria-pressed", String(status === value));
+
+                if (status === value) button.classList.add("active");
+
+                const canEdit =
+                    canManageGroup() ||
+                    String(member.user_id) === String(currentUser.id);
+
+                button.disabled = !canEdit;
+
+                if (canEdit && status !== value) {
+                    button.addEventListener("click", async () => {
+                        actions.querySelectorAll("button").forEach(item => item.disabled = true);
+
+                        const updated = await setEventParticipant(
+                            currentEvent.id,
+                            member.user_id,
+                            value
+                        );
+
+                        if (!updated) {
+                            actions.querySelectorAll("button").forEach(item => item.disabled = false);
+                            alert("No se ha podido actualizar la participación.");
+                            return;
+                        }
+
+                        participants = participants.filter(
+                            item => String(item.user_id) !== String(member.user_id)
+                        );
+                        participants.push(updated);
+
+                        renderParticipants();
+                        updateProgress();
+                        updateStatus();
+                    });
+                }
+
+                actions.appendChild(button);
+            });
+
+            row.append(info, actions);
+            container.appendChild(row);
+        });
+
+        document.getElementById("participantsYes").textContent = String(yes);
+        document.getElementById("participantsPending").textContent = String(pending);
+        document.getElementById("participantsNo").textContent = String(no);
 
         if (!members.length) {
             container.innerHTML =
-                '<div class="empty-state">No hay miembros en este grupo.</div>';
+                '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">No hay miembros en este grupo</div><div class="empty-state-text">Añade personas al workspace para poder invitarlas al evento.</div></div>';
         }
     }
 
@@ -959,25 +862,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function updateProgress() {
-        const participantProgress =
-            members.length
-                ? members.filter(member => {
-                    const participant =
-                        participants.find(
-                            item =>
-                                String(
-                                    item.user_id
-                                ) ===
-                                String(
-                                    member.user_id
-                                )
-                        );
+        const answeredParticipants = members.filter(member => {
+            const participant = participants.find(
+                item => String(item.user_id) === String(member.user_id)
+            );
+            return participant?.status === "yes" || participant?.status === "no";
+        }).length;
 
-                    return participant?.status ===
-                        "yes";
-                }).length /
-                members.length
-                : 0;
+        const participantProgress =
+            members.length ? answeredParticipants / members.length : 0;
 
         const taskProgress =
             tasks.length
