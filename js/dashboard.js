@@ -666,11 +666,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             );
 
         const answered =
-            members.filter(member =>
-                participantMap.has(
-                    String(member.user_id)
-                )
-            ).length;
+            members.filter(member => {
+                const status = participantMap.get(String(member.user_id));
+                return status === "yes" || status === "no";
+            }).length;
 
         const going =
             members.filter(member =>
@@ -884,7 +883,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const incompleteTasks = nextEventTasks.filter(task => !task.completed);
             const participants = await getEventParticipants(nextEvent.id);
             const answeredCount = members.filter(member =>
-                participants.some(item => String(item.user_id) === String(member.user_id))
+                participants.some(item =>
+                    String(item.user_id) === String(member.user_id) &&
+                    (item.status === "yes" || item.status === "no")
+                )
             ).length;
             const unanswered = Math.max(0, members.length - answeredCount);
 
