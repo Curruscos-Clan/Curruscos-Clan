@@ -238,5 +238,33 @@
     "Lugares de interés": "景点",
     "Precio": "价格",
     "Comparar": "比较"
+  },
+  "auth": {
+    "completeLogin": "请输入邮箱和密码。",
+    "loggingIn": "正在登录…",
+    "loginError": "无法登录。",
+    "enterCredentials": "请输入邮箱和密码。",
+    "passwordMin": "密码至少需要 6 个字符。",
+    "creatingAccount": "正在创建账户…",
+    "accountCreated": "账户已创建，正在登录…",
+    "confirmEmail": "账户已创建，请检查邮箱完成确认。",
+    "registerError": "无法创建账户。"
+  },
+  "createEvent": {
+    "adapts": "对于{{type}}，Curruscos 会根据所选格式调整组织方式。",
+    "previewTitle": "你的活动将在这里显示",
+    "dateTbd": "日期待定",
+    "autoScoring": "自动",
+    "loginRequired": "登录后才能发布活动。",
+    "publicNote": "你的活动将公开，并可能出现在发现页面。",
+    "required": "请填写活动名称和日期。",
+    "futureDate": "活动日期必须是未来日期。",
+    "deadlineBefore": "报名截止时间必须早于活动开始时间。",
+    "capacityInvalid": "人数必须是大于 0 的整数。",
+    "feeInvalid": "价格不能为负数。",
+    "teamSizeInvalid": "每队至少需要 2 名玩家。",
+    "publishing": "正在发布…",
+    "publishError": "无法发布活动，请检查信息。",
+    "publish": "发布活动"
   }
 }
