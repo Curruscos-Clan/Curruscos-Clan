@@ -1364,6 +1364,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     event.currentTarget.reset();
 
                     renderExpenses();
+                    updateProgress();
+                    updateStatus();
+                    updateCommandCenter();
                 } catch (error) {
                     alert(
                         getSupabaseErrorMessage(
@@ -1387,21 +1390,29 @@ document.addEventListener("DOMContentLoaded", async () => {
             '<option value="">Seleccionar persona</option>';
 
         members.forEach(member => {
-            const option =
-                document.createElement("option");
+            const option = document.createElement("option");
 
-            option.value =
-                member.user_id;
+            option.value = member.user_id;
+            option.textContent = memberName(member.user_id);
 
-            option.textContent =
-                memberName(
-                    member.user_id
-                );
+            const status = participants.find(
+                item => String(item.user_id) === String(member.user_id)
+            )?.status;
 
-            payerSelect.appendChild(
-                option
-            );
+            if (status === "yes") {
+                option.textContent += " · va";
+            } else if (status === "no") {
+                option.textContent += " · no va";
+            } else {
+                option.textContent += " · pendiente";
+            }
+
+            payerSelect.appendChild(option);
         });
+
+        if (members.some(member => String(member.user_id) === String(currentUser.id))) {
+            payerSelect.value = currentUser.id;
+        }
     }
 
     await load();
