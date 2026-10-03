@@ -661,7 +661,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                 escapeHtml(item.href) + '">' +
                 escapeHtml(item.title) + ' →</a>');
 
-        signalsEl.innerHTML = compactSignals.join("") + secondary.join("");
+        const uniqueSignals = [];
+        const seenSignalKeys = new Set();
+        [...compactSignals.map((html, index) => ({ html, key: "metric-" + index })), ...secondary.map((html, index) => ({ html, key: "suggestion-" + index }))]
+            .forEach(item => {
+                if (!seenSignalKeys.has(item.key)) {
+                    seenSignalKeys.add(item.key);
+                    uniqueSignals.push(item.html);
+                }
+            });
+        signalsEl.innerHTML = uniqueSignals.join("");
 
         if (top.score >= 90) {
             orbEl.style.transform = "scale(1.03)";
