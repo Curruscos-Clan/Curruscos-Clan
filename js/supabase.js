@@ -344,6 +344,19 @@ async function requestWorkspacePlan(groupId, planCode) {
     return data || null;
 }
 
+async function reviewWorkspacePlanRequest(requestId, decision) {
+    if (!requestId || !decision) return null;
+    const { data, error } = await supabaseClient.rpc("review_workspace_plan_request", {
+        target_request_id: requestId,
+        decision
+    });
+    if (error) {
+        console.error("Error gestionando solicitud de plan:", error);
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido gestionar la solicitud."));
+    }
+    return data || null;
+}
+
 async function getWorkspacePlanRequests(groupId) {
     if (!groupId) return [];
     const { data, error } = await supabaseClient
