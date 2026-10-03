@@ -238,5 +238,33 @@
     "Lugares de interés": "Pontos de interesse",
     "Precio": "Preço",
     "Comparar": "Comparar"
+  },
+  "auth": {
+    "completeLogin": "Preenche o e-mail e a palavra-passe.",
+    "loggingIn": "A iniciar sessão...",
+    "loginError": "Não foi possível iniciar sessão.",
+    "enterCredentials": "Escreve um e-mail e uma palavra-passe.",
+    "passwordMin": "A palavra-passe deve ter pelo menos 6 caracteres.",
+    "creatingAccount": "A criar conta...",
+    "accountCreated": "Conta criada. A iniciar sessão...",
+    "confirmEmail": "Conta criada. Verifica o teu e-mail para confirmar a conta.",
+    "registerError": "Não foi possível criar a conta."
+  },
+  "createEvent": {
+    "adapts": "Para {{type}}, o Curruscos adapta a organização ao formato escolhido.",
+    "previewTitle": "O teu evento aparecerá aqui",
+    "dateTbd": "Data por definir",
+    "autoScoring": "Automática",
+    "loginRequired": "Inicia sessão para publicar um evento.",
+    "publicNote": "O teu evento será público e poderá aparecer em Explorar.",
+    "required": "Preenche o nome e a data do evento.",
+    "futureDate": "A data do evento deve ser futura.",
+    "deadlineBefore": "O fim das inscrições deve ser antes do início do evento.",
+    "capacityInvalid": "O número de lugares deve ser um número inteiro superior a 0.",
+    "feeInvalid": "O preço não pode ser negativo.",
+    "teamSizeInvalid": "Indica pelo menos 2 jogadores por equipa.",
+    "publishing": "A publicar...",
+    "publishError": "Não foi possível publicar o evento. Verifica os dados.",
+    "publish": "Publicar evento"
   }
 }
