@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://adriplaalonso-lgtm.github.io/Curruscos-Clan/sitemap.xml
