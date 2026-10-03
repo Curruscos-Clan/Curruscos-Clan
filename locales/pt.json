@@ -329,7 +329,8 @@
     "nameRequired": "Introduza um nome para o grupo.",
     "creating": "A criar o vosso espaço...",
     "createError": "Não foi possível criar o grupo.",
-    "created": "Grupo criado. A entrar..."
+    "created": "Grupo criado. A entrar...",
+    "planFree": "Gratuito"
   },
   "profile": {
     "saving": "A guardar...",
