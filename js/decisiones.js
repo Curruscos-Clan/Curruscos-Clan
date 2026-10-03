@@ -43,6 +43,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    let pollFilter = "open";
+    let pollSearch = "";
+
+    const renderPollToolbar = () => {
+        const toolbar = document.getElementById("pollToolbar");
+        if (!toolbar) return;
+        toolbar.querySelectorAll("[data-poll-filter]").forEach(button => {
+            const active = button.dataset.pollFilter === pollFilter;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-pressed", String(active));
+        });
+    };
+
     let optionCount = 0;
 
     function addOption(value = "") {
@@ -132,12 +145,39 @@ document.addEventListener("DOMContentLoaded", async () => {
             pollIds.map((pollId, index) => [pollId, results[index] || []])
         );
 
+        const normalizedSearch = pollSearch.trim().toLocaleLowerCase();
+
+        polls = polls.filter(poll => {
+            if (pollFilter === "open" && poll.is_closed) return false;
+            if (pollFilter === "closed" && !poll.is_closed) return false;
+
+            if (normalizedSearch) {
+                const haystack = [
+                    poll.question,
+                    poll.description,
+                    ...(poll.poll_options || []).map(option => option.option_text)
+                ].filter(Boolean).join(" ").toLocaleLowerCase();
+
+                if (!haystack.includes(normalizedSearch)) return false;
+            }
+
+            return true;
+        });
+
         polls.sort((a, b) => {
             if (Boolean(a.is_closed) !== Boolean(b.is_closed)) {
                 return a.is_closed ? 1 : -1;
             }
             return new Date(b.created_at) - new Date(a.created_at);
         });
+
+        renderPollToolbar();
+        const resultsMeta = document.getElementById("pollResultsMeta");
+        if (resultsMeta) {
+            resultsMeta.textContent = polls.length
+                ? polls.length + (polls.length === 1 ? " decisión" : " decisiones")
+                : "No hay decisiones con estos filtros.";
+        }
 
         list.innerHTML = "";
 
@@ -150,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         polls.forEach(poll => {
             const votes = resultMap.get(poll.id) || [];
             const selectedOption = myVoteMap.get(String(poll.id));
-            const totalVotes = votes.length;
+            const totalVotes = new Set(votes.map(vote => String(vote.user_id))).size;
 
             const card = document.createElement("article");
             card.className = "poll-card" + (poll.is_closed ? " closed" : "");
@@ -247,12 +287,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             if (poll.is_closed) {
                 note.textContent = totalVotes
-                    ? totalVotes + " " + (totalVotes === 1 ? "voto registrado." : "votos registrados.")
-                    : "Todavía no hay votos.";
+                    ? totalVotes + " " + (totalVotes === 1 ? "persona ha votado." : "personas han votado.")
+                    : "Todavía no ha votado nadie.";
             } else if (selectedOption) {
-                note.textContent = "Ya has votado. La decisión sigue abierta.";
+                note.textContent = "Has votado · " + totalVotes + (totalVotes === 1 ? " persona ha respondido." : " personas han respondido.");
             } else {
-                note.textContent = "Elige una opción para votar.";
+                note.textContent = totalVotes
+                    ? totalVotes + (totalVotes === 1 ? " persona ya ha respondido. Elige una opción." : " personas ya han respondido. Elige una opción.")
+                    : "Todavía no ha votado nadie. Elige una opción.";
             }
 
             actions.appendChild(note);
@@ -347,6 +389,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         await renderPolls();
         window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const pollSearchInput = document.getElementById("pollSearch");
+    pollSearchInput?.addEventListener("input", () => {
+        pollSearch = pollSearchInput.value;
+        renderPolls();
+    });
+
+    document.querySelectorAll("[data-poll-filter]").forEach(button => {
+        button.addEventListener("click", () => {
+            pollFilter = button.dataset.pollFilter || "open";
+            renderPolls();
+        });
     });
 
     await renderPolls();
