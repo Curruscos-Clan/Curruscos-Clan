@@ -170,6 +170,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                         ? {href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", text:"Un evento convierte este workspace en actividad real."}
                         : {href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", text:"Revisa próximos planes, participantes y tareas."};
 
+        if (openTasks > 0) {
+            primary.urgent = true;
+            primary.baseScore = Math.max(primary.baseScore || 0, 88);
+        }
+        if (events.length === 0) primary.contextMatch = true;
+
         const actionPriority = (action) => {
             let score = action.baseScore || 40;
             if (action.urgent) score += 30;
