@@ -358,6 +358,22 @@ document.addEventListener("DOMContentLoaded", async () => {
        fricción operativa y la convierte en un paso.
     ===================================================== */
 
+    async function getServerSense() {
+        try {
+            const { data, error } = await supabaseClient.rpc("get_group_sense", {
+                target_group_id: group.id
+            });
+            if (error) {
+                console.debug("Curruscos Sense server fallback:", error);
+                return null;
+            }
+            return data || null;
+        } catch (error) {
+            console.debug("Curruscos Sense unavailable:", error);
+            return null;
+        }
+    }
+
     async function runCurruscosSense() {
         const titleEl = document.getElementById("autopilotTitle");
         const reasonEl = document.getElementById("autopilotReason");
@@ -370,7 +386,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         const signal = (name, value) => '<span class="autopilot-signal"><strong>' +
             escapeHtml(String(value)) + '</strong>' + escapeHtml(name) + '</span>';
 
+        const serverSense = await getServerSense();
         const ranked = [];
+
+        if (serverSense) {
+            ranked.push({
+                score: Number(serverSense.score || 0),
+                label: "CURRUSCOS SENSE",
+                title: serverSense.action === "attendance"
+                    ? "Cerrar la asistencia"
+                    : serverSense.action === "tasks"
+                        ? "Resolver lo pendiente"
+                        : serverSense.action === "location"
+                            ? "Definir el lugar"
+                            : serverSense.action === "decision"
+                                ? "Resolver una decisión"
+                                : serverSense.action === "trip"
+                                    ? "Avanzar un viaje"
+                                    : serverSense.action === "invitation"
+                                        ? "Responder una invitación"
+                                        : "Crear el próximo plan",
+                reason: serverSense.reason || "",
+                href: serverSense.href || "dashboard.html",
+                icon: serverSense.action === "attendance" ? "?" :
+                    serverSense.action === "tasks" ? "✓" :
+                    serverSense.action === "location" ? "⌖" :
+                    serverSense.action === "decision" ? "?" :
+                    serverSense.action === "trip" ? "↗" :
+                    serverSense.action === "invitation" ? "✉" : "+"
+            });
+        }
         const nextEvent = upcoming[0]?.event || null;
 
         if (!nextEvent) {
