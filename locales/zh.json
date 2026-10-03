@@ -297,5 +297,28 @@
     "creating": "正在创建你的空间……",
     "createError": "无法创建群组。",
     "created": "群组已创建。正在进入……"
+  },
+  "profile": {
+    "saving": "保存中…",
+    "save": "保存个人资料",
+    "saved": "个人资料已保存。",
+    "saveError": "无法更新个人资料。",
+    "saveInterests": "保存兴趣",
+    "interestsSaved": "已保存 {{count}} 个兴趣。",
+    "interestsUpdated": "兴趣已更新。",
+    "interestsError": "无法保存兴趣。",
+    "events": "活动",
+    "upcoming": "即将开始",
+    "matches": "比赛",
+    "wins": "胜场",
+    "draws": "平局",
+    "losses": "负场",
+    "teams": "队伍",
+    "eventTeam": "活动队伍",
+    "activity": "活动",
+    "noActivity": "你还没有参加任何活动。",
+    "organizedOne": "个已组织活动",
+    "organizedMany": "个已组织活动",
+    "round": "轮"
   }
 }
