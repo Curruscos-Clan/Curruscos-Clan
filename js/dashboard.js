@@ -117,6 +117,60 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error(t("dashboard.tripsLoadError"), tripsError);
     }
 
+    /* =====================================================
+       ADAPTIVE ACTION HUB — acciones según estado + tipo + plan
+       ===================================================== */
+    const actionGrid = document.getElementById("adaptiveActionGrid");
+    const actionHubEyebrow = document.getElementById("actionHubEyebrow");
+    const actionHubTitle = document.getElementById("actionHubTitle");
+    const actionHubMeta = document.getElementById("actionHubMeta");
+    if (actionGrid) {
+        const type = group.workspace_type || "community";
+        const featureMap = usage?.plan?.features || {};
+        const openTasks = tasks?.filter(task => !task.completed).length || 0;
+        const planningTrips = (trips || []).filter(trip => trip.status === "planning").length;
+        const primary = type === "sports" && featureMap.competitions
+            ? {href:"competicion.html", icon:"◆", kicker:"DEPORTE", title:"Activa la competición", text:"Equipos, formato y partidos en un mismo flujo."}
+            : type === "travel" && featureMap.travel && planningTrips === 0
+                ? {href:"viajes.html", icon:"↗", kicker:"VIAJE", title:"Planifica el próximo viaje", text:"Destino, opciones e itinerario desde un solo espacio."}
+                : openTasks > 0
+                    ? {href:"eventos.html", icon:"✓", kicker:"ORGANIZACIÓN", title:"Resolver tareas pendientes", text:openTasks + " tarea" + (openTasks === 1 ? "" : "s") + " todavía requiere" + (openTasks === 1 ? "" : "n") + " atención."}
+                    : events.length === 0
+                        ? {href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", text:"Un evento convierte este workspace en actividad real."}
+                        : {href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", text:"Revisa próximos planes, participantes y tareas."};
+
+        const actions = [
+            primary,
+            {href:"miembros.html", icon:"◎", kicker:"PERSONAS", title:"Gestionar miembros", text:members.length + " integrante" + (members.length === 1 ? "" : "s") + " en el workspace."},
+            type === "travel" && featureMap.travel
+                ? {href:"viajes.html", icon:"✈", kicker:"TRAVEL", title:"Abrir viajes", text:planningTrips ? planningTrips + " viaje" + (planningTrips === 1 ? "" : "s") + " en planificación." : "Compara opciones y construye itinerarios."}
+                : type === "sports" && featureMap.competitions
+                    ? {href:"competicion.html", icon:"◈", kicker:"COMPETICIÓN", title:"Centro competitivo", text:"Gestiona cuadros, partidos y resultados."}
+                    : {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras."},
+            {href:"eventos.html", icon:"□", kicker:"CALENDARIO", title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : "Todavía no hay eventos."},
+            {href:"recuerdos.html", icon:"◇", kicker:"MEMORIA", title:"Construir historia", text:memories.length ? memories.length + " recuerdo" + (memories.length === 1 ? "" : "s") + " guardado" + (memories.length === 1 ? "" : "s") + "." : "Empieza a guardar momentos del grupo."},
+            {href:"perfil.html", icon:"○", kicker:"IDENTIDAD", title:"Completar tu perfil", text:"Haz que las personas del workspace sepan quién eres."}
+        ];
+        const seen = new Set();
+        const visible = actions.filter(action => {
+            const key = action.href + "|" + action.title;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).slice(0, 6);
+        actionGrid.innerHTML = visible.map((action,index) =>
+            '<a class="quick-card ' + (index === 0 ? 'featured' : '') + '" href="' + escapeHtml(action.href) + '">' +
+                '<span class="action-hub-kicker">' + escapeHtml(action.kicker) + '</span>' +
+                '<div class="quick-icon">' + escapeHtml(action.icon) + '</div>' +
+                '<strong>' + escapeHtml(action.title) + '</strong>' +
+                '<span>' + escapeHtml(action.text) + '</span>' +
+            '</a>'
+        ).join("");
+        if (actionHubEyebrow) actionHubEyebrow.textContent = type === "sports" ? "CENTRO DEL EQUIPO" : type === "travel" ? "CENTRO DEL VIAJE" : "TU WORKSPACE";
+        if (actionHubTitle) actionHubTitle.textContent = "Qué hacer ahora";
+        if (actionHubMeta) actionHubMeta.textContent = "Seleccionado según el estado actual del grupo";
+    }
+
     const pulseEventEl = document.getElementById("pulseEvent");
     const pulseMembersEl = document.getElementById("pulseMembers");
     const pulseTripsEl = document.getElementById("pulseTrips");
