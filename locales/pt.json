@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "Início",
+    "explore": "Explorar",
+    "myEvents": "Os meus eventos",
+    "rankings": "Classificações",
+    "create": "Criar",
+    "login": "Entrar",
+    "saved": "Guardados",
+    "trips": "Viagens",
+    "members": "Membros",
+    "history": "História",
+    "memories": "Memórias",
+    "events": "Eventos",
+    "chat": "Chat",
+    "notifications": "Notificações"
+  },
+  "community": {
+    "activePeople": "Pessoas ativas"
+  },
+  "landing": {
+    "exploreEvents": "Explorar eventos"
+  },
+  "common": {
+    "loading": "A carregar…",
+    "searching": "A pesquisar...",
+    "save": "Guardar",
+    "saved": "Guardado",
+    "cancel": "Cancelar",
+    "send": "Enviar",
+    "close": "Fechar",
+    "add": "Adicionar",
+    "create": "Criar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "viewProfile": "Ver perfil",
+    "private": "Privado",
+    "participant": "Participante",
+    "loadingGroup": "A carregar grupo..."
+  },
+  "activity": {
+    "padel": "Padel",
+    "futbol": "Futebol",
+    "baloncesto": "Basquetebol",
+    "tenis": "Ténis",
+    "ajedrez": "Xadrez",
+    "gaming": "Gaming",
+    "running": "Running",
+    "other": "Outro",
+    "otherPlural": "Outros"
+  },
+  "category": {
+    "tournament": "Torneio",
+    "sport": "Desporto",
+    "social": "Social",
+    "activity": "Atividade"
+  },
+  "status": {
+    "live": "Em direto",
+    "preparing": "A preparar",
+    "cancelled": "Cancelado",
+    "finished": "Terminado",
+    "registrationOpen": "Inscrições abertas"
+  },
+  "format": {
+    "knockout": "Eliminatório",
+    "roundRobin": "Liga",
+    "swiss": "Suíço",
+    "race": "Corrida",
+    "custom": "Personalizado"
+  },
+  "event": {
+    "registrationClosed": "Inscrições encerradas",
+    "noSpots": "Sem vagas",
+    "free": "Grátis",
+    "locationTbd": "Local por definir",
+    "descriptionTbd": "Ainda sem descrição.",
+    "organizes": "Organizado por",
+    "event": "Evento",
+    "context": "Contexto",
+    "events": "Eventos"
+  },
+  "team": {
+    "viewTeam": "Ver equipa →",
+    "follow": "Seguir equipa",
+    "unfollow": "Deixar de seguir",
+    "owner": "Proprietário",
+    "team": "Equipa",
+    "persistent": "Equipa persistente",
+    "squad": "Plantel",
+    "history": "Histórico",
+    "members": "Membros",
+    "noVisibleMembers": "Não há membros visíveis.",
+    "noPublicEvents": "Ainda não há participações públicas da equipa.",
+    "notFound": "Equipa não encontrada.",
+    "notAvailable": "Esta equipa não está disponível publicamente."
+  },
+  "explore": {
+    "allActivities": "Todas as atividades",
+    "noEvents": "Não encontrámos eventos.",
+    "tryFilters": "Experimenta outra pesquisa ou altera os filtros.",
+    "notInterested": "Não tenho interesse",
+    "activeFilters": "Filtros ativos · limpa-os com um toque.",
+    "autoUpdate": "Os resultados públicos são atualizados automaticamente.",
+    "noResults": "Sem resultados",
+    "noPeople": "Não foram encontrados perfis públicos ativos.",
+    "noTeams": "Ainda não há equipas públicas para mostrar.",
+    "saveError": "Não foi possível atualizar o guardado."
+  },
+  "notifications": {
+    "title": "Notificações",
+    "markAllRead": "Marcar todas como lidas"
+  },
+  "chat": {
+    "newConversation": "＋ Nova conversa",
+    "conversations": "Conversas",
+    "searchPeople": "Procurar pessoas…",
+    "selectConversation": "Seleciona uma conversa",
+    "messagesHere": "As tuas mensagens aparecem aqui.",
+    "writeMessage": "Escreve uma mensagem…",
+    "communityHere": "A tua comunidade, aqui."
+  },
+  "travel": {
+    "newTrip": "＋ Nova viagem",
+    "createTrip": "Criar viagem"
+  }
+}
