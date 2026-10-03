@@ -24,6 +24,12 @@
            DASHBOARD
         ===================================================== */
 
+        .next-event-my-status{display:inline-flex;width:max-content;margin:10px 0 7px;padding:6px 9px;border-radius:999px;background:#f3f3f3;color:#555;font-size:10px;font-weight:800}
+        .next-event-my-status.is-going{background:#e9f5ed;color:#176b3a}
+        .next-event-my-status.is-not-going{background:#f7eeee;color:#8a2b2b}
+        .next-event-my-status.is-pending{background:#f5f1e6;color:#725c1d}
+        .next-event-my-status.is-assigned{background:#ececec;color:#222}
+
         .dashboard {
             max-width: 1200px;
             margin: 0 auto;
@@ -1265,6 +1271,8 @@
                     </div>
 
                     <div id="nextEventContent">
+
+                        <div id="nextEventMyStatus" class="next-event-my-status" hidden></div>
 
                         <div class="no-event">
                             Todavía no hay ningún evento próximo.
