@@ -1,0 +1,14 @@
+{
+  "name":"Curruscos",
+  "short_name":"Curruscos",
+  "description":"Descubre eventos, crea planes, equipos y grupos.",
+  "start_url":"index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f4f5f7",
+  "theme_color":"#ff4d2e",
+  "orientation":"portrait-primary",
+  "icons":[
+    {"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
