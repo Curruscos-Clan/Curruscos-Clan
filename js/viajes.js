@@ -337,6 +337,17 @@ function money(value) {
 }
 
 
+function safeOptionUrl(value) {
+    const raw = String(value || "").trim();
+    if (!raw) return "";
+    try {
+        const url = new URL(raw);
+        return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
+    } catch {
+        return "";
+    }
+}
+
 function optionDetailConfig(category) {
     const common = {
         destination: [
@@ -481,7 +492,7 @@ function renderOptions() {
             '<div class="trip-option-actions">' +
                 '<div class="trip-vote-count"><strong>'+count+'</strong><span>'+ (count === 1 ? "voto" : "votos")+'</span></div>' +
                 '<button class="button '+(voted ? "secondary" : "primary")+' trip-vote-button" data-option-id="'+escapeHtml(option.id)+'">'+(voted ? "✓ Votado" : "Votar")+'</button>' +
-                (option.url ? '<a class="button secondary" target="_blank" rel="noopener" href="'+escapeHtml(option.url)+'">Abrir</a>' : '') +
+                (safeOptionUrl(option.url) ? '<a class="button secondary" target="_blank" rel="noopener" href="'+escapeHtml(safeOptionUrl(option.url))+'">Abrir</a>' : '') +
                 (canRemove ? '<button type="button" class="trip-option-remove" data-option-remove="'+escapeHtml(option.id)+'">Eliminar</button>' : '') +
             '</div></article>';
     }).join("");
