@@ -61,14 +61,14 @@ function buildWorkspaceCapabilities(group, usage = null) {
 
     return {
         collaboration: true,
-        events: true,
-        memories: true,
-        decisions: true,
+        events: Object.prototype.hasOwnProperty.call(planFeatures, "events") ? Boolean(planFeatures.events) : true,
+        memories: Object.prototype.hasOwnProperty.call(planFeatures, "memories") ? Boolean(planFeatures.memories) : true,
+        decisions: Object.prototype.hasOwnProperty.call(planFeatures, "decisions") ? Boolean(planFeatures.decisions) : true,
         travel: Boolean(planFeatures.travel || type === "travel"),
         competitions: Boolean(planFeatures.competitions || type === "sports"),
-        tasks: true,
-        history: true,
-        study: type === "study",
+        tasks: Object.prototype.hasOwnProperty.call(planFeatures, "tasks") ? Boolean(planFeatures.tasks) : true,
+        history: Object.prototype.hasOwnProperty.call(planFeatures, "history") ? Boolean(planFeatures.history) : true,
+        study: Boolean(planFeatures.study || type === "study"),
         workspaceType: type
     };
 }
@@ -83,6 +83,10 @@ function workspaceIsType(type) {
     return (
         window.curruscosWorkspace?.type === type
     );
+}
+
+function workspaceCanManage() {
+    return Boolean(window.curruscosWorkspace?.canManage);
 }
 
 function roleLabel(role) {
