@@ -60,7 +60,8 @@
     "preparing": "Preparing",
     "cancelled": "Cancelled",
     "finished": "Finished",
-    "registrationOpen": "Registration open"
+    "registrationOpen": "Registration open",
+    "upcoming": "Upcoming"
   },
   "format": {
     "knockout": "Knockout",
@@ -98,7 +99,12 @@
     "memberMany": "members",
     "viewEvent": "View event",
     "activity": "Activity",
-    "context": "Context"
+    "context": "Context",
+    "matches": "Matches",
+    "wins": "Wins",
+    "losses": "Losses",
+    "points": "Points",
+    "followers": "Followers"
   },
   "explore": {
     "allActivities": "All activities",
