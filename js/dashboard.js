@@ -662,7 +662,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         const workspaceType = group.workspace_type || "community";
         const senseProfile = {
-            sports: { feature: "competitions", href: "competicion.html", score: 94, label: "COMPETICIÓN", title: "Pon el grupo en juego", reason: "Este workspace está orientado al deporte: la siguiente acción útil es activar la competición." },
+            sports: { feature: "competitions", href: "crear.html", score: 94, label: "COMPETICIÓN", title: "Pon el grupo en juego", reason: "Este workspace está orientado al deporte: la siguiente acción útil es activar la competición." },
             travel: { feature: "travel", href: "viajes.html", score: 92, label: "VIAJE", title: "Convierte el plan en un itinerario", reason: "Este workspace está orientado a viajes: avanzar la planificación desbloquea el siguiente paso." },
             study: { feature: "events", href: "crear-evento.html", score: 84, label: "ESTUDIO", title: "Organiza la próxima sesión", reason: "Este workspace está orientado al estudio: una actividad concreta convierte el plan en acción." },
             organization: { feature: "events", href: "crear-evento.html", score: 84, label: "ORGANIZACIÓN", title: "Activa la próxima actividad", reason: "Este workspace está orientado a organizar personas y actividades." },
@@ -1161,7 +1161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             quickLink.href = "viajes.html";
             quickLink.textContent = context.quick + " →";
         } else if (workspaceType === "sports") {
-            quickLink.href = "competicion.html";
+            quickLink.href = "crear.html";
             quickLink.textContent = context.quick + " →";
         } else {
             quickLink.href = "crear-evento.html";
