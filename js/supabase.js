@@ -127,6 +127,40 @@ async function getUserGroups(forceRefresh = false) {
         return userGroupsCache;
     }
 
+    const groupIds = (data || [])
+        .filter(item => item.groups)
+        .map(item => item.groups.id);
+
+    let subscriptions = [];
+
+    if (groupIds.length) {
+        const { data: subscriptionRows } = await supabaseClient
+            .from("group_subscriptions")
+            .select("group_id,plan_code,status,workspace_plans(code,name,description,max_members,max_events_per_month,max_trips,max_storage_mb,features)")
+            .in("group_id", groupIds);
+
+        subscriptions = subscriptionRows || [];
+    }
+
+    const subscriptionByGroup = new Map(
+        subscriptions.map(subscription => {
+            const plan = Array.isArray(subscription.workspace_plans)
+                ? subscription.workspace_plans[0]
+                : subscription.workspace_plans;
+
+            return [
+                subscription.group_id,
+                {
+                    plan_code: subscription.plan_code,
+                    plan_name: plan?.name || subscription.plan_code || "Free",
+                    plan_description: plan?.description || "",
+                    plan_status: subscription.status || "active",
+                    plan_limits: plan || null
+                }
+            ];
+        })
+    );
+
     userGroupsCache = (data || [])
         .filter(item => item.groups)
         .map(item => ({
@@ -134,7 +168,13 @@ async function getUserGroups(forceRefresh = false) {
             name: item.groups.name,
             description: item.groups.description,
             role: item.role,
-            joined_at: item.joined_at
+            joined_at: item.joined_at,
+            ...(subscriptionByGroup.get(item.groups.id) || {
+                plan_code: "free",
+                plan_name: "Free",
+                plan_status: "active",
+                plan_limits: null
+            })
         }));
 
     return userGroupsCache;
