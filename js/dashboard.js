@@ -187,12 +187,42 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ["historial", workspaceState.memories > 0, 10]
                 ];
     const milestoneMeta = {
-        personas: { label: "Personas", action: "miembros.html", unlock: "El workspace deja de depender de una sola persona." },
-        actividad: { label: "Actividad", action: "crear-evento.html", unlock: "Ya existe actividad real que el grupo puede organizar." },
-        contexto: { label: "Contexto", action: "miembros.html", unlock: "Curruscos entiende mejor para qué existe este workspace." },
-        organización: { label: "Organización", action: "eventos.html", unlock: "El grupo puede cerrar pendientes sin dejar cabos sueltos." },
-        historial: { label: "Historia", action: "recuerdos.html", unlock: "El workspace empieza a acumular memoria propia." },
-        viaje: { label: "Viaje", action: "viajes.html", unlock: "La planificación puede convertirse en itinerario." }
+        personas: {
+            label: "Personas",
+            action: "miembros.html",
+            unlock: "El workspace deja de depender de una sola persona.",
+            instruction: "Invita al menos a una persona al workspace."
+        },
+        actividad: {
+            label: "Actividad",
+            action: workspaceState.type === "sports" ? "crear.html" : "crear-evento.html",
+            unlock: "Ya existe actividad real que el grupo puede organizar.",
+            instruction: workspaceState.type === "sports" ? "Crea la primera actividad deportiva." : "Crea el primer evento o plan."
+        },
+        contexto: {
+            label: "Contexto",
+            action: "miembros.html",
+            unlock: "Curruscos entiende mejor para qué existe este workspace.",
+            instruction: "Completa el contexto y objetivo del espacio."
+        },
+        organización: {
+            label: "Organización",
+            action: "eventos.html",
+            unlock: "El grupo puede cerrar pendientes sin dejar cabos sueltos.",
+            instruction: "Abre un evento y completa las tareas que tenga pendientes."
+        },
+        historial: {
+            label: "Historia",
+            action: "recuerdos.html",
+            unlock: "El workspace empieza a acumular memoria propia.",
+            instruction: "Guarda el primer recuerdo del grupo."
+        },
+        viaje: {
+            label: "Viaje",
+            action: "viajes.html",
+            unlock: "La planificación puede convertirse en itinerario.",
+            instruction: "Crea o continúa un viaje en planificación."
+        }
     };
     const workspaceMilestones = Object.fromEntries(
         milestoneChecks.map(([key, done, weight]) => [key, {
@@ -232,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const workspaceDecision = (() => {
         const type = workspaceState.type;
+        const nextMilestone = workspaceState.nextMilestoneDetail;
         const featureMap = workspaceState.features || {};
         if (workspaceState.openTasks > 0) return { key:"tasks", href:"eventos.html", icon:"✓", kicker:"ORGANIZACIÓN", title:"Resolver tareas pendientes", reason: workspaceState.openTasks + " tarea" + (workspaceState.openTasks === 1 ? "" : "s") + " todavía requiere" + (workspaceState.openTasks === 1 ? "" : "n") + " atención." };
         if (workspaceState.members <= 1) return { key:"members", href:"miembros.html", icon:"◎", kicker:"EQUIPO", title:"Traer a la primera persona", reason:"Un workspace empieza a cobrar vida cuando deja de depender de una sola persona." };
@@ -239,6 +270,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (type === "sports" && featureMap.competitions && workspaceState.events === 0) return { key:"sports", href:"crear.html", icon:"◆", kicker:"DEPORTE", title:"Activar la competición", reason:"Crea la actividad deportiva y entra después en su organización." };
         if (type === "study" && workspaceState.events === 0) return { key:"study", href:"crear-evento.html", icon:"→", kicker:"ESTUDIO", title:"Crear la primera sesión", reason:"Convierte el objetivo del workspace en una actividad concreta." };
         if (workspaceState.events === 0) return { key:"event", href:"crear-evento.html", icon:"+", kicker:"ACTIVACIÓN", title:"Crear el primer plan", reason:"Un evento convierte la estructura del workspace en actividad real." };
+        if (nextMilestone) return {
+            key: "milestone",
+            href: nextMilestone.action,
+            icon: "→",
+            kicker: "SIGUIENTE DESBLOQUEO",
+            title: "Completar " + nextMilestone.label,
+            reason: nextMilestone.instruction + " " + nextMilestone.unlock
+        };
         return { key:"next", href:"eventos.html", icon:"→", kicker:"PRÓXIMO PASO", title:"Entrar en la organización", reason:"Revisa próximos planes, participantes y tareas." };
     })();
     document.documentElement.dataset.workspaceHealth = workspaceState.readiness;
@@ -307,7 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return '<a class="workspace-milestone ' + state + '" href="' + escapeHtml(milestone.action) + '">' +
                 '<span class="workspace-milestone-marker">' + marker + '</span>' +
                 '<span class="workspace-milestone-copy"><strong>' + escapeHtml(milestone.label) + '</strong><span>' +
-                (milestone.done ? milestone.unlock : "Completa este paso para avanzar.") + '</span></span>' +
+                (milestone.done ? milestone.unlock : milestone.instruction) + '</span></span>' +
                 '<span class="workspace-milestone-action">' + action + '</span>' +
             '</a>';
         }).join("");
