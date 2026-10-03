@@ -189,8 +189,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                     ["organización", tasks.length > 0 && workspaceState.openTasks === 0, 15],
                     ["historial", workspaceState.memories > 0, 10]
                 ];
+    const milestoneMeta = {
+        personas: { label: "Personas", action: "miembros.html", unlock: "El workspace deja de depender de una sola persona." },
+        actividad: { label: "Actividad", action: "crear-evento.html", unlock: "Ya existe actividad real que el grupo puede organizar." },
+        contexto: { label: "Contexto", action: "miembros.html", unlock: "Curruscos entiende mejor para qué existe este workspace." },
+        organización: { label: "Organización", action: "eventos.html", unlock: "El grupo puede cerrar pendientes sin dejar cabos sueltos." },
+        historial: { label: "Historia", action: "recuerdos.html", unlock: "El workspace empieza a acumular memoria propia." },
+        viaje: { label: "Viaje", action: "viajes.html", unlock: "La planificación puede convertirse en itinerario." }
+    };
     const workspaceMilestones = Object.fromEntries(
-        milestoneChecks.map(([key, done, weight]) => [key, { done, weight }])
+        milestoneChecks.map(([key, done, weight]) => [key, {
+            key,
+            done,
+            weight,
+            ...milestoneMeta[key]
+        }])
     );
     const workspaceActivationScore = milestoneChecks.reduce(
         (score, [, done, weight]) => score + (done ? weight : 0),
@@ -201,6 +214,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     workspaceState.completedMilestones = milestoneChecks.filter(([, done]) => done).length;
     workspaceState.totalMilestones = milestoneChecks.length;
     workspaceState.nextMilestone = milestoneChecks.find(([, done]) => !done)?.[0] || null;
+    workspaceState.nextMilestoneDetail = workspaceState.nextMilestone
+        ? workspaceMilestones[workspaceState.nextMilestone]
+        : null;
     workspaceState.readiness = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     workspaceState.needsAttention = workspaceState.openTasks > 0 || workspaceState.members <= 1 ||
         (workspaceState.type === "travel" && workspaceState.features.travel && workspaceState.planningTrips === 0) ||
