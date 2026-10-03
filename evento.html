@@ -670,6 +670,12 @@
     gap: 9px;
 }
 
+.task-edit-form{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:7px;width:100%}
+.task-edit-form input,.task-edit-form select{width:100%;min-height:34px;box-sizing:border-box;padding:0 9px;border:1px solid #ddd;border-radius:8px;background:#fff;font:inherit;font-size:11px;color:#222}
+.task-edit-controls{display:flex;gap:6px;grid-column:1 / -1;justify-content:flex-end}
+.task-edit-save,.task-edit-cancel,.task-edit-button{border:1px solid #ddd;border-radius:8px;padding:6px 9px;background:#fff;color:#555;font-size:10px;font-weight:800;cursor:pointer}
+.task-edit-save{background:#111;border-color:#111;color:#fff}.task-edit-cancel{background:#fafafa}
+.task-edit-button:hover,.task-edit-cancel:hover{border-color:#bbb;color:#111}.task-edit-save:hover{background:#292929}
 .task-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}.task-copy strong{font-size:13px;color:#151515}.task-copy>span{font-size:10px;color:#777}.task-state{font-size:9px;color:#999;font-weight:800}.task-card.completed .task-copy strong{text-decoration:line-through;color:#999}.task-card.completed{opacity:.72}.task-card {
     display: flex;
     align-items: center;
@@ -1895,6 +1901,7 @@
 
     @media (max-width: 600px) {
 
+        .task-edit-form{grid-template-columns:1fr}
         .task-toolbar{align-items:flex-start;flex-direction:column}
         .task-filters{justify-content:flex-start}
 
