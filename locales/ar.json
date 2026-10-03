@@ -292,6 +292,10 @@
     "namePlaceholder": "مثال: Curruscos Clan",
     "description": "الوصف",
     "descriptionPlaceholder": "ما نوع مجموعتكم؟",
-    "createButton": "إنشاء مجموعتي"
+    "createButton": "إنشاء مجموعتي",
+    "nameRequired": "أدخل اسم المجموعة.",
+    "creating": "جارٍ إنشاء مساحتكم...",
+    "createError": "تعذر إنشاء المجموعة.",
+    "created": "تم إنشاء المجموعة. جارٍ الدخول..."
   }
 }
