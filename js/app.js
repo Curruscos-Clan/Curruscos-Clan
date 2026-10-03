@@ -1398,8 +1398,22 @@ document.addEventListener(
         await updateSavedNavigation(access.user.id);
 
         if (page === "eventos.html") {
-            await loadEvents();
-            setupEventForm();
+            if (!workspaceHasCapability("events")) {
+                const form = document.getElementById("eventForm");
+                if (form) {
+                    form.hidden = true;
+                }
+                const message = document.createElement("div");
+                message.className = "workspace-capability-message";
+                message.innerHTML =
+                    "<strong>Organización de eventos no disponible</strong>" +
+                    "<p>Esta función no está activa en el workspace actual.</p>";
+                const target = document.querySelector("main") || document.body;
+                target.prepend(message);
+            } else {
+                await loadEvents();
+                setupEventForm();
+            }
         }
 
         window.CURRUSCOS_SHELL_READY =
