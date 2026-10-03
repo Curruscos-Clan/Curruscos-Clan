@@ -472,6 +472,7 @@
     "answerInvitationsCount": "Répondre à {{count}} invitation(s)",
     "communitySignal": "SIGNAL DE COMMUNAUTÉ",
     "communityTitle": "Voir ce qui se passe",
-    "communityReason": "Il y a une activité récente autour de {{event}}."
+    "communityReason": "Il y a une activité récente autour de {{event}}.",
+    "tripsInMotion": "Aucun événement à venir, mais {{count}} voyage(s) sont déjà en cours."
   }
 }
