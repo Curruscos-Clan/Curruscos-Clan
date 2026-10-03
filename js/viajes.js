@@ -29,6 +29,7 @@ function bindTripUi() {
     $("optionCategory").addEventListener("change", renderOptionDetailsForm);
     $("optionFilter")?.addEventListener("change", renderOptions);
     $("optionSort")?.addEventListener("change", renderOptions);
+    $("smartSearchForm")?.addEventListener("submit", runSmartTravelSearch);
 
     $("tripModal").addEventListener("click", e => { if (e.target === $("tripModal")) closeTripModal(); });
     $("optionModal").addEventListener("click", e => { if (e.target === $("optionModal")) closeOptionModal(); });
@@ -345,6 +346,7 @@ function renderActiveTrip() {
     $("activeTripOptionsCount").textContent = activeTrip.options.length;
     $("activeTripVotesCount").textContent = activeTrip.votes.length;
     updateTripSearchLinks();
+    renderSmartSearchForm();
     renderOptions();
     renderItinerary();
     renderDecisionSummary();
@@ -646,11 +648,149 @@ function renderDecisionSummary() {
     container.innerHTML = ranked.map((o,i)=>`<div class="decision-row"><span class="decision-rank">${i+1}</span><div class="decision-main"><strong>${escapeHtml(o.title)}</strong><div class="decision-bar"><span style="width:${Math.min(100,o.count*20)}%"></span></div></div><strong>${o.count}</strong></div>`).join("");
 }
 
+function readSmartSearchPreferences() {
+    const interests = [...document.querySelectorAll("#smartSearchInterests input:checked")].map(input => input.value);
+    return {
+        origin: $("smartOrigin")?.value.trim() || "",
+        destination: $("smartDestination")?.value.trim() || "",
+        start_date: $("smartStartDate")?.value || "",
+        end_date: $("smartEndDate")?.value || "",
+        budget_per_person: $("smartBudget")?.value ? Number($("smartBudget").value) : null,
+        travellers: $("smartTravellers")?.value ? Number($("smartTravellers").value) : null,
+        stay: $("smartStay")?.value || "any",
+        transport: $("smartTransport")?.value || "any",
+        interests,
+        notes: $("smartNotes")?.value.trim() || ""
+    };
+}
+
+function renderSmartSearchForm() {
+    if (!activeTrip) return;
+    const p = activeTrip.search_preferences || {};
+    if ($("smartOrigin")) $("smartOrigin").value = p.origin || "";
+    if ($("smartDestination")) $("smartDestination").value = p.destination || activeTrip.destination || "";
+    if ($("smartStartDate")) $("smartStartDate").value = p.start_date || activeTrip.start_date || "";
+    if ($("smartEndDate")) $("smartEndDate").value = p.end_date || activeTrip.end_date || "";
+    if ($("smartBudget")) $("smartBudget").value = p.budget_per_person ?? activeTrip.budget_per_person ?? "";
+    if ($("smartTravellers")) $("smartTravellers").value = p.travellers || "";
+    if ($("smartStay")) $("smartStay").value = p.stay || "any";
+    if ($("smartTransport")) $("smartTransport").value = p.transport || "any";
+    if ($("smartNotes")) $("smartNotes").value = p.notes || "";
+    document.querySelectorAll("#smartSearchInterests input").forEach(input => {
+        input.checked = (p.interests || []).includes(input.value);
+    });
+    renderSmartRecommendations(activeTrip.recommendations || []);
+}
+
+function smartDestinationIdeas(p) {
+    if (p.destination) return [{name:p.destination, reason:"Destino indicado por el grupo"}];
+    const interests = new Set(p.interests || []);
+    const ideas = [];
+    const add = (name, reason) => { if (!ideas.some(x => x.name.toLowerCase() === name.toLowerCase())) ideas.push({name, reason}); };
+    if (interests.has("beach")) { add("Valencia","Playa, ciudad y buena conexión"); add("Málaga","Costa, gastronomía y ambiente"); add("Alicante","Playa y escapada urbana"); }
+    if (interests.has("culture")) { add("Roma","Historia, patrimonio y gastronomía"); add("Lisboa","Ciudad, cultura y escapada cómoda"); add("Praga","Arquitectura y patrimonio"); }
+    if (interests.has("nature")) { add("Asturias","Naturaleza, costa y montaña"); add("Madeira","Naturaleza y rutas"); add("Alpes","Montaña y actividades al aire libre"); }
+    if (interests.has("food")) { add("San Sebastián","Gastronomía y ciudad"); add("Bolonia","Gastronomía y cultura"); }
+    if (interests.has("nightlife")) { add("Madrid","Vida urbana y ocio"); add("Lisboa","Ambiente y vida nocturna"); add("Budapest","Ciudad y ocio"); }
+    if (interests.has("relax")) { add("Mallorca","Costa y descanso"); add("Algarve","Playas y ritmo tranquilo"); }
+    if (interests.has("adventure")) { add("Madeira","Naturaleza y actividades"); add("Andorra","Montaña y deporte"); }
+    if (!ideas.length) ["Lisboa","Valencia","Roma"].forEach(x => add(x,"Punto de partida para comparar"));
+    return ideas.slice(0,5);
+}
+
+function buildTravelSearchLinks(p, destination) {
+    const dest = encodeURIComponent(destination);
+    const origin = encodeURIComponent(p.origin || "");
+    const datePart = p.start_date && p.end_date ? encodeURIComponent(p.start_date + "_" + p.end_date) : "";
+    return {
+        flights: p.origin && p.start_date ? "https://www.google.com/travel/flights?q=" + origin + "%20to%20" + dest + (datePart ? "%20" + datePart : "") : "https://www.google.com/travel/flights?q=" + dest,
+        hotels: "https://www.google.com/travel/hotels?q=" + dest,
+        places: "https://www.google.com/maps/search/" + dest
+    };
+}
+
+function scoreTravelIdea(idea, p) {
+    let score = 60;
+    const text = (idea.reason + " " + idea.name).toLowerCase();
+    const interests = p.interests || [];
+    if (interests.some(i => text.includes(i))) score += 8;
+    if (p.budget_per_person) score += 4;
+    if (p.start_date && p.end_date) score += 4;
+    if (p.travellers) score += 4;
+    return Math.min(96, score);
+}
+
+function renderSmartRecommendations(recommendations) {
+    const root = $("smartRecommendations");
+    if (!root) return;
+    if (!recommendations.length) { root.hidden = true; root.innerHTML = ""; return; }
+    root.hidden = false;
+    const p = activeTrip?.search_preferences || {};
+    root.innerHTML = '<div class="trip-smart-results-head"><strong>Propuestas para vuestro grupo</strong><span>' +
+        escapeHtml((p.travellers ? p.travellers + " viajeros" : "Grupo sin tamaño definido") + (p.budget_per_person ? " · " + money(p.budget_per_person) + " / persona" : "")) +
+        '</span></div>' +
+        recommendations.map(item => {
+            const links = item.links || buildTravelSearchLinks(p, item.destination || item.name);
+            const tags = (item.tags || []).map(tag => '<span>' + escapeHtml(tag) + '</span>').join("");
+            return '<article class="trip-smart-card"><div class="trip-smart-card-main">' +
+                '<span class="trip-smart-card-kicker">' + escapeHtml(item.type || "DESTINO") + (item.match ? " · " + item.match + "% DE AJUSTE" : "") + '</span>' +
+                '<h4>' + escapeHtml(item.destination || item.name) + '</h4>' +
+                '<p>' + escapeHtml(item.reason || "Opción generada a partir de las necesidades del grupo.") + '</p>' +
+                '<div class="trip-smart-tags">' + tags + '</div>' +
+                '<div class="trip-smart-disclaimer">' + escapeHtml(item.detail || "Los precios y disponibilidad se consultan en el momento de abrir el comparador.") + '</div>' +
+                '</div><div class="trip-smart-links">' +
+                '<a class="button secondary" target="_blank" rel="noopener" href="' + escapeHtml(links.flights) + '">✈ Vuelos</a>' +
+                '<a class="button secondary" target="_blank" rel="noopener" href="' + escapeHtml(links.hotels) + '">⌂ Hoteles</a>' +
+                '<a class="button secondary" target="_blank" rel="noopener" href="' + escapeHtml(links.places) + '">⌖ Lugares</a>' +
+                '</div></article>';
+        }).join("");
+}
+
+async function runSmartTravelSearch(e) {
+    e?.preventDefault();
+    if (!activeTrip) return;
+    const preferences = readSmartSearchPreferences();
+    if (preferences.start_date && preferences.end_date && preferences.end_date < preferences.start_date) {
+        alert("La fecha de vuelta no puede ser anterior a la de ida.");
+        return;
+    }
+    const button = $("smartSearchForm")?.querySelector("button[type=submit]");
+    if (button) { button.disabled = true; button.textContent = "Buscando…"; }
+    if ($("smartSearchStatus")) $("smartSearchStatus").textContent = "Analizando las preferencias del grupo…";
+    const ideas = smartDestinationIdeas(preferences);
+    const recommendations = ideas.map((idea, index) => ({
+        type: "DESTINO",
+        destination: idea.name,
+        reason: idea.reason,
+        match: scoreTravelIdea(idea, preferences) - index * 2,
+        tags: (preferences.interests || []).slice(0,4).map(i => ({
+            beach:"Playa",culture:"Cultura",nature:"Naturaleza",food:"Gastronomía",nightlife:"Ambiente",adventure:"Aventura",relax:"Relax"
+        }[i] || i)),
+        links: buildTravelSearchLinks(preferences, idea.name),
+        detail: "Búsqueda preparada con " + (preferences.origin || "vuestro origen") + (preferences.budget_per_person ? ", presupuesto de " + money(preferences.budget_per_person) + " por persona" : "") + "."
+    }));
+    const { data, error } = await supabaseClient.from("trips").update({
+        search_preferences: preferences,
+        recommendations,
+        recommendations_updated_at: new Date().toISOString()
+    }).eq("id", activeTrip.id).select().single();
+    if (error) {
+        console.error(error);
+        if ($("smartSearchStatus")) $("smartSearchStatus").textContent = "No se han podido guardar las preferencias.";
+    } else {
+        activeTrip = data;
+        trips = trips.map(t => t.id === data.id ? data : t);
+        renderSmartSearchForm();
+        if ($("smartSearchStatus")) $("smartSearchStatus").textContent = "Listo: hemos preparado búsquedas adaptadas a vuestro grupo.";
+    }
+    if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
+}
+
 async function createTripFromForm(e) {
     e.preventDefault();
     const user = await getCurrentUser(), group = await getCurrentGroup();
     if (!user || !group) return;
-    const payload = {group_id:group.id,created_by:user.id,title:$("tripTitle").value.trim(),destination:$("tripDestination").value.trim()||null,start_date:$("tripStartDate").value||null,end_date:$("tripEndDate").value||null,budget_per_person:$("tripBudget").value?Number($("tripBudget").value):null,description:$("tripDescription").value.trim()||null};
+    const payload = {group_id:group.id,created_by:user.id,title:$("tripTitle").value.trim(),destination:$("tripDestination").value.trim()||null,start_date:$("tripStartDate").value||null,end_date:$("tripEndDate").value||null,budget_per_person:$("tripBudget").value?Number($("tripBudget").value):null,description:$("tripDescription").value.trim()||null,search_preferences:{}};
     if (!payload.title) return;
     const {data,error}=await supabaseClient.from("trips").insert(payload).select().single();
     if(error){alert("No se ha podido crear el viaje.");console.error(error);return;}

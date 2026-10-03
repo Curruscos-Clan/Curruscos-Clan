@@ -55,6 +55,41 @@
 .trip-search-link{border-radius:12px!important}
 @media(max-width:900px){.trip-layout{grid-template-columns:1fr}.trip-sidebar{position:static}.trip-hero{display:block}.trip-hero .button{margin-top:24px}.trip-hero::after{display:none}}
 @media(max-width:600px){.trip-page{padding:42px 16px 80px}.trip-hero{padding:30px 0 38px}.trip-hero h1{font-size:52px}.trip-section,.trip-header-card{padding:19px!important;border-radius:20px!important}.trip-summary-grid{grid-template-columns:1fr 1fr!important}.trip-section-head{display:block}.trip-section-head-actions{margin-top:12px;display:flex;flex-wrap:wrap}.trip-section-head-actions>*{max-width:100%}}
+</style>
+<style id="curruscos-trip-smart-search">
+.trip-smart-search{position:relative;overflow:hidden;background:radial-gradient(700px 260px at 100% 0,rgba(255,77,46,.11),transparent 65%),linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.018))!important}
+.trip-smart-search:before{content:"";position:absolute;inset:0;pointer-events:none;border-top:1px solid rgba(255,255,255,.18)}
+.trip-smart-badge{padding:7px 10px;border:1px solid rgba(255,255,255,.13);border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.12em;color:var(--muted)}
+.trip-smart-form{display:grid;gap:16px;margin-top:22px}
+.trip-smart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.trip-smart-form label{display:grid;gap:7px;font-size:11px;font-weight:800;color:var(--text)}
+.trip-smart-form input,.trip-smart-form select,.trip-smart-form textarea{box-sizing:border-box;width:100%;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.045);color:var(--text);padding:12px 13px;font:inherit;font-size:12px;outline:none}
+.trip-smart-form input:focus,.trip-smart-form select:focus,.trip-smart-form textarea:focus{border-color:rgba(255,255,255,.3);box-shadow:0 0 0 3px rgba(255,255,255,.04)}
+.trip-smart-preferences{display:grid;gap:9px}
+.trip-smart-preferences>span{font-size:10px;color:var(--muted);font-weight:900;letter-spacing:.12em}
+.trip-interest-chips{display:flex;gap:7px;flex-wrap:wrap}
+.trip-interest-chips label{display:block;cursor:pointer}
+.trip-interest-chips input{position:absolute;opacity:0;pointer-events:none}
+.trip-interest-chips span{display:block;padding:9px 12px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.03);font-size:11px;font-weight:700;color:var(--muted);transition:.18s}
+.trip-interest-chips input:checked+span{background:var(--text);border-color:var(--text);color:var(--surface)}
+.trip-smart-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.trip-smart-actions small{color:var(--muted);font-size:10px}
+.trip-smart-results{display:grid;gap:10px;margin-top:20px}
+.trip-smart-results-head{display:flex;justify-content:space-between;gap:12px;align-items:end}
+.trip-smart-results-head strong{font-size:19px;letter-spacing:-.035em}
+.trip-smart-results-head span{font-size:10px;color:var(--muted)}
+.trip-smart-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:18px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.035)}
+.trip-smart-card-main{min-width:0}
+.trip-smart-card-kicker{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.12em}
+.trip-smart-card h4{margin:7px 0 5px;font-size:22px;letter-spacing:-.045em}
+.trip-smart-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.trip-smart-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.trip-smart-tags span{padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.055);font-size:9px;color:var(--muted)}
+.trip-smart-links{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.trip-smart-links .button{min-height:38px;padding:0 12px}
+.trip-smart-disclaimer{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.5}
+@media(max-width:1000px){.trip-smart-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.trip-smart-grid{grid-template-columns:1fr}.trip-smart-card{grid-template-columns:1fr}.trip-smart-links{justify-content:flex-start}.trip-smart-badge{display:none}}
 </style></head>
 <body>
 <header class="navbar">
@@ -125,6 +160,44 @@
           <article class="trip-stat"><span>OPCIONES</span><strong id="activeTripOptionsCount">0</strong></article>
           <article class="trip-stat"><span>VOTOS</span><strong id="activeTripVotesCount">0</strong></article>
         </div>
+
+        <section class="trip-section trip-smart-search">
+          <div class="trip-section-head">
+            <div><span>CURRUSCOS TRAVEL INTELLIGENCE</span><h3>Encontrad un viaje que encaje con vosotros.</h3></div>
+            <span class="trip-smart-badge">PERSONALIZADO</span>
+          </div>
+          <p class="trip-section-copy">Decidnos presupuesto, fechas, origen y qué os apetece. Curruscos transforma esas necesidades en búsquedas y propuestas adaptadas al grupo.</p>
+          <form id="smartSearchForm" class="trip-smart-form">
+            <div class="trip-smart-grid">
+              <label>Desde<input id="smartOrigin" maxlength="120" placeholder="Madrid, Barcelona, Bilbao…"></label>
+              <label>Destino<input id="smartDestination" maxlength="120" placeholder="Roma, Lisboa o “cualquiera”"></label>
+              <label>Desde<input id="smartStartDate" type="date"></label>
+              <label>Hasta<input id="smartEndDate" type="date"></label>
+              <label>Presupuesto / persona<input id="smartBudget" type="number" min="0" step="1" placeholder="500"></label>
+              <label>Viajeros<input id="smartTravellers" type="number" min="1" max="50" step="1" placeholder="6"></label>
+              <label>Alojamiento<select id="smartStay"><option value="any">Me da igual</option><option value="budget">Económico</option><option value="comfort">Cómodo</option><option value="premium">Premium</option></select></label>
+              <label>Transporte<select id="smartTransport"><option value="any">Me da igual</option><option value="flight">Avión</option><option value="train">Tren</option><option value="car">Coche</option></select></label>
+            </div>
+            <div class="trip-smart-preferences">
+              <span>¿Qué queréis encontrar?</span>
+              <div id="smartSearchInterests" class="trip-interest-chips">
+                <label><input type="checkbox" value="beach"><span>Playa</span></label>
+                <label><input type="checkbox" value="culture"><span>Cultura</span></label>
+                <label><input type="checkbox" value="nature"><span>Naturaleza</span></label>
+                <label><input type="checkbox" value="food"><span>Gastronomía</span></label>
+                <label><input type="checkbox" value="nightlife"><span>Ambiente</span></label>
+                <label><input type="checkbox" value="adventure"><span>Aventura</span></label>
+                <label><input type="checkbox" value="relax"><span>Relax</span></label>
+              </div>
+            </div>
+            <label>Lo que más importa al grupo<textarea id="smartNotes" rows="2" maxlength="600" placeholder="Ej. Queremos gastar poco, evitar muchas escalas y estar cerca del centro."></textarea></label>
+            <div class="trip-smart-actions">
+              <button type="submit" class="button primary">✦ Encontrar opciones</button>
+              <small id="smartSearchStatus">Las preferencias se guardan en este viaje.</small>
+            </div>
+          </form>
+          <div id="smartRecommendations" class="trip-smart-results" hidden></div>
+        </section>
 
         <div class="trip-section">
           <div class="trip-section-head"><div><span>COMPARADOR DEL GRUPO</span><h3>Opciones guardadas</h3></div><div class="trip-section-head-actions"><select id="optionFilter" class="trip-compare-filter"><option value="all">Todas las opciones</option><option value="destination">Destinos</option><option value="flight">Vuelos</option><option value="hotel">Hoteles</option><option value="activity">Actividades</option><option value="place">Lugares</option><option value="transport">Transporte</option><option value="other">Otros</option></select><select id="optionSort" class="trip-compare-filter"><option value="votes">Más votadas</option><option value="price">Menor precio</option><option value="newest">Más recientes</option></select><button class="button secondary" id="addOptionButton">＋ Añadir opción</button></div></div>
