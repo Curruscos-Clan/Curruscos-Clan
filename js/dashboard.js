@@ -350,6 +350,163 @@ document.addEventListener("DOMContentLoaded", async () => {
             "Cuando haya un próximo evento, aquí verás su estado de organización.";
     }
 
+
+    /* =====================================================
+       CURRUSCOS SENSE — MOTOR DE SIGUIENTE MOVIMIENTO
+       Convierte señales dispersas del grupo en una sola
+       acción prioritaria. No predice personas: detecta
+       fricción operativa y la convierte en un paso.
+    ===================================================== */
+
+    async function runCurruscosSense() {
+        const titleEl = document.getElementById("autopilotTitle");
+        const reasonEl = document.getElementById("autopilotReason");
+        const labelEl = document.getElementById("autopilotLabel");
+        const actionEl = document.getElementById("autopilotAction");
+        const orbEl = document.getElementById("autopilotOrb");
+        const signalsEl = document.getElementById("autopilotSignals");
+        if (!titleEl || !reasonEl || !actionEl) return;
+
+        const signal = (name, value) => '<span class="autopilot-signal"><strong>' +
+            escapeHtml(String(value)) + '</strong>' + escapeHtml(name) + '</span>';
+
+        const ranked = [];
+        const nextEvent = upcoming[0]?.event || null;
+
+        if (!nextEvent) {
+            ranked.push({
+                score: 100,
+                label: "MODO DESCUBRIMIENTO",
+                title: "Crear el próximo plan",
+                reason: "El grupo no tiene ningún evento futuro. El sistema detecta un hueco de actividad.",
+                href: "crear-evento.html",
+                icon: "+"
+            });
+        }
+
+        if (nextEvent) {
+            const nextEventTasks = tasks.filter(task => task.event_id === nextEvent.id);
+            const incompleteTasks = nextEventTasks.filter(task => !task.completed);
+            const participants = await getEventParticipants(nextEvent.id);
+            const answeredCount = members.filter(member =>
+                participants.some(item => String(item.user_id) === String(member.user_id))
+            ).length;
+            const unanswered = Math.max(0, members.length - answeredCount);
+
+            if (unanswered > 0) {
+                ranked.push({
+                    score: 95 + Math.min(unanswered, 10),
+                    label: "FRICCIÓN DETECTADA",
+                    title: "Cerrar la asistencia de " + unanswered + (unanswered === 1 ? " persona" : " personas"),
+                    reason: nextEvent.title + " todavía no tiene una respuesta de todo el grupo.",
+                    href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
+                    icon: "?"
+                });
+            }
+
+            if (incompleteTasks.length) {
+                ranked.push({
+                    score: 82 + Math.min(incompleteTasks.length, 10),
+                    label: "FRICCIÓN DETECTADA",
+                    title: "Resolver " + incompleteTasks.length + (incompleteTasks.length === 1 ? " tarea pendiente" : " tareas pendientes"),
+                    reason: "El próximo plan tiene trabajo abierto antes de poder considerarse cerrado.",
+                    href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
+                    icon: "✓"
+                });
+            }
+
+            if (!nextEvent.location) {
+                ranked.push({
+                    score: 78,
+                    label: "DETALLE ABIERTO",
+                    title: "Decidir dónde será " + nextEvent.title,
+                    reason: "El evento tiene fecha pero todavía no tiene lugar definido.",
+                    href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
+                    icon: "⌖"
+                });
+            }
+        }
+
+        if ((trips || []).length) {
+            const activeTrips = trips.filter(trip => trip.status === "planning");
+            if (activeTrips.length) {
+                ranked.push({
+                    score: nextEvent ? 63 : 88,
+                    label: "PLAN EN MARCHA",
+                    title: "Avanzar " + (activeTrips.length === 1 ? "el viaje" : "los viajes"),
+                    reason: activeTrips.length + (activeTrips.length === 1 ? " viaje sigue en planificación." : " viajes siguen en planificación."),
+                    href: "viajes.html",
+                    icon: "↗"
+                });
+            }
+        }
+
+        try {
+            if (typeof getGroupPolls === "function") {
+                const polls = await getGroupPolls();
+                const openPolls = (polls || []).filter(poll => !poll.is_closed);
+                if (openPolls.length) {
+                    ranked.push({
+                        score: nextEvent ? 68 : 91,
+                        label: "DECISIÓN ABIERTA",
+                        title: "Resolver " + (openPolls.length === 1 ? "una decisión" : openPolls.length + " decisiones"),
+                        reason: "Hay votaciones abiertas que están esperando una respuesta del grupo.",
+                        href: "decisiones.html",
+                        icon: "?"
+                    });
+                }
+            }
+        } catch (error) {
+            console.debug("Curruscos Sense: decisiones no disponibles", error);
+        }
+
+        if (invitations.length) {
+            ranked.push({
+                score: 92,
+                label: "ENTRADA PENDIENTE",
+                title: "Responder a " + (invitations.length === 1 ? "una invitación" : invitations.length + " invitaciones"),
+                reason: "Hay grupos esperando una respuesta tuya.",
+                href: "#dashboardInvitationsSection",
+                icon: "✉"
+            });
+        }
+
+        if (!ranked.length) {
+            ranked.push({
+                score: 20,
+                label: "TODO FLUYE",
+                title: "El grupo está al día",
+                reason: "No hemos detectado ningún bloqueo claro. Es un buen momento para disfrutar o guardar el momento.",
+                href: "recuerdos.html",
+                icon: "✦"
+            });
+        }
+
+        ranked.sort((a, b) => b.score - a.score);
+        const top = ranked[0];
+
+        labelEl.textContent = top.label;
+        titleEl.textContent = top.title;
+        reasonEl.textContent = top.reason;
+        actionEl.href = top.href;
+        actionEl.textContent = top.href.startsWith("#") ? "Ver →" : "Hacerlo →";
+        orbEl.textContent = top.icon;
+
+        const compactSignals = [
+            signal("personas", members.length),
+            signal("eventos", events.length),
+            signal("tareas abiertas", tasks.filter(task => !task.completed).length),
+            signal("viajes", (trips || []).length)
+        ];
+        signalsEl.innerHTML = compactSignals.join("");
+
+        if (top.score >= 90) {
+            orbEl.style.transform = "scale(1.03)";
+        }
+    }
+
+    await runCurruscosSense();
+
     /* =====================================================
        ACTIVIDAD
        ===================================================== */
