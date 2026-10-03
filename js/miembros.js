@@ -265,6 +265,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         group.role === "owner" ||
         group.role === "admin";
 
+    /* El workspace central es la fuente de verdad para las acciones de equipo. */
+    if (inviteButton && !workspaceHasCapability("collaboration")) {
+        inviteButton.disabled = true;
+        inviteButton.title = "La colaboración no está activa en este workspace.";
+    }
+
+    if (subtitle) {
+        const workspaceLabels = {
+            community: "comunidad",
+            sports: "workspace deportivo",
+            travel: "workspace de viajes",
+            study: "workspace de estudio",
+            organization: "organización"
+        };
+        const typeLabel = workspaceLabels[group.workspace_type] || "workspace";
+        subtitle.textContent =
+            (membersGrid ? "Gestionad vuestro equipo en este " + typeLabel + "." : subtitle.textContent);
+    }
+
     if (!isOwner) {
         if (saveButton) {
             saveButton.hidden = true;
