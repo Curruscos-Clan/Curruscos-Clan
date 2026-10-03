@@ -4,7 +4,20 @@ let activeTrip = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await window.curruscosI18n?.ready;
-    await window.curruscosReady;
+    const access = await window.curruscosReady;
+    if (!access) return;
+
+    if (!workspaceHasCapability("travel")) {
+        const root = document.querySelector(".trip-page") || document.body;
+        const banner = document.createElement("div");
+        banner.className = "trip-capability-banner";
+        banner.innerHTML =
+            "<strong>Viajes no está activo en este workspace.</strong>" +
+            "<p>Esta función depende del tipo de workspace y del plan actual.</p>";
+        root.prepend(banner);
+        return;
+    }
+
     bindTripUi();
     await loadTrips();
 });
