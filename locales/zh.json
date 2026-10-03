@@ -60,7 +60,8 @@
     "preparing": "准备中",
     "cancelled": "已取消",
     "finished": "已结束",
-    "registrationOpen": "报名开放"
+    "registrationOpen": "报名开放",
+    "upcoming": "即将开始"
   },
   "format": {
     "knockout": "淘汰赛",
@@ -98,7 +99,12 @@
     "memberMany": "名成员",
     "viewEvent": "查看活动",
     "activity": "活动",
-    "context": "背景"
+    "context": "背景",
+    "matches": "比赛",
+    "wins": "胜场",
+    "losses": "负场",
+    "points": "积分",
+    "followers": "关注者"
   },
   "explore": {
     "allActivities": "所有活动",
