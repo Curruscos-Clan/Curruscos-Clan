@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "Home",
+    "explore": "Esplora",
+    "myEvents": "I miei eventi",
+    "rankings": "Classifiche",
+    "create": "Crea",
+    "login": "Accedi",
+    "saved": "Salvati",
+    "trips": "Viaggi",
+    "members": "Membri",
+    "history": "Storia",
+    "memories": "Ricordi",
+    "events": "Eventi",
+    "chat": "Chat",
+    "notifications": "Notifiche"
+  },
+  "community": {
+    "activePeople": "Persone attive"
+  },
+  "landing": {
+    "exploreEvents": "Esplora eventi"
+  },
+  "common": {
+    "loading": "Caricamento…",
+    "searching": "Ricerca...",
+    "save": "Salva",
+    "saved": "Salvato",
+    "cancel": "Annulla",
+    "send": "Invia",
+    "close": "Chiudi",
+    "add": "Aggiungi",
+    "create": "Crea",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "viewProfile": "Vedi profilo",
+    "private": "Privato",
+    "participant": "Partecipante",
+    "loadingGroup": "Caricamento gruppo..."
+  },
+  "activity": {
+    "padel": "Padel",
+    "futbol": "Calcio",
+    "baloncesto": "Pallacanestro",
+    "tenis": "Tennis",
+    "ajedrez": "Scacchi",
+    "gaming": "Gaming",
+    "running": "Running",
+    "other": "Altro",
+    "otherPlural": "Altri"
+  },
+  "category": {
+    "tournament": "Torneo",
+    "sport": "Sport",
+    "social": "Social",
+    "activity": "Attività"
+  },
+  "status": {
+    "live": "In diretta",
+    "preparing": "Preparazione",
+    "cancelled": "Annullato",
+    "finished": "Terminato",
+    "registrationOpen": "Iscrizioni aperte"
+  },
+  "format": {
+    "knockout": "Eliminazione",
+    "roundRobin": "Campionato",
+    "swiss": "Svizzero",
+    "race": "Gara",
+    "custom": "Personalizzato"
+  },
+  "event": {
+    "registrationClosed": "Iscrizioni chiuse",
+    "noSpots": "Nessun posto libero",
+    "free": "Gratis",
+    "locationTbd": "Luogo da definire",
+    "descriptionTbd": "Nessuna descrizione ancora.",
+    "organizes": "Organizzato da",
+    "event": "Evento",
+    "context": "Contesto",
+    "events": "Eventi"
+  },
+  "team": {
+    "viewTeam": "Vedi squadra →",
+    "follow": "Segui squadra",
+    "unfollow": "Smetti di seguire",
+    "owner": "Proprietario",
+    "team": "Squadra",
+    "persistent": "Squadra persistente",
+    "squad": "Rosa",
+    "history": "Cronologia",
+    "members": "Membri",
+    "noVisibleMembers": "Nessun membro visibile.",
+    "noPublicEvents": "Nessuna partecipazione pubblica della squadra.",
+    "notFound": "Squadra non trovata.",
+    "notAvailable": "Questa squadra non è disponibile pubblicamente."
+  },
+  "explore": {
+    "allActivities": "Tutte le attività",
+    "noEvents": "Nessun evento trovato.",
+    "tryFilters": "Prova un'altra ricerca o cambia i filtri.",
+    "notInterested": "Non mi interessa",
+    "activeFilters": "Filtri attivi · cancellali con un tocco.",
+    "autoUpdate": "I risultati pubblici si aggiornano automaticamente.",
+    "noResults": "Nessun risultato",
+    "noPeople": "Nessun profilo pubblico attivo trovato.",
+    "noTeams": "Nessuna squadra pubblica da mostrare.",
+    "saveError": "Non è stato possibile aggiornare il salvataggio."
+  },
+  "notifications": {
+    "title": "Notifiche",
+    "markAllRead": "Segna tutto come letto"
+  },
+  "chat": {
+    "newConversation": "＋ Nuova conversazione",
+    "conversations": "Conversazioni",
+    "searchPeople": "Cerca persone…",
+    "selectConversation": "Seleziona una conversazione",
+    "messagesHere": "I tuoi messaggi appariranno qui.",
+    "writeMessage": "Scrivi un messaggio…",
+    "communityHere": "La tua community, qui."
+  },
+  "travel": {
+    "newTrip": "＋ Nuovo viaggio",
+    "createTrip": "Crea viaggio"
+  }
+}
