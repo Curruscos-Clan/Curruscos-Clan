@@ -14,6 +14,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     const createPanel = document.getElementById("createPanel");
     const errorEl = document.getElementById("formError");
 
+    const group = access.currentGroup;
+    const members = await getGroupMembers(group.id);
+    const collaborationReady = members.length > 1;
+    const createPanel = document.getElementById("createPanel");
+    const focusCreateButton = document.getElementById("focusCreateButton");
+    if (!collaborationReady) {
+        if (createPanel) {
+            createPanel.innerHTML =
+                '<span class="decisions-eyebrow">DESBLOQUEO</span>' +
+                '<h2>Primero, sumad a alguien.</h2>' +
+                '<p>Las decisiones necesitan al menos dos personas. Invita a otra persona al workspace y esta herramienta se activará automáticamente.</p>' +
+                '<a class="button button-primary" href="miembros.html">Invitar a alguien →</a>';
+        }
+        if (focusCreateButton) {
+            focusCreateButton.disabled = true;
+            focusCreateButton.textContent = "Bloqueada hasta activar el equipo";
+        }
+    }
+
     let optionCount = 0;
 
     function addOption(value = "") {
@@ -269,6 +288,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     form.addEventListener("submit", async event => {
+        if (!collaborationReady) {
+            event.preventDefault();
+            return;
+        }
         event.preventDefault();
         errorEl.textContent = "";
 
