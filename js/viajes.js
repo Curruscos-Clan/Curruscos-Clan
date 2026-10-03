@@ -20,13 +20,16 @@ function bindTripUi() {
     $("addOptionButton").addEventListener("click", openOptionModal);
     $("tripForm").addEventListener("submit", createTripFromForm);
     $("optionForm").addEventListener("submit", createOptionFromForm);
+    $("optionCategory").addEventListener("change", renderOptionDetailsForm);
+    $("optionFilter")?.addEventListener("change", renderOptions);
+
     $("tripModal").addEventListener("click", e => { if (e.target === $("tripModal")) closeTripModal(); });
     $("optionModal").addEventListener("click", e => { if (e.target === $("optionModal")) closeOptionModal(); });
 }
 
 function openTripModal() { $("tripModal").hidden = false; setTimeout(() => $("tripTitle").focus(), 30); }
 function closeTripModal() { $("tripModal").hidden = true; $("tripForm").reset(); }
-function openOptionModal() { if (!activeTrip) return; $("optionModal").hidden = false; setTimeout(() => $("optionTitle").focus(), 30); }
+function openOptionModal() { if (!activeTrip) return; $("optionModal").hidden = false; renderOptionDetailsForm(); setTimeout(() => $("optionTitle").focus(), 30); }
 function closeOptionModal() { $("optionModal").hidden = true; $("optionForm").reset(); }
 
 async function loadTrips(selectId = null) {
@@ -333,33 +336,165 @@ function money(value) {
     return new Intl.NumberFormat("es-ES", {style:"currency",currency:"EUR"}).format(Number(value) || 0);
 }
 
+
+function optionDetailConfig(category) {
+    const common = {
+        destination: [
+            ["country","País","Ej. Italia","text"],
+            ["travel_time","Tiempo de viaje","Ej. 2 h 15 min","text"],
+            ["best_for","Ideal para","Ej. Cultura y comida","text"],
+            ["season","Mejor época","Ej. Abril–junio","text"]
+        ],
+        flight: [
+            ["origin","Salida","Ej. Madrid (MAD)","text"],
+            ["arrival","Llegada","Ej. Roma (FCO)","text"],
+            ["departure","Salida","Ej. 08:30","text"],
+            ["arrival_time","Llegada","Ej. 11:05","text"],
+            ["duration","Duración","Ej. 2 h 35 min","text"],
+            ["stops","Escalas","Ej. Directo / 1","text"],
+            ["baggage","Equipaje","Ej. 1 maleta + mochila","text"]
+        ],
+        hotel: [
+            ["area","Zona","Ej. Centro / Trastevere","text"],
+            ["nights","Noches","Ej. 4","number"],
+            ["rooms","Habitaciones","Ej. 2","number"],
+            ["rating","Valoración","Ej. 8,7/10","text"],
+            ["breakfast","Desayuno","Ej. Incluido","text"],
+            ["distance","Distancia","Ej. 1,2 km del centro","text"]
+        ],
+        activity: [
+            ["area","Zona","Ej. Centro","text"],
+            ["duration","Duración","Ej. 3 h","text"],
+            ["booking","Reserva","Ej. Antelación recomendada","text"],
+            ["age","Edad / acceso","Ej. Todo público","text"]
+        ],
+        transport: [
+            ["mode","Medio","Ej. Tren AVE","text"],
+            ["duration","Duración","Ej. 2 h 30 min","text"],
+            ["origin","Salida","Ej. Madrid","text"],
+            ["arrival","Llegada","Ej. Barcelona","text"]
+        ],
+        other: [
+            ["detail_1","Dato clave","Ej. Condición importante","text"],
+            ["detail_2","Otro dato","Ej. Qué incluye","text"]
+        ]
+    };
+    return common[category] || common.other;
+}
+
+function renderOptionDetailsForm() {
+    const root = $("optionDetails");
+    const category = $("optionCategory")?.value || "other";
+    if (!root) return;
+    root.innerHTML = optionDetailConfig(category).map(item =>
+        '<label>' + escapeHtml(item[1]) +
+        '<input data-option-detail="' + escapeHtml(item[0]) + '" type="' + item[3] +
+        '" min="' + (item[3] === "number" ? "0" : "") +
+        '" placeholder="' + escapeHtml(item[2]) + '">' +
+        '</label>'
+    ).join("");
+}
+
+function readOptionDetails() {
+    const details = {};
+    document.querySelectorAll("#optionDetails [data-option-detail]").forEach(input => {
+        if (input.value.trim()) details[input.dataset.optionDetail] = input.value.trim();
+    });
+    return details;
+}
+
+function optionDetailPairs(option) {
+    const category = option.category || "other";
+    const details = option.metadata?.travel_details || {};
+    return optionDetailConfig(category)
+        .filter(item => details[item[0]])
+        .map(item => ({label:item[1],value:details[item[0]]}));
+}
+
+function renderCompareSummary(options) {
+    const root = $("tripCompareSummary");
+    if (!root) return;
+    const filter = $("optionFilter")?.value || "all";
+    const visible = options.filter(option => filter === "all" || option.category === filter);
+    const grouped = new Map();
+    visible.forEach(option => {
+        if (!grouped.has(option.category)) grouped.set(option.category, []);
+        grouped.get(option.category).push(option);
+    });
+    if (filter === "all") {
+        const groups = [...grouped.entries()].filter(([,rows]) => rows.length > 1);
+        if (!groups.length) { root.hidden = true; root.innerHTML = ""; return; }
+        root.hidden = false;
+        root.innerHTML = groups.map(([category,rows]) => {
+            const detailKeys = optionDetailConfig(category).map(x=>x[0]).filter(key=>rows.some(o=>o.metadata?.travel_details?.[key]));
+            const header = rows.map(o=>'<th>'+escapeHtml(o.title)+'</th>').join("");
+            const price = rows.map(o=>'<td>'+(
+                o.price_per_person != null ? escapeHtml(money(o.price_per_person))+" / persona" :
+                o.price != null ? escapeHtml(money(o.price)) : "—"
+            )+'</td>').join("");
+            const details = detailKeys.map(key => {
+                const label=optionDetailConfig(category).find(x=>x[0]===key)?.[1] || key;
+                return '<tr><th>'+escapeHtml(label)+'</th>'+rows.map(o=>'<td>'+escapeHtml(o.metadata?.travel_details?.[key] || "—")+'</td>').join("")+'</tr>';
+            }).join("");
+            return '<div style="margin-bottom:18px"><strong>'+escapeHtml(categoryLabel(category))+'</strong><table class="trip-compare-table"><thead><tr><th>Característica</th>'+header+'</tr></thead><tbody><tr><th>Precio</th>'+price+'</tr>'+details+'</tbody></table></div>';
+        }).join("");
+        return;
+    }
+    if (visible.length < 2) { root.hidden = true; root.innerHTML = ""; return; }
+    root.hidden = false;
+    const detailKeys = optionDetailConfig(filter).map(x=>x[0]).filter(key=>visible.some(o=>o.metadata?.travel_details?.[key]));
+    const header = visible.map(o=>'<th>'+escapeHtml(o.title)+'</th>').join("");
+    const price = visible.map(o=>'<td>'+(
+        o.price_per_person != null ? escapeHtml(money(o.price_per_person))+" / persona" :
+        o.price != null ? escapeHtml(money(o.price)) : "—"
+    )+'</td>').join("");
+    const details = detailKeys.map(key => {
+        const label=optionDetailConfig(filter).find(x=>x[0]===key)?.[1] || key;
+        return '<tr><th>'+escapeHtml(label)+'</th>'+visible.map(o=>'<td>'+escapeHtml(o.metadata?.travel_details?.[key] || "—")+'</td>').join("")+'</tr>';
+    }).join("");
+    root.innerHTML='<table class="trip-compare-table"><thead><tr><th>Característica</th>'+header+'</tr></thead><tbody><tr><th>Precio</th>'+price+'</tr>'+details+'</tbody></table>';
+}
 function categoryLabel(category) {
     return {destination:"Destino",flight:"Vuelo",hotel:"Hotel",activity:"Actividad",transport:"Transporte",other:"Otro"}[category] || "Opción";
 }
 
 function renderOptions() {
     const container = $("tripOptions");
-    const options = activeTrip.options || [];
+    const filter = $("optionFilter")?.value || "all";
+    const allOptions = activeTrip.options || [];
+    const options = allOptions.filter(option => filter === "all" || option.category === filter);
     $("optionsEmpty").hidden = options.length > 0;
     container.innerHTML = options.map(option => {
         const count = activeTrip.votes.filter(v => v.option_id === option.id).length;
         const voted = activeTrip.votes.some(v => v.option_id === option.id && v.user_id === window.curruscosCurrentUserId);
-        return `
-        <article class="trip-option-card">
-            <div class="trip-option-main">
-                <div class="trip-option-top"><span class="trip-option-category">${categoryLabel(option.category)}</span>${option.provider ? `<span class="trip-option-provider">${escapeHtml(option.provider)}</span>` : ""}</div>
-                <h4>${escapeHtml(option.title)}</h4>
-                <p>${escapeHtml(option.notes || "Sin notas todavía.")}</p>
-                <div class="trip-option-meta">${option.price_per_person != null ? "<strong>" + money(option.price_per_person) + " / persona</strong>" : ""}${option.price != null ? "<span>" + money(option.price) + " total</span>" : ""}</div>
-            </div>
-            <div class="trip-option-actions">
-                <div class="trip-vote-count"><strong>${count}</strong><span>${count === 1 ? "voto" : "votos"}</span></div>
-                <button class="button ${voted ? "secondary" : "primary"} trip-vote-button" data-option-id="${option.id}">${voted ? "✓ Votado" : "Votar"}</button>
-                ${option.url ? `<a class="button secondary" target="_blank" rel="noopener" href="${escapeHtml(option.url)}">Abrir</a>` : ""}
-            </div>
-        </article>`;
+        const details = optionDetailPairs(option);
+        const canRemove = option.created_by === window.curruscosCurrentUserId;
+        return '<article class="trip-option-card">' +
+            '<div class="trip-option-main">' +
+                '<div class="trip-option-top"><span class="trip-option-category">'+escapeHtml(categoryLabel(option.category))+'</span>' +
+                (option.provider ? '<span class="trip-option-provider">'+escapeHtml(option.provider)+'</span>' : '')+'</div>' +
+                '<h4>'+escapeHtml(option.title)+'</h4>' +
+                '<p>'+escapeHtml(option.notes || "Sin notas todavía.")+'</p>' +
+                (details.length ? '<div class="trip-option-detail-grid">'+details.map(d=>'<div class="trip-option-detail"><small>'+escapeHtml(d.label)+'</small><strong>'+escapeHtml(d.value)+'</strong></div>').join("")+'</div>' : '') +
+                '<div class="trip-option-meta">'+(option.price_per_person != null ? "<strong>"+money(option.price_per_person)+" / persona</strong>" : "")+(option.price != null ? "<span>"+money(option.price)+" total</span>" : "")+'</div>' +
+            '</div>' +
+            '<div class="trip-option-actions">' +
+                '<div class="trip-vote-count"><strong>'+count+'</strong><span>'+ (count === 1 ? "voto" : "votos")+'</span></div>' +
+                '<button class="button '+(voted ? "secondary" : "primary")+' trip-vote-button" data-option-id="'+escapeHtml(option.id)+'">'+(voted ? "✓ Votado" : "Votar")+'</button>' +
+                (option.url ? '<a class="button secondary" target="_blank" rel="noopener" href="'+escapeHtml(option.url)+'">Abrir</a>' : '') +
+                (canRemove ? '<button type="button" class="trip-option-remove" data-option-remove="'+escapeHtml(option.id)+'">Eliminar</button>' : '') +
+            '</div></article>';
     }).join("");
+    renderCompareSummary(allOptions);
     container.querySelectorAll(".trip-vote-button").forEach(btn => btn.addEventListener("click", () => toggleVote(btn.dataset.optionId)));
+    container.querySelectorAll("[data-option-remove]").forEach(btn => btn.addEventListener("click", () => deleteOption(btn.dataset.optionRemove)));
+}
+
+async function deleteOption(optionId) {
+    if (!activeTrip || !confirm("¿Eliminar esta opción y sus votos?")) return;
+    const {error} = await supabaseClient.from("trip_options").delete().eq("id", optionId);
+    if (error) { console.error(error); alert("No se ha podido eliminar la opción."); return; }
+    await selectTrip(activeTrip.id);
 }
 
 function renderDecisionSummary() {
@@ -385,7 +520,8 @@ async function createOptionFromForm(e) {
     e.preventDefault();
     const user = await getCurrentUser();
     if (!user || !activeTrip) return;
-    const payload={trip_id:activeTrip.id,created_by:user.id,category:$("optionCategory").value,title:$("optionTitle").value.trim(),price:$("optionPrice").value?Number($("optionPrice").value):null,price_per_person:$("optionPricePerson").value?Number($("optionPricePerson").value):null,provider:$("optionProvider").value.trim()||null,url:$("optionUrl").value.trim()||null,notes:$("optionNotes").value.trim()||null};
+    const details=readOptionDetails();
+    const payload={trip_id:activeTrip.id,created_by:user.id,category:$("optionCategory").value,title:$("optionTitle").value.trim(),price:$("optionPrice").value?Number($("optionPrice").value):null,price_per_person:$("optionPricePerson").value?Number($("optionPricePerson").value):null,provider:$("optionProvider").value.trim()||null,url:$("optionUrl").value.trim()||null,notes:$("optionNotes").value.trim()||null,metadata:{travel_details:details}};
     if(!payload.title)return;
     const {error}=await supabaseClient.from("trip_options").insert(payload);
     if(error){alert("No se ha podido guardar la opción.");console.error(error);return;}
