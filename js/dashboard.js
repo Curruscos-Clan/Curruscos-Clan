@@ -30,29 +30,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const invitationsEl =
         document.getElementById("invitationsContainer");
 
-    /* =====================================================
-       WORKSPACE START — activación del espacio
-       ===================================================== */
-    const startList = document.getElementById("workspaceStartList");
-    const startProgress = document.getElementById("workspaceStartProgress");
-    const startFill = document.getElementById("workspaceStartFill");
-    if (startList) {
-        const hasMembers = members?.length > 1;
-        const hasEvent = events?.length > 0;
-        const hasTrip = false; // trips se consulta justo después y se recalcula abajo
-        const hasProfile = Boolean(group.description || group.workspace_type || group.onboarding_profile?.objective);
-        const steps = [
-            {done: hasMembers, title: "Invitar al equipo", text: hasMembers ? "El workspace ya tiene más de una persona." : "Añade a las primeras personas.", href: "miembros.html"},
-            {done: hasEvent, title: "Crear un evento", text: hasEvent ? "Ya existe actividad en el calendario." : "Crea el primer plan.", href: "eventos.html"},
-            {done: hasProfile, title: "Definir el espacio", text: hasProfile ? "La identidad del workspace está configurada." : "Completa su contexto.", href: "miembros.html"},
-            {done: false, title: "Planificar un viaje", text: "Descubre destinos, opciones e itinerarios.", href: "viajes.html"}
-        ];
-        const done = steps.filter(step => step.done).length;
-        startProgress.textContent = done + " / " + steps.length;
-        startFill.style.width = Math.round(done / steps.length * 100) + "%";
-        startList.innerHTML = steps.map(step => '<a class="workspace-start-item '+(step.done ? 'done' : '')+'" href="'+step.href+'"><span class="workspace-start-check">'+(step.done ? '✓' : '→')+'</span><span class="workspace-start-copy"><strong>'+escapeHtml(step.title)+'</strong><small>'+escapeHtml(step.text)+'</small></span></a>').join("");
-    }
-
     const usage = await getGroupUsage(group.id);
     if (usage) {
         const plan = usage.plan || {};
@@ -99,6 +76,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         getUserNotifications(),
         getMyInvitations()
     ]);
+
+    /* =====================================================
+       WORKSPACE START — activación del espacio
+       ===================================================== */
+    const startList = document.getElementById("workspaceStartList");
+    const startProgress = document.getElementById("workspaceStartProgress");
+    const startFill = document.getElementById("workspaceStartFill");
+    if (startList) {
+        const hasMembers = members?.length > 1;
+        const hasEvent = events?.length > 0;
+        const hasTrip = false; // trips se consulta justo después y se recalcula abajo
+        const hasProfile = Boolean(group.description || group.workspace_type || group.onboarding_profile?.objective);
+        const steps = [
+            {done: hasMembers, title: "Invitar al equipo", text: hasMembers ? "El workspace ya tiene más de una persona." : "Añade a las primeras personas.", href: "miembros.html"},
+            {done: hasEvent, title: "Crear un evento", text: hasEvent ? "Ya existe actividad en el calendario." : "Crea el primer plan.", href: "eventos.html"},
+            {done: hasProfile, title: "Definir el espacio", text: hasProfile ? "La identidad del workspace está configurada." : "Completa su contexto.", href: "miembros.html"},
+            {done: false, title: "Planificar un viaje", text: "Descubre destinos, opciones e itinerarios.", href: "viajes.html"}
+        ];
+        const done = steps.filter(step => step.done).length;
+        startProgress.textContent = done + " / " + steps.length;
+        startFill.style.width = Math.round(done / steps.length * 100) + "%";
+        startList.innerHTML = steps.map(step => '<a class="workspace-start-item '+(step.done ? 'done' : '')+'" href="'+step.href+'"><span class="workspace-start-check">'+(step.done ? '✓' : '→')+'</span><span class="workspace-start-copy"><strong>'+escapeHtml(step.title)+'</strong><small>'+escapeHtml(step.text)+'</small></span></a>').join("");
+    }
+
 
     const { data: trips, error: tripsError } = await supabaseClient
         .from("trips")
