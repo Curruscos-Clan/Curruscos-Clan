@@ -31,6 +31,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const eventId =
         params.get("id");
 
+    const eventChatButton =
+        document.getElementById("eventChatButton");
+
+    if (eventChatButton && eventId) {
+        eventChatButton.href =
+            "chat.html?event=" + encodeURIComponent(eventId);
+    }
+
     if (!eventId) {
         document.getElementById(
             "eventTitle"
