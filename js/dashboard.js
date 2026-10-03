@@ -217,6 +217,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     workspaceState.nextMilestoneDetail = workspaceState.nextMilestone
         ? workspaceMilestones[workspaceState.nextMilestone]
         : null;
+    workspaceState.progress = {
+        completed: workspaceState.completedMilestones,
+        total: workspaceState.totalMilestones,
+        percent: workspaceState.activationScore
+    };
+    workspaceState.recommendation = workspaceDecision => ({
+        key: workspaceDecision.key,
+        action: workspaceDecision.href,
+        reason: workspaceDecision.reason,
+        milestone: workspaceState.nextMilestoneDetail?.key || null
+    });
     workspaceState.readiness = workspaceActivationScore >= 80 ? "active" : workspaceActivationScore >= 40 ? "building" : "starting";
     workspaceState.needsAttention = workspaceState.openTasks > 0 || workspaceState.members <= 1 ||
         (workspaceState.type === "travel" && workspaceState.features.travel && workspaceState.planningTrips === 0) ||
