@@ -34,7 +34,10 @@
     "trips": "VOYAGES",
     "discoverTitle": "Découvrez, participez et organisez. Le reste dépend de l’événement.",
     "cta": "Vous voulez participer ou créer quelque chose ?",
-    "start": "Commencer"
+    "start": "Commencer",
+    "heroLine1": "Votre communauté.",
+    "heroLine2": "Vos plans.",
+    "heroLine3": "Tout ici."
   },
   "common": {
     "loading": "Chargement…",
