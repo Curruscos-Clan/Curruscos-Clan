@@ -340,200 +340,102 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function renderTasks() {
-        const container =
-            document.getElementById(
-                "tasksList"
-            );
-
+        const container = document.getElementById("tasksList");
         container.innerHTML = "";
 
         if (!tasks.length) {
             container.innerHTML =
-                '<div class="task-empty">Todavía no hay tareas.</div>';
+                '<div class="task-empty">Todavía no hay tareas. Crea la primera para repartir la preparación.</div>';
             return;
         }
 
-        tasks.forEach(task => {
-            const card =
-                document.createElement("article");
+        const ordered = [...tasks].sort((a, b) =>
+            Number(Boolean(a.completed)) - Number(Boolean(b.completed))
+        );
 
-            card.className =
-                "task-card";
+        ordered.forEach(task => {
+            const card = document.createElement("article");
+            card.className = "task-card";
+            if (task.completed) card.classList.add("completed");
 
-            if (task.completed) {
-                card.classList.add(
-                    "completed"
-                );
-            }
-
-            const checkbox =
-                document.createElement("input");
-
-            checkbox.type =
-                "checkbox";
-
-            checkbox.checked =
-                Boolean(task.completed);
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = Boolean(task.completed);
 
             const canEdit =
                 canManageGroup() ||
-                task.created_by ===
-                    currentUser.id ||
-                task.assigned_to ===
-                    currentUser.id;
+                task.created_by === currentUser.id ||
+                task.assigned_to === currentUser.id;
 
-            checkbox.disabled =
-                !canEdit;
+            checkbox.disabled = !canEdit;
+            checkbox.setAttribute("aria-label",
+                (task.completed ? "Reabrir " : "Completar ") + (task.title || "tarea")
+            );
 
-            checkbox.addEventListener(
-                "change",
-                async () => {
-                    const next =
-                        checkbox.checked;
+            checkbox.addEventListener("change", async () => {
+                const next = checkbox.checked;
+                checkbox.disabled = true;
+                const updated = await updateEventTask(task.id, next);
+                if (!updated) {
+                    checkbox.checked = !next;
+                    checkbox.disabled = !canEdit;
+                    alert("No se ha podido actualizar la tarea.");
+                    return;
+                }
+                task.completed = updated.completed;
+                renderTasks();
+                updateProgress();
+                updateStatus();
+            });
 
-                    checkbox.disabled =
-                        true;
+            const copy = document.createElement("div");
+            copy.className = "task-copy";
 
-                    const updated =
-                        await updateEventTask(
-                            task.id,
-                            next
-                        );
+            const title = document.createElement("strong");
+            title.textContent = task.title || "Tarea";
 
-                    checkbox.disabled =
-                        !canEdit;
+            const assignee = document.createElement("span");
+            assignee.textContent = task.assigned_to
+                ? "Responsable: " + memberName(task.assigned_to)
+                : "Sin responsable";
 
-                    if (!updated) {
-                        checkbox.checked =
-                            !next;
+            const state = document.createElement("small");
+            state.className = "task-state";
+            state.textContent = task.completed
+                ? "Completada"
+                : task.assigned_to === currentUser.id
+                    ? "Te corresponde"
+                    : "Pendiente";
 
-                        alert(
-                            "No se ha podido actualizar la tarea."
-                        );
+            copy.append(title, assignee, state);
+
+            const right = document.createElement("div");
+            right.className = "task-actions";
+
+            if (canManageGroup() || task.created_by === currentUser.id) {
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "task-remove-button";
+                remove.textContent = "Eliminar";
+                remove.addEventListener("click", async () => {
+                    if (!confirm("¿Eliminar esta tarea?")) return;
+                    remove.disabled = true;
+                    const deleted = await deleteEventTask(task.id);
+                    if (!deleted) {
+                        remove.disabled = false;
+                        alert("No se ha podido eliminar la tarea.");
                         return;
                     }
-
-                    task.completed =
-                        updated.completed;
-
+                    tasks = tasks.filter(item => String(item.id) !== String(task.id));
                     renderTasks();
                     updateProgress();
                     updateStatus();
-                }
-            );
-
-            const copy =
-                document.createElement("div");
-
-            copy.className =
-                "task-copy";
-
-            const title =
-                document.createElement("strong");
-
-            title.textContent =
-                task.title || "Tarea";
-
-            const assignee =
-                document.createElement("span");
-
-            assignee.textContent =
-                task.assigned_to
-                    ? "Responsable: " +
-                      memberName(
-                          task.assigned_to
-                      )
-                    : "Sin responsable";
-
-            copy.append(
-                title,
-                assignee
-            );
-
-            const right =
-                document.createElement("div");
-
-            right.className =
-                "task-actions";
-
-            if (
-                canManageGroup() ||
-                task.created_by ===
-                    currentUser.id
-            ) {
-                const remove =
-                    document.createElement("button");
-
-                remove.type =
-                    "button";
-
-                remove.className =
-                    "task-remove-button";
-
-                remove.textContent =
-                    "Eliminar";
-
-                remove.addEventListener(
-                    "click",
-                    async () => {
-                        if (
-                            !confirm(
-                                "¿Eliminar esta tarea?"
-                            )
-                        ) {
-                            return;
-                        }
-
-                        remove.disabled =
-                            true;
-
-                        const deleted =
-                            await deleteEventTask(
-                                task.id
-                            );
-
-                        if (!deleted) {
-                            remove.disabled =
-                                false;
-
-                            alert(
-                                "No se ha podido eliminar la tarea."
-                            );
-
-                            return;
-                        }
-
-                        tasks =
-                            tasks.filter(
-                                item =>
-                                    String(
-                                        item.id
-                                    ) !==
-                                    String(
-                                        task.id
-                                    )
-                            );
-
-                        renderTasks();
-                        updateProgress();
-                        updateStatus();
-                    }
-                );
-
-                right.appendChild(
-                    remove
-                );
+                });
+                right.appendChild(remove);
             }
 
-            card.append(
-                checkbox,
-                copy,
-                right
-            );
-
-            container.appendChild(
-                card
-            );
+            card.append(checkbox, copy, right);
+            container.appendChild(card);
         });
     }
 
