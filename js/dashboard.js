@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .order("created_at", { ascending: false });
 
     if (tripsError) {
-        console.error("No se han podido cargar los viajes:", tripsError);
+        console.error(t("dashboard.tripsLoadError"), tripsError);
     }
 
     const pulseEventEl = document.getElementById("pulseEvent");
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pulseMessageEl = document.getElementById("pulseMessage");
 
     if (pulseEventEl) {
-        pulseEventEl.textContent = "Cargando…";
+        pulseEventEl.textContent = t("dashboard.loading");
     }
     if (pulseMembersEl) {
         pulseMembersEl.textContent = members.length;
@@ -122,8 +122,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (pulseEventEl) {
         pulseEventEl.textContent = next
-            ? (next.event.title || "Próximo evento")
-            : "Sin planes";
+            ? (next.event.title || t("dashboard.nextEvent"))
+            : t("dashboard.noPlans");
     }
 
     if (pulseMessageEl) {
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         } else {
             pulseMessageEl.textContent = (trips || []).length
                 ? "No hay eventos próximos, pero ya hay " + (trips || []).length + " viaje" + ((trips || []).length === 1 ? "" : "s") + " en movimiento."
-                : "Todavía no hay ningún plan próximo. Este es un buen momento para crear uno.";
+                : t("dashboard.noPlanPrompt");
         }
     }
 
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         '<small>' +
                         escapeHtml(
                             item.event.location ||
-                            "Lugar sin definir"
+                            t("dashboard.locationTbd")
                         ) +
                         '</small>' +
                     '</span>' +
@@ -316,13 +316,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (organization >= 90) {
             statusEl.textContent =
-                "🟢 Todo listo";
+                t("dashboard.ready");
 
             descriptionEl.textContent =
-                "El próximo plan está prácticamente preparado.";
+                t("dashboard.readyText");
         } else if (organization >= 60) {
             statusEl.textContent =
-                "🟠 Bien encaminado";
+                t("dashboard.onTrack");
 
             descriptionEl.textContent =
                 answered +
@@ -331,10 +331,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 " miembros ya han respondido.";
         } else {
             statusEl.textContent =
-                "🟡 En organización";
+                t("dashboard.organizing");
 
             descriptionEl.textContent =
-                "Todavía quedan cosas por cerrar antes del próximo plan.";
+                t("dashboard.stillOpen");
         }
     } else {
         progressEl.style.width =
@@ -344,10 +344,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             "0%";
 
         statusEl.textContent =
-            "Todo tranquilo";
+            t("dashboard.allQuiet");
 
         descriptionEl.textContent =
-            "Cuando haya un próximo evento, aquí verás su estado de organización.";
+            t("dashboard.waitingForEvent");
     }
 
 
@@ -399,26 +399,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (healthFillEl) healthFillEl.style.width = health + "%";
             if (healthTextEl) healthTextEl.textContent =
                 serverSense.health.text ||
-                "Midiendo cuánto está preparado el grupo para su próximo movimiento.";
+                t("dashboard.healthMeasuring");
         }
 
         if (serverSense) {
             ranked.push({
                 score: Number(serverSense.score || 0),
-                label: "CURRUSCOS SENSE",
+                label: t("dashboard.senseLabel"),
                 title: serverSense.action === "attendance"
-                    ? "Cerrar la asistencia"
+                    ? t("dashboard.closeAttendance")
                     : serverSense.action === "tasks"
-                        ? "Resolver lo pendiente"
+                        ? t("dashboard.resolveTasks")
                         : serverSense.action === "location"
-                            ? "Definir el lugar"
+                            ? t("dashboard.defineLocation")
                             : serverSense.action === "decision"
-                                ? "Resolver una decisión"
+                                ? t("dashboard.resolveDecision")
                                 : serverSense.action === "trip"
-                                    ? "Avanzar un viaje"
+                                    ? t("dashboard.advanceTrip")
                                     : serverSense.action === "invitation"
-                                        ? "Responder una invitación"
-                                        : "Crear el próximo plan",
+                                        ? t("dashboard.answerInvitation")
+                                        : t("dashboard.createNextPlan"),
                 reason: serverSense.reason || "",
                 href: serverSense.href || "dashboard.html",
                 icon: serverSense.action === "attendance" ? "?" :
@@ -434,9 +434,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!nextEvent) {
             ranked.push({
                 score: 100,
-                label: "MODO DESCUBRIMIENTO",
-                title: "Crear el próximo plan",
-                reason: "El grupo no tiene ningún evento futuro. El sistema detecta un hueco de actividad.",
+                label: t("dashboard.discoveryMode"),
+                title: t("dashboard.createNextPlan"),
+                reason: t("dashboard.noFutureReason"),
                 href: "crear-evento.html",
                 icon: "+"
             });
@@ -454,7 +454,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (unanswered > 0) {
                 ranked.push({
                     score: 95 + Math.min(unanswered, 10),
-                    label: "FRICCIÓN DETECTADA",
+                    label: t("dashboard.frictionDetected"),
                     title: "Cerrar la asistencia de " + unanswered + (unanswered === 1 ? " persona" : " personas"),
                     reason: nextEvent.title + " todavía no tiene una respuesta de todo el grupo.",
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
@@ -465,9 +465,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (incompleteTasks.length) {
                 ranked.push({
                     score: 82 + Math.min(incompleteTasks.length, 10),
-                    label: "FRICCIÓN DETECTADA",
+                    label: t("dashboard.frictionDetected"),
                     title: "Resolver " + incompleteTasks.length + (incompleteTasks.length === 1 ? " tarea pendiente" : " tareas pendientes"),
-                    reason: "El próximo plan tiene trabajo abierto antes de poder considerarse cerrado.",
+                    reason: t("dashboard.tasksReason"),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "✓"
                 });
@@ -476,9 +476,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!nextEvent.location) {
                 ranked.push({
                     score: 78,
-                    label: "DETALLE ABIERTO",
+                    label: t("dashboard.detailOpen"),
                     title: "Decidir dónde será " + nextEvent.title,
-                    reason: "El evento tiene fecha pero todavía no tiene lugar definido.",
+                    reason: t("dashboard.locationReason"),
                     href: "evento.html?id=" + encodeURIComponent(nextEvent.id),
                     icon: "⌖"
                 });
@@ -490,7 +490,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (activeTrips.length) {
                 ranked.push({
                     score: nextEvent ? 63 : 88,
-                    label: "PLAN EN MARCHA",
+                    label: t("dashboard.planInProgress"),
                     title: "Avanzar " + (activeTrips.length === 1 ? "el viaje" : "los viajes"),
                     reason: activeTrips.length + (activeTrips.length === 1 ? " viaje sigue en planificación." : " viajes siguen en planificación."),
                     href: "viajes.html",
@@ -506,9 +506,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (openPolls.length) {
                     ranked.push({
                         score: nextEvent ? 68 : 91,
-                        label: "DECISIÓN ABIERTA",
+                        label: t("dashboard.openDecision"),
                         title: "Resolver " + (openPolls.length === 1 ? "una decisión" : openPolls.length + " decisiones"),
-                        reason: "Hay votaciones abiertas que están esperando una respuesta del grupo.",
+                        reason: t("dashboard.pollReason"),
                         href: "decisiones.html",
                         icon: "?"
                     });
@@ -521,9 +521,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (invitations.length) {
             ranked.push({
                 score: 92,
-                label: "ENTRADA PENDIENTE",
+                label: t("dashboard.pendingEntry"),
                 title: "Responder a " + (invitations.length === 1 ? "una invitación" : invitations.length + " invitaciones"),
-                reason: "Hay grupos esperando una respuesta tuya.",
+                reason: t("dashboard.invitationReason"),
                 href: "#dashboardInvitationsSection",
                 icon: "✉"
             });
@@ -532,9 +532,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!ranked.length) {
             ranked.push({
                 score: 20,
-                label: "TODO FLUYE",
-                title: "El grupo está al día",
-                reason: "No hemos detectado ningún bloqueo claro. Es un buen momento para disfrutar o guardar el momento.",
+                label: t("dashboard.allFlows"),
+                title: t("dashboard.groupUpToDate"),
+                reason: t("dashboard.noBlocker"),
                 href: "recuerdos.html",
                 icon: "✦"
             });
@@ -551,10 +551,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         orbEl.textContent = top.icon;
 
         const compactSignals = [
-            signal("personas", members.length),
-            signal("eventos", events.length),
-            signal("tareas abiertas", tasks.filter(task => !task.completed).length),
-            signal("viajes", (trips || []).length)
+            signal(t("dashboard.people"), members.length),
+            signal(t("dashboard.events"), events.length),
+            signal(t("dashboard.openTasks"), tasks.filter(task => !task.completed).length),
+            signal(t("dashboard.trips"), (trips || []).length)
         ];
 
         const secondary = ranked
@@ -696,7 +696,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     title.textContent =
                         invitation.group_name ||
-                        "Nuevo grupo";
+                        t("dashboard.newGroup");
 
                     const message =
                         document.createElement("p");
@@ -704,9 +704,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     message.textContent =
                         (
                             invitation.inviter_name ||
-                            "Alguien"
+                            t("dashboard.someone")
                         ) +
-                        " te ha invitado a unirte.";
+                        t("dashboard.invitedYou");
 
                     info.append(
                         title,
@@ -729,7 +729,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "button button-primary";
 
                     accept.textContent =
-                        "Aceptar";
+                        t("dashboard.accept");
 
                     accept.addEventListener(
                         "click",
@@ -752,7 +752,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 alert(
                                     getSupabaseErrorMessage(
                                         error,
-                                        "No se ha podido aceptar la invitación."
+                                        t("dashboard.acceptError")
                                     )
                                 );
                             }
@@ -769,7 +769,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         "button button-ghost";
 
                     reject.textContent =
-                        "Rechazar";
+                        t("dashboard.decline");
 
                     reject.addEventListener(
                         "click",
@@ -796,7 +796,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                                 alert(
                                     getSupabaseErrorMessage(
                                         error,
-                                        "No se ha podido rechazar la invitación."
+                                        t("dashboard.declineError")
                                     )
                                 );
                             }
@@ -845,6 +845,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                   ". Todo lo que pasa en " +
                   group.name +
                   ", en un mismo sitio."
-                : "Todo lo que hacemos juntos, en un mismo sitio.";
+                : t("dashboard.defaultWelcome");
     }
 });
