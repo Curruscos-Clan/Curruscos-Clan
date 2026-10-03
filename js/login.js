@@ -2,7 +2,8 @@
    CURRUSCOS — LOGIN / REGISTRO
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", async () => {\n    await window.curruscosI18n?.ready;
+document.addEventListener("DOMContentLoaded", async () => {
+    await window.curruscosI18n?.ready;
     const form =
         document.getElementById("loginForm");
 
