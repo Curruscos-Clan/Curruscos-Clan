@@ -1,6 +1,30 @@
 let trips = [];
 let activeTripId = null;
 let activeTrip = null;
+let comparisonSelection = new Set();
+
+function syncComparisonSelection() {
+    const validIds = new Set((activeTrip?.options || []).map(option => String(option.id)));
+    comparisonSelection = new Set([...comparisonSelection].filter(id => validIds.has(id)));
+}
+
+function toggleComparisonOption(optionId) {
+    const id = String(optionId);
+    if (comparisonSelection.has(id)) comparisonSelection.delete(id);
+    else {
+        if (comparisonSelection.size >= 4) {
+            alert("Podéis comparar hasta 4 opciones a la vez.");
+            return;
+        }
+        comparisonSelection.add(id);
+    }
+    renderOptions();
+}
+
+function clearComparisonSelection() {
+    comparisonSelection.clear();
+    renderOptions();
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
     await window.curruscosI18n?.ready;
@@ -106,6 +130,7 @@ async function selectTrip(id) {
         votes = voteRows || [];
     }
     activeTrip.options = options || [];
+    syncComparisonSelection();
     activeTrip.votes = votes || [];
     activeTrip.itinerary = itinerary || [];
     renderActiveTrip();
@@ -602,45 +627,55 @@ function optionDetailPairs(option) {
 function renderCompareSummary(options) {
     const root = $("tripCompareSummary");
     if (!root) return;
-    const filter = $("optionFilter")?.value || "all";
-    const visible = options.filter(option => filter === "all" || option.category === filter);
-    const grouped = new Map();
-    visible.forEach(option => {
-        if (!grouped.has(option.category)) grouped.set(option.category, []);
-        grouped.get(option.category).push(option);
-    });
-    if (filter === "all") {
-        const groups = [...grouped.entries()].filter(([,rows]) => rows.length > 1);
-        if (!groups.length) { root.hidden = true; root.innerHTML = ""; return; }
-        root.hidden = false;
-        root.innerHTML = groups.map(([category,rows]) => {
-            const detailKeys = optionDetailConfig(category).map(x=>x[0]).filter(key=>rows.some(o=>o.metadata?.travel_details?.[key]));
-            const header = rows.map(o=>'<th>'+escapeHtml(o.title)+'</th>').join("");
-            const price = rows.map(o=>'<td>'+(
-                o.price_per_person != null ? escapeHtml(money(o.price_per_person))+" / persona" :
-                o.price != null ? escapeHtml(money(o.price)) : "—"
-            )+'</td>').join("");
-            const details = detailKeys.map(key => {
-                const label=optionDetailConfig(category).find(x=>x[0]===key)?.[1] || key;
-                return '<tr><th>'+escapeHtml(label)+'</th>'+rows.map(o=>'<td>'+escapeHtml(o.metadata?.travel_details?.[key] || "—")+'</td>').join("")+'</tr>';
-            }).join("");
-            return '<div style="margin-bottom:18px"><strong>'+escapeHtml(categoryLabel(category))+'</strong><table class="trip-compare-table"><thead><tr><th>Característica</th>'+header+'</tr></thead><tbody><tr><th>Precio</th>'+price+'</tr>'+details+'</tbody></table></div>';
-        }).join("");
+    syncComparisonSelection();
+    const selected = options.filter(option => comparisonSelection.has(String(option.id)));
+    if (!selected.length) {
+        root.hidden = true;
+        root.innerHTML = "";
         return;
     }
-    if (visible.length < 2) { root.hidden = true; root.innerHTML = ""; return; }
-    root.hidden = false;
-    const detailKeys = optionDetailConfig(filter).map(x=>x[0]).filter(key=>visible.some(o=>o.metadata?.travel_details?.[key]));
-    const header = visible.map(o=>'<th>'+escapeHtml(o.title)+'</th>').join("");
-    const price = visible.map(o=>'<td>'+(
-        o.price_per_person != null ? escapeHtml(money(o.price_per_person))+" / persona" :
-        o.price != null ? escapeHtml(money(o.price)) : "—"
-    )+'</td>').join("");
-    const details = detailKeys.map(key => {
-        const label=optionDetailConfig(filter).find(x=>x[0]===key)?.[1] || key;
-        return '<tr><th>'+escapeHtml(label)+'</th>'+visible.map(o=>'<td>'+escapeHtml(o.metadata?.travel_details?.[key] || "—")+'</td>').join("")+'</tr>';
+
+    const detailKeys = [...new Set(selected.flatMap(option =>
+        optionDetailConfig(option.category).map(item => item[0])
+    ))].filter(key => selected.some(option => option.metadata?.travel_details?.[key]));
+
+    const header = selected.map(option =>
+        '<th><span class="trip-compare-selected-title">' + escapeHtml(option.title) + '</span>' +
+        '<button type="button" class="trip-compare-remove" data-compare-remove="' + escapeHtml(option.id) + '">Quitar</button></th>'
+    ).join("");
+
+    const price = selected.map(option => '<td>' +
+        (option.price_per_person != null ? escapeHtml(money(option.price_per_person)) + " / persona" :
+        option.price != null ? escapeHtml(money(option.price)) : "—") + '</td>').join("");
+
+    const votes = selected.map(option => {
+        const count = activeTrip.votes.filter(vote => String(vote.option_id) === String(option.id)).length;
+        return '<td>' + count + (count === 1 ? " voto" : " votos") + '</td>';
     }).join("");
-    root.innerHTML='<table class="trip-compare-table"><thead><tr><th>Característica</th>'+header+'</tr></thead><tbody><tr><th>Precio</th>'+price+'</tr>'+details+'</tbody></table>';
+
+    const category = selected.map(option => '<td>' + escapeHtml(categoryLabel(option.category)) + '</td>').join("");
+
+    const details = detailKeys.map(key => {
+        const label = selected.flatMap(option => optionDetailConfig(option.category))
+            .find(item => item[0] === key)?.[1] || key;
+        return '<tr><th>' + escapeHtml(label) + '</th>' +
+            selected.map(option => '<td>' + escapeHtml(option.metadata?.travel_details?.[key] || "—") + '</td>').join("") +
+            '</tr>';
+    }).join("");
+
+    root.hidden = false;
+    root.innerHTML =
+        '<div class="trip-compare-head"><div><span>COMPARACIÓN ACTIVA</span><strong>' +
+        selected.length + ' opciones seleccionadas</strong></div>' +
+        '<button type="button" class="trip-compare-clear" id="clearComparisonButton">Limpiar</button></div>' +
+        '<div class="trip-compare-scroll"><table class="trip-compare-table"><thead><tr><th>Característica</th>' +
+        header + '</tr></thead><tbody><tr><th>Tipo</th>' + category + '</tr><tr><th>Precio</th>' +
+        price + '</tr><tr><th>Votos</th>' + votes + '</tr>' + details + '</tbody></table></div>';
+
+    root.querySelectorAll("[data-compare-remove]").forEach(button =>
+        button.addEventListener("click", () => toggleComparisonOption(button.dataset.compareRemove))
+    );
+    root.querySelector("#clearComparisonButton")?.addEventListener("click", clearComparisonSelection);
 }
 function categoryLabel(category) {
     return {destination:"Destino",flight:"Vuelo",hotel:"Hotel",activity:"Actividad",place:"Lugar de interés",transport:"Transporte",other:"Otro"}[category] || "Opción";
@@ -652,34 +687,43 @@ function renderOptions() {
     const allOptions = activeTrip.options || [];
     let options = allOptions.filter(option => filter === "all" || option.category === filter);
     const sort = $("optionSort")?.value || "votes";
-    options = [...options].sort((a,b) => { if(sort === "price") return Number(a.price_per_person ?? a.price ?? Infinity) - Number(b.price_per_person ?? b.price ?? Infinity); if(sort === "newest") return new Date(b.created_at || 0) - new Date(a.created_at || 0); return activeTrip.votes.filter(v=>v.option_id===b.id).length - activeTrip.votes.filter(v=>v.option_id===a.id).length; });
+    options = [...options].sort((a,b) => {
+        if (sort === "price") return Number(a.price_per_person ?? a.price ?? Infinity) - Number(b.price_per_person ?? b.price ?? Infinity);
+        if (sort === "newest") return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        return activeTrip.votes.filter(v=>v.option_id===b.id).length - activeTrip.votes.filter(v=>v.option_id===a.id).length;
+    });
     $("optionsEmpty").hidden = options.length > 0;
     container.innerHTML = options.map(option => {
         const count = activeTrip.votes.filter(v => v.option_id === option.id).length;
         const voted = activeTrip.votes.some(v => v.option_id === option.id && v.user_id === window.curruscosCurrentUserId);
+        const selected = comparisonSelection.has(String(option.id));
         const details = optionDetailPairs(option);
         const canRemove = option.created_by === window.curruscosCurrentUserId;
-        return '<article class="trip-option-card">' +
-            '<div class="trip-option-main">' +
-                '<div class="trip-option-top"><span class="trip-option-category">'+escapeHtml(categoryLabel(option.category))+'</span>' +
-                (option.provider ? '<span class="trip-option-provider">'+escapeHtml(option.provider)+'</span>' : '')+'</div>' +
-                '<h4>'+escapeHtml(option.title)+'</h4>' +
-                '<p>'+escapeHtml(option.notes || "Sin notas todavía.")+'</p>' +
-                (details.length ? '<div class="trip-option-detail-grid">'+details.map(d=>'<div class="trip-option-detail"><small>'+escapeHtml(d.label)+'</small><strong>'+escapeHtml(d.value)+'</strong></div>').join("")+'</div>' : '') +
-                '<div class="trip-option-meta">'+(option.price_per_person != null ? "<strong>"+money(option.price_per_person)+" / persona</strong>" : "")+(option.price != null ? "<span>"+money(option.price)+" total</span>" : "")+'</div>' +
-            '</div>' +
-            '<div class="trip-option-actions">' +
-                '<div class="trip-vote-count"><strong>'+count+'</strong><span>'+ (count === 1 ? "voto" : "votos")+'</span></div>' +
-                '<button class="button '+(voted ? "secondary" : "primary")+' trip-vote-button" data-option-id="'+escapeHtml(option.id)+'">'+(voted ? "✓ Votado" : "Votar")+'</button>' +
-                (safeOptionUrl(option.url) ? '<a class="button secondary" target="_blank" rel="noopener" href="'+escapeHtml(safeOptionUrl(option.url))+'">Abrir</a>' : '') +
-                (canRemove ? '<button type="button" class="trip-option-remove" data-option-remove="'+escapeHtml(option.id)+'">Eliminar</button>' : '') +
+        return '<article class="trip-option-card ' + (selected ? "comparison-selected" : "") + '">' +
+            '<div class="trip-option-main"><div class="trip-option-top"><span class="trip-option-category">' +
+            escapeHtml(categoryLabel(option.category)) + '</span>' +
+            (option.provider ? '<span class="trip-option-provider">' + escapeHtml(option.provider) + '</span>' : '') +
+            (selected ? '<span class="trip-option-compare-badge">COMPARANDO</span>' : '') + '</div>' +
+            '<h4>' + escapeHtml(option.title) + '</h4><p>' + escapeHtml(option.notes || "Sin notas todavía.") + '</p>' +
+            (details.length ? '<div class="trip-option-detail-grid">' + details.map(d => '<div class="trip-option-detail"><small>' +
+            escapeHtml(d.label) + '</small><strong>' + escapeHtml(d.value) + '</strong></div>').join("") + '</div>' : '') +
+            '<div class="trip-option-meta">' + (option.price_per_person != null ? "<strong>" + money(option.price_per_person) + " / persona</strong>" : "") +
+            (option.price != null ? "<span>" + money(option.price) + " total</span>" : "") + '</div></div>' +
+            '<div class="trip-option-actions"><div class="trip-vote-count"><strong>' + count + '</strong><span>' +
+            (count === 1 ? "voto" : "votos") + '</span></div>' +
+            '<button class="button ' + (voted ? "secondary" : "primary") + ' trip-vote-button" data-option-id="' + escapeHtml(option.id) + '">' +
+            (voted ? "✓ Votado" : "Votar") + '</button>' +
+            '<button type="button" class="button secondary trip-compare-button ' + (selected ? "active" : "") +
+            '" data-compare-option="' + escapeHtml(option.id) + '">' + (selected ? "✓ Comparando" : "Comparar") + '</button>' +
+            (safeOptionUrl(option.url) ? '<a class="button secondary" target="_blank" rel="noopener" href="' + escapeHtml(safeOptionUrl(option.url)) + '">Abrir</a>' : '') +
+            (canRemove ? '<button type="button" class="trip-option-remove" data-option-remove="' + escapeHtml(option.id) + '">Eliminar</button>' : '') +
             '</div></article>';
     }).join("");
     renderCompareSummary(allOptions);
     container.querySelectorAll(".trip-vote-button").forEach(btn => btn.addEventListener("click", () => toggleVote(btn.dataset.optionId)));
+    container.querySelectorAll("[data-compare-option]").forEach(btn => btn.addEventListener("click", () => toggleComparisonOption(btn.dataset.compareOption)));
     container.querySelectorAll("[data-option-remove]").forEach(btn => btn.addEventListener("click", () => deleteOption(btn.dataset.optionRemove)));
 }
-
 async function deleteOption(optionId) {
     if (!activeTrip || !confirm("¿Eliminar esta opción y sus votos?")) return;
     const {error} = await supabaseClient.from("trip_options").delete().eq("id", optionId);
