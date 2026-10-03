@@ -107,6 +107,13 @@
           <div id="tripFinanceSettlement" class="trip-finance-settlement" hidden></div>
         </div>
 
+        <div class="trip-section">
+          <div class="trip-section-head"><div><span>ITINERARIO</span><h3>Plan por días</h3></div><button class="button secondary" id="addItineraryButton">＋ Añadir al plan</button></div>
+          <p class="trip-section-copy">Construid el viaje como una agenda: desplazamientos, alojamiento, comidas, actividades y lugares, con coste previsto y enlaces.</p>
+          <div id="tripItinerary" class="trip-itinerary"></div>
+          <div id="itineraryEmpty" class="trip-empty">Todavía no hay nada en el itinerario. Empezad por el primer día.</div>
+        </div>
+
         <div class="trip-section trip-tools-grid">
           <article class="trip-tool">
             <span>✈️ VUELOS</span><h3>Buscar fuera de Curruscos</h3>
@@ -161,6 +168,21 @@
       <label>Notas<textarea id="optionNotes" rows="3" maxlength="500" placeholder="Horarios, equipaje, ubicación, condiciones…"></textarea></label>
       <div id="optionDetails" class="trip-option-details-form"></div>
       <div class="modal-actions"><button type="button" class="button secondary" id="cancelOptionButton">Cancelar</button><button type="submit" class="button primary">Guardar opción</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="itineraryModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="itineraryModalTitle">
+    <div class="modal-header"><div><span>ITINERARIO</span><h2 id="itineraryModalTitle">Añadir al plan</h2></div><button class="modal-close" id="closeItineraryModal" aria-label="Cerrar">×</button></div>
+    <form id="itineraryForm">
+      <div class="form-grid-2"><label>Día<input id="itineraryDate" type="date"></label><label>Tipo<select id="itineraryType"><option value="activity">Actividad</option><option value="travel">Desplazamiento</option><option value="stay">Alojamiento</option><option value="meal">Comida</option><option value="place">Lugar de interés</option><option value="free">Tiempo libre</option><option value="other">Otro</option></select></label></div>
+      <label>Nombre<input id="itineraryTitle" maxlength="160" required placeholder="Ej. Visita al Coliseo"></label>
+      <div class="form-grid-2"><label>Desde<input id="itineraryStart" type="time"></label><label>Hasta<input id="itineraryEnd" type="time"></label></div>
+      <label>Lugar<input id="itineraryLocation" maxlength="180" placeholder="Ej. Piazza del Colosseo"></label>
+      <div class="form-grid-2"><label>Coste previsto<input id="itineraryCost" type="number" min="0" step="0.01" placeholder="25"></label><label>Enlace<input id="itineraryUrl" type="url" placeholder="https://…"></label></div>
+      <label>Notas<textarea id="itineraryNotes" rows="3" maxlength="500" placeholder="Reserva, hora recomendada, qué llevar…"></textarea></label>
+      <div class="modal-actions"><button type="button" class="button secondary" id="cancelItineraryButton">Cancelar</button><button type="submit" class="button primary">Añadir</button></div>
     </form>
   </div>
 </div>
