@@ -476,6 +476,12 @@
         .workspace-goal strong { font-size:14px; }
         .workspace-goal > span:not(.workspace-goal-kicker) { grid-column:1; color:#aaa; font-size:11px; line-height:1.4; }
         .workspace-goal a { grid-column:2; grid-row:2; align-self:center; color:#fff; font-size:11px; font-weight:800; text-decoration:none; white-space:nowrap; }
+        .workspace-unlock-banner { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; margin-top:14px; padding:15px 16px; border:1px solid #e8e8e8; border-radius:14px; background:#fafafa; }
+        .workspace-unlock-banner span { display:block; font-size:8px; font-weight:900; letter-spacing:1.4px; color:#888; margin-bottom:5px; }
+        .workspace-unlock-banner strong { display:block; font-size:13px; }
+        .workspace-unlock-banner small { display:block; margin-top:4px; color:#777; line-height:1.4; }
+        .workspace-unlock-banner a { padding:9px 12px; border-radius:10px; background:#111; color:#fff; text-decoration:none; font-size:10px; font-weight:800; white-space:nowrap; }
+        .workspace-unlock-banner a:hover { opacity:.88; }
         .workspace-milestones { margin-top:18px; padding-top:16px; border-top:1px solid #eee; }
         .workspace-milestones-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
         .workspace-milestones-head span { font-size:8px; font-weight:900; letter-spacing:1.4px; color:#888; }
@@ -1197,6 +1203,14 @@
                     <a id="workspaceGoalAction" href="dashboard.html">Empezar →</a>
                 </div>
                 <div class="workspace-milestones" id="workspaceMilestones" aria-label="Progreso del workspace">
+                    <div class="workspace-unlock-banner" id="workspaceUnlockBanner" hidden>
+                        <div>
+                            <span>PRÓXIMO DESBLOQUEO</span>
+                            <strong id="workspaceUnlockTitle"></strong>
+                            <small id="workspaceUnlockText"></small>
+                        </div>
+                        <a id="workspaceUnlockAction" href="#">Ir →</a>
+                    </div>
                     <div class="workspace-milestones-head">
                         <span>RUTA DEL WORKSPACE</span>
                         <small id="workspaceMilestonesMeta"></small>
