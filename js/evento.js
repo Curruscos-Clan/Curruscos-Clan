@@ -104,6 +104,86 @@ document.addEventListener("DOMContentLoaded", async () => {
         return "status-pending";
     }
 
+    function renderMyAttendance() {
+        const container = document.getElementById("myAttendancePanel");
+        if (!container) return;
+
+        const currentParticipant = participants.find(
+            item => String(item.user_id) === String(currentUser.id)
+        );
+        const status = currentParticipant?.status || "pending";
+
+        const labels = {
+            yes: "Has confirmado que vas.",
+            no: "Has indicado que no vas.",
+            pending: "Todavía no has respondido."
+        };
+
+        container.innerHTML = "";
+
+        const copy = document.createElement("div");
+        copy.className = "my-attendance-copy";
+
+        const title = document.createElement("strong");
+        title.textContent = "Tu asistencia";
+
+        const description = document.createElement("span");
+        description.textContent = labels[status] || labels.pending;
+
+        copy.append(title, description);
+
+        const actions = document.createElement("div");
+        actions.className = "my-attendance-actions";
+
+        [
+            ["yes", "✓ Voy"],
+            ["no", "No voy"],
+            ["pending", "Pendiente"]
+        ].forEach(([value, label]) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "my-attendance-choice";
+            button.textContent = label;
+            button.classList.toggle("active", status === value);
+            button.setAttribute("aria-pressed", String(status === value));
+
+            if (status === value) {
+                button.disabled = true;
+            }
+
+            button.addEventListener("click", async () => {
+                actions.querySelectorAll("button").forEach(item => item.disabled = true);
+
+                const updated = await setEventParticipant(
+                    currentEvent.id,
+                    currentUser.id,
+                    value
+                );
+
+                if (!updated) {
+                    actions.querySelectorAll("button").forEach(item => item.disabled = false);
+                    alert("No se ha podido actualizar tu asistencia.");
+                    return;
+                }
+
+                participants = participants.filter(
+                    item => String(item.user_id) !== String(currentUser.id)
+                );
+                participants.push(updated);
+
+                renderMyAttendance();
+                renderParticipants();
+                updateProgress();
+                updateStatus();
+                updateCommandCenter();
+            });
+
+            actions.appendChild(button);
+        });
+
+        container.append(copy, actions);
+    }
+
     function renderParticipants() {
         const container = document.getElementById("participantsList");
         container.innerHTML = "";
@@ -1343,6 +1423,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         editButton.hidden =
             !canManageEvent();
 
+        renderMyAttendance();
         renderParticipants();
         renderTaskAssignees();
         renderTasks();
