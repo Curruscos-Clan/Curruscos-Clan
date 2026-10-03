@@ -3,7 +3,7 @@ const ACT={padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",tenis:"Tenis"
 document.addEventListener("DOMContentLoaded",async()=>{
  const root=document.getElementById("teamRoot"),id=new URLSearchParams(location.search).get("id");
  if(!id){root.innerHTML="Equipo no encontrado.";return;}
- const team=await getPublicTeam(id);
+ let team=await getPublicTeam(id);\n if(!team){const {data,error}=await supabaseClient.rpc("get_public_persistent_team",{target_team_id:id}); if(!error&&data?.length) team={...data[0],team_name:data[0].name,event_title:"Equipo de Curruscos",event_type:"otro",event_status:"published",matches_played:0,wins:0,losses:0,points:0};}
  if(!team){root.innerHTML="Este equipo no está disponible públicamente.";return;}
  const members=await getPersistentTeamMembers(id);
  const profiles=members||[];
