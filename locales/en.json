@@ -434,6 +434,17 @@
     "locationReason": "The event has a date but no location yet.",
     "pollReason": "There are open polls waiting for a group response.",
     "invitationReason": "There are groups waiting for your response.",
-    "noPlanPrompt": "There is no upcoming plan yet. This is a good time to create one."
+    "noPlanPrompt": "There is no upcoming plan yet. This is a good time to create one.",
+    "closeAttendanceCount": "Close attendance for {{count}} {{count,plural}}",
+    "attendanceReason": "{{event}} still has unanswered attendance.",
+    "resolveTasksCount": "Resolve {{count}} pending task(s)",
+    "decideLocation": "Decide where {{event}} will be",
+    "advanceTripsCount": "Advance {{count}} trip(s)",
+    "tripsPlanningReason": "{{count}} trip(s) are still being planned.",
+    "resolveDecisionsCount": "Resolve {{count}} decision(s)",
+    "answerInvitationsCount": "Answer {{count}} invitation(s)",
+    "communitySignal": "COMMUNITY SIGNAL",
+    "communityTitle": "See what is happening",
+    "communityReason": "There is recent activity around {{event}}."
   }
 }
