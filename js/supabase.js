@@ -311,6 +311,33 @@ async function checkGroupPlanCapacity(groupId, resource) {
     return { allowed: true, access };
 }
 
+async function requestWorkspacePlan(groupId, planCode) {
+    if (!groupId || !planCode) return null;
+    const { data, error } = await supabaseClient.rpc("request_workspace_plan", {
+        target_group_id: groupId,
+        target_plan: planCode
+    });
+    if (error) {
+        console.error("Error solicitando cambio de plan:", error);
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido enviar la solicitud."));
+    }
+    return data || null;
+}
+
+async function getWorkspacePlanRequests(groupId) {
+    if (!groupId) return [];
+    const { data, error } = await supabaseClient
+        .from("plan_requests")
+        .select("id,requested_plan,status,created_at,updated_at")
+        .eq("group_id", groupId)
+        .order("created_at", { ascending: false });
+    if (error) {
+        console.error("Error obteniendo solicitudes de plan:", error);
+        return [];
+    }
+    return data || [];
+}
+
 // ========================================
 // EVENTOS
 // ========================================
