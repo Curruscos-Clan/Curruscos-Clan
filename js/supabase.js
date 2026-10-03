@@ -631,13 +631,22 @@ async function createEventTask(
 }
 
 
-async function updateEventTask(taskId, completed) {
+async function updateEventTask(taskId, completed, taskData = {}) {
+    const changes = {
+        completed: completed
+    };
+
+    if (typeof taskData.title === "string") {
+        changes.title = taskData.title.trim();
+    }
+
+    if (Object.prototype.hasOwnProperty.call(taskData, "assigned_to")) {
+        changes.assigned_to = taskData.assigned_to || null;
+    }
 
     const { data, error } = await supabaseClient
         .from("tasks")
-        .update({
-            completed: completed
-        })
+        .update(changes)
         .eq("id", taskId)
         .select()
         .single();
