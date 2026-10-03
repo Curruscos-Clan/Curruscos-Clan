@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Planes — Curruscos</title>
+<link rel="stylesheet" href="css/styles.css">
+<style>
+body{background:#f7f7f7;color:#111}.plans-page{max-width:1100px;margin:0 auto;padding:70px 20px 90px}
+.plans-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:#888}.plans-page h1{font-size:clamp(38px,7vw,68px);letter-spacing:-3px;margin:10px 0}.plans-lead{max-width:650px;color:#777;line-height:1.6}
+.plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:42px}.plan-card{background:#fff;border:1px solid #e5e5e5;border-radius:24px;padding:26px;position:relative}.plan-card.featured{border-color:#111;box-shadow:0 18px 45px rgba(0,0,0,.08)}.plan-badge{font-size:9px;font-weight:900;letter-spacing:1.3px;background:#111;color:#fff;border-radius:999px;padding:6px 9px;display:inline-block}.plan-card h2{font-size:25px;margin:18px 0 5px}.plan-price{font-size:28px;font-weight:900;margin-bottom:20px}.plan-price small{font-size:12px;color:#888;font-weight:600}.plan-card ul{list-style:none;padding:0;margin:0 0 25px}.plan-card li{padding:9px 0;border-top:1px solid #eee;font-size:13px;color:#555}.plan-card li:first-child{border-top:0}.plan-action{width:100%;border:0;border-radius:12px;padding:12px;background:#111;color:#fff;font-weight:800;cursor:pointer}.plan-action.secondary{background:#f0f0f0;color:#111}.plan-action:disabled{opacity:.55;cursor:default}.plan-note{margin-top:10px;font-size:11px;color:#888;line-height:1.4}.plans-status{margin-top:20px;padding:14px 16px;border-radius:14px;background:#fff;border:1px solid #e5e5e5;display:none}.plans-back{display:inline-block;margin-top:25px;color:#555;font-size:12px}.current-plan{position:absolute;right:22px;top:24px;font-size:9px;font-weight:900;letter-spacing:1px;color:#888}@media(max-width:800px){.plan-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="navbar"><a class="logo" href="dashboard.html">CURRUSCOS</a></header>
+<main class="plans-page">
+<span class="plans-eyebrow">PLANES DEL WORKSPACE</span>
+<h1>Crece cuando el grupo lo necesite.</h1>
+<p class="plans-lead">Empieza con Free y pasa a un workspace con más capacidad cuando el grupo crezca. Los límites se aplican en el servidor, no solo en la interfaz.</p>
+<section class="plan-grid">
+<article class="plan-card" data-plan="free"><span class="current-plan" id="freeCurrent"></span><h2>Free</h2><div class="plan-price">0 € <small>para empezar</small></div><ul><li>Hasta 25 miembros</li><li>Hasta 20 eventos al mes</li><li>Hasta 3 viajes</li><li>Herramientas principales del workspace</li></ul><button class="plan-action secondary" disabled>Plan actual / base</button></article>
+<article class="plan-card featured" data-plan="pro"><span class="plan-badge">PARA GRUPOS EN CRECIMIENTO</span><span class="current-plan" id="proCurrent"></span><h2>Pro</h2><div class="plan-price">Más capacidad <small>plan ampliado</small></div><ul><li>Hasta 100 miembros</li><li>Hasta 100 eventos al mes</li><li>Hasta 20 viajes</li><li>Funciones avanzadas según configuración del workspace</li></ul><button class="plan-action" data-request-plan="pro">Solicitar Pro</button><p class="plan-note">La solicitud no realiza ningún cobro. Sirve para iniciar el cambio de plan.</p></article>
+<article class="plan-card" data-plan="organization"><span class="current-plan" id="orgCurrent"></span><h2>Organization</h2><div class="plan-price">A medida <small>para organizaciones</small></div><ul><li>Sin límites de capacidad configurados</li><li>Mayor control del workspace</li><li>Preparado para equipos grandes</li><li>Configuración adaptada al uso</li></ul><button class="plan-action" data-request-plan="organization">Solicitar Organization</button><p class="plan-note">La solicitud no realiza ningún cobro.</p></article>
+</section>
+<div class="plans-status" id="plansStatus"></div>
+<a class="plans-back" href="dashboard.html">← Volver al workspace</a>
+</main>
+<script src="js/supabase.js"></script>
+<script src="js/app.js"></script>
+<script>
+(async()=>{
+ const access=await window.curruscosReady;if(!access)return;
+ const plan=(access.currentGroup.plan_name||"Free").toLowerCase();
+ document.getElementById("freeCurrent").textContent=plan==="free"?"ACTUAL":"";
+ document.getElementById("proCurrent").textContent=plan==="pro"?"ACTUAL":"";
+ document.getElementById("orgCurrent").textContent=plan==="organization"?"ACTUAL":"";
+ const status=document.getElementById("plansStatus");
+ const requests=await getWorkspacePlanRequests(access.currentGroup.id);
+ const pending=requests.find(r=>r.status==="pending");
+ if(pending){status.style.display="block";status.textContent="Ya hay una solicitud pendiente para "+(pending.requested_plan==="pro"?"Pro":"Organization")+".";document.querySelectorAll("[data-request-plan]").forEach(b=>b.disabled=true);}
+ document.querySelectorAll("[data-request-plan]").forEach(button=>button.addEventListener("click",async()=>{
+   button.disabled=true;button.textContent="Enviando…";
+   try{await requestWorkspacePlan(access.currentGroup.id,button.dataset.requestPlan);status.style.display="block";status.textContent="Solicitud enviada. El cambio de plan queda pendiente de gestión.";document.querySelectorAll("[data-request-plan]").forEach(b=>b.disabled=true);}
+   catch(e){status.style.display="block";status.textContent=e.message||"No se ha podido enviar la solicitud.";button.disabled=false;button.textContent="Solicitar "+(button.dataset.requestPlan==="pro"?"Pro":"Organization");}
+ }));
+})();
+</script>
+</body></html>
