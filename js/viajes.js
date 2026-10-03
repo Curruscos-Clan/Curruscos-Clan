@@ -325,10 +325,22 @@ async async function loadTripFinances() {
         const payer = String(expense.paid_by || "");
         if (balances.has(payer)) balances.set(payer, balances.get(payer) + Number(expense.amount || 0));
         const expenseSplits = splits.filter(split => String(split.expense_id) === String(expense.id));
-        expenseSplits.forEach(split => {
-            const userId = String(split.user_id);
-            if (balances.has(userId)) balances.set(userId, balances.get(userId) - Number(split.amount || 0));
-        });
+        if (expenseSplits.length) {
+            expenseSplits.forEach(split => {
+                const userId = String(split.user_id);
+                if (balances.has(userId)) {
+                    balances.set(userId, balances.get(userId) - Number(split.amount || 0));
+                }
+            });
+        } else if (memberCount) {
+            const equalShare = Number(expense.amount || 0) / memberCount;
+            participatingMembers.forEach(member => {
+                const userId = String(member.user_id);
+                if (balances.has(userId)) {
+                    balances.set(userId, balances.get(userId) - equalShare);
+                }
+            });
+        }
     });
 
     const creditors = [], debtors = [];
