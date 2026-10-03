@@ -1781,6 +1781,10 @@ async function leavePublicEvent(eventId) {
     return true;
 }
 
+async function getPersistentTeamMembers(teamId){const {data,error}=await supabaseClient.rpc("get_persistent_team_members",{target_team_id:teamId});if(error){console.error("Error obteniendo miembros:",error);return [];}return data||[];}
+async function addPersistentTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("add_persistent_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido añadir al miembro."));return data;}
+async function removePersistentTeamMember(teamId,userId){const {data,error}=await supabaseClient.rpc("remove_persistent_team_member",{target_team_id:teamId,target_user_id:userId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido quitar al miembro."));return data;}
+async function getMyTeamRole(teamId){const {data,error}=await supabaseClient.rpc("get_my_team_role",{target_team_id:teamId});if(error)return null;return data;}
 async function createPersistentTeam(name,description=""){const {data,error}=await supabaseClient.rpc("create_persistent_team",{target_name:name,target_description:description||null});if(error){console.error("Error creando equipo persistente:",error);throw new Error(getSupabaseErrorMessage(error,"No se ha podido crear el equipo."));}return data;}
 async function getMyTeams(){const {data,error}=await supabaseClient.rpc("get_my_teams");if(error){console.error("Error obteniendo equipos:",error);return [];}return data||[];}
 async function getMyTeamsForEvent(eventId){const {data,error}=await supabaseClient.rpc("get_my_teams_for_event",{target_event_id:eventId});if(error){console.error("Error obteniendo equipos para evento:",error);return [];}return data||[];}
