@@ -4,7 +4,14 @@
    notificaciones y comportamiento compartido.
    ========================================================= */
 
-const AUTH_ONLY_PAGES = new Set([\n    "mis-eventos.html",\n    "guardados.html",\n    "notificaciones.html",\n    "chat.html"\n]);\n\nconst PRIVATE_PAGES = new Set([
+const AUTH_ONLY_PAGES = new Set([
+    "mis-eventos.html",
+    "guardados.html",
+    "notificaciones.html",
+    "chat.html"
+]);
+
+const PRIVATE_PAGES = new Set([
     "dashboard.html",
     "miembros.html",
     "historia.html",
@@ -119,7 +126,16 @@ function formatEventTime(event) {
    SEGURIDAD DE PÁGINAS PRIVADAS
    ========================================================= */
 
-async function requireAuthPage() {\n    const user = await getCurrentUser();\n    if (!user) {\n        window.location.replace("login.html");\n        return null;\n    }\n    return { user };\n}\n\nasync function requirePrivatePage() {
+async function requireAuthPage() {
+    const user = await getCurrentUser();
+    if (!user) {
+        window.location.replace("login.html");
+        return null;
+    }
+    return { user };
+}
+
+async function requirePrivatePage() {
     const user = await getCurrentUser();
 
     if (!user) {
