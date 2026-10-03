@@ -353,7 +353,8 @@
     "nameRequired": "Saisissez un nom de groupe.",
     "creating": "Création de votre espace...",
     "createError": "Impossible de créer le groupe.",
-    "created": "Groupe créé. Entrée en cours..."
+    "created": "Groupe créé. Entrée en cours...",
+    "planFree": "Free"
   },
   "profile": {
     "saving": "Enregistrement...",
