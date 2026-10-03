@@ -54,7 +54,8 @@
     "viewProfile": "查看个人资料",
     "private": "私密",
     "participant": "参与者",
-    "loadingGroup": "正在加载群组..."
+    "loadingGroup": "正在加载群组...",
+    "creating": "正在创建…"
   },
   "activity": {
     "padel": "板式网球",
@@ -266,5 +267,21 @@
     "publishing": "正在发布…",
     "publishError": "无法发布活动，请检查信息。",
     "publish": "发布活动"
+  },
+  "roles": {
+    "owner": "所有者",
+    "admin": "管理员",
+    "member": "成员"
+  },
+  "date": {
+    "undefined": "日期未定"
+  },
+  "time": {
+    "undefined": "时间未定"
+  },
+  "group": {
+    "group": "群组",
+    "namePrompt": "新群组名称：",
+    "descriptionPrompt": "群组描述（可选）："
   }
 }
