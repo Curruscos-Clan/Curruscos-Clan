@@ -261,5 +261,33 @@
     "Todavía no participas en ningún evento.": "Non partecipi ancora a nessun evento.",
     "Todavía no tienes historial de eventos.": "Non hai ancora uno storico degli eventi.",
     "Encontrar un plan →": "Trova un piano →"
+  },
+  "auth": {
+    "completeLogin": "Inserisci e-mail e password.",
+    "loggingIn": "Accesso...",
+    "loginError": "Impossibile accedere.",
+    "enterCredentials": "Inserisci e-mail e password.",
+    "passwordMin": "La password deve contenere almeno 6 caratteri.",
+    "creatingAccount": "Creazione account...",
+    "accountCreated": "Account creato. Accesso...",
+    "confirmEmail": "Account creato. Controlla l'e-mail per confermare l'account.",
+    "registerError": "Impossibile creare l'account."
+  },
+  "createEvent": {
+    "adapts": "Per {{type}}, Curruscos adatterà l’organizzazione al formato scelto.",
+    "previewTitle": "Il tuo evento apparirà qui",
+    "dateTbd": "Data da definire",
+    "autoScoring": "Automatico",
+    "loginRequired": "Accedi per pubblicare un evento.",
+    "publicNote": "Il tuo evento sarà pubblico e potrà apparire in Esplora.",
+    "required": "Completa il nome e la data dell’evento.",
+    "futureDate": "La data dell’evento deve essere futura.",
+    "deadlineBefore": "La chiusura delle iscrizioni deve precedere l’inizio dell’evento.",
+    "capacityInvalid": "Il numero di posti deve essere un intero maggiore di 0.",
+    "feeInvalid": "Il prezzo non può essere negativo.",
+    "teamSizeInvalid": "Indica almeno 2 giocatori per squadra.",
+    "publishing": "Pubblicazione...",
+    "publishError": "Impossibile pubblicare l’evento. Controlla i dati.",
+    "publish": "Pubblica evento"
   }
 }
