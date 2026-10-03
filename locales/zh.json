@@ -411,6 +411,17 @@
     "locationReason": "活动已有日期，但还没有地点。",
     "pollReason": "有投票正在等待群组回应。",
     "invitationReason": "有群组正在等待你的回应。",
-    "noPlanPrompt": "还没有即将开始的计划。现在是创建一个的好时机。"
+    "noPlanPrompt": "还没有即将开始的计划。现在是创建一个的好时机。",
+    "closeAttendanceCount": "确认 {{count}} 人的出席情况",
+    "attendanceReason": "{{event}} 仍有出席回复未完成。",
+    "resolveTasksCount": "处理 {{count}} 个待办任务",
+    "decideLocation": "确定 {{event}} 的地点",
+    "advanceTripsCount": "推进 {{count}} 次旅行",
+    "tripsPlanningReason": "仍有 {{count}} 次旅行在计划中。",
+    "resolveDecisionsCount": "解决 {{count}} 个决定",
+    "answerInvitationsCount": "回复 {{count}} 个邀请",
+    "communitySignal": "社区动态",
+    "communityTitle": "看看正在发生什么",
+    "communityReason": "{{event}} 周围有新的社区活动。"
   }
 }
