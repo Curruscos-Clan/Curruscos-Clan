@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "myEvents": "My events",
+    "rankings": "Rankings",
+    "create": "Create",
+    "login": "Log in",
+    "saved": "Saved",
+    "trips": "Trips",
+    "members": "Members",
+    "history": "History",
+    "memories": "Memories",
+    "events": "Events",
+    "chat": "Chat",
+    "notifications": "Notifications"
+  },
+  "community": {
+    "activePeople": "Active people"
+  },
+  "landing": {
+    "exploreEvents": "Explore events"
+  },
+  "common": {
+    "loading": "Loading…",
+    "searching": "Searching...",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "send": "Send",
+    "close": "Close",
+    "add": "Add",
+    "create": "Create",
+    "delete": "Delete",
+    "edit": "Edit",
+    "viewProfile": "View profile",
+    "private": "Private",
+    "participant": "Participant",
+    "loadingGroup": "Loading group..."
+  },
+  "activity": {
+    "padel": "Padel",
+    "futbol": "Football",
+    "baloncesto": "Basketball",
+    "tenis": "Tennis",
+    "ajedrez": "Chess",
+    "gaming": "Gaming",
+    "running": "Running",
+    "other": "Other",
+    "otherPlural": "Other"
+  },
+  "category": {
+    "tournament": "Tournament",
+    "sport": "Sport",
+    "social": "Social",
+    "activity": "Activity"
+  },
+  "status": {
+    "live": "Live",
+    "preparing": "Preparing",
+    "cancelled": "Cancelled",
+    "finished": "Finished",
+    "registrationOpen": "Registration open"
+  },
+  "format": {
+    "knockout": "Knockout",
+    "roundRobin": "League",
+    "swiss": "Swiss",
+    "race": "Race",
+    "custom": "Custom"
+  },
+  "event": {
+    "registrationClosed": "Registration closed",
+    "noSpots": "No spots left",
+    "free": "Free",
+    "locationTbd": "Location to be decided",
+    "descriptionTbd": "No description yet.",
+    "organizes": "Organized by",
+    "event": "Event",
+    "context": "Context",
+    "events": "Events"
+  },
+  "team": {
+    "viewTeam": "View team →",
+    "follow": "Follow team",
+    "unfollow": "Unfollow team",
+    "owner": "Owner",
+    "team": "Team",
+    "persistent": "Persistent team",
+    "squad": "Roster",
+    "history": "History",
+    "members": "Members",
+    "noVisibleMembers": "No visible members.",
+    "noPublicEvents": "There are no public team participations yet.",
+    "notFound": "Team not found.",
+    "notAvailable": "This team is not publicly available."
+  },
+  "explore": {
+    "allActivities": "All activities",
+    "noEvents": "No events found.",
+    "tryFilters": "Try another search or change the filters.",
+    "notInterested": "Not interested",
+    "activeFilters": "Active filters · clear them with one tap.",
+    "autoUpdate": "Public results update automatically.",
+    "noResults": "No results",
+    "noPeople": "No active public profiles found.",
+    "noTeams": "There are no public teams to show yet.",
+    "saveError": "Could not update the saved status."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read"
+  },
+  "chat": {
+    "newConversation": "＋ New conversation",
+    "conversations": "Conversations",
+    "searchPeople": "Search people…",
+    "selectConversation": "Select a conversation",
+    "messagesHere": "Your messages appear here.",
+    "writeMessage": "Write a message…",
+    "communityHere": "Your community, here."
+  },
+  "travel": {
+    "newTrip": "＋ New trip",
+    "createTrip": "Create trip"
+  }
+}
