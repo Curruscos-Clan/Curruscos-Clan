@@ -1017,7 +1017,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function updateCommandCenter() {
         const yes = participants.filter(item => item.status === "yes").length;
-        const pending = members.length - participants.filter(item => item.status === "yes" || item.status === "no").length;
+        const answered = participants.filter(item => item.status === "yes" || item.status === "no").length;
+        const pending = Math.max(0, members.length - answered);
         const completed = tasks.filter(task => task.completed).length;
         const taskPercent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
         const total = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
@@ -1028,21 +1029,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cost = document.getElementById("commandCost");
         const headline = document.getElementById("eventCommandHeadline");
         const subline = document.getElementById("eventCommandSubline");
+        const action = document.getElementById("eventCommandAction");
 
         if (people) people.textContent = yes + "/" + members.length;
         if (taskEl) taskEl.textContent = taskPercent + "%";
         if (cost) cost.textContent = formatMoney(total);
 
+        const setAction = (label, target) => {
+            if (!action) return;
+            action.hidden = false;
+            action.textContent = label;
+            action.onclick = () => {
+                const el = document.getElementById(target);
+                el?.scrollIntoView({ behavior: "smooth", block: "start" });
+            };
+        };
+
+        if (action) {
+            action.hidden = true;
+            action.onclick = null;
+        }
+
         if (headline && subline) {
             if (!members.length) {
                 headline.textContent = "El evento está listo para organizarse.";
                 subline.textContent = "Añade miembros al grupo para empezar a coordinarlo.";
+                setAction("Ir a miembros →", "participantsList");
             } else if (pending > 0) {
                 headline.textContent = pending + (pending === 1 ? " persona aún no ha respondido." : " personas aún no han respondido.");
                 subline.textContent = yes + " confirmadas · " + pending + " pendientes.";
+                setAction("Revisar asistencia →", "participantsList");
             } else if (tasks.length && taskPercent < 100) {
                 headline.textContent = "La asistencia está cerrada, pero aún quedan tareas.";
                 subline.textContent = completed + " de " + tasks.length + " tareas completadas.";
+                setAction("Ver tareas pendientes →", "tasksList");
             } else if (expenses.length && going.length) {
                 const balances = calculateBalances();
                 const unresolved = [...balances.values()].some(value => Math.abs(value) > 0.01);
@@ -1052,16 +1072,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 subline.textContent = unresolved
                     ? "Hay " + expenses.length + " gasto" + (expenses.length === 1 ? "" : "s") + " y todavía hay pagos pendientes entre el grupo."
                     : "Asistencia, tareas y gastos están organizados.";
-            } else if (expenses.length) {
-                headline.textContent = "Hay gastos registrados, pero falta asistencia.";
-                subline.textContent = "Confirma quién va para calcular el reparto.";
+                setAction(unresolved ? "Revisar liquidación →" : "Abrir chat del evento →", unresolved ? "expenseSplit" : "eventChatButton");
             } else {
                 headline.textContent = "El evento ya tiene una base sólida.";
                 subline.textContent = "Ahora podéis completar asistencia, tareas y presupuesto.";
+                setAction("Abrir chat del evento →", "eventChatButton");
             }
         }
     }
-
     function updateStatus() {
         const status = document.getElementById("eventStatus");
         if (!status) return;
