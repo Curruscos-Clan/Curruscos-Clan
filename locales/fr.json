@@ -55,7 +55,9 @@
     "private": "Privé",
     "participant": "Participant",
     "loadingGroup": "Chargement du groupe...",
-    "creating": "Création..."
+    "creating": "Création...",
+    "viewEvent": "Voir l’événement",
+    "remove": "Supprimer"
   },
   "activity": {
     "padel": "Padel",
@@ -98,7 +100,10 @@
     "organizes": "Organisé par",
     "event": "Événement",
     "context": "Contexte",
-    "events": "Événements"
+    "events": "Événements",
+    "generic": "Événement",
+    "spots": "places",
+    "open": "Événement ouvert"
   },
   "team": {
     "viewTeam": "Voir l'équipe →",
@@ -343,5 +348,22 @@
     "organizedOne": "événement organisé",
     "organizedMany": "événements organisés",
     "round": "Manche"
+  },
+  "saved": {
+    "loadError": "Impossible de charger vos événements enregistrés.",
+    "retry": "Réessayez dans quelques secondes.",
+    "eventsError": "Impossible de charger les événements.",
+    "loginTitle": "Enregistrez vos prochains plans.",
+    "loginText": "Connectez-vous pour créer votre collection personnelle d’événements.",
+    "noMatch": "Aucun enregistrement ne correspond.",
+    "empty": "Vous n’avez encore enregistré aucun événement.",
+    "tryOther": "Essayez un autre terme.",
+    "exploreHint": "Explorez les événements, enregistrez ceux qui vous intéressent et revenez quand vous voulez.",
+    "removeError": "Impossible de supprimer l’événement.",
+    "generic": "Événement",
+    "spots": "places",
+    "open": "Événement ouvert",
+    "viewEvent": "Voir l’événement",
+    "remove": "Supprimer"
   }
 }
