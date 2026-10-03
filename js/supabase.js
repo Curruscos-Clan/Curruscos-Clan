@@ -1781,6 +1781,7 @@ async function leavePublicEvent(eventId) {
     return true;
 }
 
+async function createPersistentTeam(name,description=""){const {data,error}=await supabaseClient.rpc("create_persistent_team",{target_name:name,target_description:description||null});if(error){console.error("Error creando equipo persistente:",error);throw new Error(getSupabaseErrorMessage(error,"No se ha podido crear el equipo."));}return data;}
 async function getMyTeams(){const {data,error}=await supabaseClient.rpc("get_my_teams");if(error){console.error("Error obteniendo equipos:",error);return [];}return data||[];}
 async function getMyTeamsForEvent(eventId){const {data,error}=await supabaseClient.rpc("get_my_teams_for_event",{target_event_id:eventId});if(error){console.error("Error obteniendo equipos para evento:",error);return [];}return data||[];}
 async function registerPersistentTeamForEvent(eventId,teamId){const {data,error}=await supabaseClient.rpc("register_persistent_team_for_event",{target_event_id:eventId,target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido registrar el equipo."));return data;}
