@@ -3,6 +3,7 @@
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await window.curruscosI18n?.ready;
     const user =
         await getCurrentUser();
 
