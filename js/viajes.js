@@ -142,11 +142,12 @@ async function selectTrip(id) {
 async function loadTripParticipants() {
     if (!activeTrip) return;
     const participantTripId = activeTrip.id;
+    const participantGroupId = activeTrip.group_id;
 
     const container = $("tripParticipants");
     if (!container) return;
 
-    const members = await getGroupMembers(activeTrip.group_id);
+    const members = await getGroupMembers(participantGroupId);
     if (participantTripId !== activeTripId) return;
     if (!members.length) {
         container.innerHTML = '<div class="trip-participants-empty">Todavía no hay miembros en este grupo.</div>';
