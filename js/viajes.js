@@ -995,5 +995,5 @@ async function toggleVote(optionId) {
         const {error}=await supabaseClient.from("trip_votes").insert({option_id:optionId,user_id:user.id});
         if(error){console.error(error);return;}
     }
-    await selectTrip(activeTrip.id);
+    if (activeTripId === tripId) await selectTrip(tripId);
 }
