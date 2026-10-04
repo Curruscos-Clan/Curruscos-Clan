@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#ff4d2e">
     <style>
 .auth-brand{width:min(520px,100%);display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.11em}.auth-brand a{font-size:16px;letter-spacing:-.04em;color:var(--text);text-decoration:none}.auth-brand a span{color:var(--accent)}.auth-kicker{display:block;margin-bottom:9px;color:var(--accent);font-size:10px;font-weight:900;letter-spacing:.13em}.auth-trust{display:flex;justify-content:center;align-items:center;gap:7px;color:var(--muted);font-size:10px;margin-top:18px}.auth-trust span{color:#1b9b5b}.login-page{min-height:100svh!important;padding:40px 20px!important;background:radial-gradient(circle at 88% 8%,rgba(255,77,46,.14),transparent 22rem),radial-gradient(circle at 10% 90%,rgba(91,104,255,.08),transparent 20rem),var(--background)!important}.login-card{border:1px solid var(--border)!important;border-radius:28px!important;background:rgba(255,255,255,.86)!important;box-shadow:var(--shadow-lg)!important;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow:hidden}.login-header h1{letter-spacing:-.075em!important}.login-card form .button-primary{background:linear-gradient(135deg,#ff5a3c,#ff3c1f)!important;border:0!important}.login-divider{color:var(--muted);display:flex;align-items:center;gap:12px;margin:18px 0}.login-divider:before,.login-divider:after{content:"";height:1px;background:var(--border);flex:1}.auth-extra{display:none}.login-card.register-mode .auth-extra{display:block}.login-card.register-mode #registerButton{display:none}.login-card.register-mode .login-divider{display:none}.auth-helper{font-size:12px;color:var(--muted);line-height:1.5;margin:7px 0 14px}.auth-switch{display:block;width:100%;margin-top:12px;background:none;border:0;color:var(--text);font:inherit;font-weight:800;cursor:pointer}.auth-switch span{color:var(--accent)}.password-meter{height:6px;border-radius:99px;background:var(--border);overflow:hidden;margin:8px 0 4px}.password-meter span{display:block;height:100%;width:0;transition:width .2s ease}.password-hint{font-size:11px;color:var(--muted);margin:0 0 12px}.auth-check{display:flex!important;align-items:flex-start;gap:9px;margin:14px 0;font-size:11px!important;line-height:1.45}.auth-check input{width:auto!important;margin-top:2px}.auth-success{display:none;text-align:center;padding:6px 0 2px}.auth-success.active{display:block}.auth-success-icon{font-size:42px;line-height:1;margin:4px 0 16px}.auth-success h2{margin:0 0 8px}.auth-success p{color:var(--muted);line-height:1.55;font-size:13px}.auth-email-box{padding:12px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface);font-weight:800;word-break:break-word;margin:14px 0}.auth-resend{margin-top:8px}.auth-small{font-size:11px;color:var(--muted);margin-top:12px}.forgot-link{display:block;text-align:right;margin:-5px 0 14px;font-size:11px;color:var(--muted);text-decoration:none}.forgot-link:hover{color:var(--accent)}@media(max-width:600px){.auth-brand{width:100%}.auth-brand>span{display:none}.login-page{padding:24px 14px!important}}
-    </style>
+     .auth-reset{display:none}.auth-reset.active{display:block}.auth-reset h2{margin:0 0 8px}.auth-reset p{color:var(--muted);font-size:12px;line-height:1.5;margin:0 0 16px}.reset-actions{display:flex;flex-direction:column;gap:10px}</style>
     <script src="js/i18n.js"></script>
 </head>
 <body>
@@ -55,6 +55,22 @@
 
             <button type="submit" id="submitButton" class="button button-primary">Entrar</button>
         </form>
+
+        <div id="resetPanel" class="auth-reset">
+            <span class="auth-kicker">RECUPERAR CUENTA</span>
+            <h2>Elige una nueva contraseña</h2>
+            <p>Tu enlace de recuperación es válido. Crea una contraseña nueva y segura para volver a entrar.</p>
+            <label for="resetPassword">Nueva contraseña</label>
+            <input type="password" id="resetPassword" autocomplete="new-password" minlength="8" placeholder="Nueva contraseña">
+            <div class="password-meter" aria-hidden="true"><span id="resetPasswordMeter"></span></div>
+            <p class="password-hint" id="resetPasswordHint">Usa al menos 8 caracteres, incluyendo letras y números.</p>
+            <label for="resetPasswordConfirm">Repite la contraseña</label>
+            <input type="password" id="resetPasswordConfirm" autocomplete="new-password" minlength="8" placeholder="Repite la nueva contraseña">
+            <div class="reset-actions">
+                <button id="resetPasswordButton" class="button button-primary" type="button">Guardar nueva contraseña</button>
+                <button id="resetCancelButton" class="auth-switch" type="button">← Volver al inicio de sesión</button>
+            </div>
+        </div>
 
         <div class="login-divider"><span>o</span></div>
 
