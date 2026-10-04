@@ -1652,6 +1652,13 @@ async function leaveGroup(groupId) {
         ));
     }
 
+    const savedGroupId = localStorage.getItem("curruscos_current_group");
+    if (savedGroupId === groupId) {
+        localStorage.removeItem("curruscos_current_group");
+    }
+    userGroupsCache = null;
+    currentGroupCache = null;
+
     return data;
 }
 
@@ -1667,6 +1674,13 @@ async function deleteGroup(groupId) {
             "No se ha podido eliminar el grupo."
         ));
     }
+
+    const savedGroupId = localStorage.getItem("curruscos_current_group");
+    if (savedGroupId === groupId) {
+        localStorage.removeItem("curruscos_current_group");
+    }
+    userGroupsCache = null;
+    currentGroupCache = null;
 
     return data;
 }
