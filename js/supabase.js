@@ -111,7 +111,13 @@ async function getUserGroups(forceRefresh = false) {
                 name,
                 description,
                 workspace_type,
-                onboarding_profile
+                onboarding_profile,
+                slug,
+                created_by,
+                timezone,
+                default_locale,
+                visibility,
+                avatar_url
             )
         `)
         .eq("user_id", user.id)
@@ -169,6 +175,14 @@ async function getUserGroups(forceRefresh = false) {
             id: item.groups.id,
             name: item.groups.name,
             description: item.groups.description,
+            workspace_type: item.groups.workspace_type || "community",
+            onboarding_profile: item.groups.onboarding_profile || {},
+            slug: item.groups.slug || null,
+            created_by: item.groups.created_by || null,
+            timezone: item.groups.timezone || "Europe/Madrid",
+            default_locale: item.groups.default_locale || "es",
+            visibility: item.groups.visibility || "private",
+            avatar_url: item.groups.avatar_url || null,
             role: item.role,
             joined_at: item.joined_at,
             ...(subscriptionByGroup.get(item.groups.id) || {
