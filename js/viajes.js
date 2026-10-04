@@ -237,7 +237,7 @@ async function loadTripParticipants() {
                 .from("trip_participants")
                 .upsert(
                     {
-                        trip_id: activeTrip.id,
+                        trip_id: participantTripId,
                         user_id: currentUserId,
                         status: nextStatus,
                         updated_at: new Date().toISOString()
