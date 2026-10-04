@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Planes — Curruscos</title>
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/style.css">
 <style>
 body{background:#f7f7f7;color:#111}.plans-page{max-width:1100px;margin:0 auto;padding:70px 20px 90px}
 .plans-eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:#888}.plans-page h1{font-size:clamp(38px,7vw,68px);letter-spacing:-3px;margin:10px 0}.plans-lead{max-width:650px;color:#777;line-height:1.6}
@@ -16,9 +16,9 @@ body{background:#f7f7f7;color:#111}.plans-page{max-width:1100px;margin:0 auto;pa
 <main class="plans-page">
 <span class="plans-eyebrow">PLANES DEL WORKSPACE</span>
 <h1>Todo lo importante, gratis.</h1>
-<p class="plans-lead">Curruscos está pensado para que un grupo pueda organizarse de verdad sin pagar. El plan Free incluye las herramientas principales y una capacidad amplia. Los planes superiores quedan preparados para el futuro.</p>
+<p class="plans-lead">Curruscos está pensado para que un grupo pueda organizarse de verdad sin pagar. El plan Free incluye las herramientas principales con límites claros por workspace. Los planes superiores quedan preparados para el futuro.</p>
 <section class="plan-grid">
-<article class="plan-card" data-plan="free"><span class="current-plan" id="freeCurrent"></span><h2>Free</h2><div class="plan-price">0 € <small>para empezar</small></div><ul><li>Hasta 50 miembros</li><li>Hasta 50 eventos al mes</li><li>Hasta 10 viajes</li><li>Eventos, tareas, decisiones, viajes, recuerdos, competiciones y colaboración</li></ul><button class="plan-action secondary" disabled>Plan Free · completo</button></article>
+<article class="plan-card" data-plan="free"><span class="current-plan" id="freeCurrent"></span><h2>Free</h2><div class="plan-price">0 € <small>para empezar</small></div><ul><li>Hasta 25 miembros</li><li>Hasta 20 eventos al mes</li><li>Hasta 3 viajes</li><li>Eventos, tareas, decisiones, viajes, recuerdos, competiciones y colaboración</li></ul><button class="plan-action secondary" disabled>Plan Free · completo</button></article>
 <article class="plan-card featured" data-plan="pro"><span class="plan-badge">PARA GRUPOS EN CRECIMIENTO</span><span class="current-plan" id="proCurrent"></span><h2>Pro</h2><div class="plan-price">Más capacidad <small>más adelante</small></div><ul><li>Hasta 100 miembros</li><li>Hasta 100 eventos al mes</li><li>Hasta 20 viajes</li><li>Funciones avanzadas según configuración del workspace</li></ul><button class="plan-action" data-future-plan="pro">Próximamente</button><p class="plan-note">Los planes de pago se activarán más adelante, cuando Curruscos esté preparado para monetizarse.</p></article>
 <article class="plan-card" data-plan="organization"><span class="current-plan" id="orgCurrent"></span><h2>Organization</h2><div class="plan-price">A medida <small>más adelante</small></div><ul><li>Sin límites de capacidad configurados</li><li>Mayor control del workspace</li><li>Preparado para equipos grandes</li><li>Configuración adaptada al uso</li></ul><button class="plan-action" data-future-plan="organization">Próximamente</button><p class="plan-note">Los planes de pago se activarán más adelante.</p></article>
 </section>
@@ -29,20 +29,34 @@ body{background:#f7f7f7;color:#111}.plans-page{max-width:1100px;margin:0 auto;pa
 <script src="js/app.js"></script>
 <script>
 (async()=>{
- const access=await window.curruscosReady;if(!access)return;
- const plan=(access.currentGroup.plan_name||"Free").toLowerCase();
+ const access=await window.curruscosReady;
+ if(!access)return;
+
+ const status=document.getElementById("plansStatus");
+ const usage=await getGroupUsage(access.currentGroup.id);
+ const plan=(usage?.plan?.name||access.currentGroup.plan_name||"Free").toLowerCase();
+ const current=usage?.usage||{};
+ const limits=usage?.plan||{};
+
  document.getElementById("freeCurrent").textContent=plan==="free"?"ACTUAL":"";
  document.getElementById("proCurrent").textContent=plan==="pro"?"ACTUAL":"";
  document.getElementById("orgCurrent").textContent=plan==="organization"?"ACTUAL":"";
- const status=document.getElementById("plansStatus");
- const requests=await getWorkspacePlanRequests(access.currentGroup.id);
- const pending=requests.find(r=>r.status==="pending");
- if(pending){status.style.display="block";status.textContent="Ya hay una solicitud pendiente para "+(pending.requested_plan==="pro"?"Pro":"Organization")+".";document.querySelectorAll("[data-request-plan]").forEach(b=>b.disabled=true);}
- /* Los planes de pago quedan visibles como hoja de ruta, pero no se activan todavía. */\n document.querySelectorAll("[data-future-plan]").forEach(button=>{button.disabled=true;});\n document.querySelectorAll("[data-request-plan]").forEach(button=>button.addEventListener("click",async()=>{
-   button.disabled=true;button.textContent="Enviando…";
-   try{await requestWorkspacePlan(access.currentGroup.id,button.dataset.requestPlan);status.style.display="block";status.textContent="Solicitud enviada. El cambio de plan queda pendiente de gestión.";document.querySelectorAll("[data-request-plan]").forEach(b=>b.disabled=true);}
-   catch(e){status.style.display="block";status.textContent=e.message||"No se ha podido enviar la solicitud.";button.disabled=false;button.textContent="Solicitar "+(button.dataset.requestPlan==="pro"?"Pro":"Organization");}
- }));
+
+ const formatLimit=(value)=>{
+   const n=Number(value);
+   return Number.isFinite(n)&&n>0?String(n):"∞";
+ };
+
+ status.style.display="block";
+ status.innerHTML=
+   "<strong>"+(limits.name||access.currentGroup.plan_name||"Free")+"</strong>"+
+   " · "+Number(current.members||0)+"/"+formatLimit(limits.max_members)+" miembros"+
+   " · "+Number(current.events_this_month||0)+"/"+formatLimit(limits.max_events_per_month)+" eventos este mes"+
+   " · "+Number(current.trips||0)+"/"+formatLimit(limits.max_trips)+" viajes";
+
+ document.querySelectorAll("[data-future-plan]").forEach(button=>{
+   button.disabled=true;
+ });
 })();
 </script>
 </body></html>
