@@ -1759,11 +1759,13 @@ async function acceptGroupInvitation(invitationId) {
 }
 
 async function rejectGroupInvitation(invitationId) {
-    const { error } = await supabaseClient
-        .from("group_invitations")
-        .update({ status: "rejected" })
-        .eq("id", invitationId)
-        .eq("status", "pending");
+    const { data, error } = await supabaseClient.rpc(
+        "respond_to_invitation",
+        {
+            target_invitation_id: invitationId,
+            accept: false
+        }
+    );
 
     if (error) {
         throw new Error(getSupabaseErrorMessage(
@@ -1772,7 +1774,10 @@ async function rejectGroupInvitation(invitationId) {
         ));
     }
 
-    return true;
+    userGroupsCache = null;
+    currentGroupCache = null;
+
+    return data;
 }
 
 async function getTasksForEvents(eventIds) {
