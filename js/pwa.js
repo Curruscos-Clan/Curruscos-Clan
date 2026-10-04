@@ -1,1 +1,1 @@
-document.addEventListener("DOMContentLoaded",()=>{if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js",{scope:"./"}).catch(error=>console.warn("PWA:",error));}});
+document.addEventListener("DOMContentLoaded",()=>{if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js",{scope:"./"}).catch(error=>console.warn("PWA:",error));} const s=document.createElement("script");s.src="js/cookies.js";s.defer=true;document.head.appendChild(s);});
