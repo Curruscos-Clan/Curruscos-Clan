@@ -262,11 +262,12 @@ async function loadTripParticipants() {
 async function loadTripFinances() {
     if (!activeTrip) return;
     const financeTripId = activeTrip.id;
+    const financeGroupId = activeTrip.group_id;
 
     const eventResult = await supabaseClient
         .from("events")
         .select("id,title,trip_id")
-        .eq("trip_id", activeTrip.id);
+        .eq("trip_id", financeTripId);
 
     // Fetch event expenses separately so the module remains compatible with the existing schema.
     if (eventResult.error) {
@@ -320,7 +321,7 @@ async function loadTripFinances() {
     if (participantError) console.error("Error obteniendo participantes para finanzas:", participantError);
     const participantIds = new Set((participantRows || []).map(row => String(row.user_id)));
     if (financeTripId !== activeTripId) return;
-    const memberRows = await getGroupMembers(activeTrip.group_id);
+    const memberRows = await getGroupMembers(financeGroupId);
     if (financeTripId !== activeTripId) return;
     const participatingMembers = memberRows.filter(member => participantIds.has(String(member.user_id)));
     const memberCount = participatingMembers.length;
