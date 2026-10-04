@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Confirmando tu cuenta · Curruscos Clan</title>
+<link rel="stylesheet" href="css/style.css">
+<meta name="theme-color" content="#ff4d2e">
+<style>
+body{min-height:100svh;display:grid;place-items:center;padding:24px;background:var(--background)}.auth-result{width:min(500px,100%);padding:34px;border:1px solid var(--border);border-radius:28px;background:rgba(255,255,255,.9);box-shadow:var(--shadow-lg);text-align:center}.auth-result-icon{font-size:46px;margin-bottom:15px}.auth-result h1{margin:0 0 10px;letter-spacing:-.06em}.auth-result p{color:var(--muted);line-height:1.6}.auth-result a{display:inline-block;margin-top:14px}
+</style>
+</head>
+<body>
+<section class="auth-result">
+<div id="icon" class="auth-result-icon">⏳</div>
+<h1 id="title">Confirmando tu cuenta…</h1>
+<p id="message">Estamos validando el enlace de tu correo.</p>
+<a id="action" class="button button-primary" href="login.html" style="display:none">Volver a Curruscos</a>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth-callback.js"></script>
+</body>
+</html>
