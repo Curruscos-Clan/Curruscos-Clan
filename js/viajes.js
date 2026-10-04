@@ -521,7 +521,7 @@ async function deleteItineraryItem(itemId) {
     const tripId = activeTrip.id;
     const item = (activeTrip.itinerary || []).find(row => String(row.id) === String(itemId));
     if (!item || String(item.created_by) !== String(window.curruscosCurrentUserId)) return;
-    const { error } = await supabaseClient.from("trip_itinerary_items").delete().eq("id", itemId);
+    const { error } = await supabaseClient.from("trip_itinerary_items").delete().eq("id", itemId).eq("trip_id", tripId);
     if (error) { console.error(error); alert("No se ha podido eliminar."); return; }
     if (activeTripId === tripId) await selectTrip(tripId);
 }
@@ -756,7 +756,7 @@ async function deleteOption(optionId) {
     const tripId = activeTrip.id;
     const option = (activeTrip.options || []).find(item => String(item.id) === String(optionId));
     if (!option || String(option.created_by) !== String(window.curruscosCurrentUserId)) return;
-    const {error} = await supabaseClient.from("trip_options").delete().eq("id", optionId);
+    const {error} = await supabaseClient.from("trip_options").delete().eq("id", optionId).eq("trip_id", tripId);
     if (error) { console.error(error); alert("No se ha podido eliminar la opción."); return; }
     if (activeTripId === tripId) await selectTrip(tripId);
 }
@@ -918,7 +918,7 @@ async function runSmartTravelSearch(e) {
         search_preferences: preferences,
         recommendations,
         recommendations_updated_at: new Date().toISOString()
-    }).eq("id", searchTripId).select().single();
+    }).eq("id", searchTripId).eq("group_id", activeTrip.group_id).select().single();
     if (searchTripId !== activeTripId) {
         if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
         return;
