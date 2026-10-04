@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const normalizeUsername=v=>String(v||"").trim().toLowerCase().replace(/\s+/g,"_").replace(/[^a-z0-9_.-]/g,"").slice(0,24);
     const passwordScore=v=>{let s=0;if(v.length>=8)s++;if(v.length>=12)s++;if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;return Math.min(s,5);};
     const updatePasswordMeter=()=>{const v=password.value,s=passwordScore(v);meter.style.width=(s*20)+"%";hint.textContent=!v?"Usa al menos 8 caracteres, incluyendo letras y números.":s<=2?"Contraseña débil. Añade longitud, números y símbolos.":s<=3?"Contraseña aceptable. Puedes hacerla más resistente.":"Contraseña fuerte.";};
+    const updateResetPasswordMeter=()=>{const v=resetPassword?.value||"",s=passwordScore(v);if(resetMeter)resetMeter.style.width=(s*20)+"%";if(resetHint)resetHint.textContent=!v?"Usa al menos 8 caracteres, incluyendo letras y números.":s<=2?"Contraseña débil. Añade longitud, números y símbolos.":s<=3?"Contraseña aceptable. Puedes hacerla más resistente.":"Contraseña fuerte.";};
     const setRegisterMode=active=>{registerMode=active;card.classList.toggle("register-mode",active);title.textContent=active?"Crea tu cuenta.":"Bienvenido al Clan.";subtitle.textContent=active?"Solo necesitamos unos datos para que tu perfil empiece bien configurado.":"Entra a tus espacios o crea una cuenta para empezar.";submitButton.textContent=active?"Crear mi cuenta":"Entrar";forgotPassword.style.display=active?"none":"block";setMessage("");if(active){displayName.focus();password.autocomplete="new-password";}else password.autocomplete="current-password";};
     const showConfirmation=email=>{lastSignupEmail=email;confirmationEmail.textContent=email;form.style.display="none";document.querySelector(".login-divider")?.style.setProperty("display","none");registerButton.style.display="none";modeButton.style.display="none";document.querySelector(".auth-trust")?.style.setProperty("display","none");authSuccess.classList.add("active");setMessage("");};
     const restoreLogin=()=>{authSuccess.classList.remove("active");form.style.display="";document.querySelector(".login-divider")?.style.removeProperty("display");registerButton.style.display="";modeButton.style.display="";document.querySelector(".auth-trust")?.style.removeProperty("display");setRegisterMode(false);form.reset();updatePasswordMeter();};
@@ -33,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }else setMessage("El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo.");
     }else if(existingUser){await redirectAfterAuth();return;}
     password.addEventListener("input",updatePasswordMeter);
-    resetPassword?.addEventListener("input",()=>updatePasswordMeter());
+    resetPassword?.addEventListener("input",updateResetPasswordMeter);
     resetPasswordConfirm?.addEventListener("input",()=>resetPasswordConfirm.setCustomValidity(!resetPasswordConfirm.value||resetPasswordConfirm.value===resetPassword.value?"":"Las contraseñas no coinciden."));
     passwordConfirm?.addEventListener("input",()=>passwordConfirm.setCustomValidity(!passwordConfirm.value||passwordConfirm.value===password.value?"":"Las contraseñas no coinciden."));
     username?.addEventListener("blur",()=>{username.value=normalizeUsername(username.value);});
@@ -83,5 +84,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         try{const redirectUrl=new URL("auth-callback.html",window.location.href).href;const{error}=await supabaseClient.auth.resend({type:"signup",email:lastSignupEmail,options:{emailRedirectTo:redirectUrl}});if(error)throw error;setMessage("Te hemos enviado otro correo de confirmación.");}
         catch(error){setMessage(friendlyError(error));}finally{setTimeout(()=>{resendLocked=false;resendButton.disabled=false;resendButton.textContent="Reenviar correo";},5000);}
     });
-    updatePasswordMeter();
+    updatePasswordMeter();updateResetPasswordMeter();
 });
