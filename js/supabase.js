@@ -1755,6 +1755,9 @@ async function acceptGroupInvitation(invitationId) {
         ));
     }
 
+    userGroupsCache = null;
+    currentGroupCache = null;
+
     return data;
 }
 
