@@ -888,6 +888,7 @@ async function runSmartTravelSearch(e) {
     e?.preventDefault();
     if (!activeTrip) return;
     const searchTripId = activeTrip.id;
+    const searchGroupId = activeTrip.group_id;
     const preferences = readSmartSearchPreferences();
     if (preferences.start_date && preferences.end_date && preferences.end_date < preferences.start_date) {
         alert("La fecha de vuelta no puede ser anterior a la de ida.");
@@ -920,7 +921,7 @@ async function runSmartTravelSearch(e) {
         search_preferences: preferences,
         recommendations,
         recommendations_updated_at: new Date().toISOString()
-    }).eq("id", searchTripId).eq("group_id", activeTrip.group_id).select().single();
+    }).eq("id", searchTripId).eq("group_id", searchGroupId).select().single();
     if (searchTripId !== activeTripId) {
         if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
         return;
