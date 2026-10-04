@@ -157,7 +157,7 @@ async function loadTripParticipants() {
     const { data: rows, error } = await supabaseClient
         .from("trip_participants")
         .select("user_id,status")
-        .eq("trip_id", activeTrip.id);
+        .eq("trip_id", participantTripId);
 
     if (participantTripId !== activeTripId) return;
     if (error) {
@@ -315,11 +315,13 @@ async function loadTripFinances() {
     const { data: participantRows, error: participantError } = await supabaseClient
         .from("trip_participants")
         .select("user_id")
-        .eq("trip_id", activeTrip.id)
+        .eq("trip_id", financeTripId)
         .eq("status", "confirmed");
     if (participantError) console.error("Error obteniendo participantes para finanzas:", participantError);
     const participantIds = new Set((participantRows || []).map(row => String(row.user_id)));
+    if (financeTripId !== activeTripId) return;
     const memberRows = await getGroupMembers(activeTrip.group_id);
+    if (financeTripId !== activeTripId) return;
     const participatingMembers = memberRows.filter(member => participantIds.has(String(member.user_id)));
     const memberCount = participatingMembers.length;
     const budgetTotal = budgetPerPerson > 0 && memberCount ? budgetPerPerson * memberCount : null;
