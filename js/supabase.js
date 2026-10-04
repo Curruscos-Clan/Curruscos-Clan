@@ -453,10 +453,17 @@ async function createGroupEvent(eventData) {
 
 async function deleteGroupEvent(eventId) {
 
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return false;
+    }
+
     const { error } = await supabaseClient
         .from("events")
         .delete()
-        .eq("id", eventId);
+        .eq("id", eventId)
+        .eq("group_id", group.id);
 
     if (error) {
         console.error("Error eliminando evento:", error);
@@ -494,10 +501,17 @@ async function getTripForEvent(tripId) {
         return null;
     }
 
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return null;
+    }
+
     const { data, error } = await supabaseClient
         .from("trips")
         .select("id, title, destination, status, start_date, end_date")
         .eq("id", tripId)
+        .eq("group_id", group.id)
         .single();
 
     if (error) {
@@ -510,10 +524,17 @@ async function getTripForEvent(tripId) {
 
 async function getGroupEvent(eventId) {
 
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return null;
+    }
+
     const { data, error } = await supabaseClient
         .from("events")
         .select("*")
         .eq("id", eventId)
+        .eq("group_id", group.id)
         .single();
 
     if (error) {
@@ -526,6 +547,12 @@ async function getGroupEvent(eventId) {
 
 async function updateGroupEvent(eventId, eventData) {
 
+    const group = await getCurrentGroup();
+
+    if (!group) {
+        return null;
+    }
+
     const { data, error } = await supabaseClient
         .from("events")
         .update({
@@ -537,6 +564,7 @@ async function updateGroupEvent(eventId, eventData) {
             trip_id: eventData.trip_id || null
         })
         .eq("id", eventId)
+        .eq("group_id", group.id)
         .select()
         .single();
 
