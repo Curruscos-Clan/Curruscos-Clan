@@ -1,0 +1,10 @@
+alter function public.get_follow_status(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_or_create_event_chat(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.mark_chat_read(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_or_create_group_chat(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_or_create_direct_chat(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_chat_people(text) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_my_chat_rooms() set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.log_activity_signal(text,uuid,text,text,jsonb) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_group_sense(uuid) set search_path = 'pg_catalog','public','auth','pg_temp';
+alter function public.get_social_activity() set search_path = 'pg_catalog','public','auth','pg_temp';
