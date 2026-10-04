@@ -503,8 +503,6 @@ async function getTripForEvent(tripId) {
     return data;
 }
 
-async function createTripForEvent(eventId){const {data,error}=await supabaseClient.rpc("create_trip_for_event",{target_event_id:eventId});if(error){console.error("Error creando viaje para evento:",error);return null;}return data||null;}
-
 async function getGroupEvent(eventId) {
 
     const { data, error } = await supabaseClient
