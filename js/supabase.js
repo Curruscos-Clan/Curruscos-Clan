@@ -278,6 +278,11 @@ async function createGroup(name, description, type = "community", size = "small"
         return null;
     }
 
+    // El usuario puede crear su primer grupo mientras las cachés
+    // todavía contienen []: invalídalas antes de navegar al dashboard.
+    userGroupsCache = null;
+    currentGroupCache = null;
+
     return data;
 
 }
