@@ -82,8 +82,10 @@ function closeItineraryModal() { if (!$("itineraryModal")) return; $("itineraryM
 async function loadTrips(selectId = null) {
     const group = await getCurrentGroup(true);
     if (!group) return;
-    const { data, error } = await supabaseClient.from("trips").select("*").eq("group_id", group.id).order("created_at", { ascending: false });
+    const groupId = group.id;
+    const { data, error } = await supabaseClient.from("trips").select("*").eq("group_id", groupId).order("created_at", { ascending: false });
     if (error) { console.error(error); return; }
+    if ((await getCurrentGroup())?.id !== groupId) return;
     trips = data || [];
     const currentUser = await getCurrentUser();
     window.curruscosCurrentUserId = currentUser?.id || null;
