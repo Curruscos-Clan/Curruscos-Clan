@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const displayName=document.getElementById("displayName"), username=document.getElementById("username");
     const terms=document.getElementById("termsAccepted"), meter=document.getElementById("passwordMeter"), hint=document.getElementById("passwordHint");
     const forgotPassword=document.getElementById("forgotPassword"), authSuccess=document.getElementById("authSuccess");
+    const resetPanel=document.getElementById("resetPanel"), resetPassword=document.getElementById("resetPassword"), resetPasswordConfirm=document.getElementById("resetPasswordConfirm"), resetPasswordButton=document.getElementById("resetPasswordButton"), resetCancelButton=document.getElementById("resetCancelButton"), resetMeter=document.getElementById("resetPasswordMeter"), resetHint=document.getElementById("resetPasswordHint");
     const confirmationEmail=document.getElementById("confirmationEmail"), resendButton=document.getElementById("resendButton"), backToLogin=document.getElementById("backToLogin");
     if(!card||!form)return;
     let registerMode=false,lastSignupEmail="",resendLocked=false;
@@ -23,8 +24,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     const showConfirmation=email=>{lastSignupEmail=email;confirmationEmail.textContent=email;form.style.display="none";document.querySelector(".login-divider")?.style.setProperty("display","none");registerButton.style.display="none";modeButton.style.display="none";document.querySelector(".auth-trust")?.style.setProperty("display","none");authSuccess.classList.add("active");setMessage("");};
     const restoreLogin=()=>{authSuccess.classList.remove("active");form.style.display="";document.querySelector(".login-divider")?.style.removeProperty("display");registerButton.style.display="";modeButton.style.display="";document.querySelector(".auth-trust")?.style.removeProperty("display");setRegisterMode(false);form.reset();updatePasswordMeter();};
     const friendlyError=error=>{const raw=String(error?.message||error||"").toLowerCase();if(raw.includes("user already registered")||raw.includes("already registered"))return"Ese correo ya tiene una cuenta. Prueba a iniciar sesión o recuperar la contraseña.";if(raw.includes("invalid login credentials"))return"El correo o la contraseña no son correctos.";if(raw.includes("email not confirmed"))return"Tu correo todavía no está confirmado. Revisa tu bandeja de entrada.";if(raw.includes("password"))return"La contraseña no cumple los requisitos de seguridad.";if(raw.includes("rate limit")||raw.includes("too many"))return"Has hecho demasiados intentos. Espera un poco antes de volver a intentarlo.";if(raw.includes("network")||raw.includes("fetch"))return"No hemos podido conectar con el servicio. Comprueba tu conexión y vuelve a intentarlo.";return getSupabaseErrorMessage(error,"No se ha podido completar la operación.");};
-    const existingUser=await getCurrentUser();if(existingUser){await redirectAfterAuth();return;}
+    const isResetRequested=new URLSearchParams(window.location.search).get("reset")==="1";
+    const existingUser=await getCurrentUser();
+    if(isResetRequested){
+        const{data:{session}}=await supabaseClient.auth.getSession();
+        if(session){
+            form.style.display="none";authSuccess.classList.remove("active");document.querySelector(".login-divider")?.style.setProperty("display","none");registerButton.style.display="none";modeButton.style.display="none";document.querySelector(".auth-trust")?.style.setProperty("display","none");resetPanel?.classList.add("active");title.textContent="Recupera tu cuenta.";subtitle.textContent="Establece una nueva contraseña para volver a acceder.";resetPassword?.focus();
+        }else setMessage("El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo.");
+    }else if(existingUser){await redirectAfterAuth();return;}
     password.addEventListener("input",updatePasswordMeter);
+    resetPassword?.addEventListener("input",()=>updatePasswordMeter());
+    resetPasswordConfirm?.addEventListener("input",()=>resetPasswordConfirm.setCustomValidity(!resetPasswordConfirm.value||resetPasswordConfirm.value===resetPassword.value?"":"Las contraseñas no coinciden."));
     passwordConfirm?.addEventListener("input",()=>passwordConfirm.setCustomValidity(!passwordConfirm.value||passwordConfirm.value===password.value?"":"Las contraseñas no coinciden."));
     username?.addEventListener("blur",()=>{username.value=normalizeUsername(username.value);});
     registerButton.addEventListener("click",()=>setRegisterMode(true));modeButton.addEventListener("click",()=>setRegisterMode(true));backToLogin.addEventListener("click",restoreLogin);
@@ -59,6 +69,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         try{const redirectUrl=new URL("auth-callback.html?reset=1",window.location.href).href;const{error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:redirectUrl});if(error)throw error;setMessage("Si existe una cuenta con ese correo, recibirás un enlace para recuperar la contraseña.");}
         catch(error){setMessage(friendlyError(error));}finally{setTimeout(()=>{forgotPassword.disabled=false;},1500);}
     });
+    resetPasswordButton?.addEventListener("click",async()=>{
+        const next=resetPassword.value;
+        if(next.length<8){setMessage("La nueva contraseña debe tener al menos 8 caracteres.");resetPassword.focus();return;}
+        if(next!==resetPasswordConfirm.value){setMessage("Las contraseñas no coinciden.");resetPasswordConfirm.focus();return;}
+        resetPasswordButton.disabled=true;setMessage("Guardando nueva contraseña...");
+        try{const{error}=await supabaseClient.auth.updateUser({password:next});if(error)throw error;setMessage("Contraseña actualizada. Preparando tu cuenta...");await supabaseClient.auth.refreshSession();setTimeout(()=>redirectAfterAuth(),350);}
+        catch(error){setMessage(friendlyError(error));}finally{resetPasswordButton.disabled=false;}
+    });
+    resetCancelButton?.addEventListener("click",()=>window.location.replace("login.html"));
     resendButton.addEventListener("click",async()=>{
         if(!lastSignupEmail||resendLocked)return;resendLocked=true;resendButton.disabled=true;resendButton.textContent="Enviando...";
         try{const redirectUrl=new URL("auth-callback.html",window.location.href).href;const{error}=await supabaseClient.auth.resend({type:"signup",email:lastSignupEmail,options:{emailRedirectTo:redirectUrl}});if(error)throw error;setMessage("Te hemos enviado otro correo de confirmación.");}
