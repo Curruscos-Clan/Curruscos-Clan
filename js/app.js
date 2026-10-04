@@ -21,7 +21,9 @@ const PRIVATE_PAGES = new Set([
     "evento.html",
     "viajes.html",
     "decisiones.html",
-    "perfil.html"
+    "perfil.html",
+    "planes.html",
+    "gestion-planes.html"
 ]);
 
 let resolveCurruscosReady;
