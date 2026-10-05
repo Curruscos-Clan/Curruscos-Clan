@@ -543,7 +543,11 @@ async function createItineraryItem(e) {
     if (payload.start_time && payload.end_time && payload.end_time < payload.start_time) { alert("La hora de fin no puede ser anterior a la de inicio."); return; }
     const group = await getCurrentGroup();
     const keyContext = group ? await getGroupE2EEContext(group.id) : null;
-    if (keyContext) {
+    if (!keyContext) {
+        alert("No se ha podido preparar el cifrado del grupo.");
+        return;
+    }
+    {
         payload.encrypted_payload = await encryptE2EEText(keyContext.key, JSON.stringify({
             title: payload.title,
             location: payload.location,
@@ -1087,7 +1091,11 @@ async function createOptionFromForm(e) {
     }
     const group = await getCurrentGroup();
     const keyContext = group ? await getGroupE2EEContext(group.id) : null;
-    if (keyContext) {
+    if (!keyContext) {
+        alert("No se ha podido preparar el cifrado del grupo.");
+        return;
+    }
+    {
         payload.encrypted_payload = await encryptE2EEText(keyContext.key, JSON.stringify({
             title: payload.title,
             provider: payload.provider,
