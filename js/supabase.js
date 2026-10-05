@@ -1168,13 +1168,30 @@ async function getEventExpenses(eventId) {
 
     const expenses = data || [];
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    if (!key) return expenses;
+    const groupId = event?.group_id || null;
+    if (!groupId) return expenses;
+
+    const latestContext = await getGroupE2EEContext(groupId);
+    if (!latestContext) return expenses;
 
     return Promise.all(expenses.map(async expense => {
         if (!expense.encrypted_payload) return expense;
-        try { return { ...expense, ...JSON.parse(await decryptE2EEText(key, expense.encrypted_payload)) }; }
-        catch { return { ...expense, title: "Contenido cifrado no disponible en este dispositivo." }; }
+        try {
+            const context = await getGroupE2EEContext(
+                groupId,
+                expense.encryption_version || latestContext.version
+            );
+            if (!context) throw new Error("Clave de cifrado no disponible");
+            return {
+                ...expense,
+                ...JSON.parse(await decryptE2EEText(context.key, expense.encrypted_payload))
+            };
+        } catch {
+            return {
+                ...expense,
+                title: "Contenido cifrado no disponible en este dispositivo."
+            };
+        }
     }));
 }
 
