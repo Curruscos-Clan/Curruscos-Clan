@@ -967,9 +967,13 @@ async function runSmartTravelSearch(e) {
     }));
     const group = await getCurrentGroup();
     const keyContext = group ? await getGroupE2EEContext(group.id) : null;
+    if (!keyContext) {
+        if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
+        throw new Error("No se ha podido preparar el cifrado del grupo.");
+    }
     let encryptedSearchPayload = null;
 
-    if (keyContext) {
+    {
         let existingPayload = {};
         try {
             const { data: existingTrip } = await supabaseClient
@@ -984,14 +988,15 @@ async function runSmartTravelSearch(e) {
                     searchGroupId,
                     existingTrip.encryption_version || null
                 );
-                if (existingContext) {
-                    existingPayload = JSON.parse(
-                        await decryptE2EEText(existingContext.key, existingTrip.encrypted_payload)
-                    );
-                }
+                if (!existingContext) throw new Error("No se puede actualizar el viaje: falta la clave histórica.");
+                existingPayload = JSON.parse(
+                    await decryptE2EEText(existingContext.key, existingTrip.encrypted_payload)
+                );
             }
         } catch (e) {
-            console.warn("No se pudo recuperar el payload cifrado anterior del viaje:", e);
+            console.error("No se pudo recuperar el payload cifrado anterior del viaje:", e);
+            if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
+            throw new Error("No se puede actualizar el viaje cifrado sin recuperar su contenido anterior.");
         }
 
         encryptedSearchPayload = await encryptE2EEText(
