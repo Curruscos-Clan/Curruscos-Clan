@@ -960,7 +960,6 @@ async function getGroupEvent(eventId) {
 }
 
 async function updateGroupEvent(eventId, eventData) {
-
     const group = await getCurrentGroup();
     if (!group) return null;
 
@@ -970,34 +969,90 @@ async function updateGroupEvent(eventId, eventData) {
         .eq("id", eventId)
         .eq("group_id", group.id)
         .single();
+
     if (readError || !existing) return null;
 
-    const changes = { date: eventData.date, time: eventData.time, trip_id: eventData.trip_id || null };
+    const targetVisibility = eventData.visibility || existing.visibility || "private";
+    const changes = {
+        date: eventData.date,
+        time: eventData.time,
+        trip_id: eventData.trip_id || null,
+        visibility: targetVisibility
+    };
+
     const keyContext = await getGroupE2EEContext(group.id);
 
-    if (keyContext && existing.visibility !== "public") {
-        let payload = { title: eventData.title || "", description: eventData.description || "", location: eventData.location || "" };
+    if (targetVisibility === "public") {
+        let payload = {
+            title: eventData.title || "",
+            description: eventData.description || "",
+            location: eventData.location || ""
+        };
+
         if (existing.encrypted_payload && existing.encryption_version) {
+            const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+            if (!oldContext) throw new Error("No se puede publicar el evento: falta la clave histórica.");
             try {
-                const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
-                if (oldContext) payload = { ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)), ...payload };
-            } catch {}
+                payload = {
+                    ...payload,
+                    ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload))
+                };
+            } catch {
+                throw new Error("No se puede publicar el evento: no se ha podido descifrar su contenido.");
+            }
         }
+
         Object.assign(changes, {
-            title: null, description: null, location: null,
+            title: payload.title,
+            description: payload.description,
+            location: payload.location,
+            encrypted_payload: null,
+            encryption_version: null
+        });
+    } else {
+        if (!keyContext) throw new Error("No se puede guardar el evento privado: falta la clave E2EE.");
+
+        let payload = {
+            title: eventData.title || "",
+            description: eventData.description || "",
+            location: eventData.location || ""
+        };
+
+        if (existing.encrypted_payload && existing.encryption_version) {
+            const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+            if (!oldContext) throw new Error("No se puede actualizar el evento: falta la clave histórica.");
+            try {
+                payload = {
+                    ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)),
+                    ...payload
+                };
+            } catch {
+                throw new Error("No se puede actualizar el evento: no se ha podido descifrar su contenido.");
+            }
+        }
+
+        Object.assign(changes, {
+            title: null,
+            description: null,
+            location: null,
             encrypted_payload: await encryptE2EEText(keyContext.key, JSON.stringify(payload)),
             encryption_version: keyContext.version
         });
-    } else {
-        Object.assign(changes, { title: eventData.title, description: eventData.description, location: eventData.location });
     }
 
     const { data, error } = await supabaseClient
-        .from("events").update(changes).eq("id", eventId).eq("group_id", group.id).select().single();
+        .from("events")
+        .update(changes)
+        .eq("id", eventId)
+        .eq("group_id", group.id)
+        .select()
+        .single();
+
     if (error) {
         console.error("Error actualizando evento:", error);
         return null;
     }
+
     return data;
 }
 
