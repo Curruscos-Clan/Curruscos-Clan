@@ -4,7 +4,6 @@
     {href:"explorar.html",label:"Explorar"},
     {href:"guardados.html",label:"Guardados"},
     {href:"mis-eventos.html",label:"Mis planes"},
-    {href:"grupos.html",label:"Grupos"},
     {href:"crear.html",label:"Crear"}
   ];
   function init(){
