@@ -790,7 +790,7 @@ async function getGroupEvents() {
     if (!latestContext) return events;
 
     return Promise.all(events.map(async event => {
-        if (event.visibility === "public" || !event.encrypted_payload) return event;
+        if (!event.encrypted_payload) return event;
         try {
             const context = await getGroupE2EEContext(group.id, event.encryption_version || latestContext.version);
             if (!context) throw new Error("Clave no disponible");
@@ -1055,13 +1055,15 @@ async function getEventTasks(eventId) {
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
     if (!event?.group_id) return tasks;
 
-    const key = await getGroupE2EEKey(event.group_id);
-    if (!key) return tasks;
+    const latestContext = await getGroupE2EEContext(event.group_id);
+    if (!latestContext) return tasks;
 
     return Promise.all(tasks.map(async task => {
         if (!task.encrypted_payload) return task;
         try {
-            const payload = JSON.parse(await decryptE2EEText(key, task.encrypted_payload));
+            const context = await getGroupE2EEContext(event.group_id, task.encryption_version || latestContext.version);
+            if (!context) throw new Error("Clave no disponible");
+            const payload = JSON.parse(await decryptE2EEText(context.key, task.encrypted_payload));
             return { ...task, ...payload, encrypted_payload: task.encrypted_payload };
         } catch {
             return { ...task, title: "Contenido cifrado no disponible en este dispositivo." };
@@ -1364,13 +1366,15 @@ async function getGroupMemories() {
     }
 
     const memories = data || [];
-    const key = await getGroupE2EEKey(group.id);
-    if (!key) return memories;
+    const latestContext = await getGroupE2EEContext(group.id);
+    if (!latestContext) return memories;
 
     return Promise.all(memories.map(async memory => {
         if (!memory.encrypted_payload) return memory;
         try {
-            const payload = JSON.parse(await decryptE2EEText(key, memory.encrypted_payload));
+            const context = await getGroupE2EEContext(group.id, memory.encryption_version || latestContext.version);
+            if (!context) throw new Error("Clave no disponible");
+            const payload = JSON.parse(await decryptE2EEText(context.key, memory.encrypted_payload));
             return { ...memory, ...payload };
         } catch {
             return { ...memory, title: "Contenido cifrado no disponible en este dispositivo.", description: "" };
@@ -1403,6 +1407,7 @@ async function createGroupMemory(memoryData) {
             title: encryptedPayload ? null : memoryData.title,
             description: encryptedPayload ? null : (memoryData.description || null),
             encrypted_payload: encryptedPayload,
+            encryption_version: keyContext?.version || null,
             image_url: memoryData.image_url || null
         })
         .select()
