@@ -6390,3 +6390,41 @@ hr{
 @media(max-width:720px){
  .workspace-switcher .group-menu{top:calc(100% + 8px);right:-45px}
 }
+
+/* Workspace panel — lateral */
+.workspace-switcher .group-menu{
+  position:fixed;
+  top:70px;
+  left:0;
+  right:auto;
+  width:340px;
+  max-width:calc(100vw - 20px);
+  min-height:calc(100vh - 70px);
+  max-height:calc(100vh - 70px);
+  overflow:auto;
+  padding:18px 14px 20px;
+  border:0;
+  border-right:1px solid var(--border);
+  border-radius:0 20px 20px 0;
+  box-shadow:18px 0 45px rgba(0,0,0,.12);
+  background:var(--surface);
+  z-index:500;
+}
+.workspace-switcher .group-menu::before{
+  content:"";
+  display:block;
+  width:32px;
+  height:4px;
+  margin:0 0 18px 6px;
+  border-radius:99px;
+  background:var(--border);
+}
+.workspace-switcher .group-list{max-height:none}
+@media(max-width:720px){
+  .workspace-switcher .group-menu{
+    top:64px;
+    width:min(340px,calc(100vw - 18px));
+    min-height:calc(100vh - 64px);
+    max-height:calc(100vh - 64px);
+  }
+}
