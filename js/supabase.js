@@ -1481,8 +1481,8 @@ async function createGroupMemory(memoryData) {
         .insert({
             group_id: group.id,
             created_by: user.id,
-            title: encryptedPayload ? null : memoryData.title,
-            description: encryptedPayload ? null : (memoryData.description || null),
+            title: null,
+            description: null,
             encrypted_payload: encryptedPayload,
             encryption_version: keyContext.version,
             image_url: memoryData.image_url || null
