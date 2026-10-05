@@ -950,31 +950,42 @@ async function getGroupEvent(eventId) {
 async function updateGroupEvent(eventId, eventData) {
 
     const group = await getCurrentGroup();
+    if (!group) return null;
 
-    if (!group) {
-        return null;
+    const { data: existing, error: readError } = await supabaseClient
+        .from("events")
+        .select("id,visibility,encrypted_payload,encryption_version")
+        .eq("id", eventId)
+        .eq("group_id", group.id)
+        .single();
+    if (readError || !existing) return null;
+
+    const changes = { date: eventData.date, time: eventData.time, trip_id: eventData.trip_id || null };
+    const keyContext = await getGroupE2EEContext(group.id);
+
+    if (keyContext && existing.visibility !== "public") {
+        let payload = { title: eventData.title || "", description: eventData.description || "", location: eventData.location || "" };
+        if (existing.encrypted_payload && existing.encryption_version) {
+            try {
+                const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+                if (oldContext) payload = { ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)), ...payload };
+            } catch {}
+        }
+        Object.assign(changes, {
+            title: null, description: null, location: null,
+            encrypted_payload: await encryptE2EEText(keyContext.key, JSON.stringify(payload)),
+            encryption_version: keyContext.version
+        });
+    } else {
+        Object.assign(changes, { title: eventData.title, description: eventData.description, location: eventData.location });
     }
 
     const { data, error } = await supabaseClient
-        .from("events")
-        .update({
-            title: eventData.title,
-            description: eventData.description,
-            date: eventData.date,
-            time: eventData.time,
-            location: eventData.location,
-            trip_id: eventData.trip_id || null
-        })
-        .eq("id", eventId)
-        .eq("group_id", group.id)
-        .select()
-        .single();
-
+        .from("events").update(changes).eq("id", eventId).eq("group_id", group.id).select().single();
     if (error) {
         console.error("Error actualizando evento:", error);
         return null;
     }
-
     return data;
 }
 
@@ -3723,31 +3734,42 @@ async function getGroupEvent(eventId) {
 async function updateGroupEvent(eventId, eventData) {
 
     const group = await getCurrentGroup();
+    if (!group) return null;
 
-    if (!group) {
-        return null;
+    const { data: existing, error: readError } = await supabaseClient
+        .from("events")
+        .select("id,visibility,encrypted_payload,encryption_version")
+        .eq("id", eventId)
+        .eq("group_id", group.id)
+        .single();
+    if (readError || !existing) return null;
+
+    const changes = { date: eventData.date, time: eventData.time, trip_id: eventData.trip_id || null };
+    const keyContext = await getGroupE2EEContext(group.id);
+
+    if (keyContext && existing.visibility !== "public") {
+        let payload = { title: eventData.title || "", description: eventData.description || "", location: eventData.location || "" };
+        if (existing.encrypted_payload && existing.encryption_version) {
+            try {
+                const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+                if (oldContext) payload = { ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)), ...payload };
+            } catch {}
+        }
+        Object.assign(changes, {
+            title: null, description: null, location: null,
+            encrypted_payload: await encryptE2EEText(keyContext.key, JSON.stringify(payload)),
+            encryption_version: keyContext.version
+        });
+    } else {
+        Object.assign(changes, { title: eventData.title, description: eventData.description, location: eventData.location });
     }
 
     const { data, error } = await supabaseClient
-        .from("events")
-        .update({
-            title: eventData.title,
-            description: eventData.description,
-            date: eventData.date,
-            time: eventData.time,
-            location: eventData.location,
-            trip_id: eventData.trip_id || null
-        })
-        .eq("id", eventId)
-        .eq("group_id", group.id)
-        .select()
-        .single();
-
+        .from("events").update(changes).eq("id", eventId).eq("group_id", group.id).select().single();
     if (error) {
         console.error("Error actualizando evento:", error);
         return null;
     }
-
     return data;
 }
 
@@ -6501,31 +6523,42 @@ async function getGroupEvent(eventId) {
 async function updateGroupEvent(eventId, eventData) {
 
     const group = await getCurrentGroup();
+    if (!group) return null;
 
-    if (!group) {
-        return null;
+    const { data: existing, error: readError } = await supabaseClient
+        .from("events")
+        .select("id,visibility,encrypted_payload,encryption_version")
+        .eq("id", eventId)
+        .eq("group_id", group.id)
+        .single();
+    if (readError || !existing) return null;
+
+    const changes = { date: eventData.date, time: eventData.time, trip_id: eventData.trip_id || null };
+    const keyContext = await getGroupE2EEContext(group.id);
+
+    if (keyContext && existing.visibility !== "public") {
+        let payload = { title: eventData.title || "", description: eventData.description || "", location: eventData.location || "" };
+        if (existing.encrypted_payload && existing.encryption_version) {
+            try {
+                const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+                if (oldContext) payload = { ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)), ...payload };
+            } catch {}
+        }
+        Object.assign(changes, {
+            title: null, description: null, location: null,
+            encrypted_payload: await encryptE2EEText(keyContext.key, JSON.stringify(payload)),
+            encryption_version: keyContext.version
+        });
+    } else {
+        Object.assign(changes, { title: eventData.title, description: eventData.description, location: eventData.location });
     }
 
     const { data, error } = await supabaseClient
-        .from("events")
-        .update({
-            title: eventData.title,
-            description: eventData.description,
-            date: eventData.date,
-            time: eventData.time,
-            location: eventData.location,
-            trip_id: eventData.trip_id || null
-        })
-        .eq("id", eventId)
-        .eq("group_id", group.id)
-        .select()
-        .single();
-
+        .from("events").update(changes).eq("id", eventId).eq("group_id", group.id).select().single();
     if (error) {
         console.error("Error actualizando evento:", error);
         return null;
     }
-
     return data;
 }
 
@@ -9269,31 +9302,42 @@ async function getGroupEvent(eventId) {
 async function updateGroupEvent(eventId, eventData) {
 
     const group = await getCurrentGroup();
+    if (!group) return null;
 
-    if (!group) {
-        return null;
+    const { data: existing, error: readError } = await supabaseClient
+        .from("events")
+        .select("id,visibility,encrypted_payload,encryption_version")
+        .eq("id", eventId)
+        .eq("group_id", group.id)
+        .single();
+    if (readError || !existing) return null;
+
+    const changes = { date: eventData.date, time: eventData.time, trip_id: eventData.trip_id || null };
+    const keyContext = await getGroupE2EEContext(group.id);
+
+    if (keyContext && existing.visibility !== "public") {
+        let payload = { title: eventData.title || "", description: eventData.description || "", location: eventData.location || "" };
+        if (existing.encrypted_payload && existing.encryption_version) {
+            try {
+                const oldContext = await getGroupE2EEContext(group.id, existing.encryption_version);
+                if (oldContext) payload = { ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)), ...payload };
+            } catch {}
+        }
+        Object.assign(changes, {
+            title: null, description: null, location: null,
+            encrypted_payload: await encryptE2EEText(keyContext.key, JSON.stringify(payload)),
+            encryption_version: keyContext.version
+        });
+    } else {
+        Object.assign(changes, { title: eventData.title, description: eventData.description, location: eventData.location });
     }
 
     const { data, error } = await supabaseClient
-        .from("events")
-        .update({
-            title: eventData.title,
-            description: eventData.description,
-            date: eventData.date,
-            time: eventData.time,
-            location: eventData.location,
-            trip_id: eventData.trip_id || null
-        })
-        .eq("id", eventId)
-        .eq("group_id", group.id)
-        .select()
-        .single();
-
+        .from("events").update(changes).eq("id", eventId).eq("group_id", group.id).select().single();
     if (error) {
         console.error("Error actualizando evento:", error);
         return null;
     }
-
     return data;
 }
 
