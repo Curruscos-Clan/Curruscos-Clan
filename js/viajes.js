@@ -961,11 +961,31 @@ async function runSmartTravelSearch(e) {
         links: buildTravelSearchLinks(preferences, idea.name),
         detail: "Búsqueda preparada con " + (preferences.origin || "vuestro origen") + (preferences.budget_per_person ? ", presupuesto de " + money(preferences.budget_per_person) + " por persona" : "") + "."
     }));
-    const { data, error } = await supabaseClient.from("trips").update({
-        search_preferences: preferences,
-        recommendations,
-        recommendations_updated_at: new Date().toISOString()
-    }).eq("id", searchTripId).eq("group_id", searchGroupId).select().single();
+    const group = await getCurrentGroup();
+    const keyContext = group ? await getGroupE2EEContext(group.id) : null;
+    const encryptedSearchPayload = keyContext
+        ? await encryptE2EEText(keyContext.key, JSON.stringify({
+            search_preferences: preferences,
+            recommendations
+        }))
+        : null;
+
+    const tripChanges = encryptedSearchPayload
+        ? {
+            search_preferences: null,
+            recommendations: null,
+            encrypted_payload: encryptedSearchPayload,
+            encryption_version: keyContext.version,
+            recommendations_updated_at: new Date().toISOString()
+        }
+        : {
+            search_preferences: preferences,
+            recommendations,
+            recommendations_updated_at: new Date().toISOString()
+        };
+
+    const { data, error } = await supabaseClient.from("trips").update(tripChanges)
+        .eq("id", searchTripId).eq("group_id", searchGroupId).select().single();
     if (searchTripId !== activeTripId) {
         if (button) { button.disabled = false; button.textContent = "✦ Encontrar opciones"; }
         return;
@@ -974,8 +994,19 @@ async function runSmartTravelSearch(e) {
         console.error(error);
         if ($("smartSearchStatus")) $("smartSearchStatus").textContent = "No se han podido guardar las preferencias.";
     } else {
-        activeTrip = data;
-        trips = trips.map(t => t.id === data.id ? data : t);
+        if (encryptedSearchPayload && keyContext) {
+            try {
+                const decryptedSearch = JSON.parse(
+                    await decryptE2EEText(keyContext.key, encryptedSearchPayload)
+                );
+                activeTrip = { ...data, ...decryptedSearch };
+            } catch {
+                activeTrip = data;
+            }
+        } else {
+            activeTrip = data;
+        }
+        trips = trips.map(t => t.id === data.id ? activeTrip : t);
         renderSmartSearchForm();
         if ($("smartSearchStatus")) $("smartSearchStatus").textContent = "Listo: hemos preparado búsquedas adaptadas a vuestro grupo.";
     }
