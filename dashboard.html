@@ -983,424 +983,110 @@
     ===================================================== -->
 
     <main>
-        <div
-    id="invitationsContainer"
-    class="container"
-    style="margin-top:30px;"
-></div>
+  <div id="invitationsContainer" class="container" style="margin-top:20px;"></div>
+  <section class="dashboard dashboard-home">
+
+    <header class="dashboard-welcome">
+      <div class="dashboard-eyebrow">TU GRUPO</div>
+      <h1>¿Qué hacemos<br><span>hoy?</span></h1>
+      <p id="dashboardIntro">Aquí tienes lo importante de vuestro grupo, sin ruido.</p>
+    </header>
+
+    <section class="dashboard-command dashboard-card">
+      <div class="dashboard-command-main">
+        <span class="dashboard-command-kicker">PRÓXIMO MOVIMIENTO</span>
+        <h2 id="nextEventTitle">Cargando vuestro próximo plan…</h2>
+        <p id="nextEventContent">Estamos preparando el resumen del grupo.</p>
+        <div class="dashboard-command-actions">
+          <a id="autopilotAction" class="next-event-button" href="crear.html">Crear un plan</a>
+          <a class="dashboard-secondary-action" href="explorar.html">Explorar ideas</a>
+        </div>
+      </div>
+      <div class="dashboard-command-side">
+        <div class="dashboard-command-date" id="nextEventDate">—</div>
+        <div class="dashboard-command-label">PRÓXIMO PLAN</div>
+      </div>
+    </section>
+
+    <section class="dashboard-context-row">
+      <article class="dashboard-card dashboard-context-card">
+        <span class="dashboard-card-kicker">EL GRUPO</span>
+        <strong id="dashboardMembers">0</strong>
+        <span>personas</span>
+        <div class="dashboard-mini-stats">
+          <div><b id="dashboardEvents">0</b><small>planes</small></div>
+          <div><b id="dashboardTasks">0</b><small>tareas</small></div>
+          <div><b id="dashboardMemories">0</b><small>recuerdos</small></div>
+        </div>
+      </article>
+
+      <article class="dashboard-card dashboard-context-card dashboard-sense">
+        <div class="dashboard-sense-head">
+          <span class="dashboard-card-kicker">CURRUSCOS SENSE</span>
+          <span id="autopilotLabel">ACTIVO</span>
+        </div>
+        <h3 id="autopilotTitle">Leyendo el estado del grupo…</h3>
+        <p id="autopilotReason">Conectando lo que está pasando.</p>
+        <div class="dashboard-sense-bar"><span id="senseHealthFill"></span></div>
+        <strong id="senseHealthValue">—</strong>
+        <small id="senseHealthText">Estado del grupo</small>
+        <div id="autopilotSignals" class="dashboard-sense-signals"></div>
+        <span id="autopilotOrb" hidden>↗</span>
+      </article>
+    </section>
+
+    <section class="dashboard-section dashboard-next-actions">
+      <div class="dashboard-section-header action-hub-header">
+        <div><span class="action-hub-kicker">AHORA</span><h2 id="actionHubTitle">Siguiente movimiento</h2></div>
+        <span id="actionHubMeta" class="action-hub-meta">Lo que tiene más sentido hacer ahora.</span>
+      </div>
+      <div id="adaptiveActionGrid" class="quick-grid adaptive-action-grid"></div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-section-header">
+        <span>LO QUE PASA</span><h2>Actividad reciente.</h2>
+      </div>
+      <div class="dashboard-card activity-layout dashboard-activity-card">
+        <div class="activity-list" id="activityList"><div class="empty-dashboard">Todavía no hay actividad reciente.</div></div>
+        <aside class="dashboard-organization">
+          <span class="dashboard-card-kicker">ORGANIZACIÓN</span>
+          <strong id="organizationStatus">Todo tranquilo</strong>
+          <p id="organizationDescription">Aquí aparecerá cómo va la organización del grupo.</p>
+          <div class="organization-progress"><div class="organization-progress-fill" id="organizationProgress"></div></div>
+          <div class="organization-progress-label"><span>Organización</span><span id="organizationPercent">0%</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="dashboard-section">
+      <div class="dashboard-section-header">
+        <span>PLANES</span><h2>Próximamente.</h2>
+      </div>
+      <div class="dashboard-card upcoming-events" id="upcomingEvents"><div class="empty-dashboard">No hay planes próximos.</div></div>
+    </section>
+
+    <section class="dashboard-section dashboard-progress-card dashboard-card">
+      <div class="dashboard-section-header">
+        <span>ESTADO DEL GRUPO</span><h2 id="workspaceHealthTitle">En construcción.</h2>
+      </div>
+      <div class="dashboard-progress-score"><strong id="workspaceHealthScore">0%</strong><div class="workspace-health-track"><span id="workspaceHealthFill"></span></div></div>
+      <p id="workspaceHealthText">Preparando el espacio para funcionar.</p>
+      <div class="workspace-health-metrics" id="workspaceHealthMetrics"></div>
+      <div id="workspaceGoal" hidden><strong id="workspaceGoalTitle"></strong><span id="workspaceGoalText"></span><a id="workspaceGoalAction" href="dashboard.html">Empezar →</a></div>
+      <div id="workspaceMilestones" class="workspace-milestones">
+        <div id="workspaceUnlockBanner" hidden><strong id="workspaceUnlockTitle"></strong><small id="workspaceUnlockText"></small><a id="workspaceUnlockAction" href="#">Ir →</a></div>
+        <div id="workspaceMilestonesList"></div><small id="workspaceMilestonesMeta"></small>
+      </div>
+    </section>
+
+    <section class="dashboard-hidden-data" aria-hidden="true">
+      <span id="workspacePlanName"></span><span id="workspaceStartList"></span><span id="workspaceStartProgress"></span><span id="workspaceStartFill"></span>
+      <span id="pulseEvent"></span><span id="pulseMembers"></span><span id="pulseTrips"></span><span id="pulseMemories"></span><span id="pulseMessage"></span>
+    </section>
 
-        <section class="dashboard">
-
-
-            <!-- BIENVENIDA -->
-
-            <div class="dashboard-welcome">
-
-                <div class="dashboard-eyebrow">
-                    TU GRUPO · CENTRO DE OPERACIONES
-                </div>
-
-                <h1>
-                    Todo lo que vuestro<br>
-                    <span>grupo necesita.</span>
-                </h1>
-
-                <p>
-                    Todo lo que hacemos juntos, en un mismo sitio.
-                </p>
-
-            </div>
-
-
-
-            <section class="group-pulse dashboard-card" aria-label="Pulso del grupo">
-                <div class="pulse-heading">
-                    <div>
-                        <span class="pulse-eyebrow">PULSO DEL GRUPO</span>
-                        <h2>Lo que está pasando.</h2>
-                    </div>
-                    <a href="viajes.html" class="pulse-link">Planificar algo →</a>
-                </div>
-                <div class="pulse-grid">
-                    <div class="pulse-item">
-                        <span class="pulse-icon">📅</span>
-                        <div><strong id="pulseEvent">—</strong><span>Próximo plan</span></div>
-                    </div>
-                    <div class="pulse-item">
-                        <span class="pulse-icon">👥</span>
-                        <div><strong id="pulseMembers">—</strong><span>Personas en el grupo</span></div>
-                    </div>
-                    <div class="pulse-item">
-                        <span class="pulse-icon">✈️</span>
-                        <div><strong id="pulseTrips">—</strong><span>Viajes en planificación</span></div>
-                    </div>
-                    <div class="pulse-item">
-                        <span class="pulse-icon">📸</span>
-                        <div><strong id="pulseMemories">—</strong><span>Recuerdos guardados</span></div>
-                    </div>
-                </div>
-                <div class="pulse-message" id="pulseMessage">Cargando el estado del grupo…</div>
-            </section>
-
-            <section class="workspace-usage dashboard-card" aria-label="Uso del espacio">
-                <div class="workspace-usage-head">
-                    <div>
-                        <span>WORKSPACE</span>
-                        <h2 id="workspacePlanName">Plan Free</h2>
-                    </div>
-                    <a href="planes.html" class="workspace-plan-link">Ver capacidad del Free →</a>
-                </div>
-                <p class="workspace-usage-copy">Tu espacio crece contigo. Aquí puedes ver de un vistazo el uso actual y los límites del plan.</p>
-                <div class="workspace-usage-grid">
-                    <div class="workspace-usage-item"><div><strong>Miembros</strong><span id="usageMembersLabel">—</span></div><div class="workspace-usage-track"><span id="usageMembersFill"></span></div></div>
-                    <div class="workspace-usage-item"><div><strong>Eventos este mes</strong><span id="usageEventsLabel">—</span></div><div class="workspace-usage-track"><span id="usageEventsFill"></span></div></div>
-                    <div class="workspace-usage-item"><div><strong>Viajes</strong><span id="usageTripsLabel">—</span></div><div class="workspace-usage-track"><span id="usageTripsFill"></span></div></div>
-                </div>
-            </section>
-
-            <section class="workspace-start dashboard-card" id="workspaceStart">
-                <div class="workspace-start-head"><div><span>PRIMEROS PASOS</span><h2>Haz que este espacio empiece a moverse.</h2></div><strong id="workspaceStartProgress" class="workspace-start-progress">0 / 3</strong></div>
-                <div class="workspace-start-bar"><span id="workspaceStartFill"></span></div>
-                <div id="workspaceStartList" class="workspace-start-list"></div>
-            </section>
-
-            <section class="workspace-health-card dashboard-card" aria-label="Estado del workspace">
-                <div class="workspace-health-head">
-                    <div><span>ESTADO DEL WORKSPACE</span><h2 id="workspaceHealthTitle">En construcción.</h2></div>
-                    <strong id="workspaceHealthScore">0%</strong>
-                </div>
-                <div class="workspace-health-track"><span id="workspaceHealthFill"></span></div>
-                <p id="workspaceHealthText">Estamos midiendo cuánto del espacio ya está listo para funcionar.</p>
-                <div class="workspace-health-metrics" id="workspaceHealthMetrics"></div>
-                <div class="workspace-goal" id="workspaceGoal" hidden>
-                    <span class="workspace-goal-kicker">SIGUIENTE DESBLOQUEO</span>
-                    <strong id="workspaceGoalTitle"></strong>
-                    <span id="workspaceGoalText"></span>
-                    <a id="workspaceGoalAction" href="dashboard.html">Empezar →</a>
-                </div>
-                <div class="workspace-milestones" id="workspaceMilestones" aria-label="Progreso del workspace">
-                    <div class="workspace-unlock-banner" id="workspaceUnlockBanner" hidden>
-                        <div>
-                            <span>PRÓXIMO DESBLOQUEO</span>
-                            <strong id="workspaceUnlockTitle"></strong>
-                            <small id="workspaceUnlockText"></small>
-                        </div>
-                        <a id="workspaceUnlockAction" href="#">Ir →</a>
-                    </div>
-                    <div class="workspace-milestones-head">
-                        <span>RUTA DEL WORKSPACE</span>
-                        <small id="workspaceMilestonesMeta"></small>
-                    </div>
-                    <div class="workspace-milestones-list" id="workspaceMilestonesList"></div>
-                </div>
-            </section>
-
-            <section class="autopilot-card dashboard-card" aria-label="Curruscos Sense">
-                <div class="autopilot-top">
-                    <div>
-                        <span class="autopilot-eyebrow">CURRUSCOS SENSE · INTELIGENCIA DEL GRUPO</span>
-                        <h2>El grupo, en movimiento.</h2>
-                    </div>
-                    <span class="autopilot-live"><i></i> ACTUALIZADO</span>
-                </div>
-                <div class="sense-intro">
-                    <div class="sense-orbit" aria-hidden="true">
-                        <span class="sense-orbit-dot"></span>
-                        <div class="autopilot-orb" id="autopilotOrb">↗</div>
-                    </div>
-                    <div class="autopilot-copy">
-                        <span class="autopilot-label" id="autopilotLabel">ANALIZANDO</span>
-                        <h3 id="autopilotTitle">Leyendo el estado del grupo…</h3>
-                        <p id="autopilotReason">Conectando eventos, personas, tareas, decisiones y viajes.</p>
-                    </div>
-                    <a id="autopilotAction" class="autopilot-action" href="dashboard.html">Abrir →</a>
-                </div>
-                <div class="sense-health">
-                    <div class="sense-health-head"><span>COHESIÓN OPERATIVA</span><strong id="senseHealthValue">—</strong></div>
-                    <div class="sense-health-track"><span id="senseHealthFill"></span></div>
-                    <p id="senseHealthText">Midiendo cuánto está preparado el grupo para su próximo movimiento.</p>
-                </div>
-                <div class="autopilot-signals" id="autopilotSignals"></div>
-            </section>
-
-            <!-- =================================================
-                 PRÓXIMO EVENTO + ESTADÍSTICAS
-            ================================================= -->
-
-            <div class="dashboard-top">
-
-
-                <!-- PRÓXIMO EVENTO -->
-
-                <div class="dashboard-card next-event-card">
-
-                    <div class="next-event-label">
-                        📅 PRÓXIMO EVENTO
-                    </div>
-
-                    <div id="nextEventContent">
-
-                        <div class="no-event">
-                            Todavía no hay ningún evento próximo.
-                            <br><br>
-
-                            <a href="eventos.html">
-                                Crear un evento →
-                            </a>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- RESUMEN DEL GRUPO -->
-
-                <div class="dashboard-card">
-
-                    <div class="group-card-title">
-                        👥 EL GRUPO
-                    </div>
-
-                    <div
-                        class="group-stat-big"
-                        id="dashboardMembers"
-                    >
-                        0
-                    </div>
-
-                    <div class="group-stat-label">
-                        miembros del clan
-                    </div>
-
-
-                    <div class="mini-stats">
-
-                        <div class="mini-stat">
-
-                            <strong id="dashboardEvents">
-                                0
-                            </strong>
-
-                            <span>
-                                eventos
-                            </span>
-
-                        </div>
-
-
-                        <div class="mini-stat">
-
-                            <strong id="dashboardMemories">
-                                0
-                            </strong>
-
-                            <span>
-                                recuerdos
-                            </span>
-
-                        </div>
-
-
-                        <div class="mini-stat">
-
-                            <strong id="dashboardTasks">
-                                0
-                            </strong>
-
-                            <span>
-                                tareas
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 ACCESOS RÁPIDOS
-            ================================================= -->
-
-                        <section class="dashboard-section">
-                <div class="dashboard-section-header action-hub-header">
-                    <div>
-                        <span id="actionHubEyebrow">TU WORKSPACE</span>
-                        <h2 id="actionHubTitle">Siguiente movimiento</h2>
-                    </div>
-                    <span id="actionHubMeta" class="action-hub-meta">Acciones adaptadas a tu grupo</span>
-                </div>
-                <div id="adaptiveActionGrid" class="quick-grid adaptive-action-grid"></div>
-            </section>
-
-
-
-            <!-- =================================================
-                 ACTIVIDAD + ORGANIZACIÓN
-            ================================================= -->
-
-            <section class="dashboard-section">
-
-                <div class="dashboard-section-header">
-
-                    <span>
-                        QUÉ ESTÁ PASANDO
-                    </span>
-
-                    <h2>
-                        Actividad reciente.
-                    </h2>
-
-                </div>
-
-
-                <div class="activity-layout">
-
-
-                    <!-- ACTIVIDAD -->
-
-                    <div class="dashboard-card">
-
-                        <div
-                            class="activity-list"
-                            id="activityList"
-                        >
-
-                            <div class="empty-dashboard">
-                                Todavía no hay actividad reciente.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- ORGANIZACIÓN -->
-
-                    <div class="dashboard-card organization-card">
-
-                        <div class="group-card-title">
-                            ⚡ ESTADO DEL CLAN
-                        </div>
-
-                        <div
-                            class="organization-status"
-                            id="organizationStatus"
-                        >
-                            Todo tranquilo
-                        </div>
-
-                        <div
-                            class="organization-description"
-                            id="organizationDescription"
-                        >
-                            Cuando empecéis a crear eventos,
-                            aquí aparecerá el estado de organización.
-                        </div>
-
-
-                        <div class="organization-progress">
-
-                            <div
-                                class="organization-progress-fill"
-                                id="organizationProgress"
-                            ></div>
-
-                        </div>
-
-
-                        <div class="organization-progress-label">
-
-                            <span>
-                                Organización
-                            </span>
-
-                            <span id="organizationPercent">
-                                0%
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- =================================================
-                 PRÓXIMOS EVENTOS
-            ================================================= -->
-
-            <section class="dashboard-section">
-
-                <div class="dashboard-section-header">
-
-                    <span>
-                        CALENDARIO DEL CLAN
-                    </span>
-
-                    <h2>
-                        Próximamente.
-                    </h2>
-
-                </div>
-
-
-                <div class="dashboard-card">
-
-                    <div
-                        class="upcoming-events"
-                        id="upcomingEvents"
-                    >
-
-                        <div class="empty-dashboard">
-                            No hay eventos próximos.
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- =================================================
-                 CTA
-            ================================================= -->
-
-            <section class="dashboard-cta">
-
-                <span>
-                    TU GRUPO
-                </span>
-
-                <h2>
-                    Del plan a la realidad, juntos.
-                </h2>
-
-                <p>
-                    Descubrid planes, tomad decisiones y organizad lo que vais a hacer juntos.
-                </p>
-
-                <a href="crear.html">
-                    Crear un plan
-                </a>
-
-            </section>
-
-
-        </section>
-
-    </main>
+  </section>
+</main>
 
 
 
