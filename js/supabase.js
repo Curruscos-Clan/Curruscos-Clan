@@ -2431,6 +2431,16 @@ async function markChatRead(roomId){const {data,error}=await supabaseClient.rpc(
 async function getChatPeople(search=""){const {data,error}=await supabaseClient.rpc("get_chat_people",{search_text:String(search||"").trim()||null});if(error){console.error("Error buscando personas para chat:",error);return [];}return data||[];}
 async function getOrCreateGroupChat(groupId){const {data,error}=await supabaseClient.rpc("get_or_create_group_chat",{target_group_id:groupId});if(error){console.error("Error abriendo chat del grupo:",error);return null;}return data||null;}
 async function getOrCreateEventChat(eventId){const {data,error}=await supabaseClient.rpc("get_or_create_event_chat",{target_event_id:eventId});if(error){console.error("Error abriendo chat del evento:",error);return null;}return data||null;}
+async function sendEncryptedChatMessage(roomId, encryptedBody){
+    const user=await getCurrentUser();
+    if(!user||!roomId||!encryptedBody)return null;
+    const {data,error}=await supabaseClient.from("chat_messages").insert({
+        room_id:roomId,user_id:user.id,body:null,encrypted_body:encryptedBody,encryption_version:1
+    }).select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").single();
+    if(error){console.error("Error enviando mensaje cifrado:",error);return null;}
+    return data;
+}
+
 async function getChatMessages(roomId){const {data,error}=await supabaseClient.from("chat_messages").select("id,room_id,user_id,body,created_at,edited_at,deleted_at").eq("room_id",roomId).is("deleted_at",null).order("created_at",{ascending:true}).limit(200);if(error){console.error("Error obteniendo mensajes:",error);return [];}return data||[];}
 async function updateChatMessage(messageId,body){const {data,error}=await supabaseClient.from("chat_messages").update({body:String(body||"").trim().slice(0,2000),edited_at:new Date().toISOString()}).eq("id",messageId).eq("user_id",(await getCurrentUser())?.id).select().single();if(error){console.error("Error editando mensaje:",error);return null;}return data;}
 async function deleteChatMessage(messageId){const {error}=await supabaseClient.from("chat_messages").update({deleted_at:new Date().toISOString()}).eq("id",messageId).eq("user_id",(await getCurrentUser())?.id);if(error){console.error("Error borrando mensaje:",error);return false;}return true;}
