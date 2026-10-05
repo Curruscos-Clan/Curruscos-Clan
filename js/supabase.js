@@ -242,16 +242,55 @@ async function provisionGroupE2EEEnvelope(groupId, targetUserId, encryptedGroupK
     return data;
 }
 
+async function provisionMissingGroupE2EEEnvelopes(groupId, groupKey, keyVersion = 1) {
+    const user = await getCurrentUser();
+    if (!user || !groupId || !groupKey) return 0;
+
+    const { data: members, error: memberError } = await supabaseClient
+        .from("group_members")
+        .select("user_id")
+        .eq("group_id", groupId);
+    if (memberError) throw new Error(getSupabaseErrorMessage(memberError, "No se han podido cargar los miembros del grupo."));
+
+    const { data: envelopes, error: envelopeError } = await supabaseClient
+        .from("group_key_envelopes")
+        .select("user_id,key_version")
+        .eq("group_id", groupId)
+        .eq("key_version", keyVersion);
+    if (envelopeError) throw new Error(getSupabaseErrorMessage(envelopeError, "No se han podido comprobar las claves del grupo."));
+
+    const existing = new Set((envelopes || []).map(row => row.user_id));
+    let provisioned = 0;
+    for (const member of (members || [])) {
+        if (existing.has(member.user_id)) continue;
+        try {
+            const encrypted = await wrapGroupE2EEKeyForUser(groupKey, member.user_id);
+            await provisionGroupE2EEEnvelope(groupId, member.user_id, encrypted, keyVersion);
+            provisioned++;
+        } catch (error) {
+            console.warn("No se pudo provisionar E2EE para", member.user_id, error);
+        }
+    }
+    return provisioned;
+}
+
 async function ensureGroupE2EE(groupId) {
     if (!groupId) return null;
     const existing = await getGroupE2EEKey(groupId);
-    if (existing) return existing;
+    if (existing) {
+        await provisionMissingGroupE2EEEnvelopes(groupId, existing, 1);
+        return existing;
+    }
+
     const user = await getCurrentUser();
     if (!user) return null;
     const group = await getCurrentGroup();
-    if (!group || group.id !== groupId) return null;
+    if (!group || group.id !== groupId || !["owner","admin"].includes(group.role)) return null;
+
     await initializeGroupE2EE(groupId);
-    return getGroupE2EEKey(groupId);
+    const key = await getGroupE2EEKey(groupId);
+    if (key) await provisionMissingGroupE2EEEnvelopes(groupId, key, 1);
+    return key;
 }
 
 async function getGroupE2EEKey(groupId) {
