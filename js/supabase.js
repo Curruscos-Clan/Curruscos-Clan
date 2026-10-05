@@ -863,13 +863,18 @@ async function getGroupTripsForEvent() {
     }
 
     const trips = data || [];
-    const key = await getGroupE2EEKey(group.id);
-    if (!key) return trips;
+    const latestContext = await getGroupE2EEContext(group.id);
+    if (!latestContext) return trips;
 
     return Promise.all(trips.map(async trip => {
         if (!trip.encrypted_payload) return trip;
         try {
-            return { ...trip, ...JSON.parse(await decryptE2EEText(key, trip.encrypted_payload)) };
+            const context = await getGroupE2EEContext(
+                group.id,
+                trip.encryption_version || latestContext.version
+            );
+            if (!context) throw new Error("Clave no disponible");
+            return { ...trip, ...JSON.parse(await decryptE2EEText(context.key, trip.encrypted_payload)) };
         } catch {
             return { ...trip, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" };
         }
@@ -894,10 +899,15 @@ async function getTripForEvent(tripId) {
     }
 
     if (data?.encrypted_payload) {
-        const key = await getGroupE2EEKey(group.id);
-        if (key) {
-            try { return { ...data, ...JSON.parse(await decryptE2EEText(key, data.encrypted_payload)) }; }
-            catch { return { ...data, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" }; }
+        try {
+            const context = await getGroupE2EEContext(
+                group.id,
+                data.encryption_version || null
+            );
+            if (!context) throw new Error("Clave no disponible");
+            return { ...data, ...JSON.parse(await decryptE2EEText(context.key, data.encrypted_payload)) };
+        } catch {
+            return { ...data, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" };
         }
     }
     return data;
