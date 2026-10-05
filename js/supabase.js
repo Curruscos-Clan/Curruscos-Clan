@@ -719,7 +719,49 @@ async function getWorkspacePlanRequests(groupId) {
 // EVENTOS
 // ========================================
 
-async function createTripForEvent(eventId){const {data,error}=await supabaseClient.rpc("create_trip_for_event",{target_event_id:eventId});if(error){console.error("Error creando viaje para evento:",error);return null;}return data||null;}
+async function createTripForEvent(eventId){
+    const {data,error}=await supabaseClient.rpc("create_trip_for_event",{target_event_id:eventId});
+    if(error){console.error("Error creando viaje para evento:",error);return null;}
+    const tripId = data || null;
+    if (!tripId) return null;
+
+    try {
+        const { data: event, error: eventError } = await supabaseClient
+            .from("events")
+            .select("id,group_id,title,location,date")
+            .eq("id", eventId)
+            .maybeSingle();
+        if (eventError || !event) throw eventError || new Error("EVENT_NOT_FOUND");
+
+        const keyContext = await getGroupE2EEContext(event.group_id);
+        if (!keyContext) throw new Error("E2EE_GROUP_KEY_UNAVAILABLE");
+
+        const encryptedPayload = await encryptE2EEText(keyContext.key, JSON.stringify({
+            title: [event.title || "Evento", "· Viaje"].join(" "),
+            destination: event.location || null,
+            description: `Viaje asociado al evento "${event.title || "Evento"}".`
+        }));
+
+        const { error: updateError } = await supabaseClient
+            .from("trips")
+            .update({
+                encrypted_payload: encryptedPayload,
+                encryption_version: keyContext.version,
+                title: null,
+                destination: null,
+                description: null
+            })
+            .eq("id", tripId)
+            .eq("group_id", event.group_id);
+
+        if (updateError) throw updateError;
+    } catch (encryptionError) {
+        console.error("Error cifrando el viaje recién creado:", encryptionError);
+        return null;
+    }
+
+    return tripId;
+}
 
 async function getGroupEvents() {
 
