@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tus grupos y espacios de trabajo en Curruscos.">
+<title>Grupos — Curruscos</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/navigation.js"></script>
+<style>
+.groups-page{max-width:1180px;margin:0 auto;padding:72px 24px 110px}
+.groups-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:44px}
+.groups-kicker{display:block;font-size:11px;font-weight:900;letter-spacing:.18em;color:#777;margin-bottom:12px}
+.groups-hero h1{margin:0;font-size:clamp(42px,7vw,72px);line-height:.94;letter-spacing:-.075em}
+.groups-hero p{max-width:520px;margin:16px 0 0;color:#777;line-height:1.6;font-size:15px}
+.groups-primary{display:inline-flex;align-items:center;justify-content:center;padding:13px 18px;border-radius:13px;background:#111;color:#fff;text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap}
+.groups-primary:hover{transform:translateY(-2px)}
+.groups-section-label{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:15px}
+.groups-section-label span{font-size:11px;font-weight:900;letter-spacing:.16em;color:#777}
+.groups-section-label small{color:#999}
+.groups-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.group-card-v2{display:flex;flex-direction:column;min-height:235px;padding:23px;border:1px solid #e7e7e7;border-radius:22px;background:#fff;text-decoration:none;color:inherit;transition:.2s;box-shadow:0 7px 28px rgba(0,0,0,.025)}
+.group-card-v2:hover{transform:translateY(-4px);border-color:#d2d2d2;box-shadow:0 15px 38px rgba(0,0,0,.07)}
+.group-card-v2.current{border-color:#111;box-shadow:0 10px 35px rgba(0,0,0,.08)}
+.group-card-top{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+.group-avatar-v2{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#f1f1f1;font-weight:900;font-size:18px}
+.group-current-badge{padding:6px 8px;border-radius:999px;background:#111;color:#fff;font-size:8px;font-weight:900;letter-spacing:.08em}
+.group-card-v2 h2{margin:25px 0 7px;font-size:22px;letter-spacing:-.035em}
+.group-card-v2 p{margin:0;color:#777;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.group-card-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:auto;padding-top:20px}
+.group-pill{padding:6px 9px;border-radius:999px;background:#f6f6f6;color:#777;font-size:9px;font-weight:800;letter-spacing:.04em}
+.group-card-action{margin-top:17px;padding-top:14px;border-top:1px solid #eee;font-size:12px;font-weight:800}
+.groups-empty{padding:48px 25px;border:1px dashed #d8d8d8;border-radius:22px;background:#fafafa;text-align:center}
+.groups-empty h2{margin:0 0 8px;font-size:25px;letter-spacing:-.04em}
+.groups-empty p{max-width:480px;margin:0 auto 20px;color:#777;line-height:1.55;font-size:13px}
+.groups-next{margin-top:55px;display:grid;grid-template-columns:1.1fr .9fr;gap:15px}
+.groups-info{padding:27px;border-radius:23px;background:#111;color:#fff}
+.groups-info span{font-size:9px;font-weight:900;letter-spacing:.15em;color:#888}
+.groups-info h2{margin:9px 0 10px;font-size:29px;letter-spacing:-.05em}
+.groups-info p{margin:0;color:#aaa;line-height:1.55;font-size:13px;max-width:600px}
+.groups-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.groups-action{display:flex;flex-direction:column;justify-content:space-between;padding:20px;border:1px solid #e7e7e7;border-radius:18px;text-decoration:none;color:inherit;background:#fff}
+.groups-action strong{font-size:15px}.groups-action span{margin-top:25px;color:#777;font-size:11px;line-height:1.4}
+.groups-loading{color:#888;padding:20px 0}
+@media(max-width:850px){.groups-grid{grid-template-columns:1fr 1fr}.groups-next{grid-template-columns:1fr}.groups-hero{align-items:flex-start;flex-direction:column}}
+@media(max-width:560px){.groups-page{padding:45px 16px 80px}.groups-grid{grid-template-columns:1fr}.groups-hero h1{font-size:48px}.groups-actions{grid-template-columns:1fr}.groups-primary{width:100%}}
+</style>
+</head>
+<body>
+<header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
+<main class="groups-page">
+<section class="groups-hero">
+<div><span class="groups-kicker">GRUPOS</span><h1>Con quién<br>lo haces.</h1><p>Un grupo es el espacio donde una idea se convierte en algo que hacéis juntos. Elige uno para entrar en su centro de operaciones, o crea otro si necesitas un espacio distinto.</p></div>
+<a class="groups-primary" href="onboarding.html">＋ Crear un grupo</a>
+</section>
+<section>
+<div class="groups-section-label"><span>TUS GRUPOS</span><small id="groupsCount"></small></div>
+<div id="groupsGrid" class="groups-grid"><div class="groups-loading">Cargando tus grupos…</div></div>
+</section>
+<section class="groups-next">
+<div class="groups-info"><span>LA IDEA</span><h2>Cada grupo tiene su propio contexto.</h2><p>Planes, decisiones, tareas, viajes, competiciones y recuerdos viven dentro del grupo. Así Curruscos no mezcla lo que haces con personas diferentes.</p></div>
+<div class="groups-actions">
+<a class="groups-action" href="onboarding.html"><strong>Crear otro grupo</strong><span>Para otro proyecto, comunidad, viaje o equipo.</span></a>
+<a class="groups-action" href="mis-eventos.html"><strong>Ver mis planes</strong><span>Todo lo que estás preparando, sin importar el grupo.</span></a>
+</div>
+</section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script>
+(async function(){
+  const grid=document.getElementById("groupsGrid");
+  const count=document.getElementById("groupsCount");
+  try{
+    const user=await getCurrentUser();
+    if(!user){window.location.replace("login.html");return;}
+    const groups=await getUserGroups();
+    count.textContent=groups.length+(groups.length===1?" grupo":" grupos");
+    if(!groups.length){
+      grid.innerHTML='<div class="groups-empty"><h2>Aún no tienes ningún grupo.</h2><p>Crea el primero y tendrás un espacio para reunir personas, planes y decisiones.</p><a class="groups-primary" href="onboarding.html">Crear mi primer grupo</a></div>';
+      grid.style.display="block";
+      return;
+    }
+    const current=await getCurrentGroup();
+    grid.innerHTML="";
+    groups.forEach(group=>{
+      const card=document.createElement("a");
+      card.className="group-card-v2"+(current&&String(current.id)===String(group.id)?" current":"");
+      card.href="dashboard.html";
+      card.innerHTML='<div class="group-card-top"><div class="group-avatar-v2">'+escapeHtml((group.name||"G").trim().charAt(0).toUpperCase())+'</div>'+(current&&String(current.id)===String(group.id)?'<span class="group-current-badge">ACTIVO</span>':'')+'</div><h2>'+escapeHtml(group.name||"Sin nombre")+'</h2><p>'+escapeHtml(group.description||"Un espacio para organizaros juntos.")+'</p><div class="group-card-meta"><span class="group-pill">'+escapeHtml(group.role==="owner"?"Propietario":group.role==="admin"?"Administrador":"Miembro")+'</span><span class="group-pill">'+escapeHtml(({community:"Comunidad",sports:"Deporte",travel:"Viajes",study:"Estudios",organization:"Proyecto",other:"Grupo"})[group.workspace_type||"community"]||"Grupo")+'</span></div><div class="group-card-action">Entrar al grupo →</div>';
+      card.addEventListener("click",()=>{if(!current||String(current.id)!==String(group.id))setCurrentGroup(group.id);});
+      grid.appendChild(card);
+    });
+  }catch(error){
+    console.error(error);
+    grid.innerHTML='<div class="groups-empty"><h2>No hemos podido cargar tus grupos.</h2><p>Recarga la página y vuelve a intentarlo.</p></div>';
+    grid.style.display="block";
+  }
+})();
+</script>
+<script src="js/pwa.js"></script>
+</body>
+</html>
