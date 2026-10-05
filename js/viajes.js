@@ -963,12 +963,42 @@ async function runSmartTravelSearch(e) {
     }));
     const group = await getCurrentGroup();
     const keyContext = group ? await getGroupE2EEContext(group.id) : null;
-    const encryptedSearchPayload = keyContext
-        ? await encryptE2EEText(keyContext.key, JSON.stringify({
-            search_preferences: preferences,
-            recommendations
-        }))
-        : null;
+    let encryptedSearchPayload = null;
+
+    if (keyContext) {
+        let existingPayload = {};
+        try {
+            const { data: existingTrip } = await supabaseClient
+                .from("trips")
+                .select("encrypted_payload,encryption_version")
+                .eq("id", searchTripId)
+                .eq("group_id", searchGroupId)
+                .single();
+
+            if (existingTrip?.encrypted_payload) {
+                const existingContext = await getGroupE2EEContext(
+                    searchGroupId,
+                    existingTrip.encryption_version || null
+                );
+                if (existingContext) {
+                    existingPayload = JSON.parse(
+                        await decryptE2EEText(existingContext.key, existingTrip.encrypted_payload)
+                    );
+                }
+            }
+        } catch (e) {
+            console.warn("No se pudo recuperar el payload cifrado anterior del viaje:", e);
+        }
+
+        encryptedSearchPayload = await encryptE2EEText(
+            keyContext.key,
+            JSON.stringify({
+                ...existingPayload,
+                search_preferences: preferences,
+                recommendations
+            })
+        );
+    }
 
     const tripChanges = encryptedSearchPayload
         ? {
