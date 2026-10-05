@@ -2030,7 +2030,40 @@ async function changeGroupMemberRole(groupId, userId, role) {
     return data;
 }
 
+async function rotateGroupE2EEBeforeMemberRemoval(groupId, userId) {
+    const currentKey = await getGroupE2EEKey(groupId);
+    if (!currentKey) return false;
+
+    const { data: latest } = await supabaseClient
+        .from("group_key_envelopes")
+        .select("key_version")
+        .eq("group_id", groupId)
+        .order("key_version", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    const nextVersion = Number(latest?.key_version || 1) + 1;
+    const nextKey = await generateGroupE2EEKey();
+
+    const { data: members, error } = await supabaseClient
+        .from("group_members")
+        .select("user_id")
+        .eq("group_id", groupId)
+        .neq("user_id", userId);
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se han podido preparar las claves del grupo."));
+
+    for (const member of (members || [])) {
+        const envelope = await wrapGroupE2EEKeyForUser(nextKey, member.user_id);
+        await provisionGroupE2EEEnvelope(groupId, member.user_id, envelope, nextVersion);
+    }
+
+    return true;
+}
+
 async function removeGroupMember(groupId, userId) {
+    // Rotamos primero: el expulsado queda sin acceso a la nueva versión.
+    await rotateGroupE2EEBeforeMemberRemoval(groupId, userId);
+
     const { data, error } = await supabaseClient.rpc(
         "remove_group_member",
         {
