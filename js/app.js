@@ -910,7 +910,6 @@ function ensureProductNavigation() {
         { href: "explorar.html", text: "Explorar" },
         { href: "guardados.html", text: "Guardados" },
         { href: "mis-eventos.html", text: "Mis planes" },
-        { href: "grupos.html", text: "Grupos" },
         { href: "crear.html", text: "Crear", className: "nav-create" }
     ];
     nav.innerHTML = links.map(item => '<a href="' + item.href + '"' + (item.className ? ' class="' + item.className + '"' : '') + '>' + item.text + '</a>').join("");
