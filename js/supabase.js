@@ -2755,11 +2755,16 @@ async function markChatRead(roomId){const {data,error}=await supabaseClient.rpc(
 async function getChatPeople(search=""){const {data,error}=await supabaseClient.rpc("get_chat_people",{search_text:String(search||"").trim()||null});if(error){console.error("Error buscando personas para chat:",error);return [];}return data||[];}
 async function getOrCreateGroupChat(groupId){const {data,error}=await supabaseClient.rpc("get_or_create_group_chat",{target_group_id:groupId});if(error){console.error("Error abriendo chat del grupo:",error);return null;}return data||null;}
 async function getOrCreateEventChat(eventId){const {data,error}=await supabaseClient.rpc("get_or_create_event_chat",{target_event_id:eventId});if(error){console.error("Error abriendo chat del evento:",error);return null;}return data||null;}
-async function sendEncryptedChatMessage(roomId, encryptedBody, encryptionVersion = 1){
+async function sendEncryptedChatMessage(roomId, encryptedBody, encryptionVersion){
     const user=await getCurrentUser();
     if(!user||!roomId||!encryptedBody)return null;
+    const ctx=await getChatRoomSecurityContext(roomId);
+    if(!ctx?.groupId||!Number.isInteger(Number(encryptionVersion))||Number(encryptionVersion)<1){
+        console.error("Bloqueado: un mensaje cifrado requiere un chat de grupo/evento/equipo y una versión de clave válida.");
+        return null;
+    }
     const {data,error}=await supabaseClient.from("chat_messages").insert({
-        room_id:roomId,user_id:user.id,body:null,encrypted_body:encryptedBody,encryption_version:Number(encryptionVersion)||1
+        room_id:roomId,user_id:user.id,body:null,encrypted_body:encryptedBody,encryption_version:Number(encryptionVersion)
     }).select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").single();
     if(error){console.error("Error enviando mensaje cifrado:",error);return null;}
     return data;
@@ -2771,6 +2776,10 @@ async function updateChatMessage(messageId,body){
     if(!user)return null;
     const ctx=await getChatRoomSecurityContext(currentRoomId);
     const e2eeContext=ctx?.groupId ? await getGroupE2EEContext(ctx.groupId) : null;
+    if(ctx?.groupId && !e2eeContext){
+        console.error("Bloqueado: no hay clave E2EE disponible para editar este mensaje.");
+        return null;
+    }
     const changes=ctx?.groupId
         ? {body:null,encrypted_body:await encryptE2EEText(e2eeContext.key,String(body||"").trim().slice(0,2000)),encryption_version:e2eeContext.version,edited_at:new Date().toISOString()}
         : {body:String(body||"").trim().slice(0,2000),edited_at:new Date().toISOString()};
