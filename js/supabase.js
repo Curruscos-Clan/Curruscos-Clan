@@ -208,6 +208,52 @@ async function unwrapGroupE2EEKey(envelope) {
     );
 }
 
+async function getChatRoomSecurityContext(roomId) {
+    if (!roomId) return null;
+    const { data, error } = await supabaseClient
+        .from("chat_rooms")
+        .select("id,type,group_id,event_id,team_id,persistent_team_id")
+        .eq("id", roomId)
+        .single();
+    if (error || !data) return null;
+    if (data.group_id) return { groupId: data.group_id, scope: "group" };
+    if (data.event_id) {
+        const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", data.event_id).maybeSingle();
+        if (event?.group_id) return { groupId: event.group_id, scope: "event" };
+    }
+    if (data.team_id) {
+        const { data: team } = await supabaseClient.from("event_teams").select("event_id").eq("id", data.team_id).maybeSingle();
+        if (team?.event_id) {
+            const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", team.event_id).maybeSingle();
+            if (event?.group_id) return { groupId: event.group_id, scope: "team" };
+        }
+    }
+    return null;
+}
+
+async function provisionGroupE2EEEnvelope(groupId, targetUserId, encryptedGroupKey, keyVersion = 1) {
+    const { data, error } = await supabaseClient.rpc("upsert_group_key_envelope", {
+        target_group_id: groupId,
+        target_user_id: targetUserId,
+        target_key_version: keyVersion,
+        target_encrypted_group_key: encryptedGroupKey
+    });
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido distribuir la clave del grupo."));
+    return data;
+}
+
+async function ensureGroupE2EE(groupId) {
+    if (!groupId) return null;
+    const existing = await getGroupE2EEKey(groupId);
+    if (existing) return existing;
+    const user = await getCurrentUser();
+    if (!user) return null;
+    const group = await getCurrentGroup();
+    if (!group || group.id !== groupId) return null;
+    await initializeGroupE2EE(groupId);
+    return getGroupE2EEKey(groupId);
+}
+
 async function getGroupE2EEKey(groupId) {
     if (!groupId) return null;
     await ensureUserE2EEKey();
