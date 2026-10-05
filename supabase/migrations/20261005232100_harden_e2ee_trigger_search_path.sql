@@ -1,0 +1,1 @@
+alter function public.enforce_e2ee_payload_consistency() set search_path = public;
