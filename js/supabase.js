@@ -12,6 +12,248 @@ function getSupabaseErrorMessage(error, fallback = "Ha ocurrido un error.") {
     return error?.message || error?.details || error?.hint || fallback;
 }
 
+/* =========================================================
+   CURRUSCOS E2EE — Web Crypto client foundation
+   Private keys stay in IndexedDB and are never sent to Supabase.
+   Group content keys are AES-GCM; member envelopes use ECDH-P256 + AES-KW.
+   ========================================================= */
+
+const CURRUSCOS_E2EE_DB = "curruscos-e2ee";
+const CURRUSCOS_E2EE_STORE = "keys";
+
+function e2eeBytesToBase64(bytes) {
+    let binary = "";
+    bytes = new Uint8Array(bytes);
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(binary);
+}
+
+function e2eeBase64ToBytes(value) {
+    const binary = atob(value);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+}
+
+function e2eeOpenDb() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(CURRUSCOS_E2EE_DB, 1);
+        request.onupgradeneeded = () => {
+            if (!request.result.objectStoreNames.contains(CURRUSCOS_E2EE_STORE)) {
+                request.result.createObjectStore(CURRUSCOS_E2EE_STORE);
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function e2eeDbGet(key) {
+    const db = await e2eeOpenDb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(CURRUSCOS_E2EE_STORE, "readonly");
+        const request = tx.objectStore(CURRUSCOS_E2EE_STORE).get(key);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function e2eeDbPut(key, value) {
+    const db = await e2eeOpenDb();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(CURRUSCOS_E2EE_STORE, "readwrite");
+        tx.objectStore(CURRUSCOS_E2EE_STORE).put(value, key);
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function ensureUserE2EEKey() {
+    const user = await getCurrentUser();
+    if (!user || !window.crypto?.subtle) return null;
+
+    const stored = await e2eeDbGet("device-key:" + user.id);
+    if (stored?.privateKey && stored?.publicKeyJwk) return stored;
+
+    const pair = await crypto.subtle.generateKey(
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        ["deriveKey"]
+    );
+    const publicKeyJwk = await crypto.subtle.exportKey("jwk", pair.publicKey);
+
+    await e2eeDbPut("device-key:" + user.id, {
+        privateKey: pair.privateKey,
+        publicKeyJwk,
+        createdAt: new Date().toISOString()
+    });
+
+    const { error } = await supabaseClient
+        .from("user_e2ee_keys")
+        .upsert({
+            user_id: user.id,
+            public_key_jwk: publicKeyJwk,
+            algorithm: "ECDH-P256",
+            updated_at: new Date().toISOString()
+        }, { onConflict: "user_id" });
+
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido registrar la clave de este dispositivo."));
+    return { privateKey: pair.privateKey, publicKeyJwk };
+}
+
+async function e2eeImportPublicKey(jwk) {
+    return crypto.subtle.importKey(
+        "jwk",
+        jwk,
+        { name: "ECDH", namedCurve: "P-256" },
+        false,
+        []
+    );
+}
+
+async function e2eeDeriveWrappingKey(privateKey, publicKey) {
+    return crypto.subtle.deriveKey(
+        { name: "ECDH", public: publicKey },
+        privateKey,
+        { name: "AES-KW", length: 256 },
+        false,
+        ["wrapKey", "unwrapKey"]
+    );
+}
+
+async function generateGroupE2EEKey() {
+    return crypto.subtle.generateKey(
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function encryptE2EEText(groupKey, plaintext) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const encoded = new TextEncoder().encode(String(plaintext));
+    const ciphertext = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv },
+        groupKey,
+        encoded
+    );
+    return JSON.stringify({
+        v: 1,
+        alg: "AES-GCM-256",
+        iv: e2eeBytesToBase64(iv),
+        ciphertext: e2eeBytesToBase64(ciphertext)
+    });
+}
+
+async function decryptE2EEText(groupKey, payload) {
+    const value = typeof payload === "string" ? JSON.parse(payload) : payload;
+    const plaintext = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: e2eeBase64ToBytes(value.iv) },
+        groupKey,
+        e2eeBase64ToBytes(value.ciphertext)
+    );
+    return new TextDecoder().decode(plaintext);
+}
+
+async function wrapGroupE2EEKeyForUser(groupKey, recipientUserId) {
+    const local = await ensureUserE2EEKey();
+    if (!local) throw new Error("No se ha podido inicializar el cifrado del dispositivo.");
+
+    const { data, error } = await supabaseClient
+        .from("user_e2ee_keys")
+        .select("public_key_jwk")
+        .eq("user_id", recipientUserId)
+        .single();
+
+    if (error || !data?.public_key_jwk) {
+        throw new Error("El miembro todavía no ha activado el cifrado en su dispositivo.");
+    }
+
+    const recipientPublicKey = await e2eeImportPublicKey(data.public_key_jwk);
+    const ephemeralPair = await crypto.subtle.generateKey(
+        { name: "ECDH", namedCurve: "P-256" },
+        true,
+        ["deriveKey"]
+    );
+    const wrappingKey = await e2eeDeriveWrappingKey(ephemeralPair.privateKey, recipientPublicKey);
+    const wrapped = await crypto.subtle.wrapKey("raw", groupKey, wrappingKey, "AES-KW");
+    const ephemeralPublicKeyJwk = await crypto.subtle.exportKey("jwk", ephemeralPair.publicKey);
+
+    return JSON.stringify({
+        v: 1,
+        alg: "ECDH-P256+AES-KW",
+        ephemeralPublicKey: ephemeralPublicKeyJwk,
+        wrappedKey: e2eeBytesToBase64(wrapped)
+    });
+}
+
+async function unwrapGroupE2EEKey(envelope) {
+    const local = await ensureUserE2EEKey();
+    if (!local) return null;
+
+    const value = typeof envelope === "string" ? JSON.parse(envelope) : envelope;
+    const ephemeralPublicKey = await e2eeImportPublicKey(value.ephemeralPublicKey);
+    const wrappingKey = await e2eeDeriveWrappingKey(local.privateKey, ephemeralPublicKey);
+
+    return crypto.subtle.unwrapKey(
+        "raw",
+        e2eeBase64ToBytes(value.wrappedKey),
+        wrappingKey,
+        "AES-KW",
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+}
+
+async function getGroupE2EEKey(groupId) {
+    if (!groupId) return null;
+    await ensureUserE2EEKey();
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    const { data, error } = await supabaseClient
+        .from("group_key_envelopes")
+        .select("encrypted_group_key,key_version")
+        .eq("group_id", groupId)
+        .eq("user_id", user.id)
+        .order("key_version", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido recuperar la clave del grupo."));
+    if (!data) return null;
+    return unwrapGroupE2EEKey(data.encrypted_group_key);
+}
+
+async function initializeGroupE2EE(groupId) {
+    const user = await getCurrentUser();
+    if (!user || !groupId) return false;
+
+    await ensureUserE2EEKey();
+    const existing = await getGroupE2EEKey(groupId);
+    if (existing) return true;
+
+    const groupKey = await generateGroupE2EEKey();
+    const envelope = await wrapGroupE2EEKeyForUser(groupKey, user.id);
+
+    const { error } = await supabaseClient
+        .from("group_key_envelopes")
+        .upsert({
+            group_id: groupId,
+            user_id: user.id,
+            key_version: 1,
+            encrypted_group_key: envelope,
+            key_algorithm: "AES-GCM",
+            wrapping_algorithm: "ECDH-P256-AES-KW"
+        }, { onConflict: "group_id,user_id,key_version" });
+
+    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido inicializar el cifrado del grupo."));
+    return true;
+}
+
 
 // ========================================
 // USUARIO ACTUAL
