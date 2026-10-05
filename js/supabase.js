@@ -2441,8 +2441,20 @@ async function sendEncryptedChatMessage(roomId, encryptedBody){
     return data;
 }
 
-async function getChatMessages(roomId){const {data,error}=await supabaseClient.from("chat_messages").select("id,room_id,user_id,body,created_at,edited_at,deleted_at").eq("room_id",roomId).is("deleted_at",null).order("created_at",{ascending:true}).limit(200);if(error){console.error("Error obteniendo mensajes:",error);return [];}return data||[];}
-async function updateChatMessage(messageId,body){const {data,error}=await supabaseClient.from("chat_messages").update({body:String(body||"").trim().slice(0,2000),edited_at:new Date().toISOString()}).eq("id",messageId).eq("user_id",(await getCurrentUser())?.id).select().single();if(error){console.error("Error editando mensaje:",error);return null;}return data;}
+async function getChatMessages(roomId){const {data,error}=await supabaseClient.from("chat_messages").select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").eq("room_id",roomId).is("deleted_at",null).order("created_at",{ascending:true}).limit(200);if(error){console.error("Error obteniendo mensajes:",error);return [];}return data||[];}
+async function updateChatMessage(messageId,body){
+    const user=await getCurrentUser();
+    if(!user)return null;
+    const ctx=await getChatRoomSecurityContext(currentRoomId);
+    const changes=ctx?.groupId
+        ? {body:null,encrypted_body:await encryptE2EEText(await ensureGroupE2EE(ctx.groupId),String(body||"").trim().slice(0,2000)),encryption_version:1,edited_at:new Date().toISOString()}
+        : {body:String(body||"").trim().slice(0,2000),edited_at:new Date().toISOString()};
+    const {data,error}=await supabaseClient.from("chat_messages").update(changes).eq("id",messageId).eq("user_id",user.id).select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").single();
+    if(error){console.error("Error editando mensaje:",error);return null;}
+    if(ctx?.groupId){data.body=String(body||"").trim().slice(0,2000);}
+    return data;
+}
+
 async function deleteChatMessage(messageId){const {error}=await supabaseClient.from("chat_messages").update({deleted_at:new Date().toISOString()}).eq("id",messageId).eq("user_id",(await getCurrentUser())?.id);if(error){console.error("Error borrando mensaje:",error);return false;}return true;}
 async function sendChatMessage(roomId,body){const user=await getCurrentUser();if(!user||!String(body||"").trim())return null;const {data,error}=await supabaseClient.from("chat_messages").insert({room_id:roomId,user_id:user.id,body:String(body).trim().slice(0,2000)}).select().single();if(error){console.error("Error enviando mensaje:",error);return null;}return data;}
 function subscribeToChat(roomId,callback){return supabaseClient.channel("chat-"+roomId).on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages",filter:"room_id=eq."+roomId},payload=>callback?.(payload.new)).subscribe();}
