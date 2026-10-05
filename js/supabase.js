@@ -790,7 +790,7 @@ async function getGroupEvents() {
     if (!latestContext) return events;
 
     return Promise.all(events.map(async event => {
-        if (event.visibility === "public" || !event.encrypted_payload) return event;
+        if (!event.encrypted_payload) return event;
         try {
             const context = await getGroupE2EEContext(group.id, event.encryption_version || latestContext.version);
             if (!context) throw new Error("Clave no disponible");
