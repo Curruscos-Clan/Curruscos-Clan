@@ -325,6 +325,8 @@ async function initGroupSelector(access) {
     };
 
     name.textContent = access.currentGroup.name || t("group.group");
+    button.title = "Cambiar de grupo";
+    button.setAttribute("aria-label", "Cambiar de grupo");
     list.innerHTML = "";
 
     access.groups.forEach(group => {
