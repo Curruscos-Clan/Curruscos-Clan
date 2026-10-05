@@ -13,7 +13,11 @@ async function openRoom(roomId){if(chatChannel){await unsubscribeFromChat(chatCh
     if(currentMessages.some(m=>m.id===message.id))return;
     const ctx=await getChatRoomSecurityContext(roomId);
     if(ctx?.groupId&&message.encrypted_body){
-        try{message.body=await decryptE2EEText(await ensureGroupE2EE(ctx.groupId),message.encrypted_body);}
+        try{
+            const keyContext=await getGroupE2EEContext(ctx.groupId,message.encryption_version);
+            if(!keyContext) throw new Error("Clave no disponible");
+            message.body=await decryptE2EEText(keyContext.key,message.encrypted_body);
+        }
         catch(e){message.body="Mensaje cifrado no disponible en este dispositivo.";}
     }
     currentMessages.push(message);await renderMessages();await markChatRead(roomId);window.dispatchEvent(new Event("curruscos:chat-updated"));
