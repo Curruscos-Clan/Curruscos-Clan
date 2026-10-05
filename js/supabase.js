@@ -943,7 +943,6 @@ async function setEventParticipant(eventId, userId, status) {
 // ========================================
 
 async function getEventTasks(eventId) {
-
     const { data, error } = await supabaseClient
         .from("tasks")
         .select("*")
@@ -955,7 +954,22 @@ async function getEventTasks(eventId) {
         return [];
     }
 
-    return data || [];
+    const tasks = data || [];
+    const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
+    if (!event?.group_id) return tasks;
+
+    const key = await getGroupE2EEKey(event.group_id);
+    if (!key) return tasks;
+
+    return Promise.all(tasks.map(async task => {
+        if (!task.encrypted_payload) return task;
+        try {
+            const payload = JSON.parse(await decryptE2EEText(key, task.encrypted_payload));
+            return { ...task, ...payload, encrypted_payload: task.encrypted_payload };
+        } catch {
+            return { ...task, title: "Contenido cifrado no disponible en este dispositivo." };
+        }
+    }));
 }
 
 
@@ -971,11 +985,18 @@ async function createEventTask(
         return null;
     }
 
+    const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
+    const groupKey = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
+    const encryptedPayload = groupKey
+        ? await encryptE2EEText(groupKey, JSON.stringify({ title: String(title || "").trim() }))
+        : null;
+
     const { data, error } = await supabaseClient
         .from("tasks")
         .insert({
             event_id: eventId,
-            title: title,
+            title: encryptedPayload ? null : title,
+            encrypted_payload: encryptedPayload,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
