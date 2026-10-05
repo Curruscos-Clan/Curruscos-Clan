@@ -1797,10 +1797,9 @@ async function acceptGroupInvitation(invitationId) {
 
 async function rejectGroupInvitation(invitationId) {
     const { data, error } = await supabaseClient.rpc(
-        "respond_to_invitation",
+        "reject_group_invitation",
         {
-            target_invitation_id: invitationId,
-            accept: false
+            target_invitation_id: invitationId
         }
     );
 
