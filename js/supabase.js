@@ -994,8 +994,8 @@ async function updateGroupEvent(eventId, eventData) {
             if (!oldContext) throw new Error("No se puede publicar el evento: falta la clave histórica.");
             try {
                 payload = {
-                    ...payload,
-                    ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload))
+                    ...JSON.parse(await decryptE2EEText(oldContext.key, existing.encrypted_payload)),
+                    ...payload
                 };
             } catch {
                 throw new Error("No se puede publicar el evento: no se ha podido descifrar su contenido.");
