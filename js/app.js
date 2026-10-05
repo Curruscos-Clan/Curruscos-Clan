@@ -620,10 +620,8 @@ function ensureNotificationCenter() {
     wrapper =
         createNotificationMarkup();
 
-    const nav =
-        navbar.querySelector("#mainNav");
-
-    navbar.insertBefore(wrapper, nav);
+    const menuButton = navbar.querySelector("#menuButton");
+    navbar.insertBefore(wrapper, menuButton || null);
 
     return {
         wrapper,
