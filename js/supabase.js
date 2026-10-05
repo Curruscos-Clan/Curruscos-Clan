@@ -1721,6 +1721,17 @@ async function removeGroupMember(groupId, userId) {
         ));
     }
 
+    const currentUser = await getCurrentUser();
+
+    if (currentUser && userId === currentUser.id) {
+        const savedGroupId = localStorage.getItem("curruscos_current_group");
+        if (savedGroupId === groupId) {
+            localStorage.removeItem("curruscos_current_group");
+            currentGroupCache = null;
+        }
+        userGroupsCache = null;
+    }
+
     return data;
 }
 
