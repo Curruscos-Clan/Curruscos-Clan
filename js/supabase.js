@@ -1273,7 +1273,12 @@ async function getEventExpenses(eventId) {
     if (!groupId) return expenses;
 
     const latestContext = await getGroupE2EEContext(groupId);
-    if (!latestContext) return expenses;
+    if (!latestContext) {
+        return expenses.map(expense => expense.encrypted_payload
+            ? { ...expense, title: "Contenido cifrado no disponible en este dispositivo." }
+            : expense
+        );
+    }
 
     return Promise.all(expenses.map(async expense => {
         if (!expense.encrypted_payload) return expense;
@@ -1435,7 +1440,12 @@ async function getGroupMemories() {
 
     const memories = data || [];
     const latestContext = await getGroupE2EEContext(group.id);
-    if (!latestContext) return memories;
+    if (!latestContext) {
+        return memories.map(memory => memory.encrypted_payload
+            ? { ...memory, title: "Contenido cifrado no disponible en este dispositivo.", description: "" }
+            : memory
+        );
+    }
 
     return Promise.all(memories.map(async memory => {
         if (!memory.encrypted_payload) return memory;
@@ -1462,10 +1472,9 @@ async function createGroupMemory(memoryData) {
     const keyContext = await getGroupE2EEContext(group.id);
     if (!keyContext) return null;
     const encryptedPayload = await encryptE2EEText(keyContext.key, JSON.stringify({
-            title: memoryData.title || "",
-            description: memoryData.description || ""
-        }))
-        : null;
+        title: memoryData.title || "",
+        description: memoryData.description || ""
+    }));
 
     const { data, error } = await supabaseClient
         .from("memories")
