@@ -1072,9 +1072,9 @@ async function createEventTask(
     }
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const groupKey = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = groupKey
-        ? await encryptE2EEText(groupKey, JSON.stringify({ title: String(title || "").trim() }))
+    const groupKeyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = groupKeyContext
+        ? await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }))
         : null;
 
     const { data, error } = await supabaseClient
@@ -1083,6 +1083,7 @@ async function createEventTask(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: groupKeyContext?.version || null,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
@@ -1228,8 +1229,8 @@ async function createEventExpense(
     if (!user) return null;
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = key ? await encryptE2EEText(key, JSON.stringify({ title: String(title || "").trim() })) : null;
+    const keyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = keyContext ? await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() })) : null;
 
     const { data, error } = await supabaseClient
         .from("expenses")
@@ -1237,6 +1238,7 @@ async function createEventExpense(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: keyContext?.version || null,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
@@ -3843,9 +3845,9 @@ async function createEventTask(
     }
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const groupKey = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = groupKey
-        ? await encryptE2EEText(groupKey, JSON.stringify({ title: String(title || "").trim() }))
+    const groupKeyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = groupKeyContext
+        ? await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }))
         : null;
 
     const { data, error } = await supabaseClient
@@ -3854,6 +3856,7 @@ async function createEventTask(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: groupKeyContext?.version || null,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
@@ -3999,8 +4002,8 @@ async function createEventExpense(
     if (!user) return null;
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = key ? await encryptE2EEText(key, JSON.stringify({ title: String(title || "").trim() })) : null;
+    const keyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = keyContext ? await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() })) : null;
 
     const { data, error } = await supabaseClient
         .from("expenses")
@@ -4008,6 +4011,7 @@ async function createEventExpense(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: keyContext?.version || null,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
@@ -6619,9 +6623,9 @@ async function createEventTask(
     }
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const groupKey = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = groupKey
-        ? await encryptE2EEText(groupKey, JSON.stringify({ title: String(title || "").trim() }))
+    const groupKeyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = groupKeyContext
+        ? await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }))
         : null;
 
     const { data, error } = await supabaseClient
@@ -6630,6 +6634,7 @@ async function createEventTask(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: groupKeyContext?.version || null,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
@@ -6775,8 +6780,8 @@ async function createEventExpense(
     if (!user) return null;
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = key ? await encryptE2EEText(key, JSON.stringify({ title: String(title || "").trim() })) : null;
+    const keyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = keyContext ? await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() })) : null;
 
     const { data, error } = await supabaseClient
         .from("expenses")
@@ -6784,6 +6789,7 @@ async function createEventExpense(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: keyContext?.version || null,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
@@ -9385,9 +9391,9 @@ async function createEventTask(
     }
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const groupKey = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = groupKey
-        ? await encryptE2EEText(groupKey, JSON.stringify({ title: String(title || "").trim() }))
+    const groupKeyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = groupKeyContext
+        ? await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }))
         : null;
 
     const { data, error } = await supabaseClient
@@ -9396,6 +9402,7 @@ async function createEventTask(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: groupKeyContext?.version || null,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
@@ -9541,8 +9548,8 @@ async function createEventExpense(
     if (!user) return null;
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
-    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
-    const encryptedPayload = key ? await encryptE2EEText(key, JSON.stringify({ title: String(title || "").trim() })) : null;
+    const keyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
+    const encryptedPayload = keyContext ? await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() })) : null;
 
     const { data, error } = await supabaseClient
         .from("expenses")
@@ -9550,6 +9557,7 @@ async function createEventExpense(
             event_id: eventId,
             title: encryptedPayload ? null : title,
             encrypted_payload: encryptedPayload,
+            encryption_version: keyContext?.version || null,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
