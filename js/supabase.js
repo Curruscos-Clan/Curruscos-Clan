@@ -658,15 +658,21 @@ async function checkGroupPlanCapacity(groupId, resource) {
 async function createGroupTrip(tripData) {
     const group = await getCurrentGroup();
     if (!group) return null;
-    const { data, error } = await supabaseClient.rpc("create_trip", {
+    const keyContext = await getGroupE2EEContext(group.id);
+    if (!keyContext) throw new Error("No se ha podido preparar el cifrado del grupo.");
+    const encryptedPayload = await encryptE2EEText(keyContext.key, JSON.stringify({
+        title: tripData.title || "",
+        destination: tripData.destination || null,
+        description: tripData.description || null,
+        search_preferences: tripData.search_preferences || {}
+    }));
+    const { data, error } = await supabaseClient.rpc("create_encrypted_trip", {
         target_group_id: group.id,
-        trip_title: tripData.title,
-        trip_destination: tripData.destination || null,
         trip_start_date: tripData.start_date || null,
         trip_end_date: tripData.end_date || null,
         trip_budget: tripData.budget_per_person ?? null,
-        trip_description: tripData.description || null,
-        trip_search_preferences: tripData.search_preferences || {}
+        encrypted_payload: encryptedPayload,
+        encryption_version: keyContext.version
     });
     if (error) {
         console.error("Error creando viaje:", error);
@@ -674,7 +680,6 @@ async function createGroupTrip(tripData) {
     }
     return data || null;
 }
-
 async function requestWorkspacePlan(groupId, planCode) {
     if (!groupId || !planCode) return null;
     const { data, error } = await supabaseClient.rpc("request_workspace_plan", {
