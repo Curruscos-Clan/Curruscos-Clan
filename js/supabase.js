@@ -803,7 +803,6 @@ async function getGroupEvents() {
 
 
 async function createGroupEvent(eventData) {
-
     const user = await getCurrentUser();
     const group = await getCurrentGroup();
 
@@ -812,21 +811,34 @@ async function createGroupEvent(eventData) {
         return null;
     }
 
+    const keyContext = await getGroupE2EEContext(group.id);
+    if (!keyContext) {
+        throw new Error("No se ha podido preparar el cifrado del grupo.");
+    }
+
+    const encryptedPayload = await encryptE2EEText(
+        keyContext.key,
+        JSON.stringify({
+            title: String(eventData.title || "").trim(),
+            description: String(eventData.description || "").trim(),
+            location: String(eventData.location || "").trim()
+        })
+    );
+
     const { data, error } = await supabaseClient.rpc(
-        "create_group_event",
+        "create_encrypted_group_event",
         {
             target_group_id: group.id,
-            event_title: eventData.title,
-            event_description: eventData.description || null,
             event_date: eventData.date || null,
             event_time: eventData.time || null,
-            event_location: eventData.location || null,
-            event_trip_id: eventData.trip_id || null
+            event_trip_id: eventData.trip_id || null,
+            encrypted_payload: encryptedPayload,
+            encryption_version: keyContext.version
         }
     );
 
     if (error) {
-        console.error("Error creando evento:", error);
+        console.error("Error creando evento cifrado:", error);
         throw new Error(getSupabaseErrorMessage(error, "No se ha podido crear el evento."));
     }
 
