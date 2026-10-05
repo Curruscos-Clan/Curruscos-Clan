@@ -1193,38 +1193,36 @@ testSupabaseConnection();
 
 async function getGroupMemories() {
     const group = await getCurrentGroup();
-
-    if (!group) {
-        return [];
-    }
+    if (!group) return [];
 
     const { data, error } = await supabaseClient
         .from("memories")
         .select(`
-            id,
-            group_id,
-            created_by,
-            title,
-            description,
-            image_url,
-            created_at,
-            event_id,
-            profiles (
-                display_name,
-                username
-            )
+            id, group_id, created_by, title, description, image_url, created_at, event_id,
+            encrypted_payload,
+            profiles (display_name, username)
         `)
         .eq("group_id", group.id)
-        .order("created_at", {
-            ascending: false
-        });
+        .order("created_at", { ascending: false });
 
     if (error) {
         console.error("Error obteniendo recuerdos:", error);
         return [];
     }
 
-    return data || [];
+    const memories = data || [];
+    const key = await getGroupE2EEKey(group.id);
+    if (!key) return memories;
+
+    return Promise.all(memories.map(async memory => {
+        if (!memory.encrypted_payload) return memory;
+        try {
+            const payload = JSON.parse(await decryptE2EEText(key, memory.encrypted_payload));
+            return { ...memory, ...payload };
+        } catch {
+            return { ...memory, title: "Contenido cifrado no disponible en este dispositivo.", description: "" };
+        }
+    }));
 }
 
 
@@ -1236,13 +1234,22 @@ async function createGroupMemory(memoryData) {
         return null;
     }
 
+    const key = await getGroupE2EEKey(group.id);
+    const encryptedPayload = key
+        ? await encryptE2EEText(key, JSON.stringify({
+            title: memoryData.title || "",
+            description: memoryData.description || ""
+        }))
+        : null;
+
     const { data, error } = await supabaseClient
         .from("memories")
         .insert({
             group_id: group.id,
             created_by: user.id,
-            title: memoryData.title,
-            description: memoryData.description || null,
+            title: encryptedPayload ? null : memoryData.title,
+            description: encryptedPayload ? null : (memoryData.description || null),
+            encrypted_payload: encryptedPayload,
             image_url: memoryData.image_url || null
         })
         .select()
