@@ -315,166 +315,83 @@ function ensureGroupSelector() {
 }
 
 async function initGroupSelector(access) {
-    const selector =
-        ensureGroupSelector();
+    const selector = ensureGroupSelector();
+    if (!selector) return;
 
-    if (!selector) {
-        return;
-    }
-
-    const {
-        button,
-        name,
-        menu,
-        list,
-        create
-    } = selector;
-
-    name.textContent =
-        access.currentGroup.name || t("group.group");
-
+    const { button, name, menu, list, create } = selector;
     const workspaceTypeLabels = {
-        community: "COMUNIDAD",
-        sports: "DEPORTE",
-        travel: "VIAJE",
-        study: "ESTUDIO",
-        organization: "ORGANIZACIÓN",
-        other: "WORKSPACE"
+        community: "COMUNIDAD", sports: "DEPORTE", travel: "VIAJE",
+        study: "ESTUDIO", organization: "ORGANIZACIÓN", other: "WORKSPACE"
     };
-    if (selector.type) {
-        selector.type.textContent = workspaceTypeLabels[access.currentGroup.workspace_type || "community"] || "WORKSPACE";
-    }
 
-    const planBadge =
-        selector.button.querySelector(".group-plan-badge") ||
-        document.createElement("span");
-    planBadge.className = "group-plan-badge";
-    planBadge.textContent =
-        access.currentGroup.plan_name || t("group.planFree");
-    if (!planBadge.parentElement) {
-        selector.button.appendChild(planBadge);
-    }
-
+    name.textContent = access.currentGroup.name || t("group.group");
     list.innerHTML = "";
 
     access.groups.forEach(group => {
-        const option =
-            document.createElement("button");
-
+        const option = document.createElement("button");
         option.type = "button";
-        option.className = "group-option";
+        option.className = "group-option" + (group.id === access.currentGroup.id ? " active" : "");
 
-        if (group.id === access.currentGroup.id) {
-            option.classList.add("active");
-        }
-
-        const strong =
-            document.createElement("strong");
-
-        strong.textContent =
-            group.name || t("group.group");
-
-        const span =
-            document.createElement("span");
-
-        span.textContent =
-            roleLabel(group.role);
-
-        option.appendChild(strong);
-        option.appendChild(span);
-
+        const strong = document.createElement("strong");
+        strong.textContent = group.name || t("group.group");
+        const span = document.createElement("span");
+        span.textContent = roleLabel(group.role);
         const type = document.createElement("small");
         type.className = "group-option-type";
         type.textContent = workspaceTypeLabels[group.workspace_type || "community"] || "WORKSPACE";
-        option.appendChild(type);
-
-        const plan =
-            document.createElement("em");
+        const plan = document.createElement("em");
         plan.className = "group-option-plan";
-        plan.textContent =
-            group.plan_name || t("group.planFree");
-        option.appendChild(plan);
+        plan.textContent = group.plan_name || t("group.planFree");
 
-        option.addEventListener(
-            "click",
-            () => {
-                if (group.id === access.currentGroup.id) {
-                    menu.hidden = true;
-                    return;
-                }
-
-                setCurrentGroup(group.id);
-                window.location.reload();
+        option.append(strong, span, type, plan);
+        option.addEventListener("click", () => {
+            if (group.id === access.currentGroup.id) {
+                menu.hidden = true;
+                button.setAttribute("aria-expanded", "false");
+                return;
             }
-        );
-
+            setCurrentGroup(group.id);
+            window.location.reload();
+        });
         list.appendChild(option);
     });
 
-    button.addEventListener(
-        "click",
-        event => {
-            event.stopPropagation();
-            menu.hidden = !menu.hidden;
+    button.setAttribute("aria-expanded", "false");
+    button.addEventListener("click", event => {
+        event.stopPropagation();
+        menu.hidden = !menu.hidden;
+        button.setAttribute("aria-expanded", String(!menu.hidden));
+    });
+
+    document.addEventListener("click", event => {
+        if (!menu.contains(event.target) && event.target !== button) {
+            menu.hidden = true;
+            button.setAttribute("aria-expanded", "false");
         }
-    );
+    });
 
-    document.addEventListener(
-        "click",
-        event => {
-            if (
-                !menu.contains(event.target) &&
-                event.target !== button
-            ) {
-                menu.hidden = true;
-            }
+    create.addEventListener("click", async event => {
+        event.stopPropagation();
+        const name = prompt(t("group.namePrompt"));
+        if (!name || !name.trim()) return;
+
+        const description = prompt(t("group.descriptionPrompt"));
+        create.disabled = true;
+        const previous = create.textContent;
+        create.textContent = t("common.creating");
+
+        const newGroup = await createGroup(name.trim(), description?.trim() || null);
+        create.disabled = false;
+        create.textContent = previous;
+
+        if (!newGroup) {
+            alert("No se ha podido crear el grupo.");
+            return;
         }
-    );
 
-    create.addEventListener(
-        "click",
-        async event => {
-            event.stopPropagation();
-
-            const name =
-                prompt(t("group.namePrompt"));
-
-            if (!name || !name.trim()) {
-                return;
-            }
-
-            const description =
-                prompt(
-                    t("group.descriptionPrompt")
-                );
-
-            create.disabled = true;
-            const previous =
-                create.textContent;
-
-            create.textContent =
-                t("common.creating");
-
-            const newGroup =
-                await createGroup(
-                    name.trim(),
-                    description?.trim() || null
-                );
-
-            create.disabled = false;
-            create.textContent = previous;
-
-            if (!newGroup) {
-                alert(
-                    "No se ha podido crear el grupo."
-                );
-                return;
-            }
-
-            setCurrentGroup(newGroup.id);
-            window.location.reload();
-        }
-    );
+        setCurrentGroup(newGroup.id);
+        window.location.reload();
+    });
 }
 
 /* =========================================================
