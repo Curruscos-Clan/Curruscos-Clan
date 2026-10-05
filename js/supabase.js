@@ -1351,13 +1351,18 @@ async function getGroupMemories() {
     }
 
     const memories = data || [];
-    const key = await getGroupE2EEKey(group.id);
-    if (!key) return memories;
+    const latestContext = await getGroupE2EEContext(group.id);
+    if (!latestContext) return memories;
 
     return Promise.all(memories.map(async memory => {
         if (!memory.encrypted_payload) return memory;
         try {
-            const payload = JSON.parse(await decryptE2EEText(key, memory.encrypted_payload));
+            const context = await getGroupE2EEContext(
+                group.id,
+                memory.encryption_version || latestContext.version
+            );
+            if (!context) throw new Error("Clave no disponible");
+            const payload = JSON.parse(await decryptE2EEText(context.key, memory.encrypted_payload));
             return { ...memory, ...payload };
         } catch {
             return { ...memory, title: "Contenido cifrado no disponible en este dispositivo.", description: "" };
