@@ -414,13 +414,13 @@ async function loadTripFinances() {
 
 function updateTripSearchLinks() {
     const destination = String(activeTrip?.destination || "").trim();
-    const encoded = encodeURIComponent(destination);
+    const origin = String(activeTrip?.search_preferences?.origin || "").trim();
     const flight = $("flightSearchLink");
     const hotel = $("hotelSearchLink");
     const map = $("mapSearchLink");
-    if (flight) flight.href = destination ? "https://www.google.com/travel/flights?q=" + encoded : "https://www.google.com/travel/flights";
-    if (hotel) hotel.href = destination ? "https://www.google.com/travel/hotels?q=" + encoded : "https://www.google.com/travel/hotels";
-    if (map) map.href = destination ? "https://www.google.com/maps/search/" + encoded : "https://www.google.com/maps";
+    if (flight) flight.href = travelProviderSearchUrl("googleFlights", { origin, destination });
+    if (hotel) hotel.href = travelProviderSearchUrl("googleHotels", { destination });
+    if (map) map.href = travelProviderSearchUrl("googleMaps", { destination });
 }
 function renderActiveTrip() {
     $("tripEmptyState").hidden = true;
