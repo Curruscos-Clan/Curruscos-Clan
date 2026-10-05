@@ -275,21 +275,35 @@ function createGroupSelectorMarkup() {
 function ensureGroupSelector() {
     const navbar = document.querySelector(".navbar");
     if (!navbar) return null;
-    let button = document.getElementById("currentGroupButton");
-    if (button) return {
-        button,
-        name: document.getElementById("currentGroupName"),
-        type: document.getElementById("currentGroupType"),
-        menu: document.getElementById("groupMenu"),
-        list: document.getElementById("groupList"),
-        create: document.getElementById("createGroupButton")
-    };
-    let selector = document.createElement("div");
+    let selector = navbar.querySelector(".workspace-switcher");
+    if (selector) {
+        return {
+            button: selector.querySelector("#currentGroupButton"),
+            name: selector.querySelector("#currentGroupName"),
+            type: selector.querySelector("#currentGroupType"),
+            menu: selector.querySelector("#groupMenu"),
+            list: selector.querySelector("#groupList"),
+            create: selector.querySelector("#createGroupButton")
+        };
+    }
+    selector = document.createElement("div");
     selector.className = "group-selector workspace-switcher";
-    selector.innerHTML = '<button type="button" class="current-group-button" id="currentGroupButton"><span class="group-current-copy"><small>ESPACIO ACTIVO</small><strong id="currentGroupName">Grupo</strong></span><span class="group-selector-arrow">▾</span></button><div id="groupMenu" class="group-menu" hidden><div id="groupList" class="group-list"></div><div class="group-menu-divider"></div><button type="button" id="createGroupButton" class="create-group-button">＋ Crear un grupo</button></div>';
-    const nav = navbar.querySelector("#mainNav");
-    if (nav) nav.insertAdjacentElement("afterend", selector);
-    else navbar.appendChild(selector);
+    selector.innerHTML =
+        '<button type="button" class="current-group-button" id="currentGroupButton" aria-expanded="false" aria-haspopup="true">' +
+            '<span class="group-current-copy"><small>GRUPO ACTIVO</small><strong id="currentGroupName">Grupo</strong></span>' +
+            '<span class="group-selector-arrow">▾</span>' +
+        '</button>' +
+        '<div id="groupMenu" class="group-menu" hidden>' +
+            '<div class="group-menu-heading"><span>TUS GRUPOS</span><small>Elige dónde quieres trabajar</small></div>' +
+            '<div id="groupList" class="group-list"></div>' +
+            '<div class="group-menu-divider"></div>' +
+            '<div class="group-menu-actions">' +
+                '<button type="button" id="createGroupButton" class="create-group-button">＋ Crear un grupo</button>' +
+                '<a href="grupos.html" class="manage-groups-button">Gestionar grupos →</a>' +
+            '</div>' +
+        '</div>';
+    const menuButton = navbar.querySelector("#menuButton");
+    navbar.insertBefore(selector, menuButton || null);
     return {
         button: selector.querySelector("#currentGroupButton"),
         name: selector.querySelector("#currentGroupName"),
