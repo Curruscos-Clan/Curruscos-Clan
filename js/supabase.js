@@ -1083,12 +1083,39 @@ async function updateEventTask(taskId, completed, taskData = {}) {
         completed: completed
     };
 
-    if (typeof taskData.title === "string") {
-        changes.title = taskData.title.trim();
-    }
-
     if (Object.prototype.hasOwnProperty.call(taskData, "assigned_to")) {
         changes.assigned_to = taskData.assigned_to || null;
+    }
+
+    if (typeof taskData.title === "string") {
+        const { data: task } = await supabaseClient
+            .from("tasks")
+            .select("event_id")
+            .eq("id", taskId)
+            .maybeSingle();
+
+        const { data: event } = task?.event_id
+            ? await supabaseClient
+                .from("events")
+                .select("group_id")
+                .eq("id", task.event_id)
+                .maybeSingle()
+            : { data: null };
+
+        const keyContext = event?.group_id
+            ? await getGroupE2EEContext(event.group_id)
+            : null;
+
+        if (keyContext) {
+            changes.title = null;
+            changes.encrypted_payload = await encryptE2EEText(
+                keyContext.key,
+                JSON.stringify({ title: taskData.title.trim() })
+            );
+            changes.encryption_version = keyContext.version;
+        } else {
+            changes.title = taskData.title.trim();
+        }
     }
 
     const { data, error } = await supabaseClient
