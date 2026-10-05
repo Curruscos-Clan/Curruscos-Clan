@@ -87,6 +87,17 @@ async function loadTrips(selectId = null) {
     if (error) { console.error(error); return; }
     if ((await getCurrentGroup())?.id !== groupId) return;
     trips = data || [];
+    const groupKeyContext = await getGroupE2EEContext(groupId);
+    if (groupKeyContext) {
+        trips = await Promise.all(trips.map(async trip => {
+            if (!trip.encrypted_payload) return trip;
+            try {
+                return { ...trip, ...JSON.parse(await decryptE2EEText((await getGroupE2EEContext(groupId, trip.encryption_version || groupKeyContext.version)).key, trip.encrypted_payload)) };
+            } catch {
+                return { ...trip, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" };
+            }
+        }));
+    }
     const currentUser = await getCurrentUser();
     window.curruscosCurrentUserId = currentUser?.id || null;
     renderTripList();
@@ -124,6 +135,22 @@ async function selectTrip(id) {
     if (selectionToken !== activeTripId) return;
     if (optionsError) { console.error(optionsError); return; }
     if (itineraryError) { console.error("Error obteniendo itinerario:", itineraryError); return; }
+    const group = await getCurrentGroup();
+    const groupKeyContext = group ? await getGroupE2EEContext(group.id) : null;
+    if (groupKeyContext) {
+        for (const option of (options || [])) {
+            if (option.encrypted_payload) {
+                try { Object.assign(option, JSON.parse(await decryptE2EEText((await getGroupE2EEContext(group.id, option.encryption_version || groupKeyContext.version)).key, option.encrypted_payload))); }
+                catch { option.title = "Contenido cifrado no disponible en este dispositivo."; }
+            }
+        }
+        for (const item of (itinerary || [])) {
+            if (item.encrypted_payload) {
+                try { Object.assign(item, JSON.parse(await decryptE2EEText((await getGroupE2EEContext(group.id, item.encryption_version || groupKeyContext.version)).key, item.encrypted_payload))); }
+                catch { item.title = "Contenido cifrado no disponible en este dispositivo."; }
+            }
+        }
+    }
     let votes = [];
     if ((options || []).length) {
         const { data: voteRows, error: voteError } = await supabaseClient
@@ -514,6 +541,21 @@ async function createItineraryItem(e) {
         return;
     }
     if (payload.start_time && payload.end_time && payload.end_time < payload.start_time) { alert("La hora de fin no puede ser anterior a la de inicio."); return; }
+    const group = await getCurrentGroup();
+    const keyContext = group ? await getGroupE2EEContext(group.id) : null;
+    if (keyContext) {
+        payload.encrypted_payload = await encryptE2EEText(keyContext.key, JSON.stringify({
+            title: payload.title,
+            location: payload.location,
+            notes: payload.notes,
+            url: payload.url
+        }));
+        payload.encryption_version = keyContext.version;
+        payload.title = null;
+        payload.location = null;
+        payload.notes = null;
+        payload.url = null;
+    }
     const { error } = await supabaseClient.from("trip_itinerary_items").insert(payload);
     if (error) { console.error(error); alert("No se ha podido añadir al itinerario."); return; }
     closeItineraryModal();
@@ -981,6 +1023,23 @@ async function createOptionFromForm(e) {
     if ([payload.price, payload.price_per_person].some(value => value != null && (!Number.isFinite(value) || value < 0))) {
         alert("Los precios deben ser importes válidos.");
         return;
+    }
+    const group = await getCurrentGroup();
+    const keyContext = group ? await getGroupE2EEContext(group.id) : null;
+    if (keyContext) {
+        payload.encrypted_payload = await encryptE2EEText(keyContext.key, JSON.stringify({
+            title: payload.title,
+            provider: payload.provider,
+            url: payload.url,
+            notes: payload.notes,
+            metadata: payload.metadata
+        }));
+        payload.encryption_version = keyContext.version;
+        payload.title = null;
+        payload.provider = null;
+        payload.url = null;
+        payload.notes = null;
+        payload.metadata = null;
     }
     const {error}=await supabaseClient.from("trip_options").insert(payload);
     if(error){alert("No se ha podido guardar la opción.");console.error(error);return;}
