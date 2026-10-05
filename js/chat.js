@@ -22,17 +22,20 @@ async function refreshMessages(){
     currentMessages=await getChatMessages(currentRoomId);
     const ctx=await getChatRoomSecurityContext(currentRoomId);
     if(ctx?.groupId){
-        const keyContext=await getGroupE2EEContext(ctx.groupId,message.encryption_version);
-        if(key){
-            for(const message of currentMessages){
-                if(message.encrypted_body){
-                    try{ message.body=await decryptE2EEText(keyContext.key,message.encrypted_body); }catch(e){ message.body="Mensaje cifrado no disponible en este dispositivo."; }
-                }
+        for(const message of currentMessages){
+            if(!message.encrypted_body) continue;
+            try{
+                const keyContext=await getGroupE2EEContext(ctx.groupId, message.encryption_version);
+                if(!keyContext) throw new Error("Clave no disponible");
+                message.body=await decryptE2EEText(keyContext.key,message.encrypted_body);
+            }catch(e){
+                message.body="Mensaje cifrado no disponible en este dispositivo.";
             }
         }
     }
     await loadNames(currentMessages);await renderMessages();
 }
+
 async function loadNames(messages){const ids=[...new Set(messages.map(m=>m.user_id))];if(!ids.length)return;const {data}=await supabaseClient.from("profiles").select("id,display_name,username").in("id",ids);(data||[]).forEach(p=>profileNames[p.id]=p.display_name||p.username||"Participante");}
 async function renderMessages(){const root=qs("#chatMessages");if(!root)return;if(!currentMessages.length){root.innerHTML='<div class="chat-empty"><strong>Empieza la conversación.</strong>Todavía no hay mensajes.</div>';return;}root.innerHTML=currentMessages.map(m=>'<article class="chat-message '+(m.user_id===currentChatUser.id?"mine":"")+'"><div class="chat-author">'+chatEsc(m.user_id===currentChatUser.id?"Tú":profileNames[m.user_id]||"Participante")+'</div><div class="chat-body">'+chatEsc(m.body)+'</div><div class="chat-time">'+chatDate(m.created_at)+(m.edited_at?" · editado":"")+'</div>'+(m.user_id===currentChatUser.id?'<div style="margin-top:6px;display:flex;gap:6px"><button type="button" class="chat-mini-action" data-edit="'+m.id+'">Editar</button><button type="button" class="chat-mini-action" data-delete="'+m.id+'">Eliminar</button></div>':"")+'</article>').join("");root.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>editMessage(b.dataset.edit)));root.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>removeMessage(b.dataset.delete)));root.scrollTop=root.scrollHeight;}
 async function sendMessage(e){
