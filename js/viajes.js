@@ -976,7 +976,7 @@ async function createOptionFromForm(e) {
         alert("El enlace debe empezar por http:// o https://");
         return;
     }
-    const payload={trip_id:optionTripId,created_by:user.id,category:$("optionCategory").value,title:$("optionTitle").value.trim(),price:$("optionPrice").value?Number($("optionPrice").value):null,price_per_person:$("optionPricePerson").value?Number($("optionPricePerson").value):null,provider:$("optionProvider").value.trim()||null,url:safeUrl,notes:$("optionNotes").value.trim()||null,metadata:{travel_details:details}};
+    const normalized = normalizeTravelOption({category:$("optionCategory").value,title:$("optionTitle").value.trim(),price:$("optionPrice").value?Number($("optionPrice").value):null,price_per_person:$("optionPricePerson").value?Number($("optionPricePerson").value):null,provider:$("optionProvider").value.trim()||null,url:safeUrl,metadata:{travel_details:details}});\n    const payload={trip_id:optionTripId,created_by:user.id,category:normalized.category,title:normalized.title,price:normalized.price,price_per_person:normalized.price_per_person,provider:normalized.provider,url:normalized.url,notes:$("optionNotes").value.trim()||null,metadata:{travel_details:details,normalized:{source:normalized.source,external_id:normalized.external_id,currency:normalized.currency,start_at:normalized.start_at,end_at:normalized.end_at,location:normalized.location,rating:normalized.rating}}};
     if(!payload.title)return;
     if ([payload.price, payload.price_per_person].some(value => value != null && (!Number.isFinite(value) || value < 0))) {
         alert("Los precios deben ser importes válidos.");
