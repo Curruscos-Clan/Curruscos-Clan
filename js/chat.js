@@ -46,12 +46,15 @@ async function sendMessage(e){
     const ctx=await getChatRoomSecurityContext(currentRoomId);
     let sent=null;
     if(ctx?.groupId){
-        const key=await ensureGroupE2EE(ctx.groupId);
-        if(!key){showToast("Este grupo todavía no tiene el cifrado disponible en tu dispositivo.");}
-        else{
-            const encrypted=await encryptE2EEText(key,body);
-            sent=await sendEncryptedChatMessage(currentRoomId,encrypted);
+        try{
+            const keyContext=await getGroupE2EEContext(ctx.groupId);
+            if(!keyContext) throw new Error("E2EE_GROUP_KEY_UNAVAILABLE");
+            const encrypted=await encryptE2EEText(keyContext.key,body);
+            sent=await sendEncryptedChatMessage(currentRoomId,encrypted,keyContext.version);
             if(sent) sent.body=body;
+        }catch(error){
+            console.error("Error enviando mensaje cifrado:",error);
+            showToast("No se ha podido enviar: el cifrado del grupo no está disponible.");
         }
     }else{
         sent=await sendChatMessage(currentRoomId,body);
