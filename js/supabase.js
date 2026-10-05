@@ -1702,6 +1702,15 @@ async function changeGroupMemberRole(groupId, userId, role) {
         ));
     }
 
+    // Si el cambio afecta al usuario actual, la caché de permisos puede
+    // quedar obsoleta hasta la siguiente recarga. Invalidarla aquí evita
+    // trabajar con un rol antiguo en el mismo workspace.
+    const currentUser = await getCurrentUser();
+    if (currentUser && userId === currentUser.id) {
+        userGroupsCache = null;
+        currentGroupCache = null;
+    }
+
     return data;
 }
 
