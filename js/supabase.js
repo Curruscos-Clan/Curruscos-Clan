@@ -293,24 +293,33 @@ async function ensureGroupE2EE(groupId) {
     return key;
 }
 
-async function getGroupE2EEKey(groupId) {
+async function getGroupE2EEContext(groupId, keyVersion = null) {
     if (!groupId) return null;
     await ensureUserE2EEKey();
     const user = await getCurrentUser();
     if (!user) return null;
 
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
         .from("group_key_envelopes")
         .select("encrypted_group_key,key_version")
         .eq("group_id", groupId)
-        .eq("user_id", user.id)
-        .order("key_version", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .eq("user_id", user.id);
 
+    query = keyVersion ? query.eq("key_version", Number(keyVersion)) : query.order("key_version", { ascending: false }).limit(1);
+
+    const { data, error } = await query.maybeSingle();
     if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido recuperar la clave del grupo."));
     if (!data) return null;
-    return unwrapGroupE2EEKey(data.encrypted_group_key);
+
+    return {
+        key: await unwrapGroupE2EEKey(data.encrypted_group_key),
+        version: Number(data.key_version)
+    };
+}
+
+async function getGroupE2EEKey(groupId, keyVersion = null) {
+    const context = await getGroupE2EEContext(groupId, keyVersion);
+    return context?.key || null;
 }
 
 async function initializeGroupE2EE(groupId) {
@@ -2539,11 +2548,11 @@ async function markChatRead(roomId){const {data,error}=await supabaseClient.rpc(
 async function getChatPeople(search=""){const {data,error}=await supabaseClient.rpc("get_chat_people",{search_text:String(search||"").trim()||null});if(error){console.error("Error buscando personas para chat:",error);return [];}return data||[];}
 async function getOrCreateGroupChat(groupId){const {data,error}=await supabaseClient.rpc("get_or_create_group_chat",{target_group_id:groupId});if(error){console.error("Error abriendo chat del grupo:",error);return null;}return data||null;}
 async function getOrCreateEventChat(eventId){const {data,error}=await supabaseClient.rpc("get_or_create_event_chat",{target_event_id:eventId});if(error){console.error("Error abriendo chat del evento:",error);return null;}return data||null;}
-async function sendEncryptedChatMessage(roomId, encryptedBody){
+async function sendEncryptedChatMessage(roomId, encryptedBody, encryptionVersion = 1){
     const user=await getCurrentUser();
     if(!user||!roomId||!encryptedBody)return null;
     const {data,error}=await supabaseClient.from("chat_messages").insert({
-        room_id:roomId,user_id:user.id,body:null,encrypted_body:encryptedBody,encryption_version:1
+        room_id:roomId,user_id:user.id,body:null,encrypted_body:encryptedBody,encryption_version:Number(encryptionVersion)||1
     }).select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").single();
     if(error){console.error("Error enviando mensaje cifrado:",error);return null;}
     return data;
@@ -2554,8 +2563,9 @@ async function updateChatMessage(messageId,body){
     const user=await getCurrentUser();
     if(!user)return null;
     const ctx=await getChatRoomSecurityContext(currentRoomId);
+    const e2eeContext=ctx?.groupId ? await getGroupE2EEContext(ctx.groupId) : null;
     const changes=ctx?.groupId
-        ? {body:null,encrypted_body:await encryptE2EEText(await ensureGroupE2EE(ctx.groupId),String(body||"").trim().slice(0,2000)),encryption_version:1,edited_at:new Date().toISOString()}
+        ? {body:null,encrypted_body:await encryptE2EEText(e2eeContext.key,String(body||"").trim().slice(0,2000)),encryption_version:e2eeContext.version,edited_at:new Date().toISOString()}
         : {body:String(body||"").trim().slice(0,2000),edited_at:new Date().toISOString()};
     const {data,error}=await supabaseClient.from("chat_messages").update(changes).eq("id",messageId).eq("user_id",user.id).select("id,room_id,user_id,body,encrypted_body,encryption_version,created_at,edited_at,deleted_at").single();
     if(error){console.error("Error editando mensaje:",error);return null;}
