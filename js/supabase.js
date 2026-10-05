@@ -863,7 +863,7 @@ async function getGroupTripsForEvent() {
 
     const { data, error } = await supabaseClient
         .from("trips")
-        .select("id, title, destination, status, start_date, end_date, encrypted_payload")
+        .select("id, title, destination, status, start_date, end_date, encrypted_payload, encryption_version")
         .eq("group_id", group.id)
         .in("status", ["planning", "confirmed"])
         .order("start_date", { ascending: true });
@@ -899,7 +899,7 @@ async function getTripForEvent(tripId) {
 
     const { data, error } = await supabaseClient
         .from("trips")
-        .select("id, title, destination, status, start_date, end_date, encrypted_payload")
+        .select("id, title, destination, status, start_date, end_date, encrypted_payload, encryption_version")
         .eq("id", tripId)
         .eq("group_id", group.id)
         .single();
@@ -1355,6 +1355,7 @@ async function getGroupMemories() {
         .select(`
             id, group_id, created_by, title, description, image_url, created_at, event_id,
             encrypted_payload,
+            encryption_version,
             profiles (display_name, username)
         `)
         .eq("group_id", group.id)
