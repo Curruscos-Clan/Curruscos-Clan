@@ -792,14 +792,11 @@ async function deleteGroupEvent(eventId) {
 
 async function getGroupTripsForEvent() {
     const group = await getCurrentGroup();
-
-    if (!group) {
-        return [];
-    }
+    if (!group) return [];
 
     const { data, error } = await supabaseClient
         .from("trips")
-        .select("id, title, destination, status, start_date, end_date")
+        .select("id, title, destination, status, start_date, end_date, encrypted_payload")
         .eq("group_id", group.id)
         .in("status", ["planning", "confirmed"])
         .order("start_date", { ascending: true });
@@ -809,23 +806,28 @@ async function getGroupTripsForEvent() {
         return [];
     }
 
-    return data || [];
+    const trips = data || [];
+    const key = await getGroupE2EEKey(group.id);
+    if (!key) return trips;
+
+    return Promise.all(trips.map(async trip => {
+        if (!trip.encrypted_payload) return trip;
+        try {
+            return { ...trip, ...JSON.parse(await decryptE2EEText(key, trip.encrypted_payload)) };
+        } catch {
+            return { ...trip, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" };
+        }
+    }));
 }
 
 async function getTripForEvent(tripId) {
-    if (!tripId) {
-        return null;
-    }
-
+    if (!tripId) return null;
     const group = await getCurrentGroup();
-
-    if (!group) {
-        return null;
-    }
+    if (!group) return null;
 
     const { data, error } = await supabaseClient
         .from("trips")
-        .select("id, title, destination, status, start_date, end_date")
+        .select("id, title, destination, status, start_date, end_date, encrypted_payload")
         .eq("id", tripId)
         .eq("group_id", group.id)
         .single();
@@ -835,6 +837,13 @@ async function getTripForEvent(tripId) {
         return null;
     }
 
+    if (data?.encrypted_payload) {
+        const key = await getGroupE2EEKey(group.id);
+        if (key) {
+            try { return { ...data, ...JSON.parse(await decryptE2EEText(key, data.encrypted_payload)) }; }
+            catch { return { ...data, title: "Contenido cifrado no disponible en este dispositivo.", destination: "" }; }
+        }
+    }
     return data;
 }
 
@@ -1063,7 +1072,6 @@ async function deleteEventTask(taskId) {
 // ========================================
 
 async function getEventExpenses(eventId) {
-
     const { data, error } = await supabaseClient
         .from("expenses")
         .select("*")
@@ -1075,7 +1083,16 @@ async function getEventExpenses(eventId) {
         return [];
     }
 
-    return data || [];
+    const expenses = data || [];
+    const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
+    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
+    if (!key) return expenses;
+
+    return Promise.all(expenses.map(async expense => {
+        if (!expense.encrypted_payload) return expense;
+        try { return { ...expense, ...JSON.parse(await decryptE2EEText(key, expense.encrypted_payload)) }; }
+        catch { return { ...expense, title: "Contenido cifrado no disponible en este dispositivo." }; }
+    }));
 }
 
 
@@ -1087,16 +1104,18 @@ async function createEventExpense(
 ) {
 
     const user = await getCurrentUser();
+    if (!user) return null;
 
-    if (!user) {
-        return null;
-    }
+    const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
+    const key = event?.group_id ? await getGroupE2EEKey(event.group_id) : null;
+    const encryptedPayload = key ? await encryptE2EEText(key, JSON.stringify({ title: String(title || "").trim() })) : null;
 
     const { data, error } = await supabaseClient
         .from("expenses")
         .insert({
             event_id: eventId,
-            title: title,
+            title: encryptedPayload ? null : title,
+            encrypted_payload: encryptedPayload,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
