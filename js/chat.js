@@ -22,11 +22,11 @@ async function refreshMessages(){
     currentMessages=await getChatMessages(currentRoomId);
     const ctx=await getChatRoomSecurityContext(currentRoomId);
     if(ctx?.groupId){
-        const key=await ensureGroupE2EE(ctx.groupId);
+        const keyContext=await getGroupE2EEContext(ctx.groupId,message.encryption_version);
         if(key){
             for(const message of currentMessages){
                 if(message.encrypted_body){
-                    try{ message.body=await decryptE2EEText(key,message.encrypted_body); }catch(e){ message.body="Mensaje cifrado no disponible en este dispositivo."; }
+                    try{ message.body=await decryptE2EEText(keyContext.key,message.encrypted_body); }catch(e){ message.body="Mensaje cifrado no disponible en este dispositivo."; }
                 }
             }
         }
