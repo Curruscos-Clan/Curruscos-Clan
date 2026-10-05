@@ -1086,17 +1086,16 @@ async function createEventTask(
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
     const groupKeyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
-    const encryptedPayload = groupKeyContext
-        ? await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }))
-        : null;
+    if (!groupKeyContext) return null;
+    const encryptedPayload = await encryptE2EEText(groupKeyContext.key, JSON.stringify({ title: String(title || "").trim() }));
 
     const { data, error } = await supabaseClient
         .from("tasks")
         .insert({
             event_id: eventId,
-            title: encryptedPayload ? null : title,
+            title: null,
             encrypted_payload: encryptedPayload,
-            encryption_version: groupKeyContext?.version || null,
+            encryption_version: groupKeyContext.version,
             assigned_to: assignedTo || null,
             created_by: user.id,
             completed: false
@@ -1149,7 +1148,7 @@ async function updateEventTask(taskId, completed, taskData = {}) {
             );
             changes.encryption_version = keyContext.version;
         } else {
-            changes.title = taskData.title.trim();
+            return null;
         }
     }
 
@@ -1243,15 +1242,16 @@ async function createEventExpense(
 
     const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", eventId).maybeSingle();
     const keyContext = event?.group_id ? await getGroupE2EEContext(event.group_id) : null;
-    const encryptedPayload = keyContext ? await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() })) : null;
+    if (!keyContext) return null;
+    const encryptedPayload = await encryptE2EEText(keyContext.key, JSON.stringify({ title: String(title || "").trim() }));
 
     const { data, error } = await supabaseClient
         .from("expenses")
         .insert({
             event_id: eventId,
-            title: encryptedPayload ? null : title,
+            title: null,
             encrypted_payload: encryptedPayload,
-            encryption_version: keyContext?.version || null,
+            encryption_version: keyContext.version,
             amount: amount,
             paid_by: paidBy,
             created_by: user.id
@@ -1392,9 +1392,9 @@ async function createGroupMemory(memoryData) {
         return null;
     }
 
-    const key = await getGroupE2EEKey(group.id);
-    const encryptedPayload = key
-        ? await encryptE2EEText(key, JSON.stringify({
+    const keyContext = await getGroupE2EEContext(group.id);
+    if (!keyContext) return null;
+    const encryptedPayload = await encryptE2EEText(keyContext.key, JSON.stringify({
             title: memoryData.title || "",
             description: memoryData.description || ""
         }))
@@ -1408,7 +1408,7 @@ async function createGroupMemory(memoryData) {
             title: encryptedPayload ? null : memoryData.title,
             description: encryptedPayload ? null : (memoryData.description || null),
             encrypted_payload: encryptedPayload,
-            encryption_version: keyContext?.version || null,
+            encryption_version: keyContext.version,
             image_url: memoryData.image_url || null
         })
         .select()
