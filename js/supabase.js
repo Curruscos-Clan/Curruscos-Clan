@@ -324,18 +324,7 @@ async function initializeGroupE2EE(groupId) {
     const groupKey = await generateGroupE2EEKey();
     const envelope = await wrapGroupE2EEKeyForUser(groupKey, user.id);
 
-    const { error } = await supabaseClient
-        .from("group_key_envelopes")
-        .upsert({
-            group_id: groupId,
-            user_id: user.id,
-            key_version: 1,
-            encrypted_group_key: envelope,
-            key_algorithm: "AES-GCM",
-            wrapping_algorithm: "ECDH-P256-AES-KW"
-        }, { onConflict: "group_id,user_id,key_version" });
-
-    if (error) throw new Error(getSupabaseErrorMessage(error, "No se ha podido inicializar el cifrado del grupo."));
+    await provisionGroupE2EEEnvelope(groupId, user.id, envelope, 1);
     return true;
 }
 
