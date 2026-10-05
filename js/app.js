@@ -273,68 +273,30 @@ function createGroupSelectorMarkup() {
 }
 
 function ensureGroupSelector() {
-    const navbar =
-        document.querySelector(".navbar");
-
-    if (!navbar) {
-        return null;
-    }
-
-    let button =
-        document.getElementById("currentGroupButton");
-
-    if (button) {
-        return {
-            button,
-            name: document.getElementById("currentGroupName"),
-            type: document.getElementById("currentGroupType"),
-            menu: document.getElementById("groupMenu"),
-            list: document.getElementById("groupList"),
-            create: document.getElementById("createGroupButton")
-        };
-    }
-
-    let brandGroup =
-        navbar.querySelector(".brand-group");
-
-    const logo =
-        navbar.querySelector(".logo");
-
-    if (!brandGroup) {
-        brandGroup =
-            document.createElement("div");
-
-        brandGroup.className =
-            "brand-group";
-
-        navbar.insertBefore(
-            brandGroup,
-            navbar.querySelector("#mainNav")
-        );
-
-        if (logo) {
-            brandGroup.appendChild(logo);
-        }
-    }
-
-    const selector =
-        createGroupSelectorMarkup();
-
-    brandGroup.appendChild(selector);
-
+    const navbar = document.querySelector(".navbar");
+    if (!navbar) return null;
+    let button = document.getElementById("currentGroupButton");
+    if (button) return {
+        button,
+        name: document.getElementById("currentGroupName"),
+        type: document.getElementById("currentGroupType"),
+        menu: document.getElementById("groupMenu"),
+        list: document.getElementById("groupList"),
+        create: document.getElementById("createGroupButton")
+    };
+    let selector = document.createElement("div");
+    selector.className = "group-selector workspace-switcher";
+    selector.innerHTML = '<button type="button" class="current-group-button" id="currentGroupButton"><span class="group-current-copy"><small>ESPACIO ACTIVO</small><strong id="currentGroupName">Grupo</strong></span><span class="group-selector-arrow">▾</span></button><div id="groupMenu" class="group-menu" hidden><div id="groupList" class="group-list"></div><div class="group-menu-divider"></div><button type="button" id="createGroupButton" class="create-group-button">＋ Crear un grupo</button></div>';
+    const nav = navbar.querySelector("#mainNav");
+    if (nav) nav.insertAdjacentElement("afterend", selector);
+    else navbar.appendChild(selector);
     return {
-        button:
-            selector.querySelector("#currentGroupButton"),
-        name:
-            selector.querySelector("#currentGroupName"),
-        type:
-            selector.querySelector("#currentGroupType"),
-        menu:
-            selector.querySelector("#groupMenu"),
-        list:
-            selector.querySelector("#groupList"),
-        create:
-            selector.querySelector("#createGroupButton")
+        button: selector.querySelector("#currentGroupButton"),
+        name: selector.querySelector("#currentGroupName"),
+        type: null,
+        menu: selector.querySelector("#groupMenu"),
+        list: selector.querySelector("#groupList"),
+        create: selector.querySelector("#createGroupButton")
     };
 }
 
@@ -1013,33 +975,18 @@ async function initAccountMenu() {
 
 function ensureProductNavigation() {
     const nav = document.getElementById("mainNav");
-
-    if (!nav) {
-        return;
-    }
-
+    if (!nav) return;
     const links = [
+        { href: "index.html", text: "Inicio" },
         { href: "explorar.html", text: "Explorar" },
-        { href: "crear.html", text: "Crear" },
-        { href: "mis-eventos.html", text: "Mis eventos" },
-        { href: "decisiones.html", text: "Decisiones" }
+        { href: "guardados.html", text: "Guardados" },
+        { href: "mis-eventos.html", text: "Mis planes" },
+        { href: "dashboard.html", text: "Grupos" },
+        { href: "crear.html", text: "Crear", className: "nav-create" }
     ];
-
-    links.forEach(item => {
-        if (nav.querySelector('a[href="' + item.href + '"]')) {
-            return;
-        }
-
-        const link = document.createElement("a");
-        link.href = item.href;
-        link.textContent = item.text;
-
-        if (getCurrentPage() === item.href) {
-            link.classList.add("active");
-        }
-
-        nav.appendChild(link);
-    });
+    nav.innerHTML = links.map(item => '<a href="' + item.href + '"' + (item.className ? ' class="' + item.className + '"' : '') + '>' + item.text + '</a>').join("");
+    const page = getCurrentPage();
+    nav.querySelectorAll("a").forEach(link => link.classList.toggle("active", link.getAttribute("href") === page));
 }
 
 async function initPrivateShell(access) {
