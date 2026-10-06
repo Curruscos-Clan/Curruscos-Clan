@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Evento — Curruscos Clan</title>
+    <title>Plan — Curruscos</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -906,6 +906,7 @@
         font-size: 11px;
     }
 }
+.event-command-summary{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;margin:0 42px;padding:22px 24px;border:1px solid #dedede;border-radius:18px;background:#f7f7f7;box-shadow:0 8px 24px rgba(0,0,0,.04)}.event-command-main{min-width:0;display:flex;flex-direction:column;align-items:flex-start}.event-command-kicker{font-size:9px;font-weight:900;letter-spacing:.14em;color:#888}.event-command-main>strong{margin-top:7px;font-size:19px;line-height:1.25;letter-spacing:-.025em;color:#111}.event-command-subline{margin-top:5px;color:#777;font-size:11px;line-height:1.45}.event-command-stats{display:grid;grid-template-columns:repeat(3,minmax(70px,1fr));gap:7px}.event-command-stats>div{min-width:70px;padding:10px 12px;border:1px solid #e4e4e4;border-radius:12px;background:#fff;text-align:center}.event-command-stats strong{display:block;font-size:17px;line-height:1.1;color:#111}.event-command-stats span{display:block;margin-top:4px;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#999}.event-command-action{width:max-content;margin-top:10px;padding:8px 11px;border:1px solid #111;border-radius:9px;background:#111;color:#fff;font-size:10px;font-weight:800;cursor:pointer}.event-command-action:hover{background:#2a2a2a}.event-command-action[hidden]{display:none}.event-content{padding-top:30px}@media(max-width:700px){.event-command-summary{grid-template-columns:1fr;margin:0 16px;padding:18px}.event-command-stats{grid-template-columns:repeat(3,1fr)}.event-command-stats>div{min-width:0;padding:9px 5px}.event-command-stats strong{font-size:15px}.event-command-action{width:100%}}
 </style>
 
 <script src="js/i18n.js"></script>
@@ -939,7 +940,7 @@
             Recuerdos
         </a>
 
-        <a href="eventos.html" class="active">
+        <a href="plans.html" class="active">
             Eventos
         </a>
             <a href="viajes.html">Viajes</a>
@@ -959,7 +960,7 @@
     <section class="event-page">
 
         <a href="eventos.html" class="event-back">
-            ← Volver a eventos
+            ← Volver a planes
         </a>
 
 
@@ -974,7 +975,7 @@
     <div class="event-hero-content">
 
         <div class="event-label">
-            📅 EVENTO
+            PLAN DEL GRUPO
         </div>
 
         <h1
@@ -995,19 +996,19 @@
                 id="editEventButton"
                 class="edit-event-button"
             >
-                ✏️ Editar evento
+                ✏️ Editar plan
             </button>
             <button type="button" id="saveToHistoryButton" class="edit-event-button">
-                📖 Guardar en historia
+                📖 Guardar en recuerdos
             </button>
             <button type="button" id="shareEventButton" class="edit-event-button">
-                ↗ Compartir evento
+                ↗ Compartir plan
             </button>
             <button type="button" id="deleteEventButton" class="edit-event-button event-danger-button" hidden>
-                Eliminar evento
+                Eliminar plan
             </button>
             <a id="eventChatButton" class="edit-event-button" href="chat.html">
-                💬 Chat del evento
+                💬 Chat del plan
             </a>
         </div>
 
@@ -1022,11 +1023,11 @@
         <div class="edit-event-header">
             <div>
                 <span class="edit-event-label">
-                    EDITAR EVENTO
+                    EDITAR PLAN
                 </span>
 
                 <h2>
-                    Modificar evento
+                    Modificar plan
                 </h2>
             </div>
         </div>
@@ -1036,7 +1037,7 @@
             <div class="edit-event-field edit-event-field-full">
 
                 <label for="editEventTitle">
-                    Nombre del evento
+                    Nombre del plan
                 </label>
 
                 <input
@@ -1243,8 +1244,8 @@
             <div class="event-command-summary" id="eventCommandSummary">
                 <div class="event-command-main">
                     <span class="event-command-kicker">RESUMEN DEL PLAN</span>
-                    <strong id="eventCommandHeadline">Preparando el evento...</strong>
-                    <span id="eventCommandSubline">Cargando participantes, tareas y gastos.</span>
+                    <strong id="eventCommandHeadline">Preparando el plan...</strong>
+                    <span id="eventCommandSubline">Cargando asistencia, tareas y gastos.</span>
                     <button id="eventCommandAction" type="button" class="event-command-action" hidden>Ver siguiente paso →</button>
                 </div>
                 <div class="event-command-stats">
@@ -1291,7 +1292,7 @@
                         <div class="progress-header">
 
                             <span class="progress-label">
-                                Progreso del evento
+                                Progreso del plan
                             </span>
 
                             <span
