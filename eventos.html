@@ -1,223 +1,31 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Eventos — Curruscos Clan</title>
-
-    <link rel="stylesheet" href="css/style.css">
-<script src="js/i18n.js"></script>
-<script src="js/navigation.js"></script></head>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Planes del grupo en Curruscos."><title>Planes del grupo · Curruscos</title>
+<link rel="stylesheet" href="css/style.css"><script src="js/i18n.js"></script><script src="js/navigation.js"></script>
+</head>
 <body>
-
-    <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
-
-
-    <main>
-
-        <section class="page-hero">
-
-            <div class="container">
-
-                <span class="eyebrow">
-                    ORGANIZACIÓN
-                </span>
-
-                <h1>
-                    ¿Qué hacemos<br>
-                    próximamente?
-                </h1>
-
-                <p>
-                    Quedadas, viajes, cumpleaños y cualquier plan del clan.
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <section class="section">
-
-            <div class="container">
-
-                <div class="section-heading">
-                    <span class="eyebrow">PRÓXIMOS PLANES</span>
-                    <h2>Eventos</h2>
-                </div>
-
-                <div class="events-toolbar">
-                    <label class="events-search">
-                        <span>Buscar</span>
-                        <input id="eventsSearch" type="search" placeholder="Buscar por nombre o lugar..." autocomplete="off">
-                    </label>
-                    <div class="events-filters" id="eventsFilters" role="group" aria-label="Filtrar eventos">
-                        <button type="button" class="events-filter active" data-event-filter="upcoming">Próximos</button>
-                        <button type="button" class="events-filter" data-event-filter="all">Todos</button>
-                        <button type="button" class="events-filter" data-event-filter="past">Pasados</button>
-                    </div>
-                </div>
-
-                <div id="eventsResultsMeta" class="events-results-meta"></div>
-
-                <div id="eventsList" class="events-list"></div>
-
-            </div>
-
-        </section>
-
-
-        <section class="section create-event-section">
-
-            <div class="container">
-
-                <div class="section-heading">
-                    <span class="eyebrow">NUEVO PLAN</span>
-                    <h2>Crear evento</h2>
-                    <p>
-                        Organiza la próxima quedada del clan.
-                    </p>
-                </div>
-
-
-                <form id="eventForm" class="event-form">
-
-                    <div class="form-group">
-                        <label for="eventTitle">
-                            Nombre del evento
-                        </label>
-
-                        <input
-                            type="text"
-                            id="eventTitle"
-                            placeholder="Ej. Cena del clan"
-                            required
-                        >
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label for="eventDate">
-                                Fecha
-                            </label>
-
-                            <input
-                                type="date"
-                                id="eventDate"
-                                required
-                            >
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="eventTime">
-                                Hora
-                            </label>
-
-                            <input
-                                type="time"
-                                id="eventTime"
-                                required
-                            >
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="eventLocation">
-                            Lugar
-                        </label>
-
-                        <input
-                            type="text"
-                            id="eventLocation"
-                            placeholder="Ej. Palencia"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="eventTrip">
-                            Viaje relacionado
-                        </label>
-
-                        <select id="eventTrip">
-                            <option value="">Sin viaje relacionado</option>
-                        </select>
-
-                        <p class="form-help">
-                            Si este evento forma parte de un viaje, podrás conectarlo aquí.
-                        </p>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="eventDescription">
-                            Descripción
-                        </label>
-
-                        <textarea
-                            id="eventDescription"
-                            placeholder="Cuenta de qué va el plan..."
-                            rows="4"
-                        ></textarea>
-
-                    </div>
-
-
-                    <button type="submit" class="button button-primary">
-                        Crear evento
-                    </button>
-
-                </form>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
+<header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
+<main>
+<section class="page-hero"><div class="container"><span class="eyebrow">GRUPO ACTIVO · PLANES</span><h1>¿Qué tenemos<br>por delante?</h1><p>Organiza lo que vais a hacer juntos, consulta lo que ya está decidido y vuelve a los planes pasados cuando lo necesites.</p></div></section>
+<section class="section"><div class="container"><div class="section-heading"><span class="eyebrow">PLANES</span><h2>Actividad del grupo</h2><p>Todo lo que pertenece al workspace actual.</p></div>
+<div class="events-toolbar"><label class="events-search"><span>Buscar</span><input id="eventsSearch" type="search" placeholder="Buscar por nombre o lugar..." autocomplete="off"></label><div class="events-filters" id="eventsFilters" role="group" aria-label="Filtrar planes"><button type="button" class="events-filter active" data-event-filter="upcoming">Próximos</button><button type="button" class="events-filter" data-event-filter="all">Todos</button><button type="button" class="events-filter" data-event-filter="past">Pasados</button></div></div>
+<div id="eventsResultsMeta" class="events-results-meta"></div><div id="eventsList" class="events-list"></div></div></section>
+<section class="section create-event-section"><div class="container"><div class="section-heading"><span class="eyebrow">NUEVO PLAN</span><h2>Crear algo para el grupo</h2><p>Un plan privado es el punto de partida para organizar fecha, lugar, descripción y, después, el resto de la actividad.</p></div>
+<form id="eventForm" class="event-form">
+<div class="form-group"><label for="eventTitle">¿Qué vais a hacer?<input type="text" id="eventTitle" placeholder="Ej. Cena del viernes" required></label></div>
+<div class="form-row"><div class="form-group"><label for="eventDate">Fecha<input type="date" id="eventDate" required></label></div><div class="form-group"><label for="eventTime">Hora<input type="time" id="eventTime" required></label></div></div>
+<div class="form-group"><label for="eventLocation">Lugar<input type="text" id="eventLocation" placeholder="Ej. Palencia" required></label></div>
+<div class="form-group"><label for="eventTrip">Viaje relacionado<select id="eventTrip"><option value="">Sin viaje relacionado</option></select></label><p class="form-help">Si el plan forma parte de un viaje del grupo, puedes conectarlo aquí.</p></div>
+<div class="form-group"><label for="eventDescription">Descripción<textarea id="eventDescription" placeholder="Qué hay que saber antes de ir..." rows="4"></textarea></label></div>
+<button type="submit" class="button button-primary">Crear plan</button>
+</form></div></section>
+</main>
 <style>
-.events-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}
-.events-search{display:grid;gap:5px;flex:1;max-width:420px}
-.events-search span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#888}
-.events-search input{height:42px;box-sizing:border-box;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;font:inherit;font-size:13px;outline:none}
-.events-search input:focus{border-color:#111}
-.events-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.events-filter{min-height:34px;padding:0 11px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}
-.events-filter.active{border-color:#111;background:#111;color:#fff}
-.events-results-meta{min-height:16px;margin:0 0 9px;color:#888;font-size:10px;font-weight:700}
-@media(max-width:650px){.events-toolbar{align-items:stretch;flex-direction:column}.events-search{max-width:none}.events-filters{justify-content:flex-start}}
+.events-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}.events-search{display:grid;gap:5px;flex:1;max-width:420px}.events-search span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#888}.events-search input{height:42px;box-sizing:border-box;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;font:inherit;font-size:13px;outline:none}.events-search input:focus{border-color:#111}.events-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.events-filter{min-height:34px;padding:0 11px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}.events-filter.active{border-color:#111;background:#111;color:#fff}.events-results-meta{min-height:16px;margin:0 0 9px;color:#888;font-size:10px;font-weight:700}@media(max-width:650px){.events-toolbar{align-items:stretch;flex-direction:column}.events-search{max-width:none}.events-filters{justify-content:flex-start}}
 </style>
-
-    <footer class="footer">
-
-        <div class="container">
-
-            <p>
-                CURRUSCOS CLAN © 2026
-            </p>
-
-        </div>
-
-    </footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/app.js"></script>
-    
+<footer class="footer"><div class="container"><p>CURRUSCOS © 2026</p></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
 </body>
-
 </html>
