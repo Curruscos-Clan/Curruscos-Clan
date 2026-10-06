@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crear · Curruscos</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Pon en marcha algo en Curruscos."><title>Crear · Curruscos</title>
 <link rel="stylesheet" href="css/style.css"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#ff4d2e">
 <style>
-.create-page{max-width:1050px;margin:0 auto;padding:80px 24px 110px}.create-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:38px}.create-choice{display:block;padding:38px;border:1px solid var(--border);border-radius:28px;background:var(--surface);box-shadow:var(--shadow-sm);text-decoration:none;color:var(--text);transition:.2s}.create-choice:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--border-strong)}.create-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:18px;background:var(--accent-soft);font-size:28px}.create-choice h2{margin:34px 0 10px;font-size:32px;letter-spacing:-.05em}.create-choice p{margin:0;color:var(--muted);line-height:1.6}.create-choice span{display:block;margin-top:28px;color:var(--accent);font-size:13px;font-weight:800}@media(max-width:700px){.create-page{padding:55px 18px 80px}.create-grid{grid-template-columns:1fr}.create-choice{padding:28px}}
+.create-page{max-width:1100px;margin:0 auto;padding:72px 24px 110px}.create-header{max-width:720px}.create-header h1{font-size:clamp(50px,8vw,84px);line-height:.9;letter-spacing:-.08em;margin:14px 0 18px}.create-header p{max-width:650px;color:var(--muted);font-size:18px;line-height:1.55;margin:0}.create-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-top:42px}.create-choice{display:flex;flex-direction:column;min-height:250px;padding:30px;border:1px solid var(--border);border-radius:26px;background:var(--surface);box-shadow:var(--shadow-sm);text-decoration:none;color:var(--text);transition:.2s}.create-choice:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:var(--border-strong)}.create-choice.primary{background:#111;color:#fff;border-color:#111}.create-choice.primary p,.create-choice.primary .create-meta{color:#aaa}.create-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:16px;background:var(--accent-soft);font-size:24px}.create-choice.primary .create-icon{background:rgba(255,255,255,.12)}.create-meta{margin-top:26px;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.create-choice h2{margin:10px 0 9px;font-size:30px;letter-spacing:-.05em}.create-choice p{margin:0;color:var(--muted);line-height:1.55;font-size:13px;max-width:560px}.create-arrow{margin-top:auto;padding-top:24px;font-size:12px;font-weight:900}.create-secondary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}.create-secondary .create-choice{min-height:190px;padding:24px}.create-secondary .create-choice h2{font-size:22px}.create-secondary .create-icon{width:44px;height:44px;font-size:19px}.create-note{margin-top:18px;color:var(--muted);font-size:11px;line-height:1.5}@media(max-width:800px){.create-grid{grid-template-columns:1fr}.create-secondary{grid-template-columns:1fr 1fr}}@media(max-width:600px){.create-page{padding:48px 16px 75px}.create-header h1{font-size:56px}.create-secondary{grid-template-columns:1fr}.create-choice{min-height:220px}}
 </style>
-<style>.nav-badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--text);color:var(--surface);font-size:8px;font-weight:900;line-height:1;vertical-align:middle}</style><script src="js/i18n.js"></script>
-<script src="js/navigation.js"></script></head>
+<script src="js/i18n.js"></script><script src="js/navigation.js"></script>
+</head>
 <body>
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main class="create-page">
-<span class="eyebrow">CREAR</span>
-<h1 style="font-size:clamp(48px,8vw,82px);line-height:.95;letter-spacing:-.07em;margin:14px 0 16px">Haz que<br>algo ocurra.</h1>
-<p style="max-width:620px;color:var(--muted);font-size:18px;line-height:1.55;margin:0">Elige qué quieres poner en marcha. Puedes abrir un evento al público o crear un espacio privado para tu grupo.</p>
-<div class="create-grid">
-<a class="create-choice" href="viajes.html"><div class="create-icon" aria-hidden="true">✈️</div><span style="display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--background);color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">VIAJES</span><h2>Planificar un viaje</h2><p>Comparad destinos, vuelos, hoteles, actividades, precios y presupuesto antes de decidir juntos.</p><span>Abrir planificación →</span></a><a class="create-choice" href="crear-evento.html"><div class="create-icon" aria-hidden="true">＋</div><span style="display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--background);color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">PÚBLICO</span><h2>Crear un evento</h2><p>Crea un torneo, competición, actividad o evento público al que otras personas puedan descubrir y apuntarse.</p><span>Crear un evento →</span></a>
-<a class="create-choice" href="mis-equipos.html"><div class="create-icon" aria-hidden="true">◆</div><span style="display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--background);color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">EQUIPOS</span><h2>Mis equipos</h2><p>Crea equipos persistentes para competir en distintos eventos manteniendo su identidad y sus miembros.</p><span>Gestionar equipos →</span></a><a class="create-choice" href="onboarding.html"><div class="create-icon" aria-hidden="true">◎</div><span style="display:inline-flex;padding:7px 10px;border-radius:999px;background:var(--background);color:var(--muted);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase">PRIVADO</span><h2>Crear un grupo</h2><p>Crea un espacio privado para amigos, compañeros o cualquier comunidad que quiera organizarse junta.</p><span>Crear un grupo →</span></a>
-</div>
+<header class="create-header"><span class="eyebrow">CREAR</span><h1>Pon algo<br>en marcha.</h1><p>Empieza por lo que quieres conseguir. Si estás dentro de un grupo, lo normal es crear un plan para vosotros; si quieres organizar algo abierto, publícalo para que otras personas puedan descubrirlo.</p></header>
+<section class="create-grid" aria-label="Acciones principales">
+<a class="create-choice primary" href="eventos.html"><div class="create-icon" aria-hidden="true">＋</div><span class="create-meta">EN TU GRUPO</span><h2>Crear un plan</h2><p>Quedadas, cenas, partidos, cumpleaños o cualquier cosa que queráis organizar juntos.</p><span class="create-arrow">Abrir el espacio de planes →</span></a>
+<a class="create-choice" href="crear-evento.html"><div class="create-icon" aria-hidden="true">◎</div><span class="create-meta">PARA TODOS</span><h2>Publicar un evento</h2><p>Crea una actividad pública para que otras personas puedan encontrarla y apuntarse.</p><span class="create-arrow">Publicar evento →</span></a>
+</section>
+<section class="create-secondary" aria-label="Otras formas de crear">
+<a class="create-choice" href="viajes.html"><div class="create-icon" aria-hidden="true">✈️</div><span class="create-meta">PLANIFICAR</span><h2>Un viaje</h2><p>Destino, opciones, presupuesto e itinerario en el mismo espacio.</p><span class="create-arrow">Planificar →</span></a>
+<a class="create-choice" href="onboarding.html"><div class="create-icon" aria-hidden="true">◎</div><span class="create-meta">ESPACIO</span><h2>Un grupo</h2><p>Crea un workspace nuevo para una comunidad, amigos, equipo o proyecto.</p><span class="create-arrow">Crear grupo →</span></a>
+<a class="create-choice" href="mis-equipos.html"><div class="create-icon" aria-hidden="true">◆</div><span class="create-meta">AVANZADO</span><h2>Un equipo</h2><p>Gestiona equipos persistentes para tus competiciones y eventos.</p><span class="create-arrow">Gestionar equipos →</span></a>
+</section>
+<p class="create-note">La acción principal depende del contexto: los planes privados viven dentro del grupo activo; los eventos públicos se descubren desde Explorar.</p>
 </main>
-<script>
-const b=document.getElementById("menuButton"),n=document.getElementById("mainNav");b?.addEventListener("click",()=>n.classList.toggle("mobile-open"));
-</script>
-<script src="js/pwa.js"></script></body>
+<script>document.getElementById("menuButton")?.addEventListener("click",()=>document.getElementById("mainNav")?.classList.toggle("mobile-open"));</script><script src="js/pwa.js"></script>
+</body>
 </html>
