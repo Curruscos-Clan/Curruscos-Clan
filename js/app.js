@@ -289,9 +289,9 @@ function ensureGroupSelector() {
     selector = document.createElement("div");
     selector.className = "group-selector workspace-switcher";
     selector.innerHTML =
-        '<button type="button" class="current-group-button" id="currentGroupButton" aria-expanded="false" aria-haspopup="true">' +
+        '<button type="button" class="current-group-button" id="currentGroupButton" aria-expanded="false" aria-haspopup="dialog">' +
             '<span class="group-current-copy"><small>GRUPO ACTIVO</small><strong id="currentGroupName">Grupo</strong></span>' +
-            '<span class="group-selector-arrow">▾</span>' +
+            '<span class="group-selector-arrow">☰</span>' +
         '</button>' +
         '<div id="groupMenu" class="group-menu" hidden>' +
             '<div class="group-menu-heading"><span>TUS GRUPOS</span><small>Elige dónde quieres trabajar</small></div>' +
@@ -363,12 +363,31 @@ async function initGroupSelector(access) {
         event.stopPropagation();
         menu.hidden = !menu.hidden;
         button.setAttribute("aria-expanded", String(!menu.hidden));
+        document.body.classList.toggle("group-panel-open", !menu.hidden);
+    });
+
+    menu.addEventListener("click", event => {
+        if (event.target === menu) {
+            menu.hidden = true;
+            button.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("group-panel-open");
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !menu.hidden) {
+            menu.hidden = true;
+            button.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("group-panel-open");
+            button.focus();
+        }
     });
 
     document.addEventListener("click", event => {
-        if (!menu.contains(event.target) && event.target !== button) {
+        if (!menu.contains(event.target) && event.target !== button && !menu.hidden) {
             menu.hidden = true;
             button.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("group-panel-open");
         }
     });
 
