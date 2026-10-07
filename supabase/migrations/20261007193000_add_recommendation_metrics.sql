@@ -20,7 +20,15 @@ with params as (
   select greatest(1,least(365,coalesce(target_days,30)))::integer days
 ),
 impressions_base as (
-  select i.id,i.user_id,i.event_id,i.created_at
+  select
+    i.id,
+    i.user_id,
+    i.event_id,
+    i.created_at,
+    lead(i.created_at) over (
+      partition by i.user_id,i.event_id
+      order by i.created_at
+    ) as next_impression_at
   from public.recommendation_impressions i
   where i.user_id=auth.uid()
     and i.created_at >= now() - make_interval(days => (select days from params))
@@ -29,33 +37,37 @@ metrics as (
   select
     count(*)::bigint impressions,
     count(distinct i.event_id)::bigint unique_events_impressed,
-    count(distinct i.id) filter (where exists (
+    count(*) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='view'
         and s.created_at>=i.created_at
         and s.created_at<=i.created_at+interval '7 days'
+        and (i.next_impression_at is null or s.created_at<i.next_impression_at)
     ))::bigint viewed,
-    count(distinct i.id) filter (where exists (
+    count(*) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='save'
         and s.created_at>=i.created_at
         and s.created_at<=i.created_at+interval '7 days'
+        and (i.next_impression_at is null or s.created_at<i.next_impression_at)
     ))::bigint saved,
-    count(distinct i.event_id) filter (where exists (
+    count(*) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='join'
         and s.created_at>=i.created_at
         and s.created_at<=i.created_at+interval '7 days'
+        and (i.next_impression_at is null or s.created_at<i.next_impression_at)
     ))::bigint joined,
-    count(distinct i.event_id) filter (where exists (
+    count(*) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='dismiss'
         and s.created_at>=i.created_at
         and s.created_at<=i.created_at+interval '7 days'
+        and (i.next_impression_at is null or s.created_at<i.next_impression_at)
     ))::bigint dismissed
   from impressions_base i
 )
