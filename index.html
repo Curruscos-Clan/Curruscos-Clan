@@ -16,4 +16,156 @@ body{margin:0;background:#f5f5f7;color:#111}.landing{min-height:100vh}.landing-h
 .home-intent a:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(17,19,24,.06)}
 .home-intent strong{font-size:11px}.home-intent span{font-size:9px;color:#888;line-height:1.35}
 @media(max-width:620px){.home-intent{grid-template-columns:1fr}.home-intent a{flex-direction:row;align-items:center;justify-content:space-between}.home-intent span{max-width:170px;text-align:right}}
-</style><style>.home-group-feed{display:grid;gap:8px}.home-group-card{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:13px;padding:12px;background:#111;color:#fff;border-radius:19px;text-decoration:none}.home-group-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:#292a2e}.home-group-date strong{font-size:18px;line-height:1}.home-group-date small{color:#aaa;font-size:7px;font-weight:900;text-transform:uppercase}.home-group-card b{display:block;font-size:12px}.home-group-card span>small{display:block;color:#aaa;font-size:9px;margin-top:4px}.home-group-card i{font-style:normal;color:#aaa}.home-group-empty{display:flex;flex-direction:column;gap:7px;padding:22px;border:1px dashed rgba(17,19,24,.15);border-radius:20px;background:#fff}.home-group-empty strong{font-size:13px}.home-group-empty span{color:#888;font-size:10px;line-height:1.45}.home-group-empty a{margin-top:5px;color:#ff4d2e;font-size:10px;font-weight:900;text-decoration:none}</style></head><body class="social-app"><header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header><main class="home-feed"><section class="feed-hero"><div><span class="feed-kicker">INICIO · PARA TI</span><h1>¿Qué te apetece hacer?</h1><p>Descubre algo interesante, retoma una idea o mueve a tu grupo.</p></div><a class="feed-profile-mini" href="perfil.html"><span id="homeAvatar">C</span><span id="homeName">Tu perfil</span></a></section><section class="home-intent"><a href="explorar.html"><strong>🔎 Descubrir</strong><span>Ver planes que pueden interesarte</span></a><a href="crear.html"><strong>＋ Crear un plan</strong><span>Empezar algo para tu grupo</span></a><a href="guardados.html"><strong>♡ Guardados</strong><span>Volver a lo que te interesó</span></a></section><section class="feed-section"><div class="feed-section-head"><div><span>PARA TI</span><h2>Lo que puede interesarte</h2></div><a href="explorar.html">Ver todo →</a></div><div id="homeRecommendations" class="home-event-feed"><div class="feed-loading"><i></i><i></i><i></i></div></div></section><section class="feed-section home-group-section"><div class="feed-section-head"><div><span>EN MARCHA</span><h2>Tu próximo movimiento</h2></div><a href="dashboard.html">Abrir grupo →</a></div><div id="homeGroupFeed" class="home-group-feed"></div></section><section class="feed-section"><div class="feed-section-head"><div><span>ACTIVIDAD</span><h2>Lo que está pasando</h2></div><a href="mis-eventos.html">Ver mis planes →</a></div><div id="homeSocial" class="home-social-feed"></div></section></main><style>.social-app{background:#f6f6f4;color:#111}.social-topbar{position:sticky;top:0;z-index:50;height:62px;padding:0 max(18px,4vw);display:flex;align-items:center;justify-content:space-between;background:rgba(246,246,244,.86);border-bottom:1px solid rgba(17,19,24,.07);backdrop-filter:blur(20px)}.social-brand{color:#111;text-decoration:none;font-size:21px;font-weight:950;letter-spacing:-.065em}.social-brand span{color:#ff4d2e}.social-top-actions{display:flex;gap:14px;align-items:center}.social-top-actions>a:first-child{font-size:23px;text-decoration:none;color:#222}.top-avatar,.feed-profile-mini>span:first-child{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#17181b;color:#fff;text-decoration:none;font-size:11px;font-weight:900}.home-feed{max-width:720px;margin:auto;padding:35px 18px 110px}.feed-hero{display:flex;align-items:end;justify-content:space-between;gap:18px;padding:25px 2px 34px}.feed-kicker,.feed-section-head>div>span{font-size:9px;font-weight:950;letter-spacing:.16em;color:#ff4d2e}.feed-hero h1{margin:7px 0 5px;font-size:clamp(39px,8vw,61px);line-height:.9;letter-spacing:-.075em}.feed-hero p{margin:0;color:#777;font-size:13px}.feed-profile-mini{display:flex;align-items:center;gap:7px;color:#333;text-decoration:none;font-size:10px;font-weight:850}.feed-section{margin-top:17px}.feed-section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.feed-section-head h2{margin:4px 0 0;font-size:24px;letter-spacing:-.055em}.feed-section-head>a{color:#777;text-decoration:none;font-size:10px;font-weight:850}.home-event-feed{display:grid;gap:12px}.home-event-card{display:grid;grid-template-columns:84px 1fr;min-height:150px;overflow:hidden;border:1px solid rgba(17,19,24,.08);border-radius:24px;background:#fff;box-shadow:0 10px 30px rgba(17,19,24,.055);text-decoration:none;color:#111}.home-event-date{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#18191c;color:#fff}.home-event-date strong{font-size:28px;letter-spacing:-.07em}.home-event-date span{font-size:8px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;color:#bbb}.home-event-copy{padding:19px}.home-event-copy small{color:#ff4d2e;font-size:8px;font-weight:950;letter-spacing:.1em;text-transform:uppercase}.home-event-copy h3{margin:7px 0 6px;font-size:21px;letter-spacing:-.045em}.home-event-copy p{margin:0;color:#777;font-size:11px;line-height:1.45}.home-event-meta{display:block;margin-top:13px;color:#555;font-size:9px;font-weight:800}.home-social-feed{display:grid;gap:7px}.home-social-item{display:flex;gap:11px;align-items:center;padding:13px 14px;background:#fff;border:1px solid rgba(17,19,24,.07);border-radius:17px}.home-social-avatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#eee;font-size:10px;font-weight:900}.home-social-item strong{font-size:11px}.home-social-item span{display:block;color:#888;font-size:9px;margin-top:2px}.feed-loading{display:grid;gap:10px}.feed-loading i{height:92px;border-radius:22px;background:linear-gradient(90deg,#eee,#f8f8f8,#eee);background-size:200% 100%;animation:feedShimmer 1.2s infinite}@keyframes feedShimmer{to{background-position:-200% 0}}.bottom-nav{position:fixed;z-index:100;left:50%;bottom:14px;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,1fr);width:min(480px,calc(100% - 24px));padding:7px;background:rgba(22,23,26,.94);border-radius:23px;box-shadow:0 18px 50px rgba(0,0,0,.22);backdrop-filter:blur(20px)}.bottom-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;color:#999;text-decoration:none;border-radius:17px}.bottom-nav-item b{font-size:20px;line-height:1}.bottom-nav-item span{font-size:8px;font-weight:850}.bottom-nav-item.active{color:#fff;background:#303136}@media(max-width:520px){.feed-hero{align-items:flex-start}.feed-profile-mini>span:last-child{display:none}.home-event-card{grid-template-columns:72px 1fr}.home-event-copy{padding:16px}.home-event-copy h3{font-size:18px}}</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/i18n.js"></script><script src="js/app.js"></script><script>document.addEventListener("DOMContentLoaded",async()=>{await window.curruscosI18n?.ready;const user=await getCurrentUser();if(!user){document.getElementById("homeRecommendations").innerHTML='<div class="home-event-card" style="display:block;padding:24px"><strong>Descubre Curruscos.</strong><p style="color:#777;font-size:11px">Inicia sesión para recibir recomendaciones adaptadas a tus grupos e intereses.</p><a href="login.html" class="button button-primary">Entrar</a></div>';return}const p=await getCurrentProfile().catch(()=>null);if(p){homeName.textContent=p.display_name||p.username||"Tu perfil";homeAvatar.textContent=(p.display_name||p.username||"C").charAt(0).toUpperCase()}const rec=document.getElementById("homeRecommendations");let events=[];try{events=await getRecommendedPublicEvents("","all")||[]}catch(e){}if(!events.length)try{events=await getPublicEvents({search:"",category:"all",event_type:"all"})||[]}catch(e){}rec.innerHTML=events.slice(0,6).map(e=>{const id=e.id||e.event_id,d=new Date(e.date+"T"+(e.time||"00:00"));return '<a class="home-event-card" href="evento-publico.html?id='+encodeURIComponent(id)+'" data-event-id="'+escapeHtml(id)+'" data-event-type="'+escapeHtml(e.event_type||"")+'"><span class="home-event-date"><strong>'+d.getDate()+'</strong><span>'+d.toLocaleDateString("es-ES",{month:"short"})+'</span></span><span class="home-event-copy"><small>'+escapeHtml(String(e.event_type||e.category||"evento").replaceAll("_"," "))+'</small><h3>'+escapeHtml(e.title||"Evento")+'</h3><p>'+escapeHtml(e.description||"Descubre este plan en Curruscos.")+'</p><span class="home-event-meta">⌖ '+escapeHtml(e.location||"Lugar por confirmar")+'</span></span></a>'}).join("")||'<div class="home-group-empty"><strong>Aún estamos aprendiendo tus gustos.</strong><span>Completa tus intereses para mejorar tus recomendaciones.</span></div>';rec.querySelectorAll("[data-event-id]").forEach(x=>x.addEventListener("click",()=>logActivitySignal("view",x.dataset.eventId,x.dataset.eventType||null,null,{source:"home"}),{once:true}));const gf=document.getElementById("homeGroupFeed");if(gf){try{const group=await getCurrentGroup(),ge=group?await getGroupEvents():[],now=new Date(),up=ge.filter(e=>{const d=new Date((e.date||"")+"T"+(e.time||"23:59"));return d>=now&&e.status!=="cancelled"}).sort((a,b)=>new Date(a.date+"T"+(a.time||"23:59"))-new Date(b.date+"T"+(b.time||"23:59")));gf.innerHTML=group?(up.slice(0,3).map(e=>{const d=new Date(e.date+"T"+(e.time||"00:00"));return '<a class="home-group-card" href="evento.html?id='+encodeURIComponent(e.id)+'"><span class="home-group-date"><strong>'+d.getDate()+'</strong><small>'+d.toLocaleDateString("es-ES",{month:"short"})+'</small></span><span><b>'+escapeHtml(e.title||"Próximo plan")+'</b><small>'+escapeHtml(e.location||"Lugar por confirmar")+'</small></span><i>→</i></a>'}).join("")||'<div class="home-group-empty"><strong>Tu grupo está listo.</strong><span>Todavía no hay ningún plan próximo.</span><a href="crear.html">Crear un plan →</a></div>'):'<div class="home-group-empty"><strong>Empieza por crear o unirte a un grupo.</strong><span>Tu grupo será el espacio donde las ideas se convierten en planes.</span><a href="crear.html">Crear un grupo →</a></div>'}catch(e){gf.innerHTML='<div class="home-group-empty"><span>No se ha podido cargar el grupo ahora mismo.</span></div>'}}try{const feed=await getSocialActivity()||[];homeSocial.innerHTML=feed.slice(0,5).map(x=>'<div class="home-social-item"><span class="home-social-avatar">'+escapeHtml((x.actor_name||"C").charAt(0).toUpperCase())+'</span><div><strong>'+escapeHtml(x.actor_name||"Alguien")+'</strong><span>'+escapeHtml(x.event_title||"Actividad en Curruscos")+'</span></div></div>').join("")||'<div class="home-group-empty"><span>Aún no hay actividad reciente.</span></div>'}catch(e){}});</script></body></html>
+</style><style>.home-group-feed{display:grid;gap:8px}.home-group-card{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:13px;padding:12px;background:#111;color:#fff;border-radius:19px;text-decoration:none}.home-group-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:#292a2e}.home-group-date strong{font-size:18px;line-height:1}.home-group-date small{color:#aaa;font-size:7px;font-weight:900;text-transform:uppercase}.home-group-card b{display:block;font-size:12px}.home-group-card span>small{display:block;color:#aaa;font-size:9px;margin-top:4px}.home-group-card i{font-style:normal;color:#aaa}.home-group-empty{display:flex;flex-direction:column;gap:7px;padding:22px;border:1px dashed rgba(17,19,24,.15);border-radius:20px;background:#fff}.home-group-empty strong{font-size:13px}.home-group-empty span{color:#888;font-size:10px;line-height:1.45}.home-group-empty a{margin-top:5px;color:#ff4d2e;font-size:10px;font-weight:900;text-decoration:none}</style><style id="home-product-v2">
+.home-navbar{position:sticky;top:0;z-index:100;background:rgba(246,246,244,.9)!important;backdrop-filter:blur(18px)}
+.home-create-link{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--text);color:var(--surface);text-decoration:none;font-size:20px;font-weight:500}
+.home-feed{max-width:760px;padding:28px 18px 120px}
+.feed-hero{padding:30px 2px 20px}
+.feed-hero h1{max-width:560px}
+.home-search-card{margin:0 0 12px}
+.home-search-card a{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 17px;border:1px solid rgba(17,19,24,.08);border-radius:18px;background:#fff;color:#777;text-decoration:none;box-shadow:0 8px 25px rgba(17,19,24,.04)}
+.home-search-card a span:first-child{font-size:22px;color:#111}.home-search-card a strong{flex:1;font-size:11px;color:#777}.home-search-card a span:last-child{font-size:18px;color:#aaa}
+.home-chips{display:flex;gap:8px;overflow:auto;padding:2px 0 10px;scrollbar-width:none}.home-chips::-webkit-scrollbar{display:none}
+.home-chips a{flex:none;padding:9px 13px;border-radius:999px;background:#eceef1;color:#555;text-decoration:none;font-size:9px;font-weight:850}
+.feed-section{margin-top:32px}.feed-section-head{margin-bottom:14px}.feed-section-head h2{font-size:26px}
+.home-event-card{grid-template-columns:78px 1fr;min-height:145px;border-radius:21px;box-shadow:0 8px 25px rgba(17,19,24,.045)}
+.home-event-date{padding:8px}.home-event-date strong{font-size:27px}.home-event-copy{padding:17px}.home-event-copy h3{font-size:20px;margin:6px 0}.home-event-copy p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.home-group-section{margin-top:42px}
+.home-empty,.home-login-card{display:flex;flex-direction:column;gap:7px;padding:22px;border:1px solid rgba(17,19,24,.08);border-radius:20px;background:#fff}
+.home-empty strong,.home-login-card strong{font-size:13px}.home-empty span,.home-login-card span{color:#888;font-size:10px;line-height:1.45}.home-empty a,.home-login-card a{margin-top:5px;color:#ff4d2e;text-decoration:none;font-size:10px;font-weight:900}
+.home-login-card.muted{background:#f0f1f2;border:0}
+.home-bottom-cta{display:flex;flex-direction:column;gap:6px;margin-top:42px;padding:24px;border-radius:23px;background:#111;color:#fff}
+.home-bottom-cta strong{font-size:20px;letter-spacing:-.04em}.home-bottom-cta span{color:#aaa;font-size:11px}.home-bottom-cta a{align-self:flex-start;margin-top:8px;padding:10px 13px;border-radius:11px;background:#fff;color:#111;text-decoration:none;font-size:10px;font-weight:850}
+.bottom-nav{display:grid}
+@media(min-width:721px){.bottom-nav{display:none}.home-create-link{margin-left:auto}}
+@media(max-width:720px){.home-navbar #mainNav{display:none}.home-navbar .home-create-link{margin-left:auto;margin-right:4px}.home-feed{padding-top:18px}.feed-hero{padding-top:22px}.home-event-card{grid-template-columns:70px 1fr}}
+@media(prefers-reduced-motion:reduce){.home-event-card,.home-search-card a{transition:none!important}}
+</style></head><body class="social-app">
+<header class="navbar home-navbar">
+  <a href="index.html" class="logo" aria-label="Curruscos, inicio">CURRUSCOS.</a>
+  <nav id="mainNav" aria-label="Navegación principal"></nav>
+  <a class="home-create-link" href="crear.html" aria-label="Crear un evento">＋</a>
+  <button id="menuButton" class="menu-button" type="button" aria-label="Abrir menú" aria-expanded="false">☰</button>
+</header>
+
+<main class="home-feed">
+  <section class="feed-hero">
+    <div>
+      <span class="feed-kicker">INICIO</span>
+      <h1>¿Qué quieres hacer?</h1>
+      <p>Descubre eventos, encuentra gente y apúntate a tu próximo plan.</p>
+    </div>
+    <a class="feed-profile-mini" href="perfil.html" aria-label="Abrir mi perfil">
+      <span id="homeAvatar">C</span><span id="homeName">Tu perfil</span>
+    </a>
+  </section>
+
+  <section class="home-search-card" aria-label="Buscar eventos">
+    <a href="explorar.html"><span aria-hidden="true">⌕</span><strong>Buscar eventos, actividades o lugares</strong><span aria-hidden="true">→</span></a>
+  </section>
+
+  <section class="home-chips" aria-label="Categorías">
+    <a href="explorar.html?category=sport">Deporte</a>
+    <a href="explorar.html?category=gaming">Gaming</a>
+    <a href="explorar.html?category=social">Social</a>
+    <a href="explorar.html?category=activity">Actividades</a>
+  </section>
+
+  <section class="feed-section">
+    <div class="feed-section-head">
+      <div><span>PARA TI</span><h2>Eventos que pueden encajarte</h2></div>
+      <a href="explorar.html">Ver todos →</a>
+    </div>
+    <div id="homeRecommendations" class="home-event-feed">
+      <div class="feed-loading" aria-label="Cargando eventos"><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <section class="feed-section home-next-section">
+    <div class="feed-section-head">
+      <div><span>TUS PLANES</span><h2>Lo que tienes en marcha</h2></div>
+      <a href="mis-eventos.html">Ver mis planes →</a>
+    </div>
+    <div id="homeGroupFeed" class="home-group-feed"></div>
+  </section>
+
+  <section class="home-bottom-cta">
+    <strong>¿Tienes una idea?</strong>
+    <span>Crea un evento y deja que la gente se apunte.</span>
+    <a href="crear.html">Crear evento →</a>
+  </section>
+</main>
+
+<nav class="bottom-nav" aria-label="Navegación móvil">
+  <a class="bottom-nav-item active" href="index.html"><b>⌂</b><span>Inicio</span></a>
+  <a class="bottom-nav-item" href="explorar.html"><b>⌕</b><span>Buscar</span></a>
+  <a class="bottom-nav-item" href="mis-eventos.html"><b>♡</b><span>Mis planes</span></a>
+  <a class="bottom-nav-item" href="perfil.html"><b>◉</b><span>Perfil</span></a>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  await window.curruscosI18n?.ready;
+  const user = await getCurrentUser();
+  const rec = document.getElementById("homeRecommendations");
+  const gf = document.getElementById("homeGroupFeed");
+
+  if (!user) {
+    rec.innerHTML =
+      '<div class="home-login-card"><strong>Descubre eventos en Curruscos.</strong><span>Inicia sesión para guardar eventos, apuntarte y recibir recomendaciones.</span><a href="login.html">Entrar →</a></div>';
+    gf.innerHTML =
+      '<div class="home-login-card muted"><span>Cuando tengas una cuenta podrás ver aquí tus planes y grupos.</span><a href="login.html">Iniciar sesión →</a></div>';
+    return;
+  }
+
+  const profile = await getCurrentProfile().catch(() => null);
+  if (profile) {
+    const display = profile.display_name || profile.username || "Tu perfil";
+    document.getElementById("homeName").textContent = display;
+    document.getElementById("homeAvatar").textContent = display.charAt(0).toUpperCase();
+  }
+
+  let events = [];
+  try { events = await getRecommendedPublicEvents("", "all") || []; } catch (e) {}
+  if (!events.length) {
+    try { events = await getPublicEvents({search:"", category:"all", event_type:"all"}) || []; } catch (e) {}
+  }
+
+  rec.innerHTML = events.slice(0, 5).map(event => {
+    const id = event.id || event.event_id;
+    const d = new Date(event.date + "T" + (event.time || "00:00"));
+    const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
+    return '<a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '">' +
+      '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
+      '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>';
+  }).join("") || '<div class="home-empty"><strong>No hay recomendaciones todavía.</strong><span>Explora todos los eventos para encontrar algo que te interese.</span><a href="explorar.html">Explorar eventos →</a></div>';
+
+  rec.querySelectorAll("[data-event-id]").forEach(card => {
+    card.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
+  });
+
+  try {
+    const group = await getCurrentGroup();
+    const groupEvents = group ? await getGroupEvents() : [];
+    const now = new Date();
+    const upcoming = groupEvents.filter(event => {
+      const date = new Date((event.date || "") + "T" + (event.time || "23:59"));
+      return date >= now && event.status !== "cancelled";
+    }).sort((a,b) => new Date(a.date+"T"+(a.time||"23:59")) - new Date(b.date+"T"+(b.time||"23:59")));
+
+    gf.innerHTML = upcoming.slice(0,3).map(event => {
+      const d = new Date(event.date + "T" + (event.time || "00:00"));
+      return '<a class="home-group-card" href="evento.html?id=' + encodeURIComponent(event.id) + '">' +
+        '<span class="home-group-date"><strong>' + d.getDate() + '</strong><small>' + d.toLocaleDateString("es-ES",{month:"short"}) + '</small></span>' +
+        '<span><b>' + escapeHtml(event.title || "Próximo plan") + '</b><small>' + escapeHtml(event.location || "Lugar por confirmar") + '</small></span><i>→</i></a>';
+    }).join("") || '<div class="home-empty"><strong>Tu agenda está libre.</strong><span>Aquí aparecerán tus próximos planes.</span><a href="crear.html">Crear un evento →</a></div>';
+  } catch (e) {
+    gf.innerHTML = '<div class="home-empty"><span>No se ha podido cargar tus planes ahora mismo.</span></div>';
+  }
+});
+</script>
+</body></html>
