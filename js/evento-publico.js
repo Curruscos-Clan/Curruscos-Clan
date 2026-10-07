@@ -295,7 +295,7 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
     if(!user){btn.addEventListener("click",()=>location.href="login.html");return;}
     if(mine?.status==="yes"){if(event.status==="finished"){btn.disabled=true;return;}btn.addEventListener("click",async()=>{if(!confirm("¿Quieres salir de este evento?"))return;btn.disabled=true;const left=await leavePublicEvent(id);if(left!==false)await logActivitySignal("leave",id,event.event_type,null,{source:"event_button"});await renderPublicEvent();});return;}
     if(full||closed){btn.disabled=true;return;}
-    btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";const joined=await joinPublicEvent(id);if(!joined){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent="No se ha podido completar la inscripción.";return;}await logActivitySignal("join",id,event.event_type,null,{source:"event_button"});await renderPublicEvent();});
+    btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";const joined=await joinPublicEvent(id);if(!joined?.success){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent=joined?.message||"No se ha podido completar la inscripción.";return;}await logActivitySignal("join",id,event.event_type,null,{source:"event_button"});await renderPublicEvent();});
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{await window.curruscosI18n?.ready;await renderPublicEvent();});
