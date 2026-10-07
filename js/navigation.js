@@ -1,15 +1,14 @@
 (function(){
   const items=[
     {href:"index.html",label:"Inicio"},
-    {href:"explorar.html",label:"Explorar"},
-    {href:"guardados.html",label:"Guardados"},
+    {href:"explorar.html",label:"Buscar"},
     {href:"mis-eventos.html",label:"Mis planes"},
-    {href:"crear.html",label:"Crear"}
+    {href:"perfil.html",label:"Perfil"}
   ];
   function init(){
     const nav=document.getElementById("mainNav");
     if(!nav)return;
-    nav.innerHTML=items.map(i=>'<a href="'+i.href+'"'+(i.href==="crear.html"?' class="nav-create"':'')+'>'+i.label+'</a>').join("");
+    nav.innerHTML=items.map(i=>'<a href="'+i.href+'">'+i.label+'</a>').join("");
     const page=(location.pathname.split("/").pop()||"index.html").toLowerCase();
     nav.querySelectorAll("a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")===page));
     const button=document.getElementById("menuButton");
