@@ -1440,12 +1440,42 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    async function loadEventChatContext() {
+        const link = document.getElementById("eventActivityChatLink");
+        if (!currentEvent?.id) return;
+
+        try {
+            const roomId = await getOrCreateEventChat(currentEvent.id);
+            if (!roomId) return;
+
+            if (link) link.href = "chat.html?room=" + encodeURIComponent(roomId);
+
+            const messages = await getChatMessages(roomId);
+            const latest = messages[messages.length - 1];
+            if (latest) {
+                activityChatContext = {
+                    type: "chat",
+                    icon: "↗",
+                    title: "Conversación reciente",
+                    detail: "El chat del plan tiene " + messages.length + " mensajes.",
+                    created_at: latest.created_at
+                };
+            }
+
+            renderEventActivity();
+        } catch (error) {
+            console.error("No se ha podido cargar el contexto del chat:", error);
+        }
+    }
+
+    let activityChatContext = null;
+
     function renderEventActivity() {
         const container = document.getElementById("eventActivityList");
         const meta = document.getElementById("eventActivityMeta");
         if (!container) return;
 
-        const activity = [];
+        const activity = activityChatContext ? [activityChatContext] : [];
 
         if (currentEvent?.created_at) activity.push({ type:"event", icon:"✦", title:"Plan creado", detail:currentEvent.title || "Este plan", created_at:currentEvent.created_at });
         decisions.forEach(poll => activity.push({ type:"decision", icon:"?", title:poll.is_closed ? "Decisión cerrada" : "Nueva decisión", detail:poll.question || "Decisión del plan", created_at:poll.created_at }));
@@ -1731,6 +1761,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateStatus();
         updateCommandCenter();
         renderEventActivity();
+        await loadEventChatContext();
 
         setupForms();
         setupEventDecisionForm();
