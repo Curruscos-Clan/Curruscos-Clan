@@ -1901,7 +1901,6 @@ async function logRecommendationImpression(eventId,surface="home",position=0,sco
     const key="curruscos_reco_impression_"+surface+"_"+eventId;
     try{
         if(sessionStorage.getItem(key))return true;
-        sessionStorage.setItem(key,"1");
     }catch(e){}
     const {data,error}=await supabaseClient.rpc("log_recommendation_impression",{
         target_event_id:eventId,
@@ -1910,7 +1909,13 @@ async function logRecommendationImpression(eventId,surface="home",position=0,sco
         target_score:score==null?null:Number(score),
         target_reason:reason||null
     });
-    if(error){console.error("Recommendation impression:",error);return false;}
+    if(error){
+        console.error("Recommendation impression:",error);
+        return false;
+    }
+    if(data){
+        try{sessionStorage.setItem(key,"1");}catch(e){}
+    }
     return !!data;
 }
 
