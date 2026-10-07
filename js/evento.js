@@ -173,6 +173,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 );
                 participants.push(updated);
 
+                if (currentEvent?.visibility === "public") {
+                    participantCounts = await getEventParticipantCounts(currentEvent.id);
+                }
+
                 renderMyAttendance();
                 renderParticipants();
                 updateProgress();
