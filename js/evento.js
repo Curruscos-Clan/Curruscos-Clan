@@ -1317,11 +1317,60 @@ document.addEventListener("DOMContentLoaded", async () => {
                     : (totalVotes ? totalVotes + (totalVotes === 1 ? " persona ha respondido." : " personas han respondido.") : "Nadie ha votado todavía."));
 
             const actions = card.querySelector(".event-decision-actions");
-            const canClose = !poll.is_closed && (
+            const canManage = (
                 currentGroup.role === "owner" ||
                 currentGroup.role === "admin" ||
                 poll.created_by === currentUser.id
             );
+
+            const rankedOptions = options
+                .map(option => ({
+                    option,
+                    count: counts.get(String(option.id)) || 0
+                }))
+                .sort((a, b) => b.count - a.count);
+            const winningOption = rankedOptions[0];
+            const hasUniqueWinner = Boolean(
+                poll.is_closed &&
+                winningOption &&
+                winningOption.count > 0 &&
+                rankedOptions.filter(item => item.count === winningOption.count).length === 1
+            );
+
+            if (poll.is_closed && canManage && hasUniqueWinner && !poll.action_task_id) {
+                const createTask = document.createElement("button");
+                createTask.type = "button";
+                createTask.className = "event-decision-close event-decision-create-task";
+                createTask.textContent = "Convertir resultado en tarea";
+                createTask.addEventListener("click", async () => {
+                    createTask.disabled = true;
+                    createTask.textContent = "Creando tarea…";
+                    const createdTask = await createTaskFromClosedPoll(poll.id, eventId);
+                    if (!createdTask?.task?.id) {
+                        createTask.disabled = false;
+                        createTask.textContent = "Convertir resultado en tarea";
+                        if (createdTask?.tie) {
+                            alert("No se puede crear la tarea porque hay empate.");
+                        } else if (createdTask?.noVotes) {
+                            alert("No se puede crear la tarea porque todavía no hay votos.");
+                        } else {
+                            alert("No se ha podido crear la tarea.");
+                        }
+                        return;
+                    }
+                    await loadEventTasks();
+                    await renderEventDecisions();
+                    updateCommandCenter();
+                });
+                actions.appendChild(createTask);
+            } else if (poll.is_closed && poll.action_task_id) {
+                const linked = document.createElement("span");
+                linked.className = "event-decision-linked-task";
+                linked.textContent = "✓ Resultado convertido en tarea";
+                actions.appendChild(linked);
+            }
+
+            const canClose = !poll.is_closed && canManage;
             if (canClose) {
                 const close = document.createElement("button");
                 close.type = "button";
