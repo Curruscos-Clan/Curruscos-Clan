@@ -214,7 +214,6 @@ async function toggleSavedEvent(eventId,user){
     if(data){
         const result=await supabaseClient.from("saved_events").delete().eq("id",data.id);
         if(result.error)throw result.error;
-        await logActivitySignal("leave",eventId,null,null,{source:"public_event",action:"unsave"});
         return false;
     }
     const result=await supabaseClient.from("saved_events").insert({event_id:eventId,user_id:user.id});
