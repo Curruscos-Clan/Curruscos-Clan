@@ -910,6 +910,20 @@
 </style>
 
 <script src="js/i18n.js"></script>
+<style id="event-command-operations-v2">
+.event-command-summary{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:18px!important}
+.event-command-stats{grid-template-columns:repeat(4,minmax(65px,1fr))!important}
+.event-command-tools{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;padding-top:2px}
+.event-command-tools button{min-height:34px;padding:0 11px;border:1px solid #e2e2e2;border-radius:999px;background:#fff;color:#555;font:inherit;font-size:10px;font-weight:800;cursor:pointer;transition:.18s ease}
+.event-command-tools button:hover{background:#111;border-color:#111;color:#fff;transform:translateY(-1px)}
+.event-command-tools button.is-active{background:#111;border-color:#111;color:#fff}
+@media(max-width:700px){
+ .event-command-summary{grid-template-columns:1fr!important}
+ .event-command-stats{grid-template-columns:repeat(2,1fr)!important}
+ .event-command-tools{display:grid;grid-template-columns:repeat(2,1fr)}
+ .event-command-tools button{width:100%}
+}
+</style>
 </head>
 
 
@@ -1251,7 +1265,14 @@
                 <div class="event-command-stats">
                     <div><strong id="commandPeople">0/0</strong><span>van</span></div>
                     <div><strong id="commandTasks">0%</strong><span>tareas</span></div>
+                    <div><strong id="commandDecisions">0</strong><span>decisiones</span></div>
                     <div><strong id="commandCost">0,00 €</strong><span>gasto</span></div>
+                </div>
+                <div class="event-command-tools" aria-label="Herramientas del plan">
+                    <button type="button" id="commandChatButton">💬 Chat</button>
+                    <button type="button" id="commandTasksButton">✓ Tareas</button>
+                    <button type="button" id="commandDecisionsButton">? Decisiones</button>
+                    <button type="button" id="commandExpensesButton">€ Gastos</button>
                 </div>
             </div>
 
