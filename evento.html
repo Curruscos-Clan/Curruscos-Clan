@@ -1482,6 +1482,41 @@
                 </section>
 
 
+
+                <!-- =================================
+                     DECISIONES
+                     ================================= -->
+
+                <section class="event-section event-decisions-section">
+
+                    <div class="event-section-header">
+                        <div>
+                            <h2 class="event-section-title">
+                                <span class="event-section-title-icon">?</span>
+                                Decisiones
+                            </h2>
+                        </div>
+                    </div>
+
+                    <p class="event-decision-intro">
+                        Si este plan depende de elegir algo, decididlo aquí. La decisión queda ligada al plan y las respuestas del grupo quedan en el mismo sitio.
+                    </p>
+
+                    <form id="eventDecisionForm" class="event-decision-form">
+                        <input id="eventDecisionQuestion" type="text" maxlength="180" placeholder="¿Qué tenemos que decidir?" required>
+                        <input id="eventDecisionDescription" type="text" maxlength="300" placeholder="Contexto opcional">
+                        <div id="eventDecisionOptions" class="event-decision-inputs">
+                            <input type="text" maxlength="120" placeholder="Opción 1" required>
+                            <input type="text" maxlength="120" placeholder="Opción 2" required>
+                        </div>
+                        <button type="submit">+ Crear decisión</button>
+                    </form>
+
+                    <div id="eventDecisionsList" class="event-decisions-list"></div>
+
+                </section>
+
+
                 <div class="event-divider"></div>
 
 
@@ -1941,6 +1976,45 @@
             font-size: 14px;
         }
 
+    }
+
+
+    .event-decisions-section{scroll-margin-top:90px}
+    .event-decision-intro{margin:-7px 0 16px;color:#777;font-size:12px;line-height:1.55;max-width:720px}
+    .event-decision-form{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;padding:15px;border:1px solid #e6e6e6;border-radius:16px;background:#f8f8f8}
+    .event-decision-form>input{width:100%;box-sizing:border-box;min-height:42px;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;font:inherit;font-size:12px}
+    .event-decision-form>button{min-height:42px;border:0;border-radius:10px;background:#111;color:#fff;font-size:11px;font-weight:800;cursor:pointer}
+    .event-decision-form>button:hover{background:#292929}
+    .event-decision-inputs{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .event-decision-inputs input{width:100%;box-sizing:border-box;min-height:40px;padding:0 11px;border:1px solid #ddd;border-radius:10px;background:#fff;font:inherit;font-size:12px}
+    .event-decisions-list{display:grid;gap:10px}
+    .event-decision-card{padding:17px;border:1px solid #e5e5e5;border-radius:16px;background:#fff}
+    .event-decision-card.closed{opacity:.88}
+    .event-decision-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+    .event-decision-kicker{font-size:9px;font-weight:900;letter-spacing:.12em;color:#999}
+    .event-decision-head h3{margin:5px 0 4px;font-size:16px;line-height:1.25}
+    .event-decision-head p{margin:0;color:#777;font-size:11px;line-height:1.45}
+    .event-decision-status{flex-shrink:0;padding:6px 8px;border-radius:999px;background:#f1f1f1;color:#777;font-size:9px;font-weight:900;letter-spacing:.08em}
+    .event-decision-options{display:grid;gap:7px;margin-top:14px}
+    .event-decision-option{position:relative;overflow:hidden;border:1px solid #e3e3e3;border-radius:11px;background:#fafafa}
+    .event-decision-option.selected{border-color:#111}
+    .event-decision-bar{position:absolute;inset:0 auto 0 0;background:#ededed;transition:width .25s ease}
+    .event-decision-option button{position:relative;z-index:1;width:100%;min-height:42px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 11px;border:0;background:transparent;text-align:left;color:#222;font:inherit;cursor:pointer}
+    .event-decision-option button:disabled{cursor:default}
+    .event-decision-option button span{color:#777;font-size:10px;white-space:nowrap}
+    .event-decision-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:11px}
+    .event-decision-meta{color:#888;font-size:10px}
+    .event-decision-close{border:0;background:transparent;color:#777;font-size:10px;font-weight:800;cursor:pointer}
+    .event-decision-close:hover{color:#111}
+    .event-decision-empty{display:grid;gap:5px;padding:22px;border:1px dashed #d7d7d7;border-radius:14px;background:#fafafa;color:#888;text-align:center;font-size:11px}
+    .event-decision-empty strong{color:#444;font-size:12px}
+    @media(max-width:600px){
+        .event-decision-form{grid-template-columns:1fr}
+        .event-decision-inputs{grid-column:auto;grid-template-columns:1fr}
+        .event-decision-form>button{grid-column:auto}
+        .event-decision-head{flex-direction:column}
+        .event-decision-status{align-self:flex-start}
+        .event-decision-footer{align-items:flex-start;flex-direction:column}
     }
 
 </style>
