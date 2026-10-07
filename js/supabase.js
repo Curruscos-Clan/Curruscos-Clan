@@ -1879,7 +1879,22 @@ async function getRecommendedPublicEvents(search="",eventType="all"){
 }
 async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);return [];}return (data||[]).map(x=>x.interest);}
 async function setMyInterests(interests){const {data,error}=await supabaseClient.rpc("set_my_interests",{target_interests:interests});if(error)throw error;return !!data;}
-async function logActivitySignal(signal,eventId=null,eventType=null,searchText=null,metadata={}){const {data,error}=await supabaseClient.rpc("log_activity_signal",{target_signal:signal,target_event_id:eventId,target_event_type:eventType,target_search:searchText,target_metadata:metadata});if(error){console.error("Activity signal:",error);return false;}return !!data;}
+async function logActivitySignal(signal,eventId=null,eventType=null,searchText=null,metadata={}){
+    // Las señales de intención fuerte siempre se conservan. Para vistas y búsquedas,
+    // evitamos registrar la misma acción repetidamente en una ventana corta.
+    const noisy=["view","search"].includes(signal);
+    const key="curruscos_signal_"+signal+"_"+(eventId||"")+"_"+(searchText||"");
+    if(noisy){
+        try{
+            const previous=Number(sessionStorage.getItem(key)||0);
+            if(previous&&Date.now()-previous<15*60*1000)return true;
+            sessionStorage.setItem(key,String(Date.now()));
+        }catch(e){}
+    }
+    const {data,error}=await supabaseClient.rpc("log_activity_signal",{target_signal:signal,target_event_id:eventId,target_event_type:eventType,target_search:searchText,target_metadata:metadata});
+    if(error){console.error("Activity signal:",error);return false;}
+    return !!data;
+}
 
 // ==========================================
 // 🗳️ VOTACIONES
