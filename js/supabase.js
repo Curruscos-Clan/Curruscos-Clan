@@ -1076,6 +1076,49 @@ async function getEventParticipants(eventId) {
 }
 
 
+async function getEventParticipantCounts(eventId) {
+    const statuses = ["yes", "pending", "no"];
+    const results = await Promise.all(statuses.map(async status => {
+        const { count, error } = await supabaseClient
+            .from("event_participants")
+            .select("*", { count: "exact", head: true })
+            .eq("event_id", eventId)
+            .eq("status", status);
+
+        if (error) {
+            console.error("Error contando participantes:", error);
+            return 0;
+        }
+
+        return count || 0;
+    }));
+
+    return {
+        yes: results[0],
+        pending: results[1],
+        no: results[2]
+    };
+}
+
+async function getMyEventParticipant(eventId, userId) {
+    if (!eventId || !userId) return null;
+
+    const { data, error } = await supabaseClient
+        .from("event_participants")
+        .select("*")
+        .eq("event_id", eventId)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Error obteniendo mi participación:", error);
+        return null;
+    }
+
+    return data || null;
+}
+
+
 async function setEventParticipant(eventId, userId, status) {
 
     const { data, error } = await supabaseClient
