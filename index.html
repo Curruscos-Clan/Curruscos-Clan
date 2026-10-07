@@ -132,6 +132,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  if (new URLSearchParams(location.search).get("debug") === "recommendations") {
+    const debugBox = document.createElement("section");
+    debugBox.id = "recommendationDebug";
+    debugBox.style.cssText = "max-width:1190px;margin:20px auto 40px;padding:20px;border:1px solid var(--border);border-radius:18px;background:var(--surface-solid,#fff);font:13px/1.5 system-ui,sans-serif;";
+    debugBox.innerHTML = '<strong>Diagnóstico del recomendador</strong><div id="recommendationDebugBody" style="margin-top:10px;color:var(--muted,#666)">Ejecutando…</div>';
+    document.querySelector("main")?.prepend(debugBox);
+    try {
+      const debugInterests = await getMyInterests().catch(() => []);
+      const debugEvents = await getRecommendedPublicEvents("", "all");
+      document.getElementById("recommendationDebugBody").innerHTML =
+        "<div><b>Usuario autenticado:</b> sí</div>" +
+        "<div><b>Intereses:</b> " + escapeHtml((debugInterests || []).join(", ") || "ninguno") + "</div>" +
+        "<div><b>Recomendaciones RPC:</b> " + debugEvents.length + "</div>" +
+        (debugEvents.length ? "<pre style=\"white-space:pre-wrap;overflow:auto;margin-top:12px;padding:12px;background:var(--surface,#f5f5f7);border-radius:12px\">" + escapeHtml(JSON.stringify(debugEvents, null, 2)) + "</pre>" : "<div style=\"margin-top:8px\">El RPC no devuelve candidatos para esta sesión.</div>");
+    } catch (error) {
+      document.getElementById("recommendationDebugBody").textContent = "Error del RPC: " + (error?.message || error);
+    }
+  }
+
   const profile = await getCurrentProfile().catch(() => null);
   const interests = await getMyInterests().catch(() => []);
   if (profile) {
