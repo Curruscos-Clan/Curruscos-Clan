@@ -40,6 +40,8 @@ body{margin:0;background:#f5f5f7;color:#111}.landing{min-height:100vh}.landing-h
 @media(min-width:721px){.bottom-nav{display:none}.home-create-link{margin-left:auto}}
 @media(max-width:720px){.home-navbar #mainNav{display:none}.home-navbar .home-create-link{margin-left:auto;margin-right:4px}.home-feed{padding-top:18px}.feed-hero{padding-top:22px}.home-event-card{grid-template-columns:70px 1fr}}
 @media(prefers-reduced-motion:reduce){.home-event-card,.home-search-card a{transition:none!important}}
+</style><style id="home-social-feed-v1">
+.home-social-feed{display:grid;gap:7px}.home-social-item{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:12px 13px;border:1px solid var(--border);border-radius:16px;background:var(--surface);text-decoration:none;color:var(--text)}.home-social-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#111;color:#fff;font-size:12px;font-weight:900}.home-social-item strong{font-size:10px}.home-social-item p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.35}.home-social-item small{display:block;margin-top:4px;color:var(--muted);font-size:8px}.home-social-item b{font-weight:900}@media(max-width:600px){.home-social-item{padding:11px}}
 </style></head><body class="social-app">
 <header class="navbar home-navbar">
   <a href="index.html" class="logo" aria-label="Curruscos, inicio">CURRUSCOS.</a>
@@ -79,6 +81,14 @@ body{margin:0;background:#f5f5f7;color:#111}.landing{min-height:100vh}.landing-h
     <div id="homeRecommendations" class="home-event-feed">
       <div class="feed-loading" aria-label="Cargando eventos"><i></i><i></i><i></i></div>
     </div>
+  </section>
+
+  <section class="feed-section home-social-section" id="homeSocialSection" hidden>
+    <div class="feed-section-head">
+      <div><span>COMUNIDAD</span><h2>Lo que está pasando</h2></div>
+      <a href="explorar.html">Descubrir →</a>
+    </div>
+    <div id="homeSocialFeed" class="home-social-feed"></div>
   </section>
 
   <section class="feed-section home-next-section">
@@ -151,6 +161,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   rec.querySelectorAll("[data-event-id]").forEach(card => {
     card.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
   });
+
+  try {
+    const socialSection = document.getElementById("homeSocialSection");
+    const socialRoot = document.getElementById("homeSocialFeed");
+    const social = await getSocialActivity();
+    if (socialSection && socialRoot && social.length) {
+      socialSection.hidden = false;
+      socialRoot.innerHTML = social.slice(0, 5).map(item => {
+        const name = escapeHtml(item.actor_name || "Alguien");
+        const title = escapeHtml(item.event_title || "un evento");
+        const kind = item.activity_type === "join" ? "se ha apuntado a" : "ha organizado";
+        const avatar = escapeHtml((item.actor_name || "?").charAt(0).toUpperCase());
+        return '<a class="home-social-item" href="evento-publico.html?id=' + encodeURIComponent(item.event_id) + '">' +
+          '<span class="home-social-avatar">' + avatar + '</span><span><strong>' + name + '</strong> ' + kind + ' <b>' + title + '</b><small>' + escapeHtml(String(item.event_type || "Evento").replaceAll("_"," ")) + '</small></span></a>';
+      }).join("");
+    }
+  } catch (e) {}
 
   try {
     const group = await getCurrentGroup();
