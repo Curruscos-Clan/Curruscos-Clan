@@ -150,9 +150,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = event.id || event.event_id;
     const d = new Date(event.date + "T" + (event.time || "00:00"));
     const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
-    const interestKey = String(event.event_type || event.category || "").toLowerCase();
-    const interestMatch = interests.find(interest => String(interest).toLowerCase() === interestKey);
-    const reason = interestMatch ? "Porque te interesa " + interestMatch.charAt(0).toUpperCase() + interestMatch.slice(1) : (Number(event.participant_count || 0) > 0 ? "Popular en Curruscos" : "Nuevo en Curruscos");
+    const rawKey = String(event.event_type || event.category || "").trim().toLowerCase();
+    const aliases = {
+      "social":"planes sociales","planes_sociales":"planes sociales","sociales":"planes sociales",
+      "padel":"pádel","futbol":"fútbol","baloncesto":"baloncesto","tenis":"tenis",
+      "ajedrez":"ajedrez","gaming":"gaming","running":"running","viajes":"viajes",
+      "senderismo":"senderismo","musica":"música","cine":"cine"
+    };
+    const interestMatch = interests.find(interest => {
+      const normalized = String(interest || "").trim().toLowerCase();
+      return normalized === rawKey || normalized === (aliases[rawKey] || rawKey) || (aliases[normalized] || normalized) === rawKey;
+    });
+    const participantCount = Number(event.participant_count || 0);
+    const reason = interestMatch
+      ? "Porque te interesa " + String(interestMatch).trim()
+      : participantCount >= 5 ? "Popular en Curruscos"
+      : "Nuevo en Curruscos";
     return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
       '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
       '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a><button class="home-event-dismiss" type="button">No me interesa</button></div>';
