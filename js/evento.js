@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let members = [];
     let participants = [];
+    let participantCounts = null;
     let tasks = [];
     let expenses = [];
     let decisions = [];
@@ -189,9 +190,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         const container = document.getElementById("participantsList");
         container.innerHTML = "";
 
-        let yes = 0;
-        let no = 0;
-        let pending = 0;
+        let yes = participantCounts?.yes ?? 0;
+        let no = participantCounts?.no ?? 0;
+        let pending = participantCounts?.pending ?? 0;
+
+        if (currentEvent?.visibility === "public") {
+            document.getElementById("participantsYes").textContent = String(yes);
+            document.getElementById("participantsPending").textContent = String(pending);
+            document.getElementById("participantsNo").textContent = String(no);
+            container.innerHTML =
+                '<div class="public-participants-summary">' +
+                    '<strong>' + yes + ' confirmados</strong>' +
+                    '<span>La asistencia se gestiona de forma agregada para este evento público.</span>' +
+                '</div>';
+            return;
+        }
 
         const orderedMembers = [...members].sort((a, b) => {
             const rank = status => status === "pending" ? 0 : status === "yes" ? 1 : 2;
@@ -1671,6 +1684,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         const pending = Math.max(0, members.length - answered);
         const incompleteTasks = tasks.filter(task => !task.completed).length;
 
+        if (currentEvent?.visibility === "public") {
+            const confirmed = participantCounts?.yes || 0;
+            const capacity = Number(currentEvent.capacity);
+            if (capacity > 0) {
+                const remaining = Math.max(0, capacity - confirmed);
+                status.textContent = remaining > 0
+                    ? "🟢 " + confirmed + "/" + capacity + " plazas ocupadas"
+                    : "🔴 Aforo completo";
+            } else {
+                status.textContent = "🟢 " + confirmed + " personas confirmadas";
+            }
+            return;
+        }
+
         if (!members.length) {
             status.textContent = "🟡 Añade miembros para organizar";
             return;
@@ -1715,20 +1742,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 currentGroup.id
             );
 
-        const [participantData, taskData, expenseData] = await Promise.all([
-            getEventParticipants(
-                currentEvent.id
-            ),
-            getEventTasks(
-                currentEvent.id
-            ),
-            getEventExpenses(
-                currentEvent.id
-            )
+        const isPublicEvent = currentEvent.visibility === "public";
+
+        const [participantData, taskData, expenseData, publicCounts, myParticipant] = await Promise.all([
+            isPublicEvent ? getMyEventParticipant(currentEvent.id, currentUser?.id) : getEventParticipants(currentEvent.id),
+            getEventTasks(currentEvent.id),
+            getEventExpenses(currentEvent.id),
+            isPublicEvent ? getEventParticipantCounts(currentEvent.id) : null,
+            isPublicEvent ? getMyEventParticipant(currentEvent.id, currentUser?.id) : null
         ]);
 
-        participants =
-            participantData || [];
+        participants = isPublicEvent
+            ? (myParticipant ? [myParticipant] : [])
+            : (participantData || []);
+
+        participantCounts = isPublicEvent ? publicCounts : null;
 
         tasks =
             taskData || [];
