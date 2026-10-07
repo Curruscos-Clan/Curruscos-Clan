@@ -2788,9 +2788,18 @@ async function getPublicEventParticipants(eventId) {
 }
 
 async function joinPublicEvent(eventId) {
-    const user = await getCurrentUser();
-    if (!user) return null;
-    return setEventParticipant(eventId, user.id, "yes");
+    if (!eventId) return null;
+
+    const { data, error } = await supabaseClient.rpc("join_public_event", {
+        target_event_id: eventId
+    });
+
+    if (error) {
+        console.error("Error apuntándose al evento:", error);
+        return null;
+    }
+
+    return data?.success ? data : null;
 }
 
 async function leavePublicEvent(eventId) {
