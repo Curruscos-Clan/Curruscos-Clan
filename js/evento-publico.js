@@ -231,17 +231,20 @@ async function renderPublicEvent(){
     if(!event){root.innerHTML='<div class="empty-state">Este evento no existe o ya no está publicado.</div>';return;}
 
     const user=await getCurrentUser();
-    const participants=await getPublicEventParticipants(id);
-    const teams=await getPublicEventTeams(id);
-    const teamMembers=await getPublicEventTeamMembers(id);
-    const matches=await getPublicEventMatches(id);
-    const mine=user?participants.find(p=>p.user_id===user.id):null;
-    const yes=participants.filter(p=>p.status==="yes").length;
+    const isCompetition=event.format!=="standard";
+    const isOrganizer=!!user&&event.created_by===user.id;
+    const mineRecord=user?await getMyEventParticipant(event.id,user.id):null;
+    const participantCounts=await getEventParticipantCounts(event.id);
+    const participants=(isOrganizer||isCompetition)?await getPublicEventParticipants(id):[];
+    const teams=(isOrganizer||isCompetition)?await getPublicEventTeams(id):[];
+    const teamMembers=(isOrganizer||isCompetition)?await getPublicEventTeamMembers(id):[];
+    const matches=isCompetition?await getPublicEventMatches(id):[];
+    const mine=mineRecord||(participants.find(p=>p.user_id===user?.id)||null);
+    const yes=participantCounts?.yes??participants.filter(p=>p.status==="yes").length;
     const full=event.capacity!==null&&yes>=event.capacity;
     const deadlinePassed=event.registration_deadline&&new Date(event.registration_deadline).getTime()<Date.now();
     const closed=event.status!=="published"||deadlinePassed;
     const fee=Number(event.entry_fee||0);
-    const isOrganizer=!!user&&event.created_by===user.id;
     const saved=await getSavedEventState(event.id,user);
     const relatedEvents=await getPublicRelatedEvents(id);
     const activePeople=(event.event_type?await getPublicActivePeople("",event.event_type):[]).filter(p=>!participants.some(x=>x.user_id===p.user_id)).slice(0,6);
