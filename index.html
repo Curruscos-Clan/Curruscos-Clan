@@ -122,7 +122,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const profile = await getCurrentProfile().catch(() => null);\n  const interests = await getMyInterests().catch(() => []);
+  const profile = await getCurrentProfile().catch(() => null);
+  const interests = await getMyInterests().catch(() => []);
   if (profile) {
     const display = profile.display_name || profile.username || "Tu perfil";
     document.getElementById("homeName").textContent = display;
@@ -139,6 +140,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const id = event.id || event.event_id;
     const d = new Date(event.date + "T" + (event.time || "00:00"));
     const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
+    const interestKey = String(event.event_type || event.category || "").toLowerCase();
+    const interestMatch = interests.find(interest => String(interest).toLowerCase() === interestKey);
+    const reason = interestMatch ? "Porque te interesa " + interestMatch.charAt(0).toUpperCase() + interestMatch.slice(1) : (Number(event.participant_count || 0) > 0 ? "Popular en Curruscos" : "Nuevo en Curruscos");
     return '<a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '">' +
       '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
       '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>';
