@@ -141,8 +141,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   let events = [];
-  try { events = await getRecommendedPublicEvents("", "all") || []; } catch (e) {}
+  let isRecommendationFeed = true;
+  try {
+    events = await getRecommendedPublicEvents("", "all") || [];
+  } catch (e) {
+    isRecommendationFeed = false;
+  }
   if (!events.length) {
+    isRecommendationFeed = false;
     try { events = await getPublicEvents({search:"", category:"all", event_type:"all"}) || []; } catch (e) {}
   }
 
