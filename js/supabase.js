@@ -2799,7 +2799,7 @@ async function joinPublicEvent(eventId) {
         return null;
     }
 
-    return data?.success ? data : null;
+    return data || null;
 }
 
 async function leavePublicEvent(eventId) {
