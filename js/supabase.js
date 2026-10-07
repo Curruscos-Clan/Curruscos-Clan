@@ -1816,7 +1816,7 @@ async function logActivitySignal(signal,eventId=null,eventType=null,searchText=n
 // 🗳️ VOTACIONES
 // ==========================================
 
-async function getGroupPolls() {
+async function getGroupPolls(eventId = null) {
 
     const group = await getCurrentGroup();
 
@@ -1824,11 +1824,12 @@ async function getGroupPolls() {
         return [];
     }
 
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
         .from("polls")
         .select(`
             id,
             group_id,
+            event_id,
             created_by,
             question,
             description,
@@ -1840,10 +1841,15 @@ async function getGroupPolls() {
                 created_at
             )
         `)
-        .eq("group_id", group.id)
-        .order("created_at", {
-            ascending: false
-        });
+        .eq("group_id", group.id);
+
+    if (eventId) {
+        query = query.eq("event_id", eventId);
+    }
+
+    const { data, error } = await query.order("created_at", {
+        ascending: false
+    });
 
     if (error) {
         console.error(
@@ -1865,7 +1871,8 @@ async function getGroupPolls() {
 async function createGroupPoll(
     question,
     description,
-    options
+    options,
+    eventId = null
 ) {
 
     const group = await getCurrentGroup();
@@ -1909,6 +1916,7 @@ async function createGroupPoll(
             .from("polls")
             .insert({
                 group_id: group.id,
+                event_id: eventId || null,
                 created_by: user.id,
                 question: question.trim(),
                 description:
