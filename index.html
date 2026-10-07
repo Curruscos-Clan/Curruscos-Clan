@@ -75,7 +75,7 @@ body{margin:0;background:#f5f5f7;color:#111}.landing{min-height:100vh}.landing-h
 
   <section class="feed-section">
     <div class="feed-section-head">
-      <div><span>PARA TI</span><h2>Eventos que pueden encajarte</h2></div>
+      <div><span id="homeRecommendationEyebrow">PARA TI</span><h2 id="homeRecommendationTitle">Eventos que pueden encajarte</h2></div>
       <a href="explorar.html">Ver todos →</a>
     </div>
     <div id="homeRecommendations" class="home-event-feed">
@@ -126,6 +126,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const profile = user ? await getCurrentProfile().catch(() => null) : null;
   const interests = user ? await getMyInterests().catch(() => []) : [];
+  const recEyebrow = document.getElementById("homeRecommendationEyebrow");
+  const recTitle = document.getElementById("homeRecommendationTitle");
+  if (!user) {
+    if (recEyebrow) recEyebrow.textContent = "DESCUBRIR";
+    if (recTitle) recTitle.textContent = "Eventos que pueden interesarte";
+  }
   if (profile) {
     const display = profile.display_name || profile.username || "Tu perfil";
     document.getElementById("homeName").textContent = display;
@@ -160,14 +166,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       return normalized === rawKey || normalized === (aliases[rawKey] || rawKey) || (aliases[normalized] || normalized) === rawKey;
     });
     const participantCount = Number(event.participant_count || 0);
-    const reason = interestMatch
+    const reason = user ? (interestMatch
       ? "Porque te interesa " + String(interestMatch).trim()
       : participantCount >= 5 ? "Popular en Curruscos"
-      : "Nuevo en Curruscos";
+      : "Nuevo en Curruscos") : "Descubre este plan en Curruscos";
     return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
       '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
       '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>' + (user ? '<button class="home-event-dismiss" type="button">No me interesa</button>' : '') + '</div>';
-  }).join("") || '<div class="home-empty"><strong>No hay recomendaciones todavía.</strong><span>Explora todos los eventos para encontrar algo que te interese.</span><a href="explorar.html">Explorar eventos →</a></div>';
+  }).join("") || '<div class="home-empty"><strong>No hay eventos públicos todavía.</strong><span>Cuando haya nuevos planes aparecerán aquí para descubrirlos.</span><a href="explorar.html">Explorar eventos →</a></div>';
 
   rec.querySelectorAll(".home-event-wrap").forEach((card, index) => {
     const eventData = events[index];
