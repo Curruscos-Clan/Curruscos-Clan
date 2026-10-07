@@ -1898,11 +1898,11 @@ async function logActivitySignal(signal,eventId=null,eventType=null,searchText=n
         try{
             const previous=Number(sessionStorage.getItem(key)||0);
             if(previous&&Date.now()-previous<15*60*1000)return true;
-            sessionStorage.setItem(key,String(Date.now()));
         }catch(e){}
     }
     const {data,error}=await supabaseClient.rpc("log_activity_signal",{target_signal:signal,target_event_id:eventId,target_event_type:eventType,target_search:searchText,target_metadata:metadata});
     if(error){console.error("Activity signal:",error);return false;}
+    if(noisy&&data){try{sessionStorage.setItem(key,String(Date.now()));}catch(e){}}
     return !!data;
 }
 
