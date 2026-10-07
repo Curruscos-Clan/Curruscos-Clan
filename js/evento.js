@@ -1436,6 +1436,53 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    function renderEventActivity() {
+        const container = document.getElementById("eventActivityList");
+        const meta = document.getElementById("eventActivityMeta");
+        if (!container) return;
+
+        const activity = [];
+
+        if (currentEvent?.created_at) activity.push({ type:"event", icon:"✦", title:"Plan creado", detail:currentEvent.title || "Este plan", created_at:currentEvent.created_at });
+        decisions.forEach(poll => activity.push({ type:"decision", icon:"?", title:poll.is_closed ? "Decisión cerrada" : "Nueva decisión", detail:poll.question || "Decisión del plan", created_at:poll.created_at }));
+        tasks.forEach(task => activity.push({ type:"task", icon:"✓", title:task.completed ? "Tarea completada" : "Tarea creada", detail:task.title || "Tarea", created_at:task.created_at }));
+        expenses.forEach(expense => activity.push({ type:"expense", icon:"€", title:"Gasto añadido", detail:(expense.title || "Gasto") + " · " + formatMoney(expense.amount), created_at:expense.created_at }));
+
+        activity.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+        if (meta) meta.textContent = activity.length ? activity.length + (activity.length === 1 ? " movimiento" : " movimientos") : "Todavía no hay actividad.";
+        if (!activity.length) {
+            container.innerHTML = '<div class="event-activity-empty">Cuando pase algo importante en este plan, aparecerá aquí.</div>';
+            return;
+        }
+
+        container.innerHTML = "";
+        activity.slice(0,8).forEach(item => {
+            const row=document.createElement("article");
+            row.className="event-activity-item";
+            const icon=document.createElement("span");
+            icon.className="event-activity-icon event-activity-"+item.type;
+            icon.textContent=item.icon;
+            const copy=document.createElement("div");
+            copy.className="event-activity-copy";
+            const title=document.createElement("strong");
+            title.textContent=item.title;
+            const detail=document.createElement("span");
+            detail.textContent=item.detail;
+            const time=document.createElement("small");
+            time.textContent=formatActivityTime(item.created_at);
+            copy.append(title,detail,time);
+            row.append(icon,copy);
+            container.appendChild(row);
+        });
+    }
+
+    function formatActivityTime(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return new Intl.DateTimeFormat("es-ES", {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}).format(date);
+    }
+
     function updateCommandCenter() {
         const yes = participants.filter(item => item.status === "yes").length;
         const answered = participants.filter(item => item.status === "yes" || item.status === "no").length;
@@ -1679,6 +1726,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateProgress();
         updateStatus();
         updateCommandCenter();
+        renderEventActivity();
 
         setupForms();
         setupEventDecisionForm();
