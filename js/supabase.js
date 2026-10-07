@@ -1896,6 +1896,24 @@ async function logActivitySignal(signal,eventId=null,eventType=null,searchText=n
     return !!data;
 }
 
+async function logRecommendationImpression(eventId,surface="home",position=0,score=null,reason=null){
+    if(!eventId)return false;
+    const key="curruscos_reco_impression_"+surface+"_"+eventId;
+    try{
+        if(sessionStorage.getItem(key))return true;
+        sessionStorage.setItem(key,"1");
+    }catch(e){}
+    const {data,error}=await supabaseClient.rpc("log_recommendation_impression",{
+        target_event_id:eventId,
+        target_surface:surface,
+        target_position:Number(position)||0,
+        target_score:score==null?null:Number(score),
+        target_reason:reason||null
+    });
+    if(error){console.error("Recommendation impression:",error);return false;}
+    return !!data;
+}
+
 // ==========================================
 // 🗳️ VOTACIONES
 // ==========================================
