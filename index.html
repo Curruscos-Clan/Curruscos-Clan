@@ -179,13 +179,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   rec.querySelectorAll(".home-event-wrap").forEach((card, index) => {
     const eventData = events[index];
-    logRecommendationImpression(
-      card.dataset.eventId,
-      "home",
-      index + 1,
-      eventData?.score ?? eventData?.recommendation_score ?? null,
-      card.querySelector(".home-event-reason")?.textContent || null
-    );
+    if (isRecommendationFeed) {
+      logRecommendationImpression(
+        card.dataset.eventId,
+        "home",
+        index + 1,
+        eventData?.score ?? eventData?.recommendation_score ?? null,
+        card.querySelector(".home-event-reason")?.textContent || null
+      );
+    }
     card.querySelector("a")?.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
     card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
       event.preventDefault(); event.stopPropagation();
