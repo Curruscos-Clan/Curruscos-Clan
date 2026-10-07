@@ -1358,7 +1358,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                         }
                         return;
                     }
-                    await loadEventTasks();
+                    tasks = await getEventTasks(eventId);
+                    renderTasks();
+                    updateProgress();
+                    updateStatus();
                     await renderEventDecisions();
                     updateCommandCenter();
                 });
