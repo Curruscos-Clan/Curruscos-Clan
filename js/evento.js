@@ -1339,6 +1339,17 @@ document.addEventListener("DOMContentLoaded", async () => {
                 rankedOptions.filter(item => item.count === winningOption.count).length === 1
             );
 
+            const actionSuggestion = getDecisionActionSuggestion(poll, winningOption?.option);
+            if (poll.is_closed && hasUniqueWinner && actionSuggestion) {
+                const suggestion = document.createElement("div");
+                suggestion.className = "event-decision-suggestion";
+                suggestion.innerHTML =
+                    '<span class="event-decision-suggestion-kicker">ACCIÓN SUGERIDA</span>' +
+                    '<strong>' + escapeHtml(actionSuggestion.title) + '</strong>' +
+                    '<span>' + escapeHtml(actionSuggestion.detail) + '</span>';
+                card.querySelector(".event-decision-footer").before(suggestion);
+            }
+
             if (poll.is_closed && canManage && hasUniqueWinner && !poll.action_task_id) {
                 const createTask = document.createElement("button");
                 createTask.type = "button";
@@ -1398,6 +1409,32 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             list.appendChild(card);
         });
+    }
+
+    function getDecisionActionSuggestion(poll, winningOption) {
+        const text = [
+            poll?.question || "",
+            poll?.description || "",
+            winningOption?.option_text || ""
+        ].join(" ").toLowerCase();
+
+        const actionWords = [
+            "compr", "llevar", "reserv", "organ", "prepar", "hacer",
+            "traer", "pagar", "coger", "elegir", "quedar", "ir ",
+            "alquilar", "encargar", "compramos", "necesit"
+        ];
+
+        if (actionWords.some(word => text.includes(word))) {
+            return {
+                title: "Probablemente requiere una acción",
+                detail: "El resultado parece implicar algo que alguien tendrá que preparar o ejecutar."
+            };
+        }
+
+        return {
+            title: "Resultado decidido",
+            detail: "Puedes convertirlo en tarea si este resultado requiere que alguien haga algo."
+        };
     }
 
     function setupEventDecisionForm() {
