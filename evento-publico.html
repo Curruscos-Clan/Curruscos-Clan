@@ -44,7 +44,18 @@
  .event-primary-actions{display:grid}
  .event-primary-actions>*{width:100%;text-align:center}
 }
-</style></head>
+<style id="event-organizer-hierarchy">
+.organizer-tools{margin-top:12px;border:1px solid var(--border);border-radius:18px;background:var(--surface);overflow:hidden}
+.organizer-tools>summary{list-style:none;cursor:pointer;padding:16px 18px;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.organizer-tools>summary::-webkit-details-marker{display:none}
+.organizer-tools>summary::after{content:"+";font-size:18px;font-weight:400;color:var(--muted)}
+.organizer-tools[open]>summary::after{content:"−"}
+.organizer-tools[open]>summary{border-bottom:1px solid var(--border)}
+.organizer-tools>*:not(summary){margin-left:0;margin-right:0}
+.organizer-tools .event-lifecycle,.organizer-tools .event-action-panel,.organizer-tools .tournament-admin-box,.organizer-tools .team-manager,.organizer-tools .command-center{border-radius:0;border-left:0;border-right:0;margin-top:0}
+.organizer-tools .event-lifecycle:last-child,.organizer-tools .team-manager:last-child,.organizer-tools .command-center:last-child{border-bottom:0}
+@media(max-width:650px){.organizer-tools>summary{min-height:52px;padding:15px}.organizer-tools{border-radius:16px}}
+</style></style></head>
 <body>
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main class="public-event-page">
