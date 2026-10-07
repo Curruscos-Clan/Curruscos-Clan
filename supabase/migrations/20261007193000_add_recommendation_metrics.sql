@@ -29,14 +29,14 @@ metrics as (
   select
     count(*)::bigint impressions,
     count(distinct i.event_id)::bigint unique_events_impressed,
-    count(distinct i.event_id) filter (where exists (
+    count(distinct i.id) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='view'
         and s.created_at>=i.created_at
         and s.created_at<=i.created_at+interval '7 days'
     ))::bigint viewed,
-    count(distinct i.event_id) filter (where exists (
+    count(distinct i.id) filter (where exists (
       select 1 from public.user_activity_signals s
       where s.user_id=i.user_id and s.event_id=i.event_id
         and s.signal_type='save'
@@ -60,10 +60,10 @@ metrics as (
   from impressions_base i
 )
 select impressions,unique_events_impressed,viewed,saved,joined,dismissed,
-  case when unique_events_impressed=0 then 0 else round(100.0*viewed/unique_events_impressed,2) end,
-  case when unique_events_impressed=0 then 0 else round(100.0*saved/unique_events_impressed,2) end,
-  case when unique_events_impressed=0 then 0 else round(100.0*joined/unique_events_impressed,2) end,
-  case when unique_events_impressed=0 then 0 else round(100.0*dismissed/unique_events_impressed,2) end
+  case when impressions=0 then 0 else round(100.0*viewed/impressions,2) end,
+  case when impressions=0 then 0 else round(100.0*saved/impressions,2) end,
+  case when impressions=0 then 0 else round(100.0*joined/impressions,2) end,
+  case when impressions=0 then 0 else round(100.0*dismissed/impressions,2) end
 from metrics;
 $function$;
 
