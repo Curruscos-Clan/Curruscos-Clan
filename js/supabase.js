@@ -1835,6 +1835,7 @@ async function getGroupPolls(eventId = null) {
             description,
             is_closed,
             created_at,
+            action_task_id,
             poll_options (
                 id,
                 option_text,
@@ -2120,6 +2121,54 @@ async function getPollResults(
 // ==========================================
 // 🔒 CERRAR VOTACIÓN
 // ==========================================
+
+async function createTaskFromClosedPoll(pollId, fallbackEventId = null) {
+    if (!pollId) return null;
+
+    const polls = await getGroupPolls();
+    const poll = polls.find(item => String(item.id) === String(pollId));
+    if (!poll || !poll.is_closed) return null;
+
+    if (poll.action_task_id) {
+        return { alreadyExists: true, taskId: poll.action_task_id };
+    }
+
+    const eventId = poll.event_id || fallbackEventId;
+    if (!eventId) return null;
+
+    const votes = await getPollResults(poll.id);
+    const options = poll.poll_options || [];
+    const counts = options.map(option => ({
+        option,
+        count: votes.filter(vote => String(vote.option_id) === String(option.id)).length
+    })).sort((a, b) => b.count - a.count);
+
+    const winner = counts[0];
+    if (!winner || winner.count === 0) return { tie: false, noVotes: true };
+
+    const tied = counts.filter(item => item.count === winner.count);
+    if (tied.length > 1) return { tie: true, noVotes: false };
+
+    const title = "Decisión: " + String(poll.question || "Decisión").trim() +
+        " → " + String(winner.option.option_text || "").trim();
+
+    const task = await createEventTask(eventId, title, null);
+    if (!task?.id) return null;
+
+    const { error } = await supabaseClient
+        .from("polls")
+        .update({ action_task_id: task.id })
+        .eq("id", poll.id);
+
+    if (error) {
+        await deleteEventTask(task.id);
+        console.error("Error vinculando la tarea con la decisión:", error);
+        return null;
+    }
+
+    return { task, winner: winner.option };
+}
+
 
 async function closePoll(
     pollId
