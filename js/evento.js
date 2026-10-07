@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let participants = [];
     let tasks = [];
     let expenses = [];
+    let decisions = [];
     let expenseSplits = new Map();
     let relatedTrip = null;
     let taskFilter = "all";
@@ -1229,10 +1230,165 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateCommandCenter();
     }
 
+
+    async function renderEventDecisions() {
+        const list = document.getElementById("eventDecisionsList");
+        const form = document.getElementById("eventDecisionForm");
+        if (!list) return;
+
+        if (typeof workspaceHasCapability === "function" && !workspaceHasCapability("decisions")) {
+            if (form) form.hidden = true;
+            list.innerHTML = '<div class="event-decision-empty">Las decisiones no están activas en este workspace.</div>';
+            decisions = [];
+            return;
+        }
+
+        list.innerHTML = '<div class="event-decision-empty">Cargando decisiones…</div>';
+        decisions = await getGroupPolls(eventId);
+
+        const ids = decisions.map(poll => poll.id);
+        const [myVotes, ...results] = await Promise.all([
+            getMyPollVotes(ids),
+            ...ids.map(id => getPollResults(id))
+        ]);
+        const myVoteMap = new Map((myVotes || []).map(vote => [String(vote.poll_id), String(vote.option_id)]));
+        const resultMap = new Map(ids.map((id, index) => [id, results[index] || []]));
+
+        if (!decisions.length) {
+            list.innerHTML = '<div class="event-decision-empty"><strong>Todavía no hay ninguna decisión.</strong><span>Si hay algo que decidir para este plan, poned las opciones aquí y que vote el grupo.</span></div>';
+            return;
+        }
+
+        list.innerHTML = "";
+        decisions.forEach(poll => {
+            const votes = resultMap.get(poll.id) || [];
+            const selected = myVoteMap.get(String(poll.id));
+            const totalVotes = new Set(votes.map(vote => String(vote.user_id))).size;
+            const card = document.createElement("article");
+            card.className = "event-decision-card" + (poll.is_closed ? " closed" : "");
+
+            const options = poll.poll_options || [];
+            const counts = new Map(options.map(option => [
+                String(option.id),
+                votes.filter(vote => String(vote.option_id) === String(option.id)).length
+            ]));
+            const maxVotes = Math.max(1, ...counts.values());
+
+            card.innerHTML =
+                '<div class="event-decision-head">' +
+                    '<div><span class="event-decision-kicker">DECISIÓN DEL PLAN</span><h3>' + escapeHtml(poll.question || "Decisión") + '</h3>' +
+                    (poll.description ? '<p>' + escapeHtml(poll.description) + '</p>' : '') + '</div>' +
+                    '<span class="event-decision-status">' + (poll.is_closed ? 'CERRADA' : 'ABIERTA') + '</span>' +
+                '</div>' +
+                '<div class="event-decision-options"></div>' +
+                '<div class="event-decision-footer"><span class="event-decision-meta"></span><span class="event-decision-actions"></span></div>';
+
+            const optionWrap = card.querySelector(".event-decision-options");
+            options.forEach(option => {
+                const optionId = String(option.id);
+                const count = counts.get(optionId) || 0;
+                const percent = totalVotes ? Math.round(count / totalVotes * 100) : 0;
+                const row = document.createElement("div");
+                row.className = "event-decision-option" + (selected === optionId ? " selected" : "");
+                row.innerHTML =
+                    '<span class="event-decision-bar" style="width:' + (count ? Math.max(5, count / maxVotes * 100) : 0) + '%"></span>' +
+                    '<button type="button"><strong>' + escapeHtml(option.option_text) + '</strong><span>' + count + ' ' + (count === 1 ? 'voto' : 'votos') + (totalVotes ? ' · ' + percent + '%' : '') + '</span></button>';
+                const button = row.querySelector("button");
+                button.disabled = Boolean(poll.is_closed || selected);
+                button.addEventListener("click", async () => {
+                    button.disabled = true;
+                    const saved = await voteInPoll(poll.id, option.id);
+                    if (!saved) {
+                        button.disabled = false;
+                        alert("No se ha podido registrar el voto.");
+                        return;
+                    }
+                    await renderEventDecisions();
+                    updateCommandCenter();
+                });
+                optionWrap.appendChild(row);
+            });
+
+            const meta = card.querySelector(".event-decision-meta");
+            meta.textContent = poll.is_closed
+                ? (totalVotes ? totalVotes + (totalVotes === 1 ? " persona ha votado." : " personas han votado.") : "Todavía no ha votado nadie.")
+                : (selected
+                    ? "Has votado · " + totalVotes + (totalVotes === 1 ? " persona ha respondido." : " personas han respondido.")
+                    : (totalVotes ? totalVotes + (totalVotes === 1 ? " persona ha respondido." : " personas han respondido.") : "Nadie ha votado todavía."));
+
+            const actions = card.querySelector(".event-decision-actions");
+            const canClose = !poll.is_closed && (
+                currentGroup.role === "owner" ||
+                currentGroup.role === "admin" ||
+                poll.created_by === currentUser.id
+            );
+            if (canClose) {
+                const close = document.createElement("button");
+                close.type = "button";
+                close.className = "event-decision-close";
+                close.textContent = "Cerrar decisión";
+                close.addEventListener("click", async () => {
+                    if (!confirm("¿Cerrar esta decisión? Los votos seguirán visibles.")) return;
+                    close.disabled = true;
+                    if (!await closePoll(poll.id)) {
+                        close.disabled = false;
+                        alert("No se ha podido cerrar la decisión.");
+                        return;
+                    }
+                    await renderEventDecisions();
+                    updateCommandCenter();
+                });
+                actions.appendChild(close);
+            }
+            list.appendChild(card);
+        });
+    }
+
+    function setupEventDecisionForm() {
+        const form = document.getElementById("eventDecisionForm");
+        if (!form) return;
+
+        if (typeof workspaceHasCapability === "function" && !workspaceHasCapability("decisions")) {
+            form.hidden = true;
+            return;
+        }
+
+        form.addEventListener("submit", async event => {
+            event.preventDefault();
+            const question = document.getElementById("eventDecisionQuestion")?.value.trim();
+            const description = document.getElementById("eventDecisionDescription")?.value.trim();
+            const options = [...document.querySelectorAll("#eventDecisionOptions input")]
+                .map(input => input.value.trim())
+                .filter(Boolean);
+
+            if (!question || options.length < 2) {
+                alert("Escribe la decisión y al menos dos opciones.");
+                return;
+            }
+
+            const submit = form.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            submit.textContent = "Creando…";
+            try {
+                const created = await createGroupPoll(question, description, options, eventId);
+                if (!created) throw new Error("No se ha podido crear la decisión.");
+                form.reset();
+                await renderEventDecisions();
+                updateCommandCenter();
+            } catch (error) {
+                alert(getSupabaseErrorMessage(error, "No se ha podido crear la decisión."));
+            } finally {
+                submit.disabled = false;
+                submit.textContent = "Crear decisión";
+            }
+        });
+    }
+
     function updateCommandCenter() {
         const yes = participants.filter(item => item.status === "yes").length;
         const answered = participants.filter(item => item.status === "yes" || item.status === "no").length;
         const pending = Math.max(0, members.length - answered);
+        const openDecisions = decisions.filter(poll => !poll.is_closed).length;
         const completed = tasks.filter(task => task.completed).length;
         const taskPercent = tasks.length ? Math.round(completed / tasks.length * 100) : 0;
         const total = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
@@ -1283,6 +1439,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 headline.textContent = pending + (pending === 1 ? " persona aún no ha respondido." : " personas aún no han respondido.");
                 subline.textContent = yes + " confirmadas · " + pending + " pendientes.";
                 setAction("Revisar asistencia →", "participantsList");
+            } else if (openDecisions > 0) {
+                headline.textContent = openDecisions + (openDecisions === 1 ? " decisión espera al grupo." : " decisiones esperan al grupo.");
+                subline.textContent = "Resolved primero lo que condiciona el plan.";
+                setAction("Resolver decisiones →", "eventDecisionsList");
             } else if (tasks.length && taskPercent < 100) {
                 headline.textContent = "La asistencia está cerrada, pero aún quedan tareas.";
                 subline.textContent = completed + " de " + tasks.length + " tareas completadas.";
@@ -1382,6 +1542,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         expenses = expenseData || [];
 
+        await renderEventDecisions();
+
         const splitRows = await Promise.all(
             expenses.map(expense => getExpenseSplits(expense.id))
         );
@@ -1444,6 +1606,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateCommandCenter();
 
         setupForms();
+        setupEventDecisionForm();
         setupTaskFilters();
         await setupHistoryButton();
         await setupEventShare();
