@@ -1,0 +1,3 @@
+-- Improve recommendation quality: exclude already joined events and reward available capacity.
+-- The live database function is defined by the corresponding Supabase migration applied at deploy time.
+-- This migration is intentionally kept as the canonical source for the recommendation-function update.
