@@ -219,7 +219,10 @@ async function getChatRoomSecurityContext(roomId) {
     if (data.group_id) return { groupId: data.group_id, scope: "group" };
     if (data.event_id) {
         const { data: event } = await supabaseClient.from("events").select("group_id").eq("id", data.event_id).maybeSingle();
-        if (event?.group_id) return { groupId: event.group_id, scope: "event" };
+        if (event?.group_id) {
+            const { data: mode } = await supabaseClient.rpc("get_event_chat_mode", { target_room_id: roomId });
+            return { groupId: event.group_id, scope: "event", largeMode: Boolean(mode?.largeMode), canSend: mode?.canSend !== false, participantCount: Number(mode?.participantCount || 0) };
+        }
     }
     if (data.team_id) {
         const { data: team } = await supabaseClient.from("event_teams").select("event_id").eq("id", data.team_id).maybeSingle();
