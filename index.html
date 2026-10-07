@@ -124,16 +124,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const rec = document.getElementById("homeRecommendations");
   const gf = document.getElementById("homeGroupFeed");
 
-  if (!user) {
-    rec.innerHTML =
-      '<div class="home-login-card"><strong>Descubre eventos en Curruscos.</strong><span>Inicia sesión para guardar eventos, apuntarte y recibir recomendaciones.</span><a href="login.html">Entrar →</a></div>';
-    gf.innerHTML =
-      '<div class="home-login-card muted"><span>Cuando tengas una cuenta podrás ver aquí tus planes y grupos.</span><a href="login.html">Iniciar sesión →</a></div>';
-    return;
-  }
-
-  const profile = await getCurrentProfile().catch(() => null);
-  const interests = await getMyInterests().catch(() => []);
+  const profile = user ? await getCurrentProfile().catch(() => null) : null;
+  const interests = user ? await getMyInterests().catch(() => []) : [];
   if (profile) {
     const display = profile.display_name || profile.username || "Tu perfil";
     document.getElementById("homeName").textContent = display;
@@ -174,12 +166,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       : "Nuevo en Curruscos";
     return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
       '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
-      '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a><button class="home-event-dismiss" type="button">No me interesa</button></div>';
+      '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>' + (user ? '<button class="home-event-dismiss" type="button">No me interesa</button>' : '') + '</div>';
   }).join("") || '<div class="home-empty"><strong>No hay recomendaciones todavía.</strong><span>Explora todos los eventos para encontrar algo que te interese.</span><a href="explorar.html">Explorar eventos →</a></div>';
 
   rec.querySelectorAll(".home-event-wrap").forEach((card, index) => {
     const eventData = events[index];
-    if (isRecommendationFeed) {
+    if (user && isRecommendationFeed) {
       logRecommendationImpression(
         card.dataset.eventId,
         "home",
@@ -188,8 +180,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.querySelector(".home-event-reason")?.textContent || null
       );
     }
-    card.querySelector("a")?.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
-    card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
+    if (user) card.querySelector("a")?.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
+    if (user) card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
       event.preventDefault(); event.stopPropagation();
       const button=event.currentTarget; button.disabled=true;
       await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
