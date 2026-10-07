@@ -432,6 +432,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 updateProgress();
                 updateStatus();
                 updateCommandCenter();
+                renderEventActivity();
             });
 
             const copy = document.createElement("div");
@@ -1305,6 +1306,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     await renderEventDecisions();
                     updateCommandCenter();
+                    renderEventActivity();
                 });
                 optionWrap.appendChild(row);
             });
@@ -1364,6 +1366,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     updateStatus();
                     await renderEventDecisions();
                     updateCommandCenter();
+                    renderEventActivity();
                 });
                 actions.appendChild(createTask);
             } else if (poll.is_closed && poll.action_task_id) {
@@ -1389,6 +1392,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     }
                     await renderEventDecisions();
                     updateCommandCenter();
+                    renderEventActivity();
                 });
                 actions.appendChild(close);
             }
@@ -1970,6 +1974,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     renderTasks();
                     updateProgress();
                     updateStatus();
+                    updateCommandCenter();
+                    renderEventActivity();
                 } catch (error) {
                     alert(
                         getSupabaseErrorMessage(
@@ -2052,6 +2058,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     updateProgress();
                     updateStatus();
                     updateCommandCenter();
+                    renderEventActivity();
                 } catch (error) {
                     alert(
                         getSupabaseErrorMessage(
