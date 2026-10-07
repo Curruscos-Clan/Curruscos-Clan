@@ -3002,12 +3002,17 @@ async function getPublicActivePeople(search="",eventType="all"){const {data,erro
 // ========================================
 // 🔔 BADGES GLOBALES DE ACTIVIDAD
 // ========================================
+async async function getUnreadActivityCounts(){
+    const {data,error}=await supabaseClient.rpc("get_unread_activity_counts");
+    if(error){console.error("Error obteniendo contadores de actividad:",error);return {notifications:0,invitations:0};}
+    return data||{notifications:0,invitations:0};
+}
 async function updateGlobalActivityBadges(){
     const user=await getCurrentUser();
     if(!user)return;
-    const [notifications,invitations,chats]=await Promise.all([getUserNotifications(),getMySocialInvitations(),getMyChatRooms()]);
-    const unreadNotifications=(notifications||[]).filter(n=>!n.is_read).length;
-    const pendingInvitations=(invitations||[]).filter(i=>i.status==="pending").length;
+    const [activity,chats]=await Promise.all([getUnreadActivityCounts(),getMyChatRooms()]);
+    const unreadNotifications=Number(activity?.notifications||0);
+    const pendingInvitations=Number(activity?.invitations||0);
     const unreadChats=(chats||[]).reduce((sum,r)=>sum+Number(r.unread_count||0),0);
     const nav=document.getElementById("mainNav");
     if(!nav)return;
