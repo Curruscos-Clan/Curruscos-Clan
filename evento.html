@@ -1281,6 +1281,17 @@
                 </div>
             </div>
 
+            <section class="event-activity-panel" aria-labelledby="eventActivityTitle">
+                <div class="event-activity-header">
+                    <div>
+                        <span class="event-activity-kicker">ACTIVIDAD DEL PLAN</span>
+                        <h2 id="eventActivityTitle">Lo que está pasando</h2>
+                        <span id="eventActivityMeta">Cargando actividad...</span>
+                    </div>
+                </div>
+                <div id="eventActivityList" class="event-activity-list"></div>
+            </section>
+
             <div class="event-content">
 
 
@@ -2043,6 +2054,21 @@
         .event-decision-footer{align-items:flex-start;flex-direction:column}
     }
 
+
+    .event-activity-panel{margin:18px 0 0;padding:18px 20px;border:1px solid #e6e6e6;border-radius:18px;background:#fff}
+    .event-activity-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:13px}
+    .event-activity-kicker{display:block;margin-bottom:4px;color:#999;font-size:9px;font-weight:900;letter-spacing:.13em}
+    .event-activity-header h2{margin:0;color:#111;font-size:17px;letter-spacing:-.3px}
+    .event-activity-header>div>span:last-child{display:block;margin-top:4px;color:#999;font-size:10px;font-weight:600}
+    .event-activity-list{display:grid;gap:7px}
+    .event-activity-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border:1px solid #ededed;border-radius:12px;background:#fafafa}
+    .event-activity-icon{width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:9px;background:#eee;color:#222;font-size:13px;font-weight:900}
+    .event-activity-copy{min-width:0;display:grid;gap:2px}
+    .event-activity-copy strong{color:#222;font-size:11px;font-weight:800}
+    .event-activity-copy span{overflow:hidden;color:#666;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+    .event-activity-copy small{color:#aaa;font-size:9px;font-weight:600}
+    .event-activity-empty{padding:17px;border:1px dashed #d7d7d7;border-radius:12px;background:#fafafa;color:#999;text-align:center;font-size:11px}
+    @media(max-width:600px){.event-activity-panel{padding:15px}.event-activity-item{padding:9px}.event-activity-copy span{white-space:normal}}
 </style>
 
 <script src="js/evento.js"></script>
