@@ -1396,14 +1396,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const people = document.getElementById("commandPeople");
         const taskEl = document.getElementById("commandTasks");
+        const decisionEl = document.getElementById("commandDecisions");
         const cost = document.getElementById("commandCost");
         const headline = document.getElementById("eventCommandHeadline");
+        const chatButton = document.getElementById("commandChatButton");
+        const tasksButton = document.getElementById("commandTasksButton");
+        const decisionsButton = document.getElementById("commandDecisionsButton");
+        const expensesButton = document.getElementById("commandExpensesButton");
         const subline = document.getElementById("eventCommandSubline");
         const action = document.getElementById("eventCommandAction");
 
         if (people) people.textContent = yes + "/" + members.length;
         if (taskEl) taskEl.textContent = taskPercent + "%";
+        if (decisionEl) decisionEl.textContent = String(openDecisions);
         if (cost) cost.textContent = formatMoney(total);
+
+        const scrollToSection = (target) => {
+            const el = document.getElementById(target);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        };
+        if (chatButton) chatButton.onclick = () => {
+            const chat = document.getElementById("eventChatButton");
+            if (chat?.href) window.location.href = chat.href;
+        };
+        if (tasksButton) tasksButton.onclick = () => scrollToSection("tasksList");
+        if (decisionsButton) decisionsButton.onclick = () => scrollToSection("eventDecisionsList");
+        if (expensesButton) expensesButton.onclick = () => scrollToSection("expensesList");
+
+        [chatButton, tasksButton, decisionsButton, expensesButton].forEach(button => button?.classList.remove("is-active"));
+        if (openDecisions > 0) decisionsButton?.classList.add("is-active");
+        else if (tasks.length && taskPercent < 100) tasksButton?.classList.add("is-active");
+        else if (expenses.length) expensesButton?.classList.add("is-active");
 
         const setAction = (label, target) => {
             if (!action) return;
