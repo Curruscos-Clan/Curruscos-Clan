@@ -8,6 +8,8 @@ with me as (select auth.uid() uid),
 followed as (select following_id from public.user_follows where follower_id=(select uid from me)),
 followed_teams as (select team_id from public.team_follows where follower_id=(select uid from me)),
 interests as (select interest from public.user_interests where user_id=(select uid from me)),
+history as (select exists(select 1 from public.user_activity_signals where user_id=(select uid from me) and created_at>now()-interval '90 days') has_activity,
+                 exists(select 1 from public.user_interests where user_id=(select uid from me)) has_interests),
 type_affinity as (
  select event_type,sum((case signal_type when 'view' then 1 when 'save' then 4 when 'join' then 6 when 'team' then 3 when 'share' then 5 else 0 end)*greatest(0.15,1-extract(epoch from(now()-created_at))/extract(epoch from interval '90 days'))) weight
  from public.user_activity_signals where user_id=(select uid from me) and event_type is not null and signal_type in('view','join','team','save','share') and created_at>now()-interval '90 days' group by event_type
@@ -43,8 +45,16 @@ candidates as (
  -(case when e.id in(select event_id from negative_events) then least(100,20*sqrt((select weight from negative_events n where n.event_id=e.id))) else 0 end)
  -(case when e.event_type in(select event_type from negative_types) then least(45,10*sqrt((select weight from negative_types n where n.event_type=e.event_type))) else 0 end)
  +(case when e.status='live' then 35 else 0 end)
- +(case when e.date=current_date then 45 else greatest(0,45-least(45,3*(e.date-current_date))) end)
- +(least(10,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*2)))
+ +(case when (select has_activity or has_interests from history) then
+      (case when e.date=current_date then 45 else greatest(0,45-least(45,3*(e.date-current_date))) end)
+    else
+      (case when e.date=current_date then 30 else greatest(0,30-least(30,2*(e.date-current_date))) end)
+    end)
+ +(case when (select has_activity or has_interests from history) then
+      least(10,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*2))
+    else
+      least(20,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*4))
+    end)
  +(case when e.capacity is not null then greatest(0,8-least(8,(e.capacity-(select count(*) from public.event_participants ep4 where ep4.event_id=e.id and ep4.status='yes')))) else 0 end))::numeric score
  from public.events e left join public.profiles p on p.id=e.created_by
  where e.visibility='public' and e.status in('published','preparing','live') and((e.date>current_date) or (e.date=current_date and (e.time is null or e.time>=localtime)) or e.status='live')
