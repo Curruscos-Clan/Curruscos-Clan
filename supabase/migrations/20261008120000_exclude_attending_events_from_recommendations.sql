@@ -64,12 +64,17 @@ candidates as (
  and not exists(select 1 from public.event_participants mep where mep.event_id=e.id and mep.user_id=(select uid from me) and mep.status in('yes','pending'))
 )
 ranked as (
- select *,row_number() over(partition by coalesce(nullif(event_type,''),'__unknown__') order by score desc,date asc nulls last,participant_count desc) type_rank
+ select *,row_number() over(partition by coalesce(nullif(event_type,''),'__unknown__') order by score desc,date asc nulls last,participant_count desc) type_rank,
+        max(score) over() max_score
  from candidates where score>0
 ),
 selected as (
  select * from ranked
- order by case when type_rank=1 then 0 else 1 end,score desc,date asc nulls last,participant_count desc
+ order by case
+   when type_rank=1 and score>=greatest(max_score*0.72, max_score-28) then 0
+   else 1
+ end,
+ score desc,date asc nulls last,participant_count desc
  limit 24
 )
 select id,title,event_type,category,date,time,location,description,visibility,status,created_by,organizer_name,participant_count,score
