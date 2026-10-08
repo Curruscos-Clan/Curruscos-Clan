@@ -3003,7 +3003,7 @@ async function getPublicActivePeople(search="",eventType="all"){const {data,erro
 // ========================================
 // 🔔 BADGES GLOBALES DE ACTIVIDAD
 // ========================================
-async async function getUnreadActivityCounts(){
+async function getUnreadActivityCounts(){
     const {data,error}=await supabaseClient.rpc("get_unread_activity_counts");
     if(error){console.error("Error obteniendo contadores de actividad:",error);return {notifications:0,invitations:0};}
     return data||{notifications:0,invitations:0};
