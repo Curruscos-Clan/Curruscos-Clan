@@ -64,7 +64,7 @@ candidates as (
  and (e.registration_deadline is null or e.registration_deadline>=now())
  and (e.capacity is null or (select count(*) from public.event_participants ep5 where ep5.event_id=e.id and ep5.status='yes')<e.capacity)
  and not exists(select 1 from public.event_participants mep where mep.event_id=e.id and mep.user_id=(select uid from me) and mep.status in('yes','pending'))
-)
+),
 ranked as (
  select *,row_number() over(partition by coalesce(nullif(event_type,''),'__unknown__') order by score desc,date asc nulls last,participant_count desc) type_rank,
         max(score) over() max_score
