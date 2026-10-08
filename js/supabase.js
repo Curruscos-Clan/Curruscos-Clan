@@ -1865,27 +1865,10 @@ async function getRecommendedPublicEvents(search="",eventType="all"){
     if(error){console.error(error);return [];}
     const candidates=Array.isArray(data)?data:[];
 
-    // Diversidad: el ranking sigue mandando, pero evitamos llenar el bloque
-    // de recomendaciones con demasiados eventos del mismo tipo.
-    if(candidates.length<=6)return candidates;
-    const selected=[],remaining=[...candidates],counts=new Map();
-    while(selected.length<6&&remaining.length){
-        let bestIndex=0,bestScore=-Infinity;
-        for(let i=0;i<remaining.length;i++){
-            const event=remaining[i];
-            const key=String(event.category||event.event_type||"other").toLowerCase();
-            const count=counts.get(key)||0;
-            const score=Number(event.score??event.recommendation_score??0);
-            const diversityPenalty=count>=2?1000:count*12;
-            const adjusted=score-diversityPenalty-i*0.001;
-            if(adjusted>bestScore){bestScore=adjusted;bestIndex=i;}
-        }
-        const [picked]=remaining.splice(bestIndex,1);
-        const key=String(picked.category||picked.event_type||"other").toLowerCase();
-        counts.set(key,(counts.get(key)||0)+1);
-        selected.push(picked);
-    }
-    return selected;
+    // El backend ya aplica el ranking y la diversidad con el score real.
+    // No reordenamos aquí: mantener el orden evita que el cliente contradiga
+    // las reglas de relevancia/cold-start del recomendador.
+    return candidates.slice(0,6);
 }
 async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);return [];}return (data||[]).map(x=>x.interest);}
 async function setMyInterests(interests){const {data,error}=await supabaseClient.rpc("set_my_interests",{target_interests:interests});if(error)throw error;return !!data;}
