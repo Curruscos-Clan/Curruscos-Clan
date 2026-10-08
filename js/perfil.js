@@ -68,12 +68,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         interestMessage.textContent = "";
         try {
             const selected = [...interestGrid.querySelectorAll('[aria-pressed="true"]')].map(x => x.dataset.interest);
-            await setMyInterests(selected);
+            const saved = await setMyInterests(selected);
+            if (!saved) throw new Error(t("profile.interestsError"));
             interestMessage.textContent = selected.length
                 ? t("profile.interestsSaved", {count:selected.length})
                 : t("profile.interestsUpdated");
+            interestMessage.dataset.state = "success";
         } catch (error) {
             interestMessage.textContent = getSupabaseErrorMessage(error, t("profile.interestsError"));
+            interestMessage.dataset.state = "error";
         } finally {
             interestSave.disabled = false;
             interestSave.textContent = t("profile.saveInterests");
