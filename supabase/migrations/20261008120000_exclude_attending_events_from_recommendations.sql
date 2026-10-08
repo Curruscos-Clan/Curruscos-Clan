@@ -61,6 +61,8 @@ candidates as (
  and(target_event_type='all' or e.event_type=target_event_type)
  and(search_text is null or btrim(search_text)='' or e.title ilike '%'||search_text||'%' or coalesce(e.location,'') ilike '%'||search_text||'%' or coalesce(p.display_name,p.username,'') ilike '%'||search_text||'%')
  and e.created_by<>(select uid from me)
+ and (e.registration_deadline is null or e.registration_deadline>=now())
+ and (e.capacity is null or (select count(*) from public.event_participants ep5 where ep5.event_id=e.id and ep5.status='yes')<e.capacity)
  and not exists(select 1 from public.event_participants mep where mep.event_id=e.id and mep.user_id=(select uid from me) and mep.status in('yes','pending'))
 )
 ranked as (
