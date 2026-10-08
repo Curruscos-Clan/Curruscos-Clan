@@ -47,7 +47,7 @@ candidates as (
  +(least(15,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*3)))
  +(case when e.capacity is not null then greatest(0,8-least(8,(e.capacity-(select count(*) from public.event_participants ep4 where ep4.event_id=e.id and ep4.status='yes')))) else 0 end))::numeric score
  from public.events e left join public.profiles p on p.id=e.created_by
- where e.visibility='public' and e.status in('published','preparing','live') and(e.date>=current_date or e.status='live')
+ where e.visibility='public' and e.status in('published','preparing','live') and((e.date>current_date) or (e.date=current_date and (e.time is null or e.time>=localtime)) or e.status='live')
  and(target_event_type='all' or e.event_type=target_event_type)
  and(search_text is null or btrim(search_text)='' or e.title ilike '%'||search_text||'%' or coalesce(e.location,'') ilike '%'||search_text||'%' or coalesce(p.display_name,p.username,'') ilike '%'||search_text||'%')
  and e.created_by<>(select uid from me)
