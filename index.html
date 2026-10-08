@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return '<a class="home-group-card" href="evento.html?id=' + encodeURIComponent(event.id) + '">' +
         '<span class="home-group-date"><strong>' + d.getDate() + '</strong><small>' + d.toLocaleDateString("es-ES",{month:"short"}) + '</small></span>' +
         '<span><b>' + escapeHtml(event.title || "Próximo plan") + '</b><small>' + escapeHtml(event.location || "Lugar por confirmar") + '</small></span><i>→</i></a>';
-    }).join("") || '<div class="home-empty"><strong>Tu agenda está libre.</strong><span>Aquí aparecerán tus próximos planes.</span><a href="crear.html">Crear un evento →</a></div>';
+    }).join("") || '<div class="home-empty"><strong>Tu agenda está libre.</strong><span>Aquí aparecerán tus próximos planes.</span><a href="crear-evento.html">Crear un evento →</a></div>';
   } catch (e) {
     gf.innerHTML = '<div class="home-empty"><span>No se ha podido cargar tus planes ahora mismo.</span></div>';
   }
