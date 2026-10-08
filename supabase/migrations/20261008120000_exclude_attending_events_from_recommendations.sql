@@ -43,8 +43,8 @@ candidates as (
  -(case when e.id in(select event_id from negative_events) then least(100,20*sqrt((select weight from negative_events n where n.event_id=e.id))) else 0 end)
  -(case when e.event_type in(select event_type from negative_types) then least(45,10*sqrt((select weight from negative_types n where n.event_type=e.event_type))) else 0 end)
  +(case when e.status='live' then 35 else 0 end)
- +(case when e.date>=current_date then greatest(0,45-least(45,3*(e.date-current_date))) else 0 end)
- +(least(15,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*3)))
+ +(case when e.date=current_date then 45 else greatest(0,45-least(45,3*(e.date-current_date))) end)
+ +(least(10,round(sqrt(greatest(0,(select count(*) from public.event_participants ep3 where ep3.event_id=e.id and ep3.status='yes')))*2)))
  +(case when e.capacity is not null then greatest(0,8-least(8,(e.capacity-(select count(*) from public.event_participants ep4 where ep4.event_id=e.id and ep4.status='yes')))) else 0 end))::numeric score
  from public.events e left join public.profiles p on p.id=e.created_by
  where e.visibility='public' and e.status in('published','preparing','live') and((e.date>current_date) or (e.date=current_date and (e.time is null or e.time>=localtime)) or e.status='live')
