@@ -1866,7 +1866,7 @@ async function getRecommendedPublicEvents(search="",eventType="all"){
     const candidates=Array.isArray(data)?data:[];
 
     // Diversidad: el ranking sigue mandando, pero evitamos llenar el bloque
-    // de recomendaciones con cinco eventos prácticamente iguales.
+    // de recomendaciones con demasiados eventos del mismo tipo.
     if(candidates.length<=6)return candidates;
     const selected=[],remaining=[...candidates],counts=new Map();
     while(selected.length<6&&remaining.length){
