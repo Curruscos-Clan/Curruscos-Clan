@@ -218,7 +218,7 @@ async function toggleSavedEvent(eventId,user){
     }
     const result=await supabaseClient.from("saved_events").insert({event_id:eventId,user_id:user.id});
     if(result.error)throw result.error;
-    await logActivitySignal("save",eventId,null,null,{source:"public_event"});
+    await logActivitySignal("save",eventId,event?.event_type||null,null,{source:"public_event"});
     return true;
 }
 
