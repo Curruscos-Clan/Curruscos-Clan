@@ -14,6 +14,7 @@ MIGRATION = ROOT / "supabase/migrations/20261009190000_harden_public_event_regis
 ANON_POLICY_MIGRATION = ROOT / "supabase/migrations/20261009200000_allow_anon_public_participant_counts.sql"
 AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010100000_null_safe_event_organizer_authorization.sql"
 ADDITIONAL_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010110000_null_safe_team_match_and_trip_authorization.sql"
+PARTICIPANT_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010120000_null_safe_participant_status_authorization.sql"
 JS = ROOT / "js/evento-publico.js"
 
 
@@ -24,6 +25,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         cls.anon_policy_sql = ANON_POLICY_MIGRATION.read_text(encoding="utf-8").lower()
         cls.authorization_sql = AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.additional_authorization_sql = ADDITIONAL_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.participant_authorization_sql = PARTICIPANT_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.js = JS.read_text(encoding="utf-8")
 
     def test_join_rpc_rejects_started_events(self):
@@ -109,6 +111,13 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
                 self.assertIn("create or replace function public." + function_name, sql)
         self.assertGreaterEqual(sql.count("security definer"), 4)
         self.assertGreaterEqual(sql.count("set search_path to ''"), 4)
+
+    def test_participant_status_management_coalesces_nullable_creator_check(self):
+        sql = self.participant_authorization_sql
+        self.assertIn("can_manage := coalesce(e.created_by = actor, false) or exists", sql)
+        self.assertIn("target_user_id is distinct from actor and not can_manage", sql)
+        self.assertIn("security definer", sql)
+        self.assertIn("set search_path to ''", sql)
 
     def test_frontend_does_not_use_browser_clock_to_decide_event_start(self):
         self.assertNotIn("const eventStarted=new Date(event.date", self.js)
