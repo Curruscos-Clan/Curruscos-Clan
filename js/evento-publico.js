@@ -207,7 +207,7 @@ async function trackEventView(event){const u=await getCurrentUser();if(u&&event?
     if(error){console.error("Error comprobando evento guardado:",error);return false;}
     return !!data;
 }
-async function toggleSavedEvent(eventId,user){
+async function toggleSavedEvent(eventId,user,eventType=null){
     if(!user){location.href="login.html";return false;}
     const {data,error}=await supabaseClient.from("saved_events").select("id").eq("event_id",eventId).eq("user_id",user.id).maybeSingle();
     if(error)throw error;
@@ -218,7 +218,7 @@ async function toggleSavedEvent(eventId,user){
     }
     const result=await supabaseClient.from("saved_events").insert({event_id:eventId,user_id:user.id});
     if(result.error)throw result.error;
-    await logActivitySignal("save",eventId,event?.event_type||null,null,{source:"public_event"});
+    await logActivitySignal("save",eventId,eventType,null,{source:"public_event"});
     return true;
 }
 
@@ -261,7 +261,7 @@ async function renderPublicEvent(){
     if(user){document.querySelector(".public-event-main")?.insertAdjacentHTML("beforeend",'<div class="event-primary-actions"><a class="event-share-button" href="chat.html?event='+encodeURIComponent(event.id)+'">💬 Chat del evento</a></div>');}
     document.querySelector(".public-event-main")?.insertAdjacentHTML("beforeend",'<div class="event-primary-actions"><button id="shareEventButton" class="event-share-button" type="button">Compartir evento</button><button id="saveEventButton" class="event-share-button '+(saved?"saved":"")+'" type="button">'+(saved?"✓ Guardado":"＋ Guardar")+'</button></div>');
     document.getElementById("shareEventButton")?.addEventListener("click",async()=>{const button=document.getElementById("shareEventButton");try{if(navigator.share){await navigator.share({title:event.title,text:"Mira este evento en Curruscos",url:location.href}); await logActivitySignal("share",event.id,event.event_type,null,{source:"public_event",method:"native"});}else{await navigator.clipboard.writeText(location.href); await logActivitySignal("share",event.id,event.event_type,null,{source:"public_event",method:"clipboard"});button.textContent="Enlace copiado";button.classList.add("copied");setTimeout(()=>{button.textContent="Compartir evento";button.classList.remove("copied")},1800);}}catch(err){if(err?.name!=="AbortError")alert("No se ha podido compartir el evento.");}});
-    document.getElementById("saveEventButton")?.addEventListener("click",async()=>{const button=document.getElementById("saveEventButton");button.disabled=true;try{const next=await toggleSavedEvent(event.id,user);button.textContent=next?"✓ Guardado":"＋ Guardar";button.classList.toggle("saved",next);}catch(err){console.error(err);alert("No se ha podido actualizar el guardado.");}finally{button.disabled=false;}});
+    document.getElementById("saveEventButton")?.addEventListener("click",async()=>{const button=document.getElementById("saveEventButton");button.disabled=true;try{const next=await toggleSavedEvent(event.id,user,event.event_type);button.textContent=next?"✓ Guardado":"＋ Guardar";button.classList.toggle("saved",next);}catch(err){console.error(err);alert("No se ha podido actualizar el guardado.");}finally{button.disabled=false;}});
 
     const manager=await renderTeamManager(event,teams,teamMembers,participants,isOrganizer);
     const participantTeam=await renderParticipantTeamArea(event,teams,teamMembers,participants,user,isOrganizer);
