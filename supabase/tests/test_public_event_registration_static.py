@@ -12,6 +12,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 MIGRATION = ROOT / "supabase/migrations/20261009190000_harden_public_event_registration_lifecycle.sql"
 ANON_POLICY_MIGRATION = ROOT / "supabase/migrations/20261009200000_allow_anon_public_participant_counts.sql"
+AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010100000_null_safe_event_organizer_authorization.sql"
 JS = ROOT / "js/evento-publico.js"
 
 
@@ -20,6 +21,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
     def setUpClass(cls):
         cls.sql = MIGRATION.read_text(encoding="utf-8").lower()
         cls.anon_policy_sql = ANON_POLICY_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.authorization_sql = AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.js = JS.read_text(encoding="utf-8")
 
     def test_join_rpc_rejects_started_events(self):
@@ -75,6 +77,21 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("revoke all on function public.join_public_event(uuid) from public, anon", self.sql)
         self.assertIn("grant execute on function public.join_public_event(uuid) to authenticated", self.sql)
         self.assertIn("revoke all on function public.set_public_event_status(uuid, text) from public, anon", self.sql)
+
+    def test_competition_rpcs_reject_unauthenticated_null_creator_case(self):
+        sql = self.authorization_sql
+        self.assertGreaterEqual(sql.count("e.created_by is distinct from actor"), 4)
+        self.assertGreaterEqual(sql.count("if actor is null then raise exception 'necesitas iniciar sesión'; end if;"), 2)
+        for function_name in (
+            "generate_knockout_bracket",
+            "generate_round_robin_schedule",
+            "generate_swiss_round",
+            "create_event_team",
+        ):
+            with self.subTest(function_name=function_name):
+                self.assertIn("create or replace function public." + function_name, sql)
+        self.assertIn("security definer", sql)
+        self.assertIn("set search_path to ''", sql)
 
     def test_frontend_does_not_use_browser_clock_to_decide_event_start(self):
         self.assertNotIn("const eventStarted=new Date(event.date", self.js)
