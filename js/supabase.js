@@ -1123,28 +1123,18 @@ async function getMyEventParticipant(eventId, userId) {
 
 
 async function setEventParticipant(eventId, userId, status) {
-
-    const { data, error } = await supabaseClient
-        .from("event_participants")
-        .upsert(
-            {
-                event_id: eventId,
-                user_id: userId,
-                status: status
-            },
-            {
-                onConflict: "event_id,user_id"
-            }
-        )
-        .select()
-        .single();
+    const { data, error } = await supabaseClient.rpc("set_event_participant_status", {
+        target_event_id: eventId,
+        target_user_id: userId,
+        target_status: status
+    });
 
     if (error) {
         console.error("Error actualizando participante:", error);
         return null;
     }
 
-    return data;
+    return data || null;
 }
 
 
