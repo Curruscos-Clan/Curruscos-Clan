@@ -293,9 +293,51 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
 
     const btn=document.getElementById("eventJoinButton");
     if(!user){btn.addEventListener("click",()=>location.href="login.html");return;}
-    if(mine?.status==="yes"){if(event.status==="finished"){btn.disabled=true;return;}btn.addEventListener("click",async()=>{if(!confirm("¿Quieres salir de este evento?"))return;btn.disabled=true;const left=await leavePublicEvent(id);if(left!==false)await logActivitySignal("leave",id,event.event_type,null,{source:"event_button"});await renderPublicEvent();});return;}
+    if(mine?.status==="yes"){
+        if(event.status==="finished"){btn.disabled=true;return;}
+        btn.addEventListener("click",async()=>{
+            if(!confirm("¿Quieres salir de este evento?"))return;
+            btn.disabled=true;
+            const note=document.getElementById("eventJoinNote");
+            try{
+                const left=await leavePublicEvent(id);
+                if(left!==true){
+                    btn.disabled=false;
+                    if(note)note.textContent="No se ha podido cancelar tu inscripción. Inténtalo de nuevo.";
+                    return;
+                }
+                await logActivitySignal("leave",id,event.event_type,null,{source:"event_button"});
+                await renderPublicEvent();
+            }catch(error){
+                console.error("Error cancelando inscripción:",error);
+                btn.disabled=false;
+                if(note)note.textContent="Ha ocurrido un error al cancelar la inscripción. Inténtalo de nuevo.";
+            }
+        });
+        return;
+    }
     if(full||closed){btn.disabled=true;return;}
-    btn.addEventListener("click",async()=>{btn.disabled=true;btn.textContent="Apuntando...";const joined=await joinPublicEvent(id);if(!joined?.success){btn.disabled=false;btn.textContent="Apuntarme al evento";document.getElementById("eventJoinNote").textContent=joined?.message||"No se ha podido completar la inscripción.";return;}await logActivitySignal("join",id,event.event_type,null,{source:"event_button"});await renderPublicEvent();});
+    btn.addEventListener("click",async()=>{
+        btn.disabled=true;
+        btn.textContent="Apuntando...";
+        const note=document.getElementById("eventJoinNote");
+        try{
+            const joined=await joinPublicEvent(id);
+            if(!joined?.success){
+                btn.disabled=false;
+                btn.textContent="Apuntarme al evento";
+                if(note)note.textContent=joined?.message||"No se ha podido completar la inscripción.";
+                return;
+            }
+            await logActivitySignal("join",id,event.event_type,null,{source:"event_button"});
+            await renderPublicEvent();
+        }catch(error){
+            console.error("Error apuntándose al evento:",error);
+            btn.disabled=false;
+            btn.textContent="Apuntarme al evento";
+            if(note)note.textContent="Ha ocurrido un error al inscribirte. Inténtalo de nuevo.";
+        }
+    });
 }
 
 document.addEventListener("DOMContentLoaded",async()=>{await window.curruscosI18n?.ready;await renderPublicEvent();});
