@@ -16,10 +16,18 @@ BEGIN
     RAISE EXCEPTION 'create_trip wrapper must be SECURITY DEFINER';
   END IF;
 
-  IF NOT (SELECT coalesce(proconfig, ARRAY[]::text[]) @> ARRAY['search_path='] FROM pg_proc WHERE oid = event_oid) THEN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc p
+    CROSS JOIN LATERAL unnest(coalesce(p.proconfig, ARRAY[]::text[])) cfg(setting)
+    WHERE p.oid = event_oid AND cfg.setting IN ('search_path=', 'search_path=""')
+  ) THEN
     RAISE EXCEPTION 'create_group_event wrapper must use an empty search_path';
   END IF;
-  IF NOT (SELECT coalesce(proconfig, ARRAY[]::text[]) @> ARRAY['search_path='] FROM pg_proc WHERE oid = trip_oid) THEN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_proc p
+    CROSS JOIN LATERAL unnest(coalesce(p.proconfig, ARRAY[]::text[])) cfg(setting)
+    WHERE p.oid = trip_oid AND cfg.setting IN ('search_path=', 'search_path=""')
+  ) THEN
     RAISE EXCEPTION 'create_trip wrapper must use an empty search_path';
   END IF;
 
