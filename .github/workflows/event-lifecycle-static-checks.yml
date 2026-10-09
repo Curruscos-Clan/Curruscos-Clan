@@ -1,0 +1,36 @@
+name: Public event lifecycle static checks
+
+on:
+  pull_request:
+    paths:
+      - "js/evento-publico.js"
+      - "js/supabase.js"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/event-lifecycle-static-checks.yml"
+  push:
+    branches:
+      - main
+      - audit/event-registration-lifecycle
+    paths:
+      - "js/evento-publico.js"
+      - "js/supabase.js"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/event-lifecycle-static-checks.yml"
+
+jobs:
+  static-regression:
+    name: Static regression checks (not DB integration tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check JavaScript syntax
+        run: node --check js/evento-publico.js && node --check js/supabase.js
+      - name: Run lifecycle static regression tests
+        run: python -m unittest discover -s supabase/tests -p "test_*.py" -v
