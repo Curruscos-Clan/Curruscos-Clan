@@ -4,8 +4,60 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Planes del grupo en Curruscos."><title>Planes del grupo · Curruscos</title>
 <link rel="stylesheet" href="css/style.css"><script src="js/i18n.js"></script><script src="js/navigation.js"></script>
+<style id="group-events-visual-refresh">
+body.group-events-app{--group-bg:#f6f6f3;--group-ink:#17181b;--group-muted:#777a80;--group-line:#e6e6e1;--group-card:#fff;--group-accent:#ff4d2e;background:var(--group-bg)!important;color:var(--group-ink)!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2));background:rgba(246,246,243,.9)!important;border-bottom:1px solid rgba(23,24,27,.07)!important}
+.group-events-app .logo{font-size:16px;font-weight:950;letter-spacing:-.075em;color:var(--group-ink)}
+.group-events-app #mainNav{gap:6px}.group-events-app #mainNav a{padding:9px 12px;border-radius:999px;color:#777a80;font-size:12px;font-weight:750}.group-events-app #mainNav a.active{background:#ecece7;color:var(--group-ink)}.group-events-app #mainNav a.active::after{display:none}
+.group-events-app main{padding-bottom:60px}
+.group-events-app .page-hero{padding:60px 0 28px!important;background:transparent!important}
+.group-events-app .page-hero .container,.group-events-app .section .container{width:min(100% - 40px,1040px)!important;max-width:1040px!important}
+.group-events-app .page-hero .eyebrow,.group-events-app .section-heading .eyebrow{color:var(--group-accent)!important;font-size:10px!important;font-weight:950;letter-spacing:.16em}
+.group-events-app .page-hero h1{margin:12px 0!important;color:var(--group-ink)!important;font-size:clamp(42px,6vw,68px)!important;font-weight:900;letter-spacing:-.08em!important;line-height:.96!important}
+.group-events-app .page-hero p{max-width:620px;color:var(--group-muted)!important;font-size:13px!important;line-height:1.7!important}
+.group-events-app .section{padding:28px 0!important}
+.group-events-app .section-heading{margin-bottom:19px!important}
+.group-events-app .section-heading h2{margin:6px 0!important;color:var(--group-ink)!important;font-size:clamp(23px,3vw,30px)!important;font-weight:900;letter-spacing:-.06em!important}
+.group-events-app .section-heading p{color:var(--group-muted)!important;font-size:11px!important;line-height:1.65!important}
+.group-events-app .events-toolbar{align-items:flex-end;gap:10px;margin-bottom:12px}
+.group-events-app .events-search span{color:var(--group-muted)!important;font-size:9px;letter-spacing:.12em}
+.group-events-app .events-search input{height:46px;padding:0 14px;border:1px solid var(--group-line)!important;border-radius:13px!important;background:#fff!important;color:var(--group-ink)!important;font-size:12px;box-shadow:none}
+.group-events-app .events-search input:focus{border-color:#ffb3a3!important;outline:3px solid rgba(255,77,46,.1)}
+.group-events-app .events-filter{min-height:37px;padding:0 13px;border:1px solid var(--group-line)!important;border-radius:999px!important;background:#fff!important;color:#777a80!important;font-size:10px;font-weight:850}
+.group-events-app .events-filter.active{border-color:var(--group-ink)!important;background:var(--group-ink)!important;color:#fff!important}
+.group-events-app .events-results-meta{color:var(--group-muted)!important;font-size:10px}
+.group-events-app .events-list{gap:10px!important}
+.group-events-app .event-card{align-items:center;gap:18px;padding:19px!important;border:1px solid var(--group-line)!important;border-radius:18px!important;background:var(--group-card)!important;color:var(--group-ink)!important;box-shadow:0 4px 16px rgba(20,20,18,.025)!important;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.group-events-app .event-card:hover{transform:translateY(-2px);border-color:#d3d3cb!important;box-shadow:0 12px 26px rgba(20,20,18,.06)!important}
+.group-events-app .event-card.past{opacity:.65}
+.group-events-app .event-card-date{color:var(--group-accent)!important;font-size:10px;font-weight:850}
+.group-events-app .event-card h3,.group-events-app .event-card-title{color:var(--group-ink)!important;font-size:16px;font-weight:900;letter-spacing:-.04em}
+.group-events-app .event-card p,.group-events-app .event-card-location{color:var(--group-muted)!important;font-size:11px;line-height:1.55}
+.group-events-app .create-event-section{margin-top:26px;padding:30px 0 60px!important;border-top:1px solid var(--group-line)!important;background:transparent!important}
+.group-events-app #eventForm{display:grid;gap:13px;max-width:760px;padding:24px;border:1px solid var(--group-line);border-radius:21px;background:#fff;box-shadow:0 5px 22px rgba(20,20,18,.035)}
+.group-events-app #eventForm label{display:grid;gap:7px;color:#44464b;font-size:10px;font-weight:850}
+.group-events-app #eventForm input,.group-events-app #eventForm select,.group-events-app #eventForm textarea{width:100%;min-height:45px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--group-line)!important;border-radius:12px!important;background:#fafaf8!important;color:var(--group-ink)!important;font-size:12px!important;box-shadow:none!important}
+.group-events-app #eventForm textarea{min-height:100px}.group-events-app #eventForm input:focus,.group-events-app #eventForm select:focus,.group-events-app #eventForm textarea:focus{border-color:#ffb3a3!important;outline:3px solid rgba(255,77,46,.1)}
+.group-events-app .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.group-events-app .form-help{color:var(--group-muted)!important;font-size:10px;line-height:1.6}
+.group-events-app #eventForm .button-primary{min-height:47px;border:0!important;border-radius:999px!important;background:var(--group-accent)!important;color:#fff!important;font-size:11px;font-weight:900}
+.group-events-app .footer{border-color:var(--group-line)!important;background:transparent!important;color:var(--group-muted)!important}
+.bottom-nav{display:none}
+@media(max-width:760px){
+ body.group-events-app .navbar{height:60px;padding:0 17px}.group-events-app #mainNav{display:none}.group-events-app .menu-button{display:block;color:var(--group-ink);font-size:22px}
+ .group-events-app .page-hero{padding:28px 0 15px!important}.group-events-app .page-hero .container,.group-events-app .section .container{width:calc(100% - 32px)!important}
+ .group-events-app .page-hero h1{font-size:clamp(39px,10vw,54px)!important}.group-events-app .page-hero p{font-size:12px!important}
+ .group-events-app .section{padding:20px 0!important}.group-events-app .section-heading h2{font-size:23px!important}
+ .group-events-app .events-toolbar{align-items:stretch;flex-direction:column}.group-events-app .events-search{max-width:none}.group-events-app .events-filters{justify-content:flex-start;overflow:auto;flex-wrap:nowrap;padding-bottom:4px}.group-events-app .events-filter{flex:none}
+ .group-events-app .event-card{align-items:flex-start;flex-direction:column;gap:10px;padding:16px!important}
+ .group-events-app #eventForm{padding:17px;border-radius:18px}.group-events-app .form-row{grid-template-columns:1fr}
+ .group-events-app .bottom-nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
+ .group-events-app .bottom-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#85868a;text-decoration:none}.group-events-app .bottom-nav-item b{font-size:20px;font-weight:500;line-height:1}.group-events-app .bottom-nav-item span{font-size:9px;font-weight:800}.group-events-app .bottom-nav-item.active{background:#191a1d;color:#fff}
+}
+@media(prefers-reduced-motion:reduce){.group-events-app .event-card{transition:none!important}}
+</style>
 </head>
-<body>
+<body class="group-events-app">
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main>
 <section class="page-hero"><div class="container"><span class="eyebrow">GRUPO ACTIVO · PLANES</span><h1>¿Qué tenemos<br>por delante?</h1><p>Organiza lo que vais a hacer juntos, consulta lo que ya está decidido y vuelve a los planes pasados cuando lo necesites.</p></div></section>
@@ -26,6 +78,12 @@
 .events-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}.events-search{display:grid;gap:5px;flex:1;max-width:420px}.events-search span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#888}.events-search input{height:42px;box-sizing:border-box;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;font:inherit;font-size:13px;outline:none}.events-search input:focus{border-color:#111}.events-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.events-filter{min-height:34px;padding:0 11px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}.events-filter.active{border-color:#111;background:#111;color:#fff}.events-results-meta{min-height:16px;margin:0 0 9px;color:#888;font-size:10px;font-weight:700}@media(max-width:650px){.events-toolbar{align-items:stretch;flex-direction:column}.events-search{max-width:none}.events-filters{justify-content:flex-start}}
 </style>
 <footer class="footer"><div class="container"><p>CURRUSCOS © 2026</p></div></footer>
+<nav class="bottom-nav" aria-label="Navegación móvil">
+<a class="bottom-nav-item" href="index.html"><b>⌂</b><span>Inicio</span></a>
+<a class="bottom-nav-item" href="explorar.html"><b>⌕</b><span>Buscar</span></a>
+<a class="bottom-nav-item active" href="eventos.html"><b>▦</b><span>Mi grupo</span></a>
+<a class="bottom-nav-item" href="perfil.html"><b>◉</b><span>Perfil</span></a>
+</nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
 </body>
 </html>
