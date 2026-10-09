@@ -55,7 +55,20 @@
 .organizer-tools .event-lifecycle,.organizer-tools .event-action-panel,.organizer-tools .tournament-admin-box,.organizer-tools .team-manager,.organizer-tools .command-center{border-radius:0;border-left:0;border-right:0;margin-top:0}
 .organizer-tools .event-lifecycle:last-child,.organizer-tools .team-manager:last-child,.organizer-tools .command-center:last-child{border-bottom:0}
 @media(max-width:650px){.organizer-tools>summary{min-height:52px;padding:15px}.organizer-tools{border-radius:16px}}
-</style></head>
+</style>
+<style>
+.public-event-edit-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.public-event-edit-form{display:grid;gap:13px;margin-top:16px;padding:20px;border:1px solid var(--border);border-radius:18px;background:var(--background)}
+.public-event-edit-form[hidden]{display:none!important}
+.public-event-edit-head h3{margin:6px 0;font-size:21px}
+.public-event-edit-head p,.public-event-edit-message{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
+.public-event-edit-form label{display:grid;gap:6px;font-size:11px;font-weight:700}
+.public-event-edit-form input,.public-event-edit-form select,.public-event-edit-form textarea{box-sizing:border-box;width:100%;min-width:0;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:inherit}
+.public-event-edit-form textarea{resize:vertical;line-height:1.5}
+.public-event-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media(max-width:520px){.public-event-edit-form{padding:15px}.public-event-edit-grid{grid-template-columns:1fr}}
+</style>
+</head>
 <body>
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main class="public-event-page">
