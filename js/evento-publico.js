@@ -5,6 +5,29 @@ const PUBLIC_SCORING_LABELS={win_draw_loss:"Victoria · 3 pts / empate · 1",che
 const PUBLIC_CATEGORY_LABELS={tournament:"Torneo",sport:"Deporte",gaming:"Gaming",social:"Social",activity:"Actividad",other:"Otro"};
 const PUBLIC_FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación directa",round_robin:"Liga / todos contra todos",swiss:"Sistema suizo",race:"Carrera / clasificación",custom:"Formato personalizado"};
 
+
+function localDateTimeInput(value){if(!value)return "";const d=new Date(value);if(Number.isNaN(d.getTime()))return "";return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);}
+function renderPublicEventEditForm(event){
+    const categories=[["tournament","Torneo"],["sport","Deporte"],["gaming","Gaming"],["social","Social"],["activity","Actividad"],["other","Otro"]];
+    const activities=[["padel","Pádel"],["futbol","Fútbol"],["baloncesto","Baloncesto"],["tenis","Tenis"],["ajedrez","Ajedrez"],["gaming","Gaming"],["running","Running"],["otro","Otro"]];
+    const options=(items,current)=>items.map(([value,label])=>'<option value="'+value+'"'+(value===current?' selected':'')+'>'+label+'</option>').join("");
+    const today=new Date(),minDate=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    return '<div class="public-event-edit-actions"><button id="editPublicEventButton" class="button button-small" type="button">Editar detalles</button></div>'+
+    '<form id="editPublicEventForm" class="public-event-edit-form" hidden>'+
+      '<div class="public-event-edit-head"><span class="public-tournament-label">DATOS DEL EVENTO</span><h3>Editar detalles</h3><p>Los cambios se reflejarán en la ficha pública. El formato y los equipos no se modifican aquí.</p></div>'+
+      '<label>Título<input name="title" maxlength="120" required value="'+escapeHtml(event.title||"")+'"></label>'+
+      '<div class="public-event-edit-grid"><label>Fecha<input name="date" type="date" min="'+minDate+'" required value="'+escapeHtml(event.date||"")+'"></label><label>Hora<input name="time" type="time" value="'+escapeHtml((event.time||"").slice(0,5))+'"></label></div>'+
+      '<label>Lugar<input name="location" maxlength="160" value="'+escapeHtml(event.location||"")+'"></label>'+
+      '<div class="public-event-edit-grid"><label>Categoría<select name="category">'+options(categories,event.category||"other")+'</select></label><label>Actividad<select name="event_type">'+options(activities,event.event_type||"otro")+'</select></label></div>'+
+      '<label>Organizador<input name="organizer_name" maxlength="120" value="'+escapeHtml(event.organizer_name||"")+'"></label>'+
+      '<div class="public-event-edit-grid"><label>Plazas<input name="capacity" type="number" min="1" step="1" placeholder="Sin límite" value="'+(event.capacity==null?"":escapeHtml(event.capacity))+'"></label><label>Precio por persona (€)<input name="entry_fee" type="number" min="0" step="0.01" required value="'+escapeHtml(event.entry_fee??0)+'"></label></div>'+
+      '<label>Cierre de inscripciones<input name="registration_deadline" type="datetime-local" value="'+localDateTimeInput(event.registration_deadline)+'"></label>'+
+      '<label>Descripción<textarea name="description" maxlength="2000" rows="4">'+escapeHtml(event.description||"")+'</textarea></label>'+
+      '<label>Reglas e información<textarea name="rules" maxlength="4000" rows="4">'+escapeHtml(event.rules||"")+'</textarea></label>'+
+      '<div class="public-event-edit-actions"><button class="button button-primary" id="savePublicEventButton" type="submit">Guardar cambios</button><button class="button" id="cancelPublicEventEdit" type="button">Cancelar</button></div>'+
+      '<p id="editPublicEventMessage" class="public-event-edit-message" role="status" aria-live="polite"></p>'+
+    '</form>';
+}
 function publicDate(event){const d=new Date(event.date+"T"+(event.time||"00:00"));return d.toLocaleDateString(getLanguage(),{weekday:"long",day:"numeric",month:"long",year:"numeric"});}
 function publicTeamName(team){return escapeHtml(team?.name||"Por definir");}
 function renderParticipantDashboard(event,teams,teamMembers,matches,user,mine){
@@ -258,7 +281,39 @@ async function renderPublicEvent(){
     const lifecycle=renderOrganizerLifecycle(event,isOrganizer);
     const commandCenter=renderOrganizerCommandCenter(event,participants,teams,matches,isOrganizer);
 
-    root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span><div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> <a class="public-organizer-link" href="perfil-publico.html?id='+encodeURIComponent(event.created_by)+'">'+escapeHtml(event.organizer_name)+'</a></p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div></article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?(event.status==="finished"?"Participación cerrada":"Salir del evento"):(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div>';
+    root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span><div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> <a class="public-organizer-link" href="perfil-publico.html?id='+encodeURIComponent(event.created_by)+'">'+escapeHtml(event.organizer_name)+'</a></p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div>'+(isOrganizer&&!["finished","cancelled"].includes(event.status)?renderPublicEventEditForm(event):"")+'</article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?(event.status==="finished"?"Participación cerrada":"Salir del evento"):(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div>';
+
+    const editButton=document.getElementById("editPublicEventButton");
+    const editForm=document.getElementById("editPublicEventForm");
+    editButton?.addEventListener("click",()=>{editForm.hidden=!editForm.hidden;editButton.textContent=editForm.hidden?"Editar detalles":"Cerrar edición";if(!editForm.hidden)editForm.scrollIntoView({behavior:"smooth",block:"center"});});
+    document.getElementById("cancelPublicEventEdit")?.addEventListener("click",()=>{editForm.hidden=true;if(editButton)editButton.textContent="Editar detalles";});
+    editForm?.addEventListener("submit",async e=>{
+        e.preventDefault();
+        const form=e.currentTarget,fields=form.elements,message=document.getElementById("editPublicEventMessage"),save=document.getElementById("savePublicEventButton");
+        const title=fields.namedItem("title").value.trim(),date=fields.namedItem("date").value,time=fields.namedItem("time").value,deadline=fields.namedItem("registration_deadline").value,capacityRaw=fields.namedItem("capacity").value.trim(),fee=Number(fields.namedItem("entry_fee").value);
+        const start=new Date(date+"T"+(time||"23:59"));
+        if(!title||!date||Number.isNaN(start.getTime())||start<=new Date()){message.textContent="Indica un título y una fecha futura.";return;}
+        if(deadline){const deadlineDate=new Date(deadline);if(Number.isNaN(deadlineDate.getTime())||deadlineDate>=start){message.textContent="El cierre de inscripciones debe ser anterior al inicio del evento.";return;}}
+        const capacity=capacityRaw===""?null:Number(capacityRaw);
+        if(capacity!==null&&(!Number.isInteger(capacity)||capacity<1)){message.textContent="Las plazas deben ser un número entero positivo o quedar vacías.";return;}
+        if(!Number.isFinite(fee)||fee<0){message.textContent="El precio debe ser cero o superior.";return;}
+        save.disabled=true;save.textContent="Guardando…";message.textContent="";
+        try{
+            await updatePublicEventDetails(event.id,{
+                title, date, time, location:fields.namedItem("location").value.trim(),
+                category:fields.namedItem("category").value,event_type:fields.namedItem("event_type").value,
+                organizer_name:fields.namedItem("organizer_name").value.trim(),capacity,entry_fee:fee,
+                registration_deadline:deadline?new Date(deadline).toISOString():null,
+                description:fields.namedItem("description").value.trim(),rules:fields.namedItem("rules").value.trim()
+            });
+            message.textContent="Cambios guardados. Actualizando la ficha…";
+            window.location.reload();
+        }catch(error){
+            console.error("Error editando evento público:",error);
+            message.textContent=error?.message||"No se han podido guardar los cambios. Inténtalo de nuevo.";
+            save.disabled=false;save.textContent="Guardar cambios";
+        }
+    });
 
     document.querySelector(".public-event-shell")?.insertAdjacentHTML("afterend",eventContext);
     if(user){document.querySelector(".public-event-main")?.insertAdjacentHTML("beforeend",'<div class="event-primary-actions"><a class="event-share-button" href="chat.html?event='+encodeURIComponent(event.id)+'">💬 Chat del evento</a></div>');}
