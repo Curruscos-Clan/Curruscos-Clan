@@ -59,21 +59,28 @@ insert into public.profiles (id, display_name, username) values
   ('00000000-0000-0000-0000-000000000002', 'Private Only', 'private_only'),
   ('00000000-0000-0000-0000-000000000003', 'Confirmed Participant', 'participant'),
   ('00000000-0000-0000-0000-000000000004', 'Public Team Member', 'team_member'),
-  ('00000000-0000-0000-0000-000000000005', 'Pending Participant', 'pending');
+  ('00000000-0000-0000-0000-000000000005', 'Pending Participant', 'pending'),
+  ('00000000-0000-0000-0000-000000000006', 'Private Team Member', 'private_team_member'),
+  ('00000000-0000-0000-0000-000000000007', 'Cancelled Event Organizer', 'cancelled_organizer'),
+  ('00000000-0000-0000-0000-000000000008', 'Draft Event Organizer', 'draft_organizer');
 
 insert into public.events (id, visibility, status, created_by, scoring_system) values
   ('10000000-0000-0000-0000-000000000001', 'public', 'published', '00000000-0000-0000-0000-000000000001', 'points'),
-  ('10000000-0000-0000-0000-000000000002', 'private', 'published', '00000000-0000-0000-0000-000000000002', 'points');
+  ('10000000-0000-0000-0000-000000000002', 'private', 'published', '00000000-0000-0000-0000-000000000002', 'points'),
+  ('10000000-0000-0000-0000-000000000003', 'public', 'cancelled', '00000000-0000-0000-0000-000000000007', 'points'),
+  ('10000000-0000-0000-0000-000000000004', 'public', 'draft', '00000000-0000-0000-0000-000000000008', 'points');
 
 insert into public.event_participants (event_id, user_id, status) values
   ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000003', 'yes'),
   ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000005', 'pending');
 
 insert into public.event_teams (id, event_id, name) values
-  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Public Team');
+  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Public Team'),
+  ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'Private Team');
 
 insert into public.event_team_members (team_id, user_id) values
-  ('20000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000004');
+  ('20000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000004'),
+  ('20000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000006');
 
 -- Apply the migration under test after the minimal schema and fixtures exist.
 \i supabase/migrations/20261010130000_require_public_activity_for_public_profile.sql
@@ -81,7 +88,6 @@ insert into public.event_team_members (team_id, user_id) values
 do $test$
 declare
   n bigint;
-  profile_row record;
 begin
   select count(*) into n
   from public.get_public_profile('00000000-0000-0000-0000-000000000001');
@@ -98,7 +104,7 @@ begin
   select count(*) into n
   from public.get_public_profile('00000000-0000-0000-0000-000000000002');
   if n <> 0 then
-    raise exception 'Private-only profile must not be returned; got % rows', n;
+    raise exception 'Private-only organizer profile must not be returned; got % rows', n;
   end if;
 
   select count(*) into n
@@ -129,6 +135,30 @@ begin
   from public.get_public_profile('00000000-0000-0000-0000-000000000005');
   if n <> 0 then
     raise exception 'Pending participant without another public activity must not be returned; got % rows', n;
+  end if;
+
+  select count(*) into n
+  from public.get_public_profile('00000000-0000-0000-0000-000000000006');
+  if n <> 0 then
+    raise exception 'Private-only team member must not be returned; got % rows', n;
+  end if;
+
+  select count(*) into n
+  from public.get_public_profile('00000000-0000-0000-0000-000000000007');
+  if n <> 0 then
+    raise exception 'Organizer of a cancelled public event must not be returned; got % rows', n;
+  end if;
+
+  select count(*) into n
+  from public.get_public_profile('00000000-0000-0000-0000-000000000008');
+  if n <> 0 then
+    raise exception 'Organizer of a draft public event must not be returned; got % rows', n;
+  end if;
+
+  select count(*) into n
+  from public.get_public_profile('00000000-0000-0000-0000-000000000099');
+  if n <> 0 then
+    raise exception 'Unknown profile ID must return no rows; got % rows', n;
   end if;
 
   raise notice 'Public profile privacy integration tests passed.';
