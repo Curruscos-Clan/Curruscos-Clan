@@ -60,9 +60,16 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("user_id = (select auth.uid())", self.sql)
         self.assertIn("is_public_event_organizer(event_participants.event_id)", self.sql)
         self.assertIn("status = 'yes'", self.sql)
-        self.assertIn('to anon, authenticated', self.anon_policy_sql)
+        self.assertIn('to authenticated', self.anon_policy_sql)
+        self.assertIn('create policy "anonymous visitors can view confirmed public event participants"', self.anon_policy_sql)
+        self.assertIn('for select\nto anon\nusing (', self.anon_policy_sql)
         self.assertIn("e.visibility = 'public'", self.anon_policy_sql)
         self.assertIn("e.status in ('published','preparing','live','finished')", self.anon_policy_sql)
+        anon_policy = self.anon_policy_sql.split(
+            'create policy "anonymous visitors can view confirmed public event participants"', 1
+        )[1]
+        self.assertIn("status = 'yes'", anon_policy)
+        self.assertNotIn("is_public_event_organizer", anon_policy)
 
     def test_rpc_grants_do_not_allow_anon_execution(self):
         self.assertIn("revoke all on function public.join_public_event(uuid) from public, anon", self.sql)
