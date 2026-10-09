@@ -127,15 +127,16 @@ begin
     raise exception 'No tienes permisos para gestionar este evento';
   end if;
 
-  if e.status in ('cancelled','finished') and new_status <> e.status then
-    raise exception 'No se puede reabrir un evento cancelado o finalizado';
-  end if;
-
-  if e.status = 'draft' and new_status not in ('published','cancelled') then
-    raise exception 'Un borrador solo puede publicarse o cancelarse';
-  end if;
-
-  if e.status = 'published' and new_status not in ('published','preparing','live','finished','cancelled') then
+  -- Idempotent requests are safe; otherwise enforce forward-only lifecycle transitions.
+  if new_status <> e.status and not (
+    (e.status = 'draft' and new_status in ('published','cancelled'))
+    or (e.status = 'published' and new_status in ('preparing','live','finished','cancelled'))
+    or (e.status = 'preparing' and new_status in ('live','finished','cancelled'))
+    or (e.status = 'live' and new_status in ('finished','cancelled'))
+  ) then
+    if e.status in ('cancelled','finished') then
+      raise exception 'No se puede reabrir un evento cancelado o finalizado';
+    end if;
     raise exception 'Transición de estado no válida';
   end if;
 
