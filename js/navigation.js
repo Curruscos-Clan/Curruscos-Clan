@@ -14,7 +14,7 @@
     const page=(location.pathname.split("/").pop()||"index.html").toLowerCase();
     const current=page==="mis-eventos.html"?"mis-eventos.html":page;
     if(nav){
-      nav.innerHTML=items.map(i=>'<a href="'+i.href+'"'+(i.href===current?' class="active" aria-current="page"':'')+'>'+i.label+'</a>').join("");
+      nav.innerHTML=items.concat(secondary).map(i=>'<a href="'+i.href+'"'+(i.href===current?' class="active" aria-current="page"':'')+'>'+i.label+'</a>').join("");
     }
 
     let button=document.getElementById("menuButton")||header.querySelector(".menu-button");
