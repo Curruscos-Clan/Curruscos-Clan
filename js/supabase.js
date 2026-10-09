@@ -2727,6 +2727,27 @@ async function getPublicEvents(filters = {}) {
 
 async function setPublicEventStatus(eventId,status){const {data,error}=await supabaseClient.rpc("set_public_event_status",{target_event_id:eventId,new_status:status});if(error)throw error;return data;}
 
+async function updatePublicEventDetails(eventId,details){
+    const {data,error}=await supabaseClient.rpc("update_public_event_details",{
+        target_event_id:eventId,
+        target_title:details.title,
+        target_description:details.description||null,
+        target_date:details.date,
+        target_time:details.time||null,
+        target_location:details.location||null,
+        target_category:details.category,
+        target_event_type:details.event_type,
+        target_organizer_name:details.organizer_name||null,
+        target_capacity:details.capacity,
+        target_entry_fee:details.entry_fee,
+        target_registration_deadline:details.registration_deadline||null,
+        target_rules:details.rules||null
+    });
+    if(error)throw new Error(getSupabaseErrorMessage(error,"No se han podido guardar los cambios."));
+    if(!data)throw new Error("No se ha podido confirmar el guardado del evento.");
+    return data;
+}
+
 async function createPublicEvent(eventData) {
     const user = await getCurrentUser();
     if (!user) return null;
