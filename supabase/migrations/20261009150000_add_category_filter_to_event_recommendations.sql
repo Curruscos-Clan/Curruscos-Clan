@@ -88,3 +88,5 @@ $function$;
 
 revoke execute on function public.get_recommended_public_events(text,text,text) from anon, public;
 grant execute on function public.get_recommended_public_events(text,text,text) to authenticated;
+
+notify pgrst, 'reload schema';
