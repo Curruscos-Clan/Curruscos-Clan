@@ -1860,8 +1860,8 @@ async function getMyRecommendationMetrics(days=30){
     return Array.isArray(data)?(data[0]||null):data||null;
 }
 
-async function getRecommendedPublicEvents(search="",eventType="all"){
-    const {data,error}=await supabaseClient.rpc("get_recommended_public_events",{search_text:search,target_event_type:eventType});
+async function getRecommendedPublicEvents(search="",eventType="all",category="all"){
+    const {data,error}=await supabaseClient.rpc("get_recommended_public_events",{search_text:search,target_event_type:eventType,target_category:category});
     if(error){console.error(error);return [];}
     const candidates=Array.isArray(data)?data:[];
 
