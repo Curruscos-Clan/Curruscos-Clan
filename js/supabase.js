@@ -2791,19 +2791,22 @@ async function joinPublicEvent(eventId) {
 
 async function leavePublicEvent(eventId) {
     const user = await getCurrentUser();
-    if (!user) return false;
+    if (!user || !eventId) return false;
 
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("event_participants")
         .delete()
         .eq("event_id", eventId)
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .select("event_id")
+        .maybeSingle();
 
     if (error) {
         console.error("Error saliendo del evento:", error);
         return false;
     }
-    return true;
+    // PostgREST puede devolver cero filas eliminadas sin error; no confundirlo con éxito.
+    return !!data;
 }
 
 async function sendPersistentTeamInvitation(userId,teamId){const {data,error}=await supabaseClient.rpc("send_persistent_team_invitation",{target_user_id:userId,target_team_id:teamId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido enviar la invitación."));return data;}
