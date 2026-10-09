@@ -168,6 +168,9 @@ for select
 to authenticated
 using (
   user_id = (select auth.uid())
+  -- Organizers must retain access to pending/declined rows for their own events,
+  -- including standalone events that do not belong to a group.
+  or public.is_public_event_organizer(event_participants.event_id)
   or exists (
     select 1
     from public.events e
