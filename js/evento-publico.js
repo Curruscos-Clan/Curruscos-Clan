@@ -214,6 +214,9 @@ async function toggleSavedEvent(eventId,user,eventType=null){
     if(data){
         const result=await supabaseClient.from("saved_events").delete().eq("id",data.id);
         if(result.error)throw result.error;
+        const {data:remaining,error:checkError}=await supabaseClient.from("saved_events").select("id").eq("event_id",eventId).eq("user_id",user.id).maybeSingle();
+        if(checkError)throw checkError;
+        if(remaining)throw new Error("No se ha podido confirmar que el evento se haya quitado de guardados.");
         return false;
     }
     const result=await supabaseClient.from("saved_events").insert({event_id:eventId,user_id:user.id});
