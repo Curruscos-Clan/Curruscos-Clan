@@ -220,8 +220,17 @@ function renderOrganizerCommandCenter(event,participants,teams,matches,isOrganiz
 function renderOrganizerLifecycle(event,isOrganizer){
  if(!isOrganizer)return "";
  const current=EVENT_STATUS_LABELS[event.status]||event.status;
- const choices=["published","preparing","live","finished","cancelled"].filter(s=>s!==event.status);
- return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div><select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select></div>';
+ const transitions={
+  draft:["published","cancelled"],
+  published:["preparing","live","finished","cancelled"],
+  preparing:["live","finished","cancelled"],
+  live:["finished","cancelled"],
+  finished:[],
+  cancelled:[]
+ };
+ const choices=transitions[event.status]||[];
+ const options=choices.length?'<select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select>':'<span class="event-lifecycle-terminal">Estado definitivo</span>';
+ return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div>'+options+'</div>';
 }
 
 async function trackEventView(event){const u=await getCurrentUser();if(u&&event?.id)logActivitySignal("view",event.id,event.event_type,null,{source:"public_event"});}async function getSavedEventState(eventId,user){
@@ -269,7 +278,9 @@ async function renderPublicEvent(){
     const mine=mineRecord||(participants.find(p=>p.user_id===user?.id)||null);
     const yes=participantCounts?.yes??participants.filter(p=>p.status==="yes").length;
     const full=event.capacity!==null&&yes>=event.capacity;
-    const deadlinePassed=event.registration_deadline&&new Date(event.registration_deadline).getTime()<Date.now();
+    const deadlinePassed=event.registration_deadline&&new Date(event.registration_deadline).getTime()<=Date.now();
+    // The server is authoritative for event start time because the browser's
+    // timezone may differ from the event group's timezone.
     const closed=event.status!=="published"||deadlinePassed;
     const fee=Number(event.entry_fee||0);
     const saved=await getSavedEventState(event.id,user);
