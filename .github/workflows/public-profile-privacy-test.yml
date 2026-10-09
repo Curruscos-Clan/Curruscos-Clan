@@ -1,0 +1,26 @@
+name: Public profile privacy static test
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/public-profile-privacy-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-profile-privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run public profile privacy regression test
+        run: python -m unittest discover -s supabase/tests -p "test_public_profile_privacy_static.py" -v
