@@ -220,8 +220,17 @@ function renderOrganizerCommandCenter(event,participants,teams,matches,isOrganiz
 function renderOrganizerLifecycle(event,isOrganizer){
  if(!isOrganizer)return "";
  const current=EVENT_STATUS_LABELS[event.status]||event.status;
- const choices=["published","preparing","live","finished","cancelled"].filter(s=>s!==event.status);
- return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div><select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select></div>';
+ const transitions={
+  draft:["published","cancelled"],
+  published:["preparing","live","finished","cancelled"],
+  preparing:["live","finished","cancelled"],
+  live:["finished","cancelled"],
+  finished:[],
+  cancelled:[]
+ };
+ const choices=transitions[event.status]||[];
+ const options=choices.length?'<select id="eventStatusSelect"><option value="">Cambiar estado…</option>'+choices.map(s=>'<option value="'+s+'">'+EVENT_STATUS_LABELS[s]+'</option>').join("")+'</select>':'<span class="event-lifecycle-terminal">Estado definitivo</span>';
+ return '<div class="event-lifecycle"><div><span class="public-tournament-label">ESTADO DEL EVENTO</span><strong>'+escapeHtml(current)+'</strong><small>Controla cuándo se puede inscribir la gente y cuándo empieza la competición.</small></div>'+options+'</div>';
 }
 
 async function trackEventView(event){const u=await getCurrentUser();if(u&&event?.id)logActivitySignal("view",event.id,event.event_type,null,{source:"public_event"});}async function getSavedEventState(eventId,user){
