@@ -33,11 +33,6 @@ try{
     console.error("Error publicando evento:",error);
     message.textContent=t("createEvent.publishError");
 }finally{
-    if(!message.textContent.includes(t("createEvent.publishError"))){
-        button.disabled=false;
-        button.textContent=t("createEvent.publish");
-    }else{
-        button.disabled=false;
-        button.textContent=t("createEvent.publish");
-    }
+    button.disabled=false;
+    button.textContent=t("createEvent.publish");
 }});});
