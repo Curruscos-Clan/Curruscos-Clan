@@ -71,7 +71,7 @@ Also verify the organizer UI only offers allowed next states, hides the selector
 | RLS-02 | Organizer of a standalone event | Can read all rows for that event, including `pending` and `no` |
 | RLS-03 | Member of the event's group | Can read group participation as intended by the current group policy |
 | RLS-04 | Authenticated stranger | Can read only confirmed `yes` participants of public events in allowed public states |
-| RLS-05 | Anonymous visitor | Cannot query participant rows directly |
+| RLS-05 | Anonymous visitor | Can query only confirmed `yes` rows for public events in allowed states; cannot see `pending`/`no` rows or private/unlisted events |
 | RLS-06 | Public event listing | Embedded `event_participants(count)` still returns the correct confirmed count |
 | RLS-07 | Public participant RPC | Returns only confirmed participants for public events in its allowed states |
 | RLS-08 | Private/unlisted event | No participant data leaks to unrelated authenticated users |
@@ -87,3 +87,19 @@ Do not merge until:
 - [ ] Existing group organizer/member workflows remain functional.
 - [ ] The migration has been reviewed for grants, RLS, and `SECURITY DEFINER` behavior.
 - [ ] Production remains unchanged until the owner explicitly approves rollout.
+
+
+## F. Authorization null-safety audit (follow-up finding)
+
+The production schema currently allows `events.created_by` to be NULL (the column is nullable), and at least one event has no `group_id`. The current sample has no events with a NULL creator, but the schema still permits that state. Authorization predicates such as `e.created_by <> actor` can evaluate to SQL NULL rather than TRUE when the creator is NULL; PL/pgSQL `IF` does not enter its branch for a NULL condition. This can bypass a rejection check if the function relies on that predicate alone.
+
+Before release, review and test every event/competition `SECURITY DEFINER` function that uses this pattern, especially `is_public_event_organizer`, `set_public_event_status`, `generate_knockout_bracket`, `generate_round_robin_schedule`, `generate_swiss_round`, and `create_event_team`.
+
+| ID | Action | Expected result |
+|---|---|---|
+| AUTH-01 | Call organizer-only RPC as an authenticated non-member against a fixture whose `created_by` is NULL | Rejected; no state or match/team rows changed |
+| AUTH-02 | Call organizer-only RPC as authenticated non-member against a standalone event with `group_id` NULL and a valid, different creator | Rejected |
+| AUTH-03 | Call the organizer helper when the caller is neither creator nor group owner/admin | Returns strict FALSE, never NULL |
+| AUTH-04 | Repeat the above as the event creator and as a group owner/admin | Allowed only where the function's documented authorization policy permits it |
+
+Potential remediation: use explicit null-safe checks such as `e.created_by IS DISTINCT FROM actor` and make helper functions return a non-null boolean. Apply only after reviewing each function's intended policy and testing it against a disposable database; do not run a bulk production rewrite.
