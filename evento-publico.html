@@ -68,12 +68,60 @@
 .public-event-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media(max-width:520px){.public-event-edit-form{padding:15px}.public-event-edit-grid{grid-template-columns:1fr}}
 </style>
+<style id="public-event-visual-refresh">
+body.public-event-app{--event-bg:#f6f6f3;--event-ink:#17181b;--event-muted:#777a80;--event-line:#e6e6e1;--event-card:#fff;--event-accent:#ff4d2e;background:var(--event-bg)!important;color:var(--event-ink)!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body.public-event-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2));background:rgba(246,246,243,.9)!important;border-bottom:1px solid rgba(23,24,27,.07)!important}
+.public-event-app .logo{font-size:16px;font-weight:950;letter-spacing:-.075em;color:var(--event-ink)}
+.public-event-app #mainNav{gap:6px}.public-event-app #mainNav a{padding:9px 12px;border-radius:999px;color:#777a80;font-size:12px;font-weight:750}.public-event-app #mainNav a.active{background:#ecece7;color:var(--event-ink)}.public-event-app #mainNav a.active::after{display:none}
+.public-event-page{width:min(100% - 40px,1040px)!important;max-width:1040px!important;margin:0 auto!important;padding:38px 0 100px!important}
+.public-event-app #publicEventRoot>.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--event-accent)!important;font-size:10px!important;font-weight:950;letter-spacing:.16em}
+.public-event-shell{display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(260px,.75fr)!important;align-items:start;gap:14px!important;margin-top:13px}
+.public-event-main,.public-event-side{border:1px solid var(--event-line)!important;border-radius:23px!important;background:var(--event-card)!important;box-shadow:0 5px 22px rgba(20,20,18,.035)!important;color:var(--event-ink)!important}
+.public-event-main{padding:30px!important}.public-event-main h1{margin:0 0 15px!important;color:var(--event-ink)!important;font-size:clamp(34px,5vw,56px)!important;font-weight:900;letter-spacing:-.075em!important;line-height:1.02!important;overflow-wrap:anywhere}
+.public-event-main>p{color:var(--event-muted)!important;font-size:12px!important;line-height:1.65!important}.public-event-main>p strong{color:var(--event-ink)!important}
+.public-event-description{margin-top:22px;padding-top:20px;border-top:1px solid var(--event-line);color:#55575d!important;font-size:13px!important;line-height:1.8!important;overflow-wrap:anywhere}
+.public-organizer-link{color:var(--event-accent)!important;font-weight:800;text-decoration:none}
+.public-event-side{position:sticky;top:84px;padding:20px!important}
+.public-event-stat{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--event-line)!important}
+.public-event-stat:first-child{padding-top:2px}.public-event-stat span{color:var(--event-muted)!important;font-size:10px!important;font-weight:750}.public-event-stat strong{color:var(--event-ink)!important;font-size:14px!important;font-weight:900;text-align:right}
+.public-event-side #eventJoinButton{width:100%;min-height:48px;margin-top:17px;border:0!important;border-radius:999px!important;background:var(--event-accent)!important;color:#fff!important;font-size:12px;font-weight:900;box-shadow:0 8px 18px rgba(255,77,46,.17)}
+.public-event-side #eventJoinButton:disabled{opacity:.55;box-shadow:none}
+.public-event-side .public-login-note,.public-event-side .public-login-note a{color:var(--event-muted)!important;font-size:10px!important;line-height:1.6}.public-event-side .public-login-note a{color:var(--event-accent)!important;font-weight:850}
+.event-primary-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.event-share-button{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:0 13px;border:1px solid var(--event-line)!important;border-radius:999px!important;background:#fff!important;color:var(--event-ink)!important;font-size:10px;font-weight:850;text-decoration:none;cursor:pointer}
+.event-share-button:hover{border-color:#c8c8c0!important;background:#fafaf8!important}
+.public-tournament-panel,.team-manager,.participant-team-box{border:1px solid var(--event-line)!important;border-radius:18px!important;background:#fff!important;box-shadow:none!important}
+.public-match-row,.public-team-row,.public-standing-row,.public-participant-row,.managed-team{border:1px solid var(--event-line)!important;border-radius:12px!important;background:#fafaf8!important}
+.tournament-admin-box{border-radius:17px!important;background:#1b1c1f!important}
+.public-event-app .button{border-radius:999px!important;font-size:11px;font-weight:850}
+.public-event-app .button-primary{background:var(--event-accent)!important;border-color:var(--event-accent)!important;color:#fff!important}
+.public-event-app input,.public-event-app select,.public-event-app textarea{border-color:var(--event-line)!important;border-radius:12px!important;background:#fafaf8!important;color:var(--event-ink)!important;box-shadow:none!important}
+.public-event-app input:focus,.public-event-app select:focus,.public-event-app textarea:focus{border-color:#ffb3a3!important;outline:3px solid rgba(255,77,46,.1)!important}
+.bottom-nav{display:none}
+@media(max-width:760px){
+ body.public-event-app .navbar{height:60px;padding:0 17px}.public-event-app #mainNav{display:none}.public-event-app .menu-button{display:block;color:var(--event-ink);font-size:22px}
+ .public-event-page{width:calc(100% - 32px)!important;padding:23px 0 100px!important}
+ .public-event-shell{grid-template-columns:1fr!important;gap:11px!important;margin-top:10px}
+ .public-event-main{padding:21px!important;border-radius:20px!important}.public-event-main h1{font-size:clamp(32px,8.8vw,46px)!important}.public-event-main>p{font-size:11px!important}.public-event-description{margin-top:17px;padding-top:16px;font-size:12px!important}
+ .public-event-side{position:static!important;padding:17px!important;border-radius:20px!important;order:-1}
+ .public-event-side #eventJoinButton{min-height:49px;font-size:12px}
+ .public-event-app .bottom-nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
+ .public-event-app .bottom-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#85868a;text-decoration:none}.public-event-app .bottom-nav-item b{font-size:20px;font-weight:500;line-height:1}.public-event-app .bottom-nav-item span{font-size:9px;font-weight:800}.public-event-app .bottom-nav-item.active{background:#191a1d;color:#fff}
+}
+@media(prefers-reduced-motion:reduce){.event-share-button{transition:none!important}}
+</style>
 </head>
-<body>
+<body class="public-event-app">
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main class="public-event-page">
 <div id="publicEventRoot"></div>
 </main>
+<nav class="bottom-nav" aria-label="Navegación móvil">
+<a class="bottom-nav-item" href="index.html"><b>⌂</b><span>Inicio</span></a>
+<a class="bottom-nav-item active" href="explorar.html"><b>⌕</b><span>Buscar</span></a>
+<a class="bottom-nav-item" href="mis-eventos.html"><b>♡</b><span>Mis planes</span></a>
+<a class="bottom-nav-item" href="perfil.html"><b>◉</b><span>Perfil</span></a>
+</nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/evento-publico.js"></script>
