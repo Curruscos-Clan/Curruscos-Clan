@@ -6464,3 +6464,32 @@ body.group-panel-open{overflow:hidden}
 .workspace-switcher .group-menu{width:min(330px,calc(100vw - 18px));padding:20px 12px}
 .workspace-switcher .group-menu:after{left:330px}
 }
+
+
+/* CURRUSCOS — mobile right-side navigation drawer */
+.cc-drawer-backdrop{position:fixed;inset:0;z-index:3000;background:rgba(15,16,18,.38);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .22s ease,visibility .22s ease}
+.cc-drawer-backdrop.is-open{opacity:1;visibility:visible}
+.cc-nav-drawer{position:fixed;z-index:3001;top:0;right:0;bottom:0;width:min( min(360px, 88vw), 360px);padding:calc(22px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:22px;background:#fbfbf9;color:#17181b;border-left:1px solid rgba(23,24,27,.08);box-shadow:-18px 0 55px rgba(15,16,18,.16);transform:translateX(102%);visibility:hidden;transition:transform .25s cubic-bezier(.2,.75,.25,1),visibility .25s;overflow-y:auto}
+.cc-nav-drawer.is-open{transform:translateX(0);visibility:visible}
+.cc-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:18px;border-bottom:1px solid #e8e8e3}
+.cc-drawer-brand{font-size:15px;font-weight:950;letter-spacing:-.06em;color:#17181b}
+.cc-drawer-brand i{display:inline-block;width:6px;height:6px;margin-left:3px;border-radius:50%;background:#ff4d2e}
+.cc-drawer-close{display:grid;place-items:center;width:40px;height:40px;border:1px solid #e6e6e1;border-radius:50%;background:#fff;color:#17181b;font-size:23px;cursor:pointer}
+.cc-drawer-label{margin:0 0 -10px;color:#85868a;font-size:10px;font-weight:850;letter-spacing:.14em;text-transform:uppercase}
+.cc-drawer-links{display:grid;gap:6px}
+.cc-drawer-link{display:flex;align-items:center;gap:13px;min-height:56px;padding:10px 12px;border:1px solid transparent;border-radius:15px;color:#55575d;text-decoration:none;font-size:14px;font-weight:750;transition:background .16s,border-color .16s,color .16s}
+.cc-drawer-link:hover{background:#f1f1ed;color:#17181b}
+.cc-drawer-link[aria-current="page"]{background:#fff0eb;border-color:#ffddd4;color:#d93f25}
+.cc-drawer-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:12px;background:#f0f0ec;color:#44464b;font-size:17px;font-weight:700}
+.cc-drawer-link[aria-current="page"] .cc-drawer-icon{background:#ff4d2e;color:#fff}
+.cc-drawer-link span:last-child{display:grid;gap:2px}
+.cc-drawer-link small{color:#85868a;font-size:10px;font-weight:500}
+.cc-drawer-footer{margin-top:auto;padding-top:16px;border-top:1px solid #e8e8e3;color:#85868a;font-size:11px;line-height:1.6}
+@media(max-width:760px){
+ .navbar .menu-button{display:grid!important;place-items:center;width:42px;height:42px;margin-left:auto;border:1px solid rgba(23,24,27,.1)!important;border-radius:50%;background:rgba(255,255,255,.75)!important;color:#17181b!important;font-size:21px!important;line-height:1;cursor:pointer}
+ .navbar #mainNav{display:none!important}
+ .bottom-nav{display:none!important}
+ body{padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(min-width:761px){.cc-drawer-backdrop,.cc-nav-drawer{display:none!important}}
+@media(prefers-reduced-motion:reduce){.cc-drawer-backdrop,.cc-nav-drawer,.cc-drawer-link{transition:none!important}}
