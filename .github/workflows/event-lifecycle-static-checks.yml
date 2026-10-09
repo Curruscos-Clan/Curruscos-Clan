@@ -1,4 +1,4 @@
-name: Public event lifecycle static checks
+name: Public event lifecycle regression tests
 
 on:
   pull_request:
@@ -19,9 +19,12 @@ on:
       - "supabase/tests/**"
       - ".github/workflows/event-lifecycle-static-checks.yml"
 
+permissions:
+  contents: read
+
 jobs:
   static-regression:
-    name: Static regression checks (not DB integration tests)
+    name: Static regression checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -34,3 +37,32 @@ jobs:
         run: node --check js/evento-publico.js && node --check js/supabase.js
       - name: Run lifecycle static regression tests
         run: python -m unittest discover -s supabase/tests -p "test_*.py" -v
+
+  participant-authorization-postgres:
+    name: Participant authorization integration test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+      - name: Test null-safe participant authorization against isolated PostgreSQL
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: psql "$DATABASE_URL" --set ON_ERROR_STOP=1 --file supabase/tests/test_participant_authorization_postgres.sql
