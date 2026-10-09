@@ -21,3 +21,8 @@ drop trigger if exists revoke_event_team_chat_membership_after_exit on public.ev
 create trigger revoke_event_team_chat_membership_after_exit
 after delete on public.event_team_members
 for each row execute function public.revoke_event_team_chat_membership_after_exit();
+
+-- These functions are invoked by triggers, not by clients through RPC.
+revoke execute on function public.revoke_group_chat_membership_after_group_exit() from public, anon, authenticated;
+revoke execute on function public.revoke_event_chat_membership_after_attendance_change() from public, anon, authenticated;
+revoke execute on function public.revoke_event_team_chat_membership_after_exit() from public, anon, authenticated;
