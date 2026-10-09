@@ -159,11 +159,10 @@ begin
 end;
 $function$;
 
--- Public profile lists are exposed through get_public_event_participants(), which returns
--- confirmed participants only. Direct table reads are restricted to the user's own row
--- or members of the event's group; organizer/public UI paths must use their scoped RPCs.
+-- Keep public participant counts working while exposing only confirmed public entries.
+-- Users can still see their own row and group members can manage visibility within their group.
 drop policy if exists "Authenticated users can view event participation" on public.event_participants;
-create policy "Users can view own or group event participation"
+create policy "Users can view own group or confirmed public participation"
 on public.event_participants
 for select
 to authenticated
@@ -175,6 +174,16 @@ using (
     join public.group_members gm on gm.group_id = e.group_id
     where e.id = event_participants.event_id
       and gm.user_id = (select auth.uid())
+  )
+  or (
+    status = 'yes'
+    and exists (
+      select 1
+      from public.events e
+      where e.id = event_participants.event_id
+        and e.visibility = 'public'
+        and e.status in ('published','preparing','live','finished')
+    )
   )
 );
 
