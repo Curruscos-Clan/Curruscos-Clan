@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MIGRATION = ROOT / "supabase/migrations/20261009190000_harden_public_event_registration_lifecycle.sql"
 ANON_POLICY_MIGRATION = ROOT / "supabase/migrations/20261009200000_allow_anon_public_participant_counts.sql"
 AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010100000_null_safe_event_organizer_authorization.sql"
+ADDITIONAL_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010110000_null_safe_team_match_and_trip_authorization.sql"
 JS = ROOT / "js/evento-publico.js"
 
 
@@ -22,6 +23,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         cls.sql = MIGRATION.read_text(encoding="utf-8").lower()
         cls.anon_policy_sql = ANON_POLICY_MIGRATION.read_text(encoding="utf-8").lower()
         cls.authorization_sql = AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.additional_authorization_sql = ADDITIONAL_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.js = JS.read_text(encoding="utf-8")
 
     def test_join_rpc_rejects_started_events(self):
@@ -92,6 +94,21 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
                 self.assertIn("create or replace function public." + function_name, sql)
         self.assertIn("security definer", sql)
         self.assertIn("set search_path to ''", sql)
+
+    def test_additional_security_definer_rpcs_use_null_safe_authorization(self):
+        sql = self.additional_authorization_sql
+        self.assertGreaterEqual(sql.count("created_by is distinct from actor"), 3)
+        self.assertGreaterEqual(sql.count("created_by is distinct from uid"), 1)
+        for function_name in (
+            "add_event_team_member",
+            "record_event_match_result",
+            "remove_event_team_member",
+            "create_trip_for_event",
+        ):
+            with self.subTest(function_name=function_name):
+                self.assertIn("create or replace function public." + function_name, sql)
+        self.assertGreaterEqual(sql.count("security definer"), 4)
+        self.assertGreaterEqual(sql.count("set search_path to ''"), 4)
 
     def test_frontend_does_not_use_browser_clock_to_decide_event_start(self):
         self.assertNotIn("const eventStarted=new Date(event.date", self.js)
