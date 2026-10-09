@@ -11,6 +11,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 MIGRATION = ROOT / "supabase/migrations/20261009190000_harden_public_event_registration_lifecycle.sql"
+ANON_POLICY_MIGRATION = ROOT / "supabase/migrations/20261009200000_allow_anon_public_participant_counts.sql"
 JS = ROOT / "js/evento-publico.js"
 
 
@@ -18,6 +19,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.sql = MIGRATION.read_text(encoding="utf-8").lower()
+        cls.anon_policy_sql = ANON_POLICY_MIGRATION.read_text(encoding="utf-8").lower()
         cls.js = JS.read_text(encoding="utf-8")
 
     def test_join_rpc_rejects_started_events(self):
@@ -58,9 +60,9 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("user_id = (select auth.uid())", self.sql)
         self.assertIn("is_public_event_organizer(event_participants.event_id)", self.sql)
         self.assertIn("status = 'yes'", self.sql)
-        self.assertIn('to anon, authenticated', self.sql)
-        self.assertIn("e.visibility = 'public'", self.sql)
-        self.assertIn("e.status in ('published','preparing','live','finished')", self.sql)
+        self.assertIn('to anon, authenticated', self.anon_policy_sql)
+        self.assertIn("e.visibility = 'public'", self.anon_policy_sql)
+        self.assertIn("e.status in ('published','preparing','live','finished')", self.anon_policy_sql)
 
     def test_rpc_grants_do_not_allow_anon_execution(self):
         self.assertIn("revoke all on function public.join_public_event(uuid) from public, anon", self.sql)
