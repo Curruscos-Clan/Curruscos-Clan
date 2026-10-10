@@ -17,7 +17,7 @@ function bindExploreIntent(){
       const destination=targetId==="recommendationsSection"&&!isVisible(recommendations)
         ?(isVisible(featured)?featured:allEvents)
         :targetId==="featuredSection"&&!isVisible(featured)?allEvents:target;
-      destination?.scrollIntoView({behavior:"smooth",block:"start"});
+      destination?.scrollIntoView({behavior:window.matchMedia?.("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
     });
   });
 }
