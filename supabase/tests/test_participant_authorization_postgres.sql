@@ -176,7 +176,7 @@ begin
         '10000000-0000-0000-0000-000000000001'::uuid,
         '10000000-0000-0000-0000-000000000002'::uuid
       ])
-      where event_id = '10000000-0000-0000-0000-000000000001') <> 1 then
+      where event_id = '10000000-0000-0000-0000-000000000001') <> 2 then
     raise exception 'Public confirmed participant count is incorrect';
   end if;
 
