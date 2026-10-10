@@ -215,7 +215,12 @@ function setupMobileMenu() {
         return;
     }
 
-    if (menuButton.dataset.ready === "true") {
+    // js/navigation.js owns the accessible menu on pages that load it.
+    // Avoid registering a second click handler that would toggle the menu twice.
+    if (
+        menuButton.dataset.ready === "true" ||
+        menuButton.dataset.navReady === "true"
+    ) {
         return;
     }
 
