@@ -18,9 +18,9 @@ REVOKE ALL ON FUNCTION private.create_group_event_secure(uuid,text,text,date,tim
 REVOKE ALL ON FUNCTION private.create_trip_secure(uuid,text,text,date,date,numeric,text,jsonb) FROM PUBLIC, anon, authenticated;
 
 CREATE OR REPLACE FUNCTION public.create_group_event(uuid,text,text,date,time without time zone,text,uuid)
-RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';
+RETURNS uuid LANGUAGE sql AS 'SELECT private.create_group_event_secure($1,$2,$3,$4,$5,$6,$7)';
 CREATE OR REPLACE FUNCTION public.create_trip(uuid,text,text,date,date,numeric,text,jsonb)
-RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';
+RETURNS uuid LANGUAGE sql AS 'SELECT private.create_trip_secure($1,$2,$3,$4,$5,$6,$7,$8)';
 
 \i supabase/migrations/20261009190000_fix_event_trip_wrapper_permissions.sql
 
@@ -34,6 +34,11 @@ BEGIN
   IF NOT (SELECT prosecdef FROM pg_proc WHERE oid = event_oid)
      OR NOT (SELECT prosecdef FROM pg_proc WHERE oid = trip_oid) THEN
     RAISE EXCEPTION 'Both wrappers must be SECURITY DEFINER';
+  END IF;
+
+  IF position('private.create_group_event_secure' IN pg_get_functiondef(event_oid)) = 0
+     OR position('private.create_trip_secure' IN pg_get_functiondef(trip_oid)) = 0 THEN
+    RAISE EXCEPTION 'Wrappers must delegate to their private helpers';
   END IF;
 
   IF NOT EXISTS (
