@@ -263,11 +263,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!events.length) {
     isRecommendationFeed = false;
     try { events = await getPublicEvents({search:"", category:"all", event_type:"all"}) || []; } catch (e) {}
+    // The public query can include events whose date has passed if their status
+    // was never updated. Do not surface those as upcoming recommendations.
+    const now = new Date();
+    events = events.filter(event => {
+      if (event.status === "live") return true;
+      const date = event.date || event.event_date;
+      const time = event.time || event.event_time || "23:59";
+      if (!date) return false;
+      const timestamp = new Date(date + "T" + time).getTime();
+      return Number.isFinite(timestamp) && timestamp >= now.getTime();
+    });
   }
 
   rec.innerHTML = events.slice(0, 5).map(event => {
     const id = event.id || event.event_id;
-    const d = new Date(event.date + "T" + (event.time || "00:00"));
+    // The recommendation RPC returns event_date/event_time, while the public
+    // events query returns date/time. Normalize both shapes before rendering.
+    const eventDate = event.date || event.event_date;
+    const eventTime = event.time || event.event_time;
+    const d = eventDate ? new Date(eventDate + "T" + (eventTime || "00:00")) : null;
+    const hasValidDate = d && Number.isFinite(d.getTime());
+    const dateMarkup = hasValidDate
+      ? '<strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span>'
+      : '<strong>—</strong><span>Fecha pendiente</span>';
     const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
     const rawKey = String(event.event_type || event.category || "").trim().toLowerCase();
     const aliases = {
@@ -280,13 +299,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const normalized = String(interest || "").trim().toLowerCase();
       return normalized === rawKey || normalized === (aliases[rawKey] || rawKey) || (aliases[normalized] || normalized) === rawKey;
     });
-    const participantCount = Number(event.participant_count || 0);
+    const participantCount = Number(event.participant_count ?? event.event_participants?.[0]?.count ?? 0);
     const reason = user ? (interestMatch
       ? "Porque te interesa " + String(interestMatch).trim()
       : participantCount >= 5 ? "Popular en Curruscos"
       : "Nuevo en Curruscos") : "Descubre este plan en Curruscos";
     return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
-      '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
+      '<span class="home-event-date">' + dateMarkup + '</span>' +
       '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>' + (user ? '<button class="home-event-dismiss" type="button">No me interesa</button>' : '') + '</div>';
   }).join("") || '<div class="home-empty"><strong>No hay eventos públicos todavía.</strong><span>Cuando haya nuevos planes aparecerán aquí para descubrirlos.</span><a href="explorar.html">Explorar eventos →</a></div>';
 
@@ -305,8 +324,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (user) card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
       event.preventDefault(); event.stopPropagation();
       const button=event.currentTarget; button.disabled=true;
-      await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
-      card.remove();
+      const saved = await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
+      if (saved) {
+        card.remove();
+      } else {
+        button.disabled=false;
+        button.textContent="Reintentar";
+        button.title="No se ha podido guardar tu preferencia. Vuelve a intentarlo.";
+      }
     });
   });
 
@@ -319,7 +344,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       socialRoot.innerHTML = social.slice(0, 5).map(item => {
         const name = escapeHtml(item.actor_name || "Alguien");
         const title = escapeHtml(item.event_title || "un evento");
-        const kind = item.activity_type === "join" ? "se ha apuntado a" : "ha organizado";
+        const activityType = String(item.activity_type || "");
+        const kind = activityType === "join" ? "se ha apuntado a" : activityType === "create" || activityType === "organize" ? "ha organizado" : "ha participado en";
         const avatar = escapeHtml((item.actor_name || "?").charAt(0).toUpperCase());
         return '<a class="home-social-item" href="evento-publico.html?id=' + encodeURIComponent(item.event_id) + '">' +
           '<span class="home-social-avatar">' + avatar + '</span><span><strong>' + name + '</strong> ' + kind + ' <b>' + title + '</b><small>' + escapeHtml(String(item.event_type || "Evento").replaceAll("_"," ")) + '</small></span></a>';
