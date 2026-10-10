@@ -97,10 +97,10 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         sql = self.public_details_sql
         self.assertIn('drop policy if exists "event team members visible to event viewers"', sql)
         self.assertIn('create policy "authenticated event viewers can view team members"', sql)
-        self.assertIn("for select\\n to authenticated", sql)
+        self.assertRegex(sql, r"for select\\s+to authenticated")
         self.assertIn('drop policy if exists "public can view race results for public events"', sql)
         self.assertIn('create policy "authenticated users can view race results for public events"', sql)
-        self.assertIn("on public.event_race_results\\nfor select\\nto authenticated", sql)
+        self.assertRegex(sql, r"on public\\.event_race_results\\s+for select\\s+to authenticated")
 
     def test_public_feed_uses_aggregate_rpc_for_counts(self):
         self.assertIn('rpc("get_public_event_participant_counts"', self.supabase_js)
