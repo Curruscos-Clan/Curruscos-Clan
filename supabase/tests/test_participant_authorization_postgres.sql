@@ -47,6 +47,22 @@ insert into public.event_participants (event_id, user_id, status) values
 
 \i supabase/migrations/20261010120000_null_safe_participant_status_authorization.sql
 
+-- Recreate the unsafe anonymous row policy so the follow-up migration must remove it.
+create role anon;
+alter table public.event_participants enable row level security;
+create policy "Anonymous visitors can view confirmed public event participants"
+on public.event_participants for select to anon
+using (
+  status = 'yes'
+  and exists (
+    select 1 from public.events e
+    where e.id = event_participants.event_id
+      and e.visibility = 'public'
+      and e.status in ('published','preparing','live','finished')
+  )
+);
+\i supabase/migrations/20261010140000_safe_public_event_participant_counts.sql
+
 do $test$
 declare
   caught boolean := false;
@@ -130,6 +146,35 @@ begin
     raise exception 'Group admin could not update participant status: %', actual_status;
   end if;
 
-  raise notice 'Null-safe participant authorization integration tests passed.';
+  -- The anonymous role must not retain row-level access to participant records.
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'event_participants'
+      and policyname = 'Anonymous visitors can view confirmed public event participants'
+  ) then
+    raise exception 'Security regression: anonymous participant row policy still exists';
+  end if;
+
+  -- Public aggregate counts expose only confirmed totals for public events.
+  if (select participant_count
+      from public.get_public_event_participant_counts(array[
+        '10000000-0000-0000-0000-000000000001'::uuid,
+        '10000000-0000-0000-0000-000000000002'::uuid
+      ])
+      where event_id = '10000000-0000-0000-0000-000000000001') <> 1 then
+    raise exception 'Public confirmed participant count is incorrect';
+  end if;
+
+  if exists (
+    select 1 from public.get_public_event_participant_counts(array[
+      '10000000-0000-0000-0000-000000000001'::uuid,
+      '10000000-0000-0000-0000-000000000002'::uuid
+    ]) where event_id = '10000000-0000-0000-0000-000000000002'
+  ) then
+    raise exception 'Private event participant count was exposed publicly';
+  end if;
+
+  raise notice 'Null-safe authorization and aggregate participant count integration tests passed.';
 end
 $test$;
