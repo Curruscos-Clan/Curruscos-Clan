@@ -119,6 +119,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("can_manage := coalesce(e.created_by = actor, false) or exists", sql)
         self.assertIn("if target_status is null or target_status not in ('yes', 'no', 'pending') then", sql)
         self.assertIn("if e.status is distinct from 'published' then", sql)
+        self.assertIn("coalesce(e.visibility in ('public', 'unlisted'), false)", sql)
         self.assertIn("target_user_id is distinct from actor and not can_manage", sql)
         self.assertIn("security definer", sql)
         self.assertIn("set search_path to ''", sql)
