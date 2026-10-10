@@ -3,6 +3,26 @@
 drop policy if exists "Anonymous visitors can view confirmed public event participants"
   on public.event_participants;
 
+-- Signed-in users also get public participant details through the narrow RPC,
+-- not unrestricted table rows containing user IDs and internal metadata.
+drop policy if exists "Users can view own group or confirmed public participation"
+  on public.event_participants;
+create policy "Users can view own or managed event participation"
+on public.event_participants
+for select
+to authenticated
+using (
+  user_id = (select auth.uid())
+  or public.is_public_event_organizer(event_participants.event_id)
+  or exists (
+    select 1
+    from public.events e
+    join public.group_members gm on gm.group_id = e.group_id
+    where e.id = event_participants.event_id
+      and gm.user_id = (select auth.uid())
+  )
+);
+
 create or replace function public.get_public_event_participant_counts(target_event_ids uuid[])
 returns table(event_id uuid, participant_count bigint)
 language sql
