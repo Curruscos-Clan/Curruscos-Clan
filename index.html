@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const normalized = String(interest || "").trim().toLowerCase();
       return normalized === rawKey || normalized === (aliases[rawKey] || rawKey) || (aliases[normalized] || normalized) === rawKey;
     });
-    const participantCount = Number(event.participant_count || 0);
+    const participantCount = Number(event.participant_count ?? event.event_participants?.[0]?.count ?? 0);
     const reason = user ? (interestMatch
       ? "Porque te interesa " + String(interestMatch).trim()
       : participantCount >= 5 ? "Popular en Curruscos"
