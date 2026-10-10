@@ -21,7 +21,7 @@ body.public-create-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180
 .public-create-page>p{color:var(--create-muted)!important;font-size:13px!important;line-height:1.7!important}
 .public-create-card{margin-top:25px!important;padding:26px!important;border:1px solid var(--create-line)!important;border-radius:23px!important;background:var(--create-card)!important;box-shadow:0 5px 22px rgba(20,20,18,.035)!important}
 .create-progress{gap:7px!important;margin-bottom:23px!important}.create-progress-step{padding:10px 8px!important;border-radius:11px!important;background:#f4f4f0!important;color:#777a80!important;font-size:9px!important}.create-progress-step.active{background:var(--create-ink)!important;color:#fff!important}
-.create-note{padding:13px 15px!important;border:1px solid #ffd8cf;border-radius:13px!important;background:#fff3ef!important;color:#8f493b!important;font-size:11px!important;line-height:1.6!important}
+.create-note{padding:13px 15px!important;border:1px solid #ffd8cf;border-radius:13px!important;background:#fff3ef!important;color:#8f493b!important;font-size:11px!important;line-height:1.6!important}.create-note a{color:var(--create-ink)!important;font-weight:900!important;text-decoration:underline;text-underline-offset:3px}
 .public-create-form{gap:14px!important}.public-create-form label{display:grid;gap:7px;color:#44464b!important;font-size:10px!important;font-weight:850!important}
 .public-create-form input,.public-create-form select,.public-create-form textarea{width:100%;min-height:45px;box-sizing:border-box;padding:10px 12px!important;border:1px solid var(--create-line)!important;border-radius:12px!important;background:#fafaf8!important;color:var(--create-ink)!important;font-size:12px!important;box-shadow:none!important}
 .public-create-form textarea{min-height:105px;resize:vertical}.public-create-form input:focus,.public-create-form select:focus,.public-create-form textarea:focus{border-color:#ffb3a3!important;outline:3px solid rgba(255,77,46,.1)!important}
@@ -52,7 +52,7 @@ body.public-create-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180
 <h1 style="font-size:clamp(45px,7vw,70px);line-height:.94;letter-spacing:-.07em;margin:13px 0">Haz que la gente<br>pueda apuntarse.</h1>
 <p style="color:var(--muted);font-size:17px;line-height:1.55;max-width:620px">Crea el evento y Curruscos lo publicará en el espacio de descubrimiento.</p>
 <section class="public-create-card"><div class="create-progress"><span class="create-progress-step active">01 · Básico</span><span class="create-progress-step">02 · Organización</span><span class="create-progress-step">03 · Publicar</span></div>
-<p id="authNote" class="create-note">Necesitas una cuenta para publicar un evento.</p>
+<p id="authNote" class="create-note"><span id="authNoteText">Necesitas una cuenta para publicar un evento. </span><a id="authNoteLink" href="login.html" data-i18n="nav.login">Entrar</a></p>
 <form id="publicEventForm" class="public-create-form">
 <div class="create-section-label">Define el plan</div><label>Nombre del evento<input id="publicEventTitle" maxlength="120" placeholder="Ej. Torneo de Pádel Ciudad de Palencia" required></label>
 <div class="public-create-grid">
