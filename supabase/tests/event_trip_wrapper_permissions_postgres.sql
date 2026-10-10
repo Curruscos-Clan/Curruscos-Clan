@@ -22,7 +22,7 @@ RETURNS uuid LANGUAGE sql AS 'SELECT private.create_group_event_secure($1,$2,$3,
 CREATE OR REPLACE FUNCTION public.create_trip(uuid,text,text,date,date,numeric,text,jsonb)
 RETURNS uuid LANGUAGE sql AS 'SELECT private.create_trip_secure($1,$2,$3,$4,$5,$6,$7,$8)';
 
-\i supabase/migrations/20261009190000_fix_event_trip_wrapper_permissions.sql
+\i supabase/migrations/20261010160000_fix_event_trip_wrapper_permissions.sql
 
 DO $test$
 DECLARE
