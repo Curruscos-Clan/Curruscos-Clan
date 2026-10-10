@@ -1,0 +1,62 @@
+name: Visual refresh regression checks
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "explorar.html"
+      - "eventos.html"
+      - "mis-eventos.html"
+      - "dashboard.html"
+      - "crear.html"
+      - "crear-evento.html"
+      - "evento-publico.html"
+      - "perfil.html"
+      - "js/app.js"
+      - "js/navigation.js"
+      - "js/explorar.js"
+      - "js/crear-evento.js"
+      - "js/dashboard.js"
+      - "tests/test_visual_refresh_regression.py"
+      - ".github/workflows/visual-refresh-regression.yml"
+  push:
+    paths:
+      - "index.html"
+      - "explorar.html"
+      - "eventos.html"
+      - "mis-eventos.html"
+      - "dashboard.html"
+      - "crear.html"
+      - "crear-evento.html"
+      - "evento-publico.html"
+      - "perfil.html"
+      - "js/app.js"
+      - "js/navigation.js"
+      - "js/explorar.js"
+      - "js/crear-evento.js"
+      - "js/dashboard.js"
+      - "tests/test_visual_refresh_regression.py"
+      - ".github/workflows/visual-refresh-regression.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  visual-refresh-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check JavaScript syntax
+        run: |
+          set -e
+          for file in js/app.js js/navigation.js js/explorar.js js/crear-evento.js js/dashboard.js; do
+            node --check "$file"
+          done
+      - name: Check navigation and HTML style blocks
+        run: python -m unittest tests/test_visual_refresh_regression.py
