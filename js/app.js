@@ -926,6 +926,25 @@ async function initAccountMenu() {
 function ensureProductNavigation() {
     const nav = document.getElementById("mainNav");
     if (!nav) return;
+    const page = getCurrentPage();
+    const usesPrimaryTabs = document.body.matches(
+        ".social-app, .group-events-app, .my-events-app, .profile-app"
+    );
+    if (usesPrimaryTabs) {
+        const items = [
+            { href: "index.html", text: "Inicio", pages: ["index.html"] },
+            { href: "explorar.html", text: "Buscar", pages: ["explorar.html"] },
+            { href: "eventos.html", text: "Mi grupo", pages: ["eventos.html"] },
+            { href: "perfil.html", text: "Mi perfil", pages: ["perfil.html", "mis-eventos.html"] }
+        ];
+        nav.innerHTML = items.map(item => {
+            const active = item.pages.includes(page);
+            return '<a href="' + item.href + '"' +
+                (active ? ' class="active" aria-current="page"' : '') +
+                '>' + item.text + '</a>';
+        }).join("");
+        return;
+    }
     const links = [
         { href: "index.html", text: "Inicio" },
         { href: "explorar.html", text: "Explorar" },
@@ -934,7 +953,6 @@ function ensureProductNavigation() {
         { href: "crear.html", text: "Crear", className: "nav-create" }
     ];
     nav.innerHTML = links.map(item => '<a href="' + item.href + '"' + (item.className ? ' class="' + item.className + '"' : '') + '>' + item.text + '</a>').join("");
-    const page = getCurrentPage();
     nav.querySelectorAll("a").forEach(link => link.classList.toggle("active", link.getAttribute("href") === page));
 }
 
