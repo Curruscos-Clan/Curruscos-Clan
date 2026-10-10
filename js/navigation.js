@@ -34,6 +34,7 @@
         nav.classList.toggle("mobile-open",open);
         button.setAttribute("aria-expanded",String(open));
         button.setAttribute("aria-label",open?"Cerrar menú":"Abrir menú");
+        button.textContent=open?"×":"☰";
       };
       button.addEventListener("click",e=>{
         e.stopPropagation();
