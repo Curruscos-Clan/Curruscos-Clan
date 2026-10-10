@@ -16,6 +16,7 @@ AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010100000_null_safe_e
 ADDITIONAL_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010110000_null_safe_team_match_and_trip_authorization.sql"
 PARTICIPANT_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010120000_null_safe_participant_status_authorization.sql"
 PUBLIC_PARTICIPANT_COUNTS_MIGRATION = ROOT / "supabase/migrations/20261010140000_safe_public_event_participant_counts.sql"
+PUBLIC_EVENT_DETAILS_MIGRATION = ROOT / "supabase/migrations/20261010150000_restrict_anonymous_event_details.sql"
 SUPABASE_JS = ROOT / "js/supabase.js"
 JS = ROOT / "js/evento-publico.js"
 
@@ -29,6 +30,7 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         cls.additional_authorization_sql = ADDITIONAL_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.participant_authorization_sql = PARTICIPANT_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.public_counts_sql = PUBLIC_PARTICIPANT_COUNTS_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.public_details_sql = PUBLIC_EVENT_DETAILS_MIGRATION.read_text(encoding="utf-8").lower()
         cls.supabase_js = SUPABASE_JS.read_text(encoding="utf-8")
         cls.js = JS.read_text(encoding="utf-8")
 
@@ -90,6 +92,15 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn('create policy "users can view own or managed event participation"', sql)
         policy_sql = sql.split('create policy "users can view own or managed event participation"', 1)[1].split("$function$", 1)[0]
         self.assertNotIn("status =", policy_sql)
+
+    def test_anonymous_clients_cannot_read_team_members_or_race_results_directly(self):
+        sql = self.public_details_sql
+        self.assertIn('drop policy if exists "event team members visible to event viewers"', sql)
+        self.assertIn('create policy "authenticated event viewers can view team members"', sql)
+        self.assertIn("for select\\n to authenticated", sql)
+        self.assertIn('drop policy if exists "public can view race results for public events"', sql)
+        self.assertIn('create policy "authenticated users can view race results for public events"', sql)
+        self.assertIn("on public.event_race_results\\nfor select\\nto authenticated", sql)
 
     def test_public_feed_uses_aggregate_rpc_for_counts(self):
         self.assertIn('rpc("get_public_event_participant_counts"', self.supabase_js)
