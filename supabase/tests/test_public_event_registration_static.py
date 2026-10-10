@@ -40,7 +40,9 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
 
     def test_join_rpc_requires_auth_and_published_state(self):
         self.assertIn("auth.uid()", self.sql)
-        self.assertIn("e.status <> 'published'", self.sql)
+        self.assertIn("e.status is distinct from 'published'", self.sql)
+        self.assertIn("if new_status is null or new_status not in", self.sql)
+        self.assertIn("if new_status is distinct from e.status and not (", self.sql)
         self.assertIn("'not_authenticated'", self.sql)
         self.assertIn("'event_closed'", self.sql)
 
