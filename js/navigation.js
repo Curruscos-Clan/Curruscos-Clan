@@ -27,9 +27,27 @@
     }
     const button=document.getElementById("menuButton");
     if(button && nav && button.dataset.navReady!=="true"){
-      button.dataset.navReady="true";button.setAttribute("aria-expanded","false");
-      button.addEventListener("click",e=>{e.stopPropagation();const open=nav.classList.toggle("mobile-open");button.setAttribute("aria-expanded",String(open));});
-      document.addEventListener("click",e=>{if(!nav.contains(e.target)&&e.target!==button){nav.classList.remove("mobile-open");button.setAttribute("aria-expanded","false");}});
+      button.dataset.navReady="true";
+      button.setAttribute("aria-expanded","false");
+      button.setAttribute("aria-controls","mainNav");
+      const setMenuOpen=open=>{
+        nav.classList.toggle("mobile-open",open);
+        button.setAttribute("aria-expanded",String(open));
+        button.setAttribute("aria-label",open?"Cerrar menú":"Abrir menú");
+      };
+      button.addEventListener("click",e=>{
+        e.stopPropagation();
+        setMenuOpen(!nav.classList.contains("mobile-open"));
+      });
+      document.addEventListener("click",e=>{
+        if(!nav.contains(e.target)&&e.target!==button)setMenuOpen(false);
+      });
+      document.addEventListener("keydown",e=>{
+        if(e.key==="Escape"&&nav.classList.contains("mobile-open")){
+          setMenuOpen(false);
+          button.focus();
+        }
+      });
     }
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
