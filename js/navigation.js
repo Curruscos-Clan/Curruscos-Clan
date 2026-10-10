@@ -1,7 +1,7 @@
 (function(){
   const items=[
     {href:"index.html",label:"Inicio",pages:["index.html"]},
-    {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
+    {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html","crear.html"]},
     {href:"eventos.html",label:"Mi grupo",pages:["eventos.html"]},
     {href:"perfil.html",label:"Mi perfil",pages:["perfil.html","mis-eventos.html"]}
   ];
