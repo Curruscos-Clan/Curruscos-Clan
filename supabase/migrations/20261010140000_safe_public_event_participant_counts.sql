@@ -5,6 +5,9 @@ drop policy if exists "Anonymous visitors can view confirmed public event partic
 
 -- Signed-in users also get public participant details through the narrow RPC,
 -- not unrestricted table rows containing user IDs and internal metadata.
+-- Remove the actual legacy authenticated policy as well; policies are OR-combined.
+drop policy if exists "Authenticated users can view event participation"
+  on public.event_participants;
 drop policy if exists "Users can view own group or confirmed public participation"
   on public.event_participants;
 create policy "Users can view own or managed event participation"
