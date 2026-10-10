@@ -313,8 +313,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (user) card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
       event.preventDefault(); event.stopPropagation();
       const button=event.currentTarget; button.disabled=true;
-      await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
-      card.remove();
+      const saved = await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
+      if (saved) {
+        card.remove();
+      } else {
+        button.disabled=false;
+        button.textContent="Reintentar";
+        button.title="No se ha podido guardar tu preferencia. Vuelve a intentarlo.";
+      }
     });
   });
 
