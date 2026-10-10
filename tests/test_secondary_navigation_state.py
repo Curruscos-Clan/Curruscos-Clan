@@ -12,7 +12,7 @@ def profile_pages(source, anchor):
     start = source.index(anchor)
     tail = source[start:]
     match = re.search(
-        r'\{\s*href:\s*["\\']perfil\\.html["\\'].*?pages:\s*\[([^\]]*)\]',
+        r"\{\s*href:\s*['\"]perfil\.html['\"].*?pages:\s*\[([^\]]*)\]",
         tail,
         flags=re.S,
     )
