@@ -30,9 +30,9 @@ class VisualRefreshRegressionTests(unittest.TestCase):
 
     def test_visual_refresh_pages_have_balanced_style_blocks(self):
         for page in VISUAL_REFRESH_PAGES:
-            source = (ROOT / page).read_text(encoding="utf-8")
-            opening = len(re.findall(r"<style(?:\\s|>)", source, flags=re.I))
-            closing = len(re.findall(r"</style\\s*>", source, flags=re.I))
+            source = (ROOT / page).read_text(encoding="utf-8").lower()
+            opening = source.count("<style")
+            closing = source.count("</style>")
             with self.subTest(page=page):
                 self.assertEqual(
                     opening,
