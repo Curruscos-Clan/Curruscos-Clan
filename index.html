@@ -327,7 +327,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       socialRoot.innerHTML = social.slice(0, 5).map(item => {
         const name = escapeHtml(item.actor_name || "Alguien");
         const title = escapeHtml(item.event_title || "un evento");
-        const kind = item.activity_type === "join" ? "se ha apuntado a" : "ha organizado";
+        const activityType = String(item.activity_type || "");
+        const kind = activityType === "join" ? "se ha apuntado a" : activityType === "create" || activityType === "organize" ? "ha organizado" : "ha participado en";
         const avatar = escapeHtml((item.actor_name || "?").charAt(0).toUpperCase());
         return '<a class="home-social-item" href="evento-publico.html?id=' + encodeURIComponent(item.event_id) + '">' +
           '<span class="home-social-avatar">' + avatar + '</span><span><strong>' + name + '</strong> ' + kind + ' <b>' + title + '</b><small>' + escapeHtml(String(item.event_type || "Evento").replaceAll("_"," ")) + '</small></span></a>';
