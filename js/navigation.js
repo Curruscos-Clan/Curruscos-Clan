@@ -2,8 +2,8 @@
   const items=[
     {href:"index.html",label:"Inicio"},
     {href:"explorar.html",label:"Buscar"},
-    {href:"mis-eventos.html",label:"Mis planes"},
-    {href:"perfil.html",label:"Perfil"}
+    {href:"eventos.html",label:"Mi grupo"},
+    {href:"perfil.html",label:"Mi perfil"}
   ];
   function init(){
     const nav=document.getElementById("mainNav");
