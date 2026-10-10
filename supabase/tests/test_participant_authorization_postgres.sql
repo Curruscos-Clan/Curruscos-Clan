@@ -49,6 +49,10 @@ insert into public.event_participants (event_id, user_id, status) values
 
 -- Recreate the unsafe anonymous row policy so the follow-up migration must remove it.
 create role anon;
+create role authenticated;
+create function public.is_public_event_organizer(target_event_id uuid) returns boolean
+language sql stable
+as $ select false $;
 alter table public.event_participants enable row level security;
 create policy "Anonymous visitors can view confirmed public event participants"
 on public.event_participants for select to anon
@@ -154,6 +158,16 @@ begin
       and policyname = 'Anonymous visitors can view confirmed public event participants'
   ) then
     raise exception 'Security regression: anonymous participant row policy still exists';
+  end if;
+
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'event_participants'
+      and policyname = 'Users can view own or managed event participation'
+      and qual not like '%status%'
+  ) then
+    raise exception 'Security regression: authenticated users still have broad participant row access';
   end if;
 
   -- Public aggregate counts expose only confirmed totals for public events.
