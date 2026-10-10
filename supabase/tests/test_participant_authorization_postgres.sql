@@ -95,6 +95,7 @@ begin
   end if;
 
   -- NULL visibility must not be treated as public by SQL three-valued logic.
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000004', true);
   caught := false;
   begin
     perform public.set_event_participant_status(
