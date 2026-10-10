@@ -71,13 +71,12 @@
 .secondary-discovery{padding-top:5px}.people-grid{grid-template-columns:repeat(2,1fr);gap:9px}.person-card{border-radius:17px!important}
 .bottom-nav{display:grid;position:fixed;left:10px;right:10px;bottom:10px;z-index:200;grid-template-columns:repeat(4,1fr);padding:7px;border:1px solid rgba(17,19,24,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 12px 40px rgba(17,19,24,.14);backdrop-filter:blur(18px)}.bottom-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;border-radius:15px;color:#777;text-decoration:none;font-size:8px;font-weight:800}.bottom-nav-item b{font-size:18px;line-height:1}.bottom-nav-item.active{background:#111;color:#fff}
 @media(min-width:721px){.bottom-nav{display:none}.explore-create{margin-left:auto}}
-@media(max-width:720px){.explore-navbar #mainNav{display:none}.explore-page{padding-top:14px!important}.advanced-filters{grid-template-columns:1fr 1fr}.advanced-filters select:last-child{grid-column:1/-1}.public-events-grid{grid-template-columns:1fr}.recommendation-section{padding:15px}.people-grid{grid-template-columns:1fr}.explore-section{margin-top:31px!important}}
+@media(max-width:720px){.explore-navbar #mainNav{display:none}.explore-page{padding-top:14px!important}.explore-app .advanced-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.explore-app .advanced-filters select:last-child{grid-column:1/-1}.public-events-grid{grid-template-columns:1fr}.recommendation-section{padding:15px}.people-grid{grid-template-columns:1fr}.explore-section{margin-top:31px!important}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style><style id="explore-visual-refresh">
 body.explore-app{--home-bg:#f6f6f3;--home-ink:#17181b;--home-muted:#777a80;--home-line:#e6e6e1;--home-card:#fff;--home-accent:#ff4d2e;background:var(--home-bg)!important;color:var(--home-ink)!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2));background:rgba(246,246,243,.9)!important;border-bottom:1px solid rgba(23,24,27,.07)!important}
 .explore-navbar .logo{font-size:16px;font-weight:950;letter-spacing:-.075em;color:var(--home-ink)}
-.explore-navbar .logo::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 1px 3px;border-radius:50%;background:var(--home-accent)}
 .explore-navbar #mainNav{gap:6px}.explore-navbar #mainNav a{padding:9px 12px;border-radius:999px;color:#777a80;font-size:12px;font-weight:750}.explore-navbar #mainNav a.active,.explore-navbar #mainNav a:hover{background:#ecece7;color:var(--home-ink)}.explore-navbar #mainNav a.active::after{display:none}
 .explore-create{width:38px;height:38px;border-radius:50%;background:var(--home-accent)!important;color:#fff!important;font-size:24px!important;box-shadow:0 7px 18px rgba(255,77,46,.2)}
 .explore-page{width:min(100% - 40px,1040px);max-width:1040px!important;margin:0 auto!important;padding:40px 0 100px!important}
@@ -94,6 +93,8 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 .category-scroll a:hover{background:var(--home-ink);border-color:var(--home-ink);color:#fff}
 .advanced-filters{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 12px}
 .advanced-filters select{min-height:40px;max-width:100%;padding:0 30px 0 12px;border:1px solid var(--home-line)!important;border-radius:12px!important;background:rgba(255,255,255,.72)!important;color:var(--home-ink)!important;font-size:11px!important}
+.explore-app .advanced-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:8px 0 12px}
+.explore-app .advanced-filters select{width:100%;min-width:0}
 .filter-chips{display:flex;gap:7px;overflow:auto;padding:4px 0 12px;scrollbar-width:none}.filter-chips::-webkit-scrollbar{display:none}
 .explore-chip{padding:8px 12px;border:1px solid var(--home-line)!important;border-radius:999px!important;background:transparent!important;color:#686a6f!important;font-size:10px!important;font-weight:850!important}
 .explore-chip.active{background:#fff0eb!important;border-color:#ffd2c6!important;color:#c74329!important}
@@ -112,7 +113,7 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 @media(max-width:760px){
  body.explore-app .explore-navbar{height:60px;padding:0 17px}.explore-navbar #mainNav{display:none}.explore-navbar .explore-create{margin-left:auto}.explore-navbar .menu-button{display:block;color:var(--home-ink);font-size:22px}
  .explore-page{width:calc(100% - 32px);padding:24px 0 100px!important}.explore-mobile-hero{padding:22px 0 20px}.explore-mobile-hero h1{font-size:clamp(38px,10vw,54px)!important}.explore-mobile-hero p{font-size:13px!important}
- .advanced-filters{display:grid;grid-template-columns:1fr 1fr}.advanced-filters select{width:100%;font-size:10px!important}.advanced-filters select:last-child{grid-column:1/-1}
+ .explore-app .advanced-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.explore-app .advanced-filters select{width:100%;font-size:10px!important}.explore-app .advanced-filters select:last-child{grid-column:1/-1}
  .public-events-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px!important}.people-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .section-title h2{font-size:23px!important}.explore-toolbar{flex-direction:column;gap:4px}
  .bottom-nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
@@ -176,7 +177,7 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
     <button class="explore-chip" data-filter="live">En directo</button>
   </div>
 
-  <section id="recommendationsSection" class="explore-section recommendation-section">
+  <section id="recommendationsSection" class="explore-section recommendation-section" hidden>
     <div class="section-title"><div><span class="eyebrow">PARA TI</span><h2>Puede interesarte</h2><p>Seleccionados según tu actividad en Curruscos.</p></div></div>
     <div id="recommendationsGrid" class="public-events-grid"></div>
   </section>
