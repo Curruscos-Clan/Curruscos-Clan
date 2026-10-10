@@ -85,6 +85,13 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         self.assertIn('"eventos.html"', pages)
         self.assertIn('"dashboard.html"', pages)
 
+    def test_app_shell_does_not_register_duplicate_mobile_menu_handler(self):
+        start = APP_JS.index("function setupMobileMenu()")
+        end = APP_JS.index("/* =========================================================", start + 1)
+        setup = APP_JS[start:end]
+        self.assertIn('menuButton.dataset.navReady === "true"', setup)
+        self.assertIn('menuButton.dataset.ready === "true"', setup)
+
 
 def primary_navigation_pages(source):
     start = source.index("const items=")
