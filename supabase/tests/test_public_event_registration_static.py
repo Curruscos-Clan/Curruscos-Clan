@@ -85,7 +85,9 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("ep.status = 'yes'", sql)
         self.assertIn("e.visibility = 'public'", sql)
         self.assertIn("grant execute on function public.get_public_event_participant_counts(uuid[]) to anon, authenticated", sql)
-        self.assertNotIn("create policy", sql)
+        self.assertIn('create policy "users can view own or managed event participation"', sql)
+        policy_sql = sql.split('create policy "users can view own or managed event participation"', 1)[1].split("$function$", 1)[0]
+        self.assertNotIn("status =", policy_sql)
 
     def test_public_feed_uses_aggregate_rpc_for_counts(self):
         self.assertIn('rpc("get_public_event_participant_counts"', self.supabase_js)
