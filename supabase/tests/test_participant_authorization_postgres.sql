@@ -65,6 +65,11 @@ using (
       and e.status in ('published','preparing','live','finished')
   )
 );
+-- Reproduce the legacy authenticated policy found in the current database.
+-- A broad legacy SELECT policy would OR-combine with the new restricted policy.
+create policy "Authenticated users can view event participation"
+on public.event_participants for select to authenticated
+using (true);
 \i supabase/migrations/20261010140000_safe_public_event_participant_counts.sql
 
 do $test$
@@ -158,6 +163,15 @@ begin
       and policyname = 'Anonymous visitors can view confirmed public event participants'
   ) then
     raise exception 'Security regression: anonymous participant row policy still exists';
+  end if;
+
+  if exists (
+    select 1 from pg_policies
+    where schemaname = 'public'
+      and tablename = 'event_participants'
+      and policyname = 'Authenticated users can view event participation'
+  ) then
+    raise exception 'Security regression: legacy authenticated participant row policy still exists';
   end if;
 
   if not exists (
