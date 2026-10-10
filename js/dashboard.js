@@ -439,7 +439,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     : workspaceState.unlocks.decisions
                         ? {href:"decisiones.html", icon:"?", kicker:"DECISIONES", title:"Cerrar una decisión", text:"Convierte las dudas del grupo en decisiones claras.", baseScore:58}
                         : {href:"miembros.html", icon:"◎", kicker:"SIGUIENTE", title:"Activar colaboración", text:"Invita a otra persona para desbloquear decisiones y herramientas de equipo.", baseScore:58},
-            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + ".", baseScore:62, done:eventState},
+            {href:"eventos.html", icon:"□", kicker:actionState(eventState, false), title:"Ver próximos eventos", text:events.length ? events.length + " evento" + (events.length === 1 ? "" : "s") + " registrado" + (events.length === 1 ? "" : "s") + "." : t("dashboard.noUpcoming"), baseScore:62, done:eventState},
             featureMap.collaboration
                 ? {href:"chat.html", icon:"↗", kicker:"COLABORACIÓN", title:"Hablar con el grupo", text:"Abre el chat y mantened la organización en el mismo sitio.", baseScore:46}
                 : null,
