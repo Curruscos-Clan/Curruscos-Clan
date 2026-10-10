@@ -16,6 +16,15 @@ BEGIN
     RAISE EXCEPTION 'create_trip wrapper must be SECURITY DEFINER';
   END IF;
 
+  -- Ensure the public wrappers delegate to the protected helpers, rather than
+  -- accidentally becoming empty SECURITY DEFINER functions after a refactor.
+  IF position('private.create_group_event_secure' IN pg_get_functiondef(event_oid)) = 0 THEN
+    RAISE EXCEPTION 'create_group_event wrapper must call its private helper';
+  END IF;
+  IF position('private.create_trip_secure' IN pg_get_functiondef(trip_oid)) = 0 THEN
+    RAISE EXCEPTION 'create_trip wrapper must call its private helper';
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1 FROM pg_proc p
     CROSS JOIN LATERAL unnest(coalesce(p.proconfig, ARRAY[]::text[])) cfg(setting)
