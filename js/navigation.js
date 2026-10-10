@@ -14,6 +14,7 @@
         const active=item===activeItem;
         return '<a href="'+item.href+'"'+(active?' class="active" aria-current="page"':'')+'>'+item.label+'</a>';
       }).join("");
+      nav.setAttribute("aria-label","Navegación principal");
     }
     const bottomNav=document.querySelector(".bottom-nav");
     if(bottomNav){
