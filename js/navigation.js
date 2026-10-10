@@ -1,7 +1,7 @@
 (function(){
   const items=[
     {href:"index.html",label:"Inicio",pages:["index.html"]},
-    {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html","crear.html"]},
+    {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
     {href:"eventos.html",label:"Mi grupo",pages:["eventos.html","dashboard.html"]},
     {href:"perfil.html",label:"Mi perfil",pages:["perfil.html","mis-eventos.html"]}
   ];
@@ -26,7 +26,7 @@
       });
     }
     const button=document.getElementById("menuButton");
-    if(button && button.dataset.navReady!=="true"){
+    if(button && nav && button.dataset.navReady!=="true"){
       button.dataset.navReady="true";button.setAttribute("aria-expanded","false");
       button.addEventListener("click",e=>{e.stopPropagation();const open=nav.classList.toggle("mobile-open");button.setAttribute("aria-expanded",String(open));});
       document.addEventListener("click",e=>{if(!nav.contains(e.target)&&e.target!==button){nav.classList.remove("mobile-open");button.setAttribute("aria-expanded","false");}});
