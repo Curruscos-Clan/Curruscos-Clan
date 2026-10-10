@@ -24,4 +24,4 @@ jobs:
         with:
           python-version: "3.x"
       - name: Check home feed event filtering
-        run: python -m unittest tests/test_home_feed_event_filter.py
+        run: python tests/test_home_feed_event_filter.py
