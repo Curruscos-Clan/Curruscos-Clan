@@ -32,6 +32,34 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         self.assertIn('"perfil.html"', pages)
         self.assertNotIn('"mis-eventos.html"', pages)
 
+    def test_app_shell_keeps_the_four_primary_tabs(self):
+        start = APP_JS.index("function ensureProductNavigation()")
+        end = APP_JS.index("const links = [", start)
+        primary = APP_JS[start:end]
+        for href, label in [
+            ("index.html", "Inicio"),
+            ("explorar.html", "Buscar"),
+            ("eventos.html", "Mi grupo"),
+            ("perfil.html", "Mi perfil"),
+        ]:
+            self.assertIn(f'href: "{href}"', primary)
+            self.assertIn(f'text: "{label}"', primary)
+        self.assertNotIn('href: "mis-eventos.html"', primary)
+
+    def test_shared_navigation_keeps_the_four_primary_tabs(self):
+        start = NAV_JS.index("const items=")
+        end = NAV_JS.index("function init()", start)
+        primary = NAV_JS[start:end]
+        for href, label in [
+            ("index.html", "Inicio"),
+            ("explorar.html", "Buscar"),
+            ("eventos.html", "Mi grupo"),
+            ("perfil.html", "Mi perfil"),
+        ]:
+            self.assertIn(f'href:"{href}"', primary)
+            self.assertIn(f'label:"{label}"', primary)
+        self.assertNotIn('href:"mis-eventos.html"', primary)
+
 
 if __name__ == "__main__":
     unittest.main()
