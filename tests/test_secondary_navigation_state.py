@@ -21,6 +21,17 @@ def profile_pages(source, anchor):
     return match.group(1)
 
 
+def shared_item_pages(href):
+    match = re.search(
+        r'\{href:"' + re.escape(href) + r'",label:"[^"]+".*?pages:\[([^\]]*)\]',
+        NAV_JS[NAV_JS.index("const items="):],
+        flags=re.S,
+    )
+    if not match:
+        raise AssertionError(f"Could not find shared navigation item {href}")
+    return match.group(1)
+
+
 class SecondaryNavigationStateTests(unittest.TestCase):
     def test_mis_eventos_is_not_marked_as_mi_perfil_in_app_shell(self):
         pages = profile_pages(APP_JS, "function ensureProductNavigation()")
@@ -59,6 +70,26 @@ class SecondaryNavigationStateTests(unittest.TestCase):
             self.assertIn(f'href:"{href}"', primary)
             self.assertIn(f'label:"{label}"', primary)
         self.assertNotIn('href:"mis-eventos.html"', primary)
+
+    def test_secondary_creation_hub_does_not_activate_a_primary_tab(self):
+        self.assertNotIn('"crear.html"', primary_navigation_pages(NAV_JS))
+
+    def test_public_event_creation_and_detail_belong_to_buscar(self):
+        pages = shared_item_pages("explorar.html")
+        self.assertIn('"evento-publico.html"', pages)
+        self.assertIn('"crear-evento.html"', pages)
+        self.assertNotIn('"crear.html"', pages)
+
+    def test_dashboard_belongs_to_mi_grupo(self):
+        pages = shared_item_pages("eventos.html")
+        self.assertIn('"eventos.html"', pages)
+        self.assertIn('"dashboard.html"', pages)
+
+
+def primary_navigation_pages(source):
+    start = source.index("const items=")
+    end = source.index("function init()", start)
+    return source[start:end]
 
 
 if __name__ == "__main__":
