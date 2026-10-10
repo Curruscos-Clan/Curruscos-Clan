@@ -1,6 +1,12 @@
 name: Event and trip wrapper permission tests
 
 on:
+  push:
+    branches: [fix/event-trip-wrapper-permissions]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/event-trip-wrapper-permissions.yml"
   pull_request:
     branches: [main]
     paths:
