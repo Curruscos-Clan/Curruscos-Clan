@@ -52,7 +52,7 @@ create role anon;
 create role authenticated;
 create function public.is_public_event_organizer(target_event_id uuid) returns boolean
 language sql stable
-as $ select false $;
+as 'select false';
 alter table public.event_participants enable row level security;
 create policy "Anonymous visitors can view confirmed public event participants"
 on public.event_participants for select to anon
