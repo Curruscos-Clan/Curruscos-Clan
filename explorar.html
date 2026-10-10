@@ -123,6 +123,16 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 @media(max-width:430px){.public-events-grid,.people-grid{grid-template-columns:1fr}.public-event-card-link{min-height:220px!important}.explore-intent .intent{padding:9px 12px}}
 @media(prefers-reduced-motion:reduce){.public-event-card,.team-discovery-card,.person-card{transition:none!important}}
 </style>
+<style id="explore-discovery-polish">
+#exploreSummary[role="status"]{min-height:1.5em}
+.teams-discovery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.team-discovery-card{transition:transform .18s ease,background-color .18s ease}
+.team-discovery-card:focus-visible,.category-scroll a:focus-visible,.explore-intent .intent:focus-visible,.public-event-card-link:focus-visible,.explore-retry:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.explore-error{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border:1px solid var(--border);border-radius:18px;background:var(--surface);color:var(--text);font-size:12px}
+.explore-retry{min-height:40px;padding:0 14px;border:0;border-radius:999px;background:var(--text);color:var(--surface);font:inherit;font-weight:800;cursor:pointer}
+@media(max-width:650px){.teams-discovery-grid{grid-template-columns:minmax(0,1fr)}.explore-error{align-items:flex-start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.team-discovery-card{transition:none}}
+</style>
 </head>
 <body class="explore-app">
 <header class="navbar explore-navbar">
@@ -140,7 +150,7 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 
   <section class="search-main" aria-label="Buscar eventos">
     <span aria-hidden="true">⌕</span>
-    <input id="eventSearch" type="search" placeholder="Buscar eventos, lugares o personas..." autocomplete="off">
+    <input id="eventSearch" type="search" aria-label="Buscar eventos, lugares o personas" placeholder="Buscar eventos, lugares o personas..." autocomplete="off">
     <button id="clearExploreFilters" type="button" aria-label="Limpiar búsqueda">×</button>
   </section>
 
@@ -172,10 +182,10 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
   </div>
 
   <div id="exploreChips" class="filter-chips" aria-label="Filtros rápidos">
-    <button class="explore-chip active" data-filter="all">Todo</button>
-    <button class="explore-chip" data-filter="open">Con plazas</button>
-    <button class="explore-chip" data-filter="soon">Próximos</button>
-    <button class="explore-chip" data-filter="live">En directo</button>
+    <button type="button" class="explore-chip active" data-filter="all" aria-pressed="true">Todo</button>
+    <button type="button" class="explore-chip" data-filter="open" aria-pressed="false">Con plazas</button>
+    <button type="button" class="explore-chip" data-filter="soon" aria-pressed="false">Próximos</button>
+    <button type="button" class="explore-chip" data-filter="live" aria-pressed="false">En directo</button>
   </div>
 
   <section id="recommendationsSection" class="explore-section recommendation-section" hidden>
@@ -190,8 +200,13 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 
   <section class="explore-section explore-all-events">
     <div class="section-title"><div><span class="eyebrow">EXPLORAR</span><h2>Todos los eventos</h2><p id="allEventsLabel"></p></div></div>
-    <div class="explore-toolbar"><span id="exploreSummary"></span><span id="exploreHint">Los eventos públicos se actualizan automáticamente.</span></div>
+    <div class="explore-toolbar"><span id="exploreSummary" role="status" aria-live="polite" aria-atomic="true"></span><span id="exploreHint">Los eventos públicos se actualizan automáticamente.</span></div>
     <div id="publicEventsGrid" class="public-events-grid"></div>
+  </section>
+
+  <section id="teamsSection" class="explore-section secondary-discovery">
+    <div class="section-title"><div><span class="eyebrow">COMUNIDAD</span><h2>Grupos activos</h2><p>Descubre grupos públicos con actividad en Curruscos.</p></div></div>
+    <div id="teamsGrid" class="teams-discovery-grid" aria-label="Grupos públicos"></div>
   </section>
 
   <section id="peopleSection" class="explore-section secondary-discovery">
