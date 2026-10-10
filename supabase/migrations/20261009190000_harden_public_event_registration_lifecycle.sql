@@ -28,7 +28,7 @@ begin
     return jsonb_build_object('success', false, 'code', 'EVENT_NOT_FOUND', 'message', 'El evento no existe.');
   end if;
 
-  if e.status <> 'published' then
+  if e.status is distinct from 'published' then
     return jsonb_build_object('success', false, 'code', 'EVENT_CLOSED', 'message', 'Este evento no admite nuevas inscripciones.');
   end if;
 
@@ -110,7 +110,7 @@ begin
     raise exception 'Necesitas iniciar sesión';
   end if;
 
-  if new_status not in ('published','preparing','live','finished','cancelled') then
+  if new_status is null or new_status not in ('published','preparing','live','finished','cancelled') then
     raise exception 'Estado no válido';
   end if;
 
@@ -128,7 +128,7 @@ begin
   end if;
 
   -- Idempotent requests are safe; otherwise enforce forward-only lifecycle transitions.
-  if new_status <> e.status and not (
+  if new_status is distinct from e.status and not (
     (e.status = 'draft' and new_status in ('published','cancelled'))
     or (e.status = 'published' and new_status in ('preparing','live','finished','cancelled'))
     or (e.status = 'preparing' and new_status in ('live','finished','cancelled'))
