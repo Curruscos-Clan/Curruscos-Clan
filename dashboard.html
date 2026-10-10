@@ -1010,10 +1010,42 @@
 .dashboard-progress-card>p{color:#777;font-size:11px}
 .dashboard-hidden-data{display:none}
 @media(max-width:800px){.dashboard-command{grid-template-columns:1fr}.dashboard-command-side{align-items:flex-start;text-align:left}.dashboard-context-row,.dashboard-activity-card{grid-template-columns:1fr}.dashboard-organization{padding:18px 0 0;border-left:0;border-top:1px solid #eee}.dashboard-next-actions .quick-grid{grid-template-columns:1fr}.dashboard-command h2{font-size:27px}}
+
+/* Keep the primary dashboard action legible above the shared glass-card surface. */
+.dashboard-command.dashboard-card{background:radial-gradient(circle at 92% 12%,rgba(255,77,46,.24),transparent 19rem),#191a1d!important;border:1px solid #34353a!important;color:#fff!important}
+.dashboard-command.dashboard-card h2,.dashboard-command .dashboard-command-date{color:#fff!important}
+.dashboard-command .dashboard-command-kicker{color:#c8c9cc!important}
+.dashboard-command p{color:#d0d1d4!important}
+.dashboard-command .dashboard-command-label{color:#aaaeb4!important}
+.dashboard-command .dashboard-secondary-action{border-color:rgba(255,255,255,.35)!important;color:#fff!important}
+.dashboard-mobile-tabs{display:none}
+@media(max-width:760px){
+ body.group-dashboard-app .navbar{height:60px;padding:0 12px;gap:5px;justify-content:flex-start}
+ body.group-dashboard-app .navbar .logo{font-size:14px;white-space:nowrap}
+ body.group-dashboard-app .navbar .i18n-control{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .i18n-select{max-width:94px;min-height:36px;padding:0 20px 0 9px!important;font-size:9px!important}
+ body.group-dashboard-app .navbar #mainNav,body.group-dashboard-app .navbar .menu-button{display:none!important}
+ body.group-dashboard-app .navbar .workspace-switcher{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .workspace-switcher .current-group-button{width:40px;min-width:40px;height:40px;padding:6px;justify-content:center;gap:0}
+ body.group-dashboard-app .navbar .workspace-switcher .group-current-copy{display:none!important}
+ body.group-dashboard-app .navbar .workspace-switcher .group-selector-arrow{font-size:0}
+ body.group-dashboard-app .navbar .workspace-switcher .group-selector-arrow:after{content:"⌄";font-size:18px}
+ body.group-dashboard-app .navbar .notification-wrapper{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .notification-button{width:40px;height:40px;padding:7px}
+ body.group-dashboard-app .navbar .account-wrapper{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .account-button{width:40px;height:40px;justify-content:center;padding:5px}
+ body.group-dashboard-app .dashboard-home{padding-bottom:120px!important}
+ body.group-dashboard-app .dashboard-command{min-height:0;padding:22px!important;gap:16px}
+ body.group-dashboard-app .dashboard-command-actions{flex-wrap:wrap;margin-top:18px}
+ .dashboard-mobile-tabs{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
+ .dashboard-mobile-tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#66686d;text-decoration:none;font-size:10px;font-weight:800}
+ .dashboard-mobile-tabs a b{font-size:20px;font-weight:500;line-height:1}
+ .dashboard-mobile-tabs a[aria-current=page]{background:#191a1d;color:#fff}
+}
 </style></head>
 
 
-<body>
+<body class="group-dashboard-app">
 
 
     <!-- =====================================================
@@ -1132,6 +1164,13 @@
 
   </section>
 </main>
+<nav class="dashboard-mobile-tabs" aria-label="Navegación móvil">
+  <a href="index.html"><b aria-hidden="true">⌂</b><span>Inicio</span></a>
+  <a href="explorar.html"><b aria-hidden="true">⌕</b><span>Buscar</span></a>
+  <a href="eventos.html" aria-current="page"><b aria-hidden="true">▦</b><span>Mi grupo</span></a>
+  <a href="perfil.html"><b aria-hidden="true">◉</b><span>Mi perfil</span></a>
+</nav>
+
 
 
 
