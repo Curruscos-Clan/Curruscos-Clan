@@ -15,6 +15,8 @@ ANON_POLICY_MIGRATION = ROOT / "supabase/migrations/20261009200000_allow_anon_pu
 AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010100000_null_safe_event_organizer_authorization.sql"
 ADDITIONAL_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010110000_null_safe_team_match_and_trip_authorization.sql"
 PARTICIPANT_AUTHORIZATION_MIGRATION = ROOT / "supabase/migrations/20261010120000_null_safe_participant_status_authorization.sql"
+PUBLIC_PARTICIPANT_COUNTS_MIGRATION = ROOT / "supabase/migrations/20261010140000_safe_public_event_participant_counts.sql"
+SUPABASE_JS = ROOT / "js/supabase.js"
 JS = ROOT / "js/evento-publico.js"
 
 
@@ -26,6 +28,8 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         cls.authorization_sql = AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.additional_authorization_sql = ADDITIONAL_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
         cls.participant_authorization_sql = PARTICIPANT_AUTHORIZATION_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.public_counts_sql = PUBLIC_PARTICIPANT_COUNTS_MIGRATION.read_text(encoding="utf-8").lower()
+        cls.supabase_js = SUPABASE_JS.read_text(encoding="utf-8")
         cls.js = JS.read_text(encoding="utf-8")
 
     def test_join_rpc_rejects_started_events(self):
@@ -70,14 +74,23 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn("status = 'yes'", self.sql)
         self.assertIn('to authenticated', self.anon_policy_sql)
         self.assertIn('create policy "anonymous visitors can view confirmed public event participants"', self.anon_policy_sql)
-        self.assertIn('for select\nto anon\nusing (', self.anon_policy_sql)
-        self.assertIn("e.visibility = 'public'", self.anon_policy_sql)
-        self.assertIn("e.status in ('published','preparing','live','finished')", self.anon_policy_sql)
-        anon_policy = self.anon_policy_sql.split(
-            'create policy "anonymous visitors can view confirmed public event participants"', 1
-        )[1]
-        self.assertIn("status = 'yes'", anon_policy)
-        self.assertNotIn("is_public_event_organizer", anon_policy)
+        # The follow-up migration removes this row-level policy and exposes only aggregate counts.
+        self.assertIn('drop policy if exists "anonymous visitors can view confirmed public event participants"', self.public_counts_sql)
+
+    def test_public_counts_rpc_does_not_expose_participant_rows(self):
+        sql = self.public_counts_sql
+        self.assertIn("create or replace function public.get_public_event_participant_counts(target_event_ids uuid[])", sql)
+        self.assertIn("security definer", sql)
+        self.assertIn("set search_path = ''", sql)
+        self.assertIn("ep.status = 'yes'", sql)
+        self.assertIn("e.visibility = 'public'", sql)
+        self.assertIn("grant execute on function public.get_public_event_participant_counts(uuid[]) to anon, authenticated", sql)
+        self.assertNotIn("create policy", sql)
+
+    def test_public_feed_uses_aggregate_rpc_for_counts(self):
+        self.assertIn('rpc("get_public_event_participant_counts"', self.supabase_js)
+        self.assertNotIn('event_participants(count)', self.supabase_js)
+        self.assertIn("participant_count: participantCount", self.supabase_js)
 
     def test_rpc_grants_do_not_allow_anon_execution(self):
         self.assertIn("revoke all on function public.join_public_event(uuid) from public, anon", self.sql)
