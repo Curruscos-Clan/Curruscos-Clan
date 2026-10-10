@@ -267,7 +267,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   rec.innerHTML = events.slice(0, 5).map(event => {
     const id = event.id || event.event_id;
-    const d = new Date(event.date + "T" + (event.time || "00:00"));
+    // The recommendation RPC returns event_date/event_time, while the public
+    // events query returns date/time. Normalize both shapes before rendering.
+    const eventDate = event.date || event.event_date;
+    const eventTime = event.time || event.event_time;
+    const d = eventDate ? new Date(eventDate + "T" + (eventTime || "00:00")) : null;
+    const hasValidDate = d && Number.isFinite(d.getTime());
+    const dateMarkup = hasValidDate
+      ? '<strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span>'
+      : '<strong>—</strong><span>Fecha pendiente</span>';
     const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
     const rawKey = String(event.event_type || event.category || "").trim().toLowerCase();
     const aliases = {
@@ -286,7 +294,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       : participantCount >= 5 ? "Popular en Curruscos"
       : "Nuevo en Curruscos") : "Descubre este plan en Curruscos";
     return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
-      '<span class="home-event-date"><strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span></span>' +
+      '<span class="home-event-date">' + dateMarkup + '</span>' +
       '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>' + (user ? '<button class="home-event-dismiss" type="button">No me interesa</button>' : '') + '</div>';
   }).join("") || '<div class="home-empty"><strong>No hay eventos públicos todavía.</strong><span>Cuando haya nuevos planes aparecerán aquí para descubrirlos.</span><a href="explorar.html">Explorar eventos →</a></div>';
 
