@@ -76,6 +76,8 @@ class PublicEventLifecycleStaticTests(unittest.TestCase):
         self.assertIn('create policy "anonymous visitors can view confirmed public event participants"', self.anon_policy_sql)
         # The follow-up migration removes this row-level policy and exposes only aggregate counts.
         self.assertIn('drop policy if exists "anonymous visitors can view confirmed public event participants"', self.public_counts_sql)
+        # Remove the legacy authenticated policy too; permissive SELECT policies are OR-combined.
+        self.assertIn('drop policy if exists "authenticated users can view event participation"', self.public_counts_sql)
 
     def test_public_counts_rpc_does_not_expose_participant_rows(self):
         sql = self.public_counts_sql
