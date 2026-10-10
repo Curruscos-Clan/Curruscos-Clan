@@ -11,7 +11,7 @@ create table public.events (
   id uuid primary key,
   created_by uuid,
   group_id uuid,
-  visibility text not null,
+  visibility text,
   status text not null,
   registration_deadline timestamptz,
   capacity integer
@@ -34,7 +34,8 @@ create table public.event_participants (
 
 insert into public.events (id, created_by, group_id, visibility, status, capacity) values
   ('10000000-0000-0000-0000-000000000001', null, null, 'public', 'published', 10),
-  ('10000000-0000-0000-0000-000000000002', null, '20000000-0000-0000-0000-000000000001', 'private', 'published', 10);
+  ('10000000-0000-0000-0000-000000000002', null, '20000000-0000-0000-0000-000000000001', 'private', 'published', 10),
+  ('10000000-0000-0000-0000-000000000003', null, null, null, 'published', 10);
 
 insert into public.group_members (group_id, user_id, role) values
   ('20000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002', 'admin');
@@ -91,6 +92,25 @@ begin
     and user_id = '00000000-0000-0000-0000-000000000002';
   if actual_status <> 'yes' then
     raise exception 'Self-service registration failed: %', actual_status;
+  end if;
+
+  -- NULL visibility must not be treated as public by SQL three-valued logic.
+  caught := false;
+  begin
+    perform public.set_event_participant_status(
+      '10000000-0000-0000-0000-000000000003',
+      '00000000-0000-0000-0000-000000000004',
+      'yes'
+    );
+  exception when others then
+    if sqlerrm = 'NO_ACCESS' then
+      caught := true;
+    else
+      raise;
+    end if;
+  end;
+  if not caught then
+    raise exception 'Security regression: self-registration was allowed when event visibility is NULL';
   end if;
 
   -- Group admins retain authority even when the event has no creator.
