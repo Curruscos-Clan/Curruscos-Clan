@@ -1080,27 +1080,32 @@ async function getEventParticipants(eventId) {
 
 
 async function getEventParticipantCounts(eventId) {
-    const statuses = ["yes", "pending", "no"];
-    const results = await Promise.all(statuses.map(async status => {
+    const { data: publicCounts, error: publicCountError } = await supabaseClient.rpc("get_public_event_participant_counts", {
+        target_event_ids: [eventId]
+    });
+    let yes = 0;
+    if (publicCountError) {
+        console.error("Error contando participantes confirmados:", publicCountError);
+    } else {
+        yes = Number(publicCounts?.[0]?.participant_count) || 0;
+    }
+
+    const privateStatuses = ["pending", "no"];
+    const privateCounts = await Promise.all(privateStatuses.map(async status => {
         const { count, error } = await supabaseClient
             .from("event_participants")
-            .select("*", { count: "exact", head: true })
+            .select("id", { count: "exact", head: true })
             .eq("event_id", eventId)
             .eq("status", status);
 
         if (error) {
-            console.error("Error contando participantes:", error);
+            // Anonymous visitors and non-organizers must not learn private response counts.
             return 0;
         }
-
         return count || 0;
     }));
 
-    return {
-        yes: results[0],
-        pending: results[1],
-        no: results[2]
-    };
+    return { yes, pending: privateCounts[0], no: privateCounts[1] };
 }
 
 async function getMyEventParticipant(eventId, userId) {
@@ -2684,7 +2689,7 @@ async function getPublicEvent(eventId) {
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,created_at,event_participants(count)")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,created_at")
         .eq("event_participants.status", "yes")
         .eq("visibility", "public")
         .in("status", ["published", "preparing", "live"])
@@ -2712,7 +2717,22 @@ async function getPublicEvents(filters = {}) {
         console.error("Error obteniendo eventos públicos:", error);
         return [];
     }
-    return data || [];
+    const events = data || [];
+    if (!events.length) return events;
+
+    const { data: counts, error: countError } = await supabaseClient.rpc("get_public_event_participant_counts", {
+        target_event_ids: events.map(event => event.id)
+    });
+    if (countError) {
+        console.error("Error obteniendo recuentos públicos:", countError);
+        return events.map(event => ({ ...event, participant_count: 0, event_participants: [{ count: 0 }] }));
+    }
+
+    const countByEvent = new Map((counts || []).map(row => [row.event_id, Number(row.participant_count) || 0]));
+    return events.map(event => {
+        const participantCount = countByEvent.get(event.id) || 0;
+        return { ...event, participant_count: participantCount, event_participants: [{ count: participantCount }] };
+    });
 }
 
 async function setPublicEventStatus(eventId,status){const {data,error}=await supabaseClient.rpc("set_public_event_status",{target_event_id:eventId,new_status:status});if(error)throw error;return data;}
