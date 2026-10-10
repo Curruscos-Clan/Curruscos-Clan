@@ -42,7 +42,7 @@ begin
   end if;
 
   if not (
-    e.visibility in ('public', 'unlisted')
+    coalesce(e.visibility in ('public', 'unlisted'), false)
     or exists (
       select 1 from public.group_members gm
       where gm.group_id = e.group_id and gm.user_id = actor
