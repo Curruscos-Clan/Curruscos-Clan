@@ -115,6 +115,7 @@ begin
   end if;
 
   -- Group admins retain authority even when the event has no creator.
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000002', true);
   perform public.set_event_participant_status(
     '10000000-0000-0000-0000-000000000002',
     '00000000-0000-0000-0000-000000000003',
