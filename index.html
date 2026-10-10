@@ -263,6 +263,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!events.length) {
     isRecommendationFeed = false;
     try { events = await getPublicEvents({search:"", category:"all", event_type:"all"}) || []; } catch (e) {}
+    // The public query can include events whose date has passed if their status
+    // was never updated. Do not surface those as upcoming recommendations.
+    const now = new Date();
+    events = events.filter(event => {
+      if (event.status === "live") return true;
+      const date = event.date || event.event_date;
+      const time = event.time || event.event_time || "23:59";
+      if (!date) return false;
+      const timestamp = new Date(date + "T" + time).getTime();
+      return Number.isFinite(timestamp) && timestamp >= now.getTime();
+    });
   }
 
   rec.innerHTML = events.slice(0, 5).map(event => {
