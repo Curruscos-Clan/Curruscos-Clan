@@ -17,7 +17,7 @@ begin
   if actor is null then
     raise exception 'NOT_AUTHENTICATED';
   end if;
-  if target_status not in ('yes', 'no', 'pending') then
+  if target_status is null or target_status not in ('yes', 'no', 'pending') then
     raise exception 'INVALID_STATUS';
   end if;
 
@@ -58,7 +58,7 @@ begin
   for update;
 
   if target_status = 'yes' and (existing.id is null or existing.status <> 'yes') then
-    if e.status <> 'published' then
+    if e.status is distinct from 'published' then
       raise exception 'EVENT_CLOSED';
     end if;
     if e.registration_deadline is not null and e.registration_deadline < now() then
