@@ -14,6 +14,9 @@ RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';
 CREATE OR REPLACE FUNCTION private.create_trip_secure(uuid,text,text,date,date,numeric,text,jsonb)
 RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';
 
+REVOKE ALL ON FUNCTION private.create_group_event_secure(uuid,text,text,date,time without time zone,text,uuid) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION private.create_trip_secure(uuid,text,text,date,date,numeric,text,jsonb) FROM PUBLIC, anon, authenticated;
+
 CREATE OR REPLACE FUNCTION public.create_group_event(uuid,text,text,date,time without time zone,text,uuid)
 RETURNS uuid LANGUAGE sql AS 'SELECT NULL::uuid';
 CREATE OR REPLACE FUNCTION public.create_trip(uuid,text,text,date,date,numeric,text,jsonb)
