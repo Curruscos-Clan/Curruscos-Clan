@@ -416,7 +416,7 @@ async function getCurrentProfile(forceRefresh = false) {
 // GRUPO ACTUAL
 // ========================================
 
-async function getUserGroups(forceRefresh = false) {
+async function getUserGroups(forceRefresh = false, options = {}) {
 
     if (userGroupsCache && !forceRefresh) {
         return userGroupsCache;
@@ -458,6 +458,12 @@ async function getUserGroups(forceRefresh = false) {
             "Error obteniendo grupos:",
             error
         );
+
+        // Pages that need to distinguish "no groups" from "could not load"
+        // can opt into strict mode without changing legacy callers.
+        if (options?.throwOnError) {
+            throw error;
+        }
 
         userGroupsCache = [];
         return userGroupsCache;
