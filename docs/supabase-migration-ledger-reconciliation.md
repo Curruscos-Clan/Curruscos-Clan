@@ -104,3 +104,24 @@ A second read-only query confirmed that the missing aggregate-count RPC has a di
 - Live `create_group_event` and `create_trip` wrappers are callable by `authenticated` and not by `anon`, but remain invoker functions with a non-empty search path. Their private helper functions are protected from direct client execution. This means the wrapper-permission migration is only partially reflected: grants are compatible, but the requested execution/search-path hardening is not.
 
 These results increase confidence that the recent local migrations have not been applied as a coherent batch, but they do **not** establish which deployment operation should be performed next. The safe next step remains to reconstruct the migration sequence in an isolated database, verify frontend behavior against that schema, and prepare a separately reviewed rollout plan. No production changes were made during this follow-up.
+
+
+## Post-ledger migration gap (confirmed timestamp boundary, 2026-10-11)
+
+The remote ledger ends at version `20261009172455` (`secure_public_event_detail_updates`). The local repository contains the following later migration files whose versions are beyond that boundary and do not appear in the remote ledger:
+
+| Local migration | What it intends to change | Runtime evidence |
+|---|---|---|
+| `20261009190000_harden_public_event_registration_lifecycle.sql` | Reject late registration and interpret event start in the group's timezone | Live `join_public_event(uuid)` lacks these checks |
+| `20261009200000_allow_anon_public_participant_counts.sql` | Allow safe aggregate counts without exposing participant rows | Aggregate RPC is absent from the live catalogue |
+| `20261010100000_null_safe_event_organizer_authorization.sql` | Make organizer authorization null-safe | Requires function-by-function confirmation before classification |
+| `20261010110000_null_safe_team_match_and_trip_authorization.sql` | Harden team/match/trip authorization | Requires function-by-function confirmation before classification |
+| `20261010120000_null_safe_participant_status_authorization.sql` | Make participant status authorization null-safe | Live `set_event_participant_status` still has nullable comparisons |
+| `20261010130000_require_public_activity_for_public_profile.sql` | Require qualifying public activity before exposing a profile | Live `get_public_profile(uuid)` lacks the final activity gate |
+| `20261010140000_safe_public_event_participant_counts.sql` | Add a safe public aggregate count RPC | `get_public_event_participant_counts(uuid[])` is absent |
+| `20261010150000_restrict_anonymous_event_details.sql` | Restrict direct event-detail row reads to authenticated users | Live team-member and race-result policies still include `anon` |
+| `20261010160000_fix_event_trip_wrapper_permissions.sql` | Harden event/trip wrapper execution context | Live wrappers are not `SECURITY DEFINER` and retain non-empty search paths |
+
+The timestamp boundary plus the live-definition mismatches make these post-boundary migrations strong candidates for **not deployed**, rather than merely renamed. This is still not proof that every SQL file is absent from the schema: some changes may have been applied manually or combined into other migrations. Treat each row as a candidate for isolated replay and rollout planning, not as authorization to run it against production.
+
+The public event-count helper is defined by more than one local migration, so the intended final definition and grants must be resolved by replaying the ordered files together. Do not deploy only the later file or manually insert a ledger row to make the history look aligned.
