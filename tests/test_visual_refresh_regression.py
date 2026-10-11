@@ -41,5 +41,25 @@ class VisualRefreshRegressionTests(unittest.TestCase):
                 )
 
 
+    def test_each_main_page_exposes_four_mobile_navigation_destinations(self):
+        for page in VISUAL_REFRESH_PAGES:
+            source = (ROOT / page).read_text(encoding="utf-8")
+            with self.subTest(page=page):
+                if page == "dashboard.html":
+                    self.assertIn('class="dashboard-mobile-tabs"', source)
+                    nav_start = source.index('class="dashboard-mobile-tabs"')
+                    nav_end = source.index("</nav>", nav_start)
+                    mobile_nav = source[nav_start:nav_end]
+                    for href in ("index.html", "explorar.html", "eventos.html", "perfil.html"):
+                        self.assertIn(f'href="{href}"', mobile_nav)
+                    self.assertEqual(mobile_nav.count("<a "), 4)
+                else:
+                    self.assertEqual(
+                        source.count('class="bottom-nav-item'),
+                        4,
+                        f"{page} must expose exactly four mobile navigation items",
+                    )
+
+
 if __name__ == "__main__":
     unittest.main()
