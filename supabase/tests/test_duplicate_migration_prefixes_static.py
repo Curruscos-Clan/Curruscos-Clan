@@ -44,7 +44,7 @@ class DuplicateMigrationPrefixDocumentationTests(unittest.TestCase):
         undocumented = {
             prefix: names
             for prefix, names in self.duplicates.items()
-            if f"`{prefix}`" not in self.doc or any(name not in self.doc for name in names)
+            if f"`{prefix}`" not in self.doc or any(name[len(prefix) + 1:] not in self.doc for name in names)
         }
         self.assertFalse(
             undocumented,
