@@ -202,3 +202,15 @@ Source references for the CLI behavior:
 #### Safe next action
 
 Before adding a full-replay workflow, obtain a sanitized schema-only snapshot from a known-good checkpoint or reconstruct the foundational schema in a disposable Supabase project. Then select and explicitly pin a Supabase CLI release for the audit, add a small isolated duplicate-prefix fixture that captures the exact command behavior, and only then define a reviewed version-remediation plan. Do not attempt to repair production's migration ledger by guessing which files were applied.
+### Remaining four duplicate-prefix pairs: dependency scan (2026-10-11)
+
+A source review of the other four pairs found no direct shared target object between the two files in each pair. This narrows obvious ordering conflicts, but does not prove replay success or establish deployment order:
+
+| Prefix | First file scope | Second file scope | Static assessment |
+|---|---|---|---|
+| `20261004162000` | `harden_invitation_mutation.sql`: invitation-routing trigger/function on `public.invitations` | `harden_plan_request_rpc_access.sql`: grants/revokes on workspace plan-request RPCs | No direct object overlap observed. |
+| `20261004170000` | `harden_competition_cross_event_integrity.sql`: integrity triggers/functions on event matches, event team members, and race results | `harden_trip_tenant_creator_immutability.sql`: trigger/function on `public.trips` | No direct object overlap observed. |
+| `20261005170000` | `harden_chat_message_identity.sql`: chat-message trigger and update policy | `harden_persistent_team_event_registration_concurrency.sql`: persistent-team registration RPC | No direct object overlap observed. |
+| `20261009163000` | `move_public_event_editor_to_private_schema.sql`: moves/wraps the public event-detail editor function in `app_private` | `protect_task_identity_and_assignment.sql`: task update trigger/function | No direct object overlap observed. |
+
+Together with the four pairs above, all eight duplicate-prefix pairs now have a first-pass static scope review. This is not a dependency graph or an executable replay; indirect dependencies, missing pre-existing objects, and CLI ledger collisions remain unresolved. Keep all migration filenames unchanged until a tested remediation is reviewed.
