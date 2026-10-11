@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "js/explorar.js"
       - "tests/test_home_feed_event_filter.py"
       - ".github/workflows/home-feed-regression-checks.yml"
   push:
     paths:
       - "index.html"
+      - "js/explorar.js"
       - "tests/test_home_feed_event_filter.py"
       - ".github/workflows/home-feed-regression-checks.yml"
 
@@ -23,5 +25,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Check home feed event filtering
-        run: python tests/test_home_feed_event_filter.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check home and Explore recommendation fields
+        run: python -m unittest discover -s tests -p 'test_home_feed_event_filter.py'
+      - name: Check Explore JavaScript syntax
+        run: node --check js/explorar.js
