@@ -19,7 +19,8 @@
     toastContainer.appendChild(item);window.setTimeout(()=>item.remove(),duration);
   }
   function startDate(event){
-    const raw=event?.start_time||(event?.date?String(event.date)+(event?.time?"T"+String(event.time).slice(0,8):"T00:00:00"):"");
+    const dateValue=event?.date||event?.event_date;const timeValue=event?.time||event?.event_time;
+    const raw=event?.start_time||(dateValue?String(dateValue)+(timeValue?"T"+String(timeValue).slice(0,8):"T00:00:00"):"");
     const parsed=raw?new Date(raw):new Date(NaN);
     return Number.isNaN(parsed.getTime())?null:parsed;
   }
@@ -68,7 +69,7 @@
   function filteredEvents(){
     const now=new Date();
     return rankEvents(allEvents.filter(event=>{
-      const date=startDate(event);if(!date||date<=now)return false;
+      const date=startDate(event);if(event.status==="live")return true;if(!date||date<=now)return false;
       if(currentFilter==="today")return date.toDateString()===now.toDateString();
       if(currentFilter==="weekend"){const day=date.getDay();return day===5||day===6||day===0;}
       return true;
