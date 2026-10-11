@@ -206,6 +206,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    if (new URLSearchParams(window.location.search).get("mode") === "register") {
+        setRegisterMode(true);
+    }
+
     password?.addEventListener("input", () => updateMeter(password, meter, hint));
     resetPassword?.addEventListener("input", () => updateMeter(resetPassword, resetMeter, resetHint));
 
