@@ -17,6 +17,7 @@ on:
       - "js/explorar.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
+      - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
   push:
@@ -35,6 +36,7 @@ on:
       - "js/explorar.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
+      - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
 
