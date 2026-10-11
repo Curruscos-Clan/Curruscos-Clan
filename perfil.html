@@ -109,7 +109,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 }
 
 .profile-auth-card{max-width:470px;margin:0 auto 18px;padding:26px!important}
-.profile-auth-card[hidden]{display:none!important}
+.profile-auth-card[hidden],#profileAuthenticatedView[hidden]{display:none!important}
 .profile-auth-card h1{margin:0;font-size:clamp(32px,6vw,46px);letter-spacing:-.07em;line-height:.98}
 .profile-auth-card>p{margin:10px 0 20px;color:var(--profile-muted);font-size:12px;line-height:1.6}
 .profile-auth-form{display:grid;gap:8px}
@@ -145,7 +145,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 
 
 <main class="profile-page is-loading">
-<section id="profileAuthView" class="profile-card profile-auth-card" hidden aria-labelledby="profileAuthTitle">
+<section id="profileAuthView" class="profile-card profile-auth-card" aria-labelledby="profileAuthTitle">
   <span class="interest-eyebrow">TU CUENTA</span>
   <h1 id="profileAuthTitle">Vuelve a Curruscos.</h1>
   <p>Inicia sesión para acceder a tu perfil, guardar tus intereses y continuar con tus grupos y eventos.</p>
@@ -162,7 +162,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
     <a class="button button-secondary" href="login.html">¿Has olvidado la contraseña?</a>
   </div>
 </section>
-<div id="profileAuthenticatedView" class="profile-layout">
+<div id="profileAuthenticatedView" class="profile-layout" hidden>
 <section class="profile-card">
 <div class="profile-hero"><div id="profileAvatar" class="profile-avatar">C</div><div class="profile-header"><h1>Tu perfil.</h1><p id="profileEmail">Preparando tu cuenta…</p></div></div>
 <section class="profile-section">
