@@ -288,3 +288,32 @@ The live ledger has five migration basenames recorded more than once. The curren
 Git history supplies specific reasons to be cautious. The team-membership migration was added under the earlier version in commit [0881c99](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/0881c99cc895a75206144b5773b866dc13a41c63), removed in [972204a](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/972204a30f2147ac10d03205548c2df723deb003), and later restored under the version already present in the database in [380a67d](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/380a67dc503bc99d5551533437506153d07b163e). The event-match policy migration was similarly added under an applied version in [e5445a9](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/e5445a90eb52a9700c93c23479a5616264389851) and removed in [09489ff](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/09489ffe9966b32aa659ea4724cb414b8a8f9301). Two quota-lock-related files were realigned and duplicate filenames removed in [a98172b](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/a98172b251220df1f5bb57195a83ab209389cde0), [a01d891](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/a01d8911303e087e04d258e23dc081dac1817f75), [bd7c08b](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/bd7c08bda55350cef75a7f24897dc4cb5d56f05c), and [c029d1c](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/c029d1c5aa76a511d20d71fd1426dd1fdf98a453).
 
 This history establishes that files have been moved between version identities and removed after alignment. It does **not**, by itself, prove the exact SQL body represented by each live ledger row. Do not edit the live ledger or rename the current files based on these matches alone.
+
+### Historical filename realignment: patch-level evidence (2026-10-11)
+
+A patch-level review of the earlier alignment commits confirms that at least two migration bodies were moved between filename/version identities and later had the alternate file removed. This is stronger than a commit-title-only signal, but it still does not prove which exact body was recorded under each remote ledger row.
+
+#### Event team membership mutation migration
+
+The same 79-line SQL body—replacing `public.add_event_team_member(...)` with the event-row lock and validated membership checks, then dropping direct membership-management policies—appears in these commits:
+
+- [Initial addition](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/0881c99cc895a75206144b5773b866dc13a41c63): added as `20261009152433_secure_event_team_membership_mutations.sql`.
+- [Version alignment attempt](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/972204a30f2147ac10d03205548c2df723deb003): removed that file and added the same body as `20261009160000_secure_event_team_membership_mutations.sql`.
+- [Restoration](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/380a67dc503bc99d5551533437506153d07b163e): removed the `20261009160000` variant and restored the original `20261009152433` filename with the same SQL body.
+
+This establishes a concrete filename/version oscillation for an unchanged SQL body. It does **not** independently establish which version was actually applied remotely, nor whether later manual schema changes altered the live result. The final mapping must reconcile the live ledger and function/policy definitions rather than choosing the newest filename.
+
+#### Workspace quota-lock migrations
+
+A similar pattern exists for two distinct SQL bodies:
+
+- [Quota-check serialization alignment](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/a98172b251220df1f5bb57195a83ab209389cde0) added `20261009153649_serialize_workspace_quota_checks.sql`, defining the `public.enforce_group_plan_limits()` trigger function and advisory transaction locking.
+- [Duplicate filename removal](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/a01d8911303e087e04d258e23dc081dac1817f75) deleted the alternate `20261009160000_serialize_workspace_quota_checks.sql` copy.
+- [Legacy quota-check alignment](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/bd7c08bda55350cef75a7f24897dc4cb5d56f05c) added `20261009153847_serialize_legacy_group_event_quota_checks.sql`, defining the private secure group-event creation path.
+- [Legacy duplicate removal](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/c029d1c5aa76a511d20d71fd1426dd1fdf98a453) deleted the alternate `20261009161100_serialize_legacy_group_event_quota_checks.sql` copy.
+
+These patches confirm that the repository has deliberately removed alternate timestamped copies after aligning migration filenames. They do not by themselves prove the SQL-body-to-ledger mapping for the five repeated remote names or for any other row; the relevant version entries and live definitions still need to be reconciled explicitly.
+
+#### Consequence for the mapping ledger
+
+For each historical candidate, record separately: (1) content/body identity, (2) filename/version at each commit, (3) matching remote ledger rows, and (4) live-schema evidence. A matching body across Git commits is useful evidence of content identity, but must not be collapsed into a claim that a particular remote version applied that body. Keep the current filenames and remote ledger unchanged until this four-part mapping is reviewed.
