@@ -214,3 +214,14 @@ A source review of the other four pairs found no direct shared target object bet
 | `20261009163000` | `move_public_event_editor_to_private_schema.sql`: moves/wraps the public event-detail editor function in `app_private` | `protect_task_identity_and_assignment.sql`: task update trigger/function | No direct object overlap observed. |
 
 Together with the four pairs above, all eight duplicate-prefix pairs now have a first-pass static scope review. This is not a dependency graph or an executable replay; indirect dependencies, missing pre-existing objects, and CLI ledger collisions remain unresolved. Keep all migration filenames unchanged until a tested remediation is reviewed.
+### Version-specific Supabase CLI source review (v2.120.0, 2026-10-11)
+
+I checked the tagged source for Supabase CLI v2.120.0 as a concrete reference point; this is an audit-selected version, not a version pinned by this repository. In that tag:
+
+- `migration-list.ts` sorts filenames and accepts `<digits>_<name>.sql` without rejecting repeated numeric prefixes.
+- `migration-history.ts` sorts migration paths by the numeric version and `findPendingMigrations` compares local and remote versions. The comparison is version-only; it does not distinguish two local files that share the same version.
+- The standard insert into `supabase_migrations.schema_migrations` records `version` in a column defined as the table's primary key.
+
+Source links: [v2.120.0 migration-list.ts](https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/command-internal/migration-list.ts), [v2.120.0 migration-history.ts](https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/command-internal/migration-history.ts), [v2.120.0 migration-apply.ts](https://github.com/supabase/cli/blob/v2.120.0/apps/cli/src/command-internal/migration-apply.ts).
+
+This makes the collision risk concrete at source level, but it is still not a runtime reproduction. The next verification should use this exact CLI tag in an isolated fixture with two no-op SQL files sharing a prefix and a disposable PostgreSQL database, then capture whether the CLI rejects, skips, or attempts both files. Do not infer production history from that fixture.
