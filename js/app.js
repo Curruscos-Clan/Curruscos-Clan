@@ -790,7 +790,7 @@ function createAccountMenu() {
         "account-wrapper";
 
     wrapper.innerHTML =
-        '<button id="accountButton" class="account-button" type="button" aria-label="Cuenta">' +
+        '<button id="accountButton" class="account-button" type="button" aria-label="Cuenta" aria-expanded="false" aria-controls="accountPanel">' +
             '<span id="accountInitial" class="account-initial">C</span>' +
             '<span id="accountName" class="account-name">Cuenta</span>' +
         '</button>' +
@@ -850,6 +850,13 @@ function initAccountMenu() {
     document.addEventListener("click", () => {
         panel.hidden = true;
         button.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !panel.hidden) {
+            panel.hidden = true;
+            button.setAttribute("aria-expanded", "false");
+            button.focus();
+        }
     });
 
     logout?.addEventListener("click", async () => {
