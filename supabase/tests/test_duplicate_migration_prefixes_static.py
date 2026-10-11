@@ -52,6 +52,9 @@ class DuplicateMigrationPrefixDocumentationTests(unittest.TestCase):
             + repr(undocumented),
         )
         self.assertIn("Keep all migration filenames unchanged until a tested remediation is reviewed.", self.doc)
+        self.assertIn("Isolated runtime reproduction", self.doc)
+        self.assertIn("SQLSTATE 23505", self.doc)
+        self.assertNotIn("exact CLI command/error not yet reproduced", self.doc)
 
 
 if __name__ == "__main__":
