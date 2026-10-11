@@ -317,3 +317,19 @@ These patches confirm that the repository has deliberately removed alternate tim
 #### Consequence for the mapping ledger
 
 For each historical candidate, record separately: (1) content/body identity, (2) filename/version at each commit, (3) matching remote ledger rows, and (4) live-schema evidence. A matching body across Git commits is useful evidence of content identity, but must not be collapsed into a claim that a particular remote version applied that body. Keep the current filenames and remote ledger unchanged until this four-part mapping is reviewed.
+
+### Additional body-level evidence for two unresolved ledger families (2026-10-11)
+
+#### Recommendation-impression migration
+
+Git confirms that the current file `20261007183000_add_recommendation_impressions.sql` was first introduced in commit [586ade2](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/586ade29a6fb93d43902b849ebf88d7dfcfc5faa). Its initial patch creates `public.recommendation_impressions`, the two supporting indexes, enables RLS, revokes direct table access from `anon` and `authenticated`, and defines `public.log_recommendation_impression(...)` with an explicit execute grant to authenticated users. Commit [f100a08](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/f100a08efdb047e0914339f0ead3935ee4d9bbd9) then reformats the function and changes the explicit revoke to `from anon, public`, while preserving the authenticated grant.
+
+The two remote ledger rows for `add_recommendation_impressions` are `20261007144651` and `20261007144721`; neither equals the current file's `20261007183000` version. The commit evidence therefore establishes the body history of the current local file, but does **not** identify which, if either, remote row recorded that body. Do not infer a ledger mapping from the shared basename alone.
+
+#### Workspace member-plan limit migration
+
+Commit [4691840](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/46918404029b2d89d0ccd6074ed954200893d64e) added `20261003173000_enforce_workspace_member_limit.sql`. The patch defines `public.enforce_group_member_plan_limit()`, creates a `before insert` trigger on `public.group_members`, and also defines the private secure group-creation path. This is concrete evidence of what that local file contained when introduced. It does not, without a verified body comparison and matching remote row, prove that either duplicate `enforce_workspace_plan_limits` ledger entry (`20261003101759` or `20261003115025`) corresponds to this migration: the basename differs and the timestamps precede this file's version.
+
+#### Evidence standard
+
+These cases reinforce the four independent fields required in the reconciliation ledger: exact remote version, historical filename, SQL-body identity, and live-schema confirmation. Similar function/table names are leads for investigation, not sufficient proof of equivalence. Until a direct mapping is demonstrated, retain both remote rows as unresolved and do not rename or replay a candidate migration.
