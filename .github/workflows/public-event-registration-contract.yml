@@ -1,0 +1,35 @@
+name: Public event registration contract
+
+on:
+  pull_request:
+    paths:
+      - "js/evento-publico.js"
+      - "js/supabase.js"
+      - "supabase/migrations/**"
+      - "tests/test_public_event_registration_contract.py"
+      - ".github/workflows/public-event-registration-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - "js/evento-publico.js"
+      - "js/supabase.js"
+      - "supabase/migrations/**"
+      - "tests/test_public_event_registration_contract.py"
+      - ".github/workflows/public-event-registration-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  registration-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check registration and capacity invariants
+        run: python -m unittest discover -s tests -p 'test_public_event_registration_contract.py' -v
+      - name: Check JavaScript syntax
+        run: node --check js/evento-publico.js && node --check js/supabase.js
