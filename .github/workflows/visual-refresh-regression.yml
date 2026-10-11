@@ -66,13 +66,13 @@ jobs:
 
           html = Path("index.html").read_text(encoding="utf-8")
           scripts = re.findall(
-              r'<script\\b(?![^>]*\\bsrc\\s*=)[^>]*>(.*?)</script\\s*>',
+              r'<script\b(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script\s*>',
               html,
               flags=re.IGNORECASE | re.DOTALL,
           )
           if not scripts:
               raise SystemExit("No inline script found in index.html")
-          Path("/tmp/home-inline.js").write_text("\\n;\\n".join(scripts), encoding="utf-8")
+          Path("/tmp/home-inline.js").write_text("\n;\n".join(scripts), encoding="utf-8")
           PY
           node --check /tmp/home-inline.js
       - name: Check navigation and HTML style blocks
