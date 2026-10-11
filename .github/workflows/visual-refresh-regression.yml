@@ -7,6 +7,7 @@ on:
       - "explorar.html"
       - "eventos.html"
       - "mis-eventos.html"
+      - "mis-planes.html"
       - "dashboard.html"
       - "crear.html"
       - "crear-evento.html"
@@ -15,6 +16,7 @@ on:
       - "js/app.js"
       - "js/navigation.js"
       - "js/explorar.js"
+      - "js/mis-planes.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
       - "css/style.css"
@@ -26,6 +28,7 @@ on:
       - "explorar.html"
       - "eventos.html"
       - "mis-eventos.html"
+      - "mis-planes.html"
       - "dashboard.html"
       - "crear.html"
       - "crear-evento.html"
@@ -34,6 +37,7 @@ on:
       - "js/app.js"
       - "js/navigation.js"
       - "js/explorar.js"
+      - "js/mis-planes.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
       - "css/style.css"
@@ -57,7 +61,7 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           set -e
-          for file in js/app.js js/navigation.js js/explorar.js js/perfil.js js/login.js js/crear-evento.js js/dashboard.js; do
+          for file in js/app.js js/navigation.js js/explorar.js js/mis-planes.js js/perfil.js js/login.js js/crear-evento.js js/dashboard.js; do
             node --check "$file"
           done
       - name: Check home feed JavaScript syntax
