@@ -28,6 +28,12 @@ class NavigationAccessibilityTests(unittest.TestCase):
         import re
         self.assertNotRegex(css, r"\.bottom-nav\s*\{\s*display\s*:\s*none\s*!important")
 
+
+    def test_secondary_my_plans_page_does_not_claim_profile_tab(self):
+        source = (ROOT / "js" / "navigation.js").read_text(encoding="utf-8")
+        self.assertIn('{href:"perfil.html",label:"Mi perfil",pages:["perfil.html"]}', source)
+        self.assertNotIn('"mis-eventos.html"]}', source)
+
     def test_create_hub_does_not_claim_a_primary_tab(self):
         source = (ROOT / "js" / "navigation.js").read_text(encoding="utf-8")
         self.assertNotIn('"crear.html"]', source)
