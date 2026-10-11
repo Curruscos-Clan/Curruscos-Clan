@@ -169,3 +169,22 @@ The author timestamps of the commits that introduced the eight duplicate-prefix 
 | `20261009163000` | `move_public_event_editor_to_private_schema.sql` — 2026-10-09 14:52:25 | `protect_task_identity_and_assignment.sql` — 2026-10-09 16:13:26 | Yes |
 
 **Operational implication:** four pairs have a lexical filename order that conflicts with the commits' introduction chronology. Before a full replay, inspect the SQL dependencies for these pairs and establish which ordering is valid; never assume sorting the filenames or sorting commit dates alone recreates production history.
+
+### Duplicate-prefix dependency review and CLI ledger constraint (2026-10-11)
+
+A source-level review of the four duplicate-prefix pairs whose filename order conflicts with their introducing-commit chronology found no direct same-object dependency in the SQL bodies inspected:
+
+| Prefix | File A object scope | File B object scope | Dependency assessment |
+|---|---|---|---|
+| `20261004163500` | `centralize_event_trip_creation.sql` drops insert policies on `public.events` and `public.trips` | `harden_race_result_participant_scope.sql` replaces `public.record_race_result(uuid, uuid, bigint, integer, numeric)` | No direct object overlap observed; likely independent. |
+| `20261004220000` | `harden_team_follow_privacy.sql` replaces SELECT policy on `public.team_follows` | `harden_workspace_owner_invariants.sql` replaces group-member role/removal RPCs and a private trigger helper | No direct object overlap observed; likely independent. |
+| `20261005172000` | `add_group_encryption_key_envelopes.sql` creates `public.group_key_envelopes` and its policies/indexes | `harden_direct_chat_creation_concurrency.sql` replaces `public.get_or_create_direct_chat(uuid)` | No direct object overlap observed; likely independent. |
+| `20261005173000` | `add_e2ee_payload_columns.sql` adds encryption columns to chat, memory, task, trip, and expense tables | `harden_chat_invitation_role_concurrency_batch.sql` replaces chat creation, invitation, and group-role RPCs | The inspected RPC bodies do not reference the newly added encryption columns; no direct dependency observed, but the batch should still be replay-tested. |
+
+This is a static dependency assessment, not proof of historical deployment order. It does not justify renaming or reordering these files on its own. The other four duplicate-prefix pairs also remain subject to the same full replay/dependency review.
+
+#### Supabase CLI source-level finding
+
+The current Supabase CLI source lists local migration filenames in byte-wise filename order and accepts names matching `<digits>_<name>.sql`; that listing logic does not reject duplicate numeric prefixes. The migration history table defines `version` as its primary key, and the apply path inserts a history row for a migration using that version. Therefore, two local files sharing the same timestamp prefix cannot both be represented as separate successful entries in the standard migration ledger: the second attempt to record the same version conflicts with the primary key unless a command-specific path avoids recording it (which would itself make the history incomplete).
+
+**Status: source-level blocker confirmed; exact CLI command/error not yet reproduced in an isolated executable test.** Do not treat this as a completed CLI runtime test. Before full replay, the branch needs a disposable test using the project's pinned/current Supabase CLI version to capture the exact behavior, followed by a reviewed migration-version remediation plan. No CLI was run against production, and no migration files were renamed.
