@@ -26,7 +26,7 @@ class NavigationAccessibilityTests(unittest.TestCase):
         self.assertIn("nav.mobile-open", css)
         self.assertIn(".navbar #mainNav.mobile-open", css)
         import re
-        self.assertNotRegex(css, r"\\.bottom-nav\\s*\\{\\s*display\\s*:\\s*none\\s*!important")
+        self.assertNotRegex(css, r"\.bottom-nav\s*\{\s*display\s*:\s*none\s*!important")
 
     def test_create_hub_does_not_claim_a_primary_tab(self):
         source = (ROOT / "js" / "navigation.js").read_text(encoding="utf-8")
