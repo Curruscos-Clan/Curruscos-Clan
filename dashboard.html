@@ -948,6 +948,7 @@
 .sense-health{border-color:rgba(255,255,255,.1)!important;background:rgba(255,255,255,.035)!important;border-radius:18px!important}
 .sense-health-fill{background:#f5f5f5!important}
 @media(max-width:700px){.dashboard{padding-top:42px}.dashboard-card,.autopilot-card{border-radius:21px!important}.autopilot-body{grid-template-columns:48px 1fr!important}.autopilot-orb{width:48px;height:48px}.autopilot-action{grid-column:1/-1;width:100%}}
+</style>
 <style id="workspace-usage-v1">
 .workspace-usage{margin-bottom:22px;padding:24px 26px!important}
 .workspace-usage-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
@@ -963,7 +964,7 @@
 .workspace-usage-track{height:5px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
 .workspace-usage-track span{display:block;width:0;height:100%;border-radius:99px;background:#f5f5f5;transition:width .4s ease}
 @media(max-width:700px){.workspace-usage-grid{grid-template-columns:1fr}.workspace-usage-head{align-items:flex-start;flex-direction:column}}
-</style></style><style id="workspace-onboarding-v1">
+</style><style id="workspace-onboarding-v1">
 .workspace-start{margin:0 0 22px;padding:24px;border:1px solid rgba(255,255,255,.09);border-radius:26px;background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.015));box-shadow:0 24px 70px rgba(0,0,0,.12)}.workspace-start-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:17px}.workspace-start-head span{font-size:9px;font-weight:900;letter-spacing:.16em;color:#777}.workspace-start-head h2{margin:6px 0 0;font-size:25px;letter-spacing:-.05em}.workspace-start-progress{font-size:11px;color:#aaa}.workspace-start-bar{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-bottom:12px}.workspace-start-bar span{display:block;height:100%;width:0;background:#fff;border-radius:99px;transition:width .35s}.workspace-start-list{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.workspace-start-item{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid rgba(255,255,255,.07);border-radius:15px;text-decoration:none;color:inherit;min-width:0}.workspace-start-item.done{opacity:.5}.workspace-start-check{width:25px;height:25px;display:grid;place-items:center;border-radius:8px;background:rgba(255,255,255,.07);flex:none;font-size:12px}.workspace-start-item.done .workspace-start-check{background:#fff;color:#111}.workspace-start-copy{min-width:0}.workspace-start-copy strong{display:block;font-size:11px}.workspace-start-copy small{display:block;margin-top:3px;color:#777;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}@media(max-width:800px){.workspace-start-list{grid-template-columns:1fr 1fr}}@media(max-width:520px){.workspace-start-head{align-items:flex-start;flex-direction:column}.workspace-start-list{grid-template-columns:1fr}}
 </style><style id="dashboard-chat-link-v1">.dashboard-chat-link{display:inline-grid;place-items:center;width:38px;height:38px;margin-right:8px;border:1px solid #e7e7e7;border-radius:12px;background:#fff;color:inherit;text-decoration:none;font-size:16px;transition:.2s}.dashboard-chat-link:hover{transform:translateY(-2px);background:#f7f7f7}</style><script src="js/navigation.js"></script><style>
 .dashboard-home{padding-top:48px;max-width:1120px}
@@ -1010,10 +1011,48 @@
 .dashboard-progress-card>p{color:#777;font-size:11px}
 .dashboard-hidden-data{display:none}
 @media(max-width:800px){.dashboard-command{grid-template-columns:1fr}.dashboard-command-side{align-items:flex-start;text-align:left}.dashboard-context-row,.dashboard-activity-card{grid-template-columns:1fr}.dashboard-organization{padding:18px 0 0;border-left:0;border-top:1px solid #eee}.dashboard-next-actions .quick-grid{grid-template-columns:1fr}.dashboard-command h2{font-size:27px}}
+
+/* Keep the primary dashboard action legible above the shared glass-card surface. */
+.dashboard-command.dashboard-card{background:radial-gradient(circle at 92% 12%,rgba(255,77,46,.24),transparent 19rem),#191a1d!important;border:1px solid #34353a!important;color:#fff!important}
+.dashboard-command.dashboard-card h2,.dashboard-command .dashboard-command-date{color:#fff!important}
+.dashboard-command .dashboard-command-kicker{color:#c8c9cc!important}
+.dashboard-command p{color:#d0d1d4!important}
+.dashboard-command .dashboard-command-label{color:#aaaeb4!important}
+.dashboard-command .dashboard-secondary-action{border-color:rgba(255,255,255,.35)!important;color:#fff!important}
+.dashboard-mobile-tabs{display:none}
+@media(max-width:760px){
+ body.group-dashboard-app .navbar{height:60px;padding:0 12px;gap:5px;justify-content:flex-start}
+ body.group-dashboard-app .navbar .logo{font-size:14px;white-space:nowrap}
+ body.group-dashboard-app .navbar .i18n-control{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .i18n-select{max-width:94px;min-height:44px;height:44px;padding:0 20px 0 9px!important;font-size:9px!important}
+ body.group-dashboard-app .navbar #mainNav,body.group-dashboard-app .navbar .menu-button{display:none!important}
+ body.group-dashboard-app .navbar .workspace-switcher{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .workspace-switcher .current-group-button{width:44px;min-width:44px;height:44px;padding:8px;justify-content:center;gap:0}
+ body.group-dashboard-app .navbar .workspace-switcher .group-current-copy{display:none!important}
+ body.group-dashboard-app .navbar .workspace-switcher .group-selector-arrow{font-size:0}
+ body.group-dashboard-app .navbar .workspace-switcher .group-selector-arrow:after{content:"⌄";font-size:18px}
+ body.group-dashboard-app .navbar .notification-wrapper{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .notification-button{width:44px;height:44px;padding:7px}
+ body.group-dashboard-app .navbar .account-wrapper{margin:0;flex:0 0 auto}
+ body.group-dashboard-app .navbar .account-button{width:44px;height:44px;justify-content:center;padding:5px}
+ body.group-dashboard-app .dashboard-home{padding-bottom:120px!important}
+ body.group-dashboard-app .dashboard-command{min-height:0;padding:22px!important;gap:16px}
+ body.group-dashboard-app .dashboard-command-actions{flex-wrap:wrap;margin-top:18px}
+ .dashboard-mobile-tabs{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
+ .dashboard-mobile-tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#66686d;text-decoration:none;font-size:10px;font-weight:800}
+ .dashboard-mobile-tabs a b{font-size:20px;font-weight:500;line-height:1}
+ .dashboard-mobile-tabs a[aria-current=page]{background:#191a1d;color:#fff}
+}
+
+@media(max-width:380px){
+ body.group-dashboard-app .navbar{gap:2px;padding-inline:8px}
+ body.group-dashboard-app .navbar .logo{font-size:12px}
+ body.group-dashboard-app .navbar .i18n-select{max-width:84px;min-height:44px;height:44px;padding-inline:8px 18px!important}
+}
 </style></head>
 
 
-<body>
+<body class="group-dashboard-app">
 
 
     <!-- =====================================================
@@ -1132,6 +1171,13 @@
 
   </section>
 </main>
+<nav class="dashboard-mobile-tabs" aria-label="Navegación móvil">
+  <a href="index.html"><b aria-hidden="true">⌂</b><span>Inicio</span></a>
+  <a href="explorar.html"><b aria-hidden="true">⌕</b><span>Buscar</span></a>
+  <a href="eventos.html" aria-current="page"><b aria-hidden="true">▦</b><span>Mi grupo</span></a>
+  <a href="perfil.html"><b aria-hidden="true">◉</b><span>Mi perfil</span></a>
+</nav>
+
 
 
 

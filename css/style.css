@@ -6464,3 +6464,15 @@ body.group-panel-open{overflow:hidden}
 .workspace-switcher .group-menu{width:min(330px,calc(100vw - 18px));padding:20px 12px}
 .workspace-switcher .group-menu:after{left:330px}
 }
+
+
+/* Mobile discovery uses the persistent four-tab bar; keep the duplicate menu out of the header. */
+@media(max-width:760px){
+  body.social-app .menu-button,
+  body.explore-app .menu-button,
+  body.group-events-app .menu-button,
+  body.my-events-app .menu-button,
+  body.public-event-app .menu-button,
+  body.public-create-app .menu-button,
+  body.profile-app .menu-button{display:none!important}
+}
