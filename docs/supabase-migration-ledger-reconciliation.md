@@ -192,7 +192,7 @@ The current Supabase CLI source lists local migration filenames in byte-wise fil
 
 A recursive tree scan of the PR head (4762c3a0e0449ea5dfc4a753f34cc99e6fb1ec4a) found 263 tracked paths. The only SQL files outside supabase/migrations/ are targeted PostgreSQL regression fixtures under supabase/tests/; there is no tracked schema dump, baseline/bootstrap SQL, seed file, or supabase/config.toml. A second scan of main also found no non-migration schema/bootstrap artifact. This does not exclude a private/untracked dump or a schema artifact stored outside this repository, but no reproducible baseline is available in the checked-in tree.
 
-The repository workflows inspected for this audit do not pin/install Supabase CLI for a full migration replay, so there is no project-defined CLI version that can currently be treated as the canonical migration-runner version. The duplicate-prefix conclusion above therefore remains a source-level finding, not an observed error from this repository's pinned CLI.
+The repository workflows inspected for this audit do not pin a canonical Supabase CLI version for a full migration replay. The isolated runtime test documented below uses audit-selected CLI v2.120.0 and confirms the duplicate-prefix collision for that version; it does not establish behavior for every CLI release or the exact production migration history.
 
 Source references for the CLI behavior:
 - [Local migration filename listing](https://github.com/supabase/cli/blob/develop/apps/cli/src/command-internal/migration-list.ts) accepts names matching <digits>_<name>.sql and sorts filenames, without a duplicate-version validation in that listing function.
