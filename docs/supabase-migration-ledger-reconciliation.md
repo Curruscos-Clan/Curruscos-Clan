@@ -146,3 +146,8 @@ A repository-tree inspection found that `supabase/` currently contains only `mig
 5. Compare the final replayed functions, policies, and grants with the live schema and rerun all targeted regressions before proposing a separately reviewed deployment.
 
 No production schema or remote migration history was changed during these checks.
+
+
+### Baseline history cross-check
+
+Git history strengthens this blocker: the parent commit immediately before `20261003000000_add_trip_smart_search_preferences.sql` already contained ten earlier migration files, but those are also incremental feature/security changes (for example, recommendations, team follows, and group-sense functions), not a foundational schema creation. The first migration in the current 155-file tree is therefore not the start of the database's schema history. Replaying only the tracked migration directory from an empty PostgreSQL instance cannot be a faithful reconstruction of the application database without recovering that earlier schema baseline and the required Supabase-managed objects.
