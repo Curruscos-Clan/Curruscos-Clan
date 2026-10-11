@@ -871,17 +871,22 @@ function initAccountMenu() {
         alert("No se ha podido cerrar la sesión.");
     });
 
+    let profileUpdatedDuringLoad = false;
     window.addEventListener("curruscos:profile-updated", event => {
+        profileUpdatedDuringLoad = true;
         renderProfile(event.detail || {});
     });
 
     // Profile details are an enhancement, not a prerequisite for the shell.
+    // Ignore a stale response if the user saved a newer profile in the meantime.
     Promise.resolve()
         .then(() => getCurrentProfile())
-        .then(renderProfile)
+        .then(profile => {
+            if (!profileUpdatedDuringLoad) renderProfile(profile);
+        })
         .catch(error => {
             console.error("No se ha podido cargar el perfil del menú:", error);
-            renderProfile(null);
+            if (!profileUpdatedDuringLoad) renderProfile(null);
         });
 }
 
