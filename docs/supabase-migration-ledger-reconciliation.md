@@ -264,3 +264,10 @@ The repository's Git history contains earlier explicit migration-version alignme
 This is direct evidence that the current local filenames are not a pristine record of the historical applied sequence: at least some files were deliberately aligned to versions already used by the database, and at least one mismatched file was removed. The original commits and their patches should be included in the migration-to-ledger mapping review before proposing any further rename or deletion. This strengthens the case against inferring deployment solely from today's filenames.
 
 **Next safe step:** use the two inventories to investigate the 67 name-only/version-mismatch cases and the 77 remote rows without an exact local basename, starting with the historical alignment commits and the five repeated remote names. Do not change the remote ledger or production schema.
+
+
+### Missing pre-boundary history (fresh ledger comparison, 2026-10-11)
+
+The fresh ledger snapshot contains **44 remote records earlier than the earliest local migration version** (`20261003000000`). The earliest remote record is `20261002151212 / phase1_security_hardening`; the earliest local file is `20261003000000_add_trip_smart_search_preferences.sql`. The current tracked migration directory therefore omits an earlier segment of the applied history, in addition to having version/name mismatches inside the overlapping date range.
+
+These 44 records must not be treated as proof that a foundational schema can be reconstructed from their names alone. Their SQL bodies and dependency order are not present in the current migration directory. The missing segment reinforces the existing clean-replay blocker: recover the original migration bodies or a reviewed schema-only baseline before attempting full replay.
