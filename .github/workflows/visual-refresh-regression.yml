@@ -7,6 +7,7 @@ on:
       - "explorar.html"
       - "eventos.html"
       - "mis-eventos.html"
+      - "mis-planes.html"
       - "dashboard.html"
       - "crear.html"
       - "crear-evento.html"
@@ -15,10 +16,12 @@ on:
       - "js/app.js"
       - "js/navigation.js"
       - "js/explorar.js"
+      - "js/mis-planes.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
       - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
+      - "tests/test_my_plans_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
   push:
     paths:
@@ -26,6 +29,7 @@ on:
       - "explorar.html"
       - "eventos.html"
       - "mis-eventos.html"
+      - "mis-planes.html"
       - "dashboard.html"
       - "crear.html"
       - "crear-evento.html"
@@ -34,10 +38,12 @@ on:
       - "js/app.js"
       - "js/navigation.js"
       - "js/explorar.js"
+      - "js/mis-planes.js"
       - "js/crear-evento.js"
       - "js/dashboard.js"
       - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
+      - "tests/test_my_plans_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
 
 permissions:
@@ -57,25 +63,13 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           set -e
-          for file in js/app.js js/navigation.js js/explorar.js js/crear-evento.js js/dashboard.js; do
+          for file in js/app.js js/navigation.js js/explorar.js js/mis-planes.js js/perfil.js js/login.js js/crear-evento.js js/dashboard.js; do
             node --check "$file"
           done
-      - name: Check home inline JavaScript syntax
+      - name: Check home feed JavaScript syntax
         run: |
-          python - <<'PY'
-          import re
-          from pathlib import Path
-
-          html = Path("index.html").read_text(encoding="utf-8")
-          scripts = re.findall(
-              r'<script\b(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script\s*>',
-              html,
-              flags=re.IGNORECASE | re.DOTALL,
-          )
-          if not scripts:
-              raise SystemExit("No inline script found in index.html")
-          Path("/tmp/home-inline.js").write_text("\n;\n".join(scripts), encoding="utf-8")
-          PY
-          node --check /tmp/home-inline.js
+          set -e
+          node --check js/feed.js
+          node --check js/recommendations.js
       - name: Check navigation and HTML style blocks
         run: python -m unittest discover -s tests -p 'test_*.py'

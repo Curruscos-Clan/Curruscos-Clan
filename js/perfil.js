@@ -5,6 +5,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await window.curruscosI18n?.ready;
 
     const page = document.querySelector(".profile-page");
+    const authView = document.getElementById("profileAuthView");
+    const authenticatedView = document.getElementById("profileAuthenticatedView");
+    const authForm = document.getElementById("profileAuthForm");
+    const authEmail = document.getElementById("profileAuthEmail");
+    const authPassword = document.getElementById("profileAuthPassword");
+    const authSubmit = document.getElementById("profileAuthSubmit");
+    const authMessage = document.getElementById("profileAuthMessage");
+    const logoutButton = document.getElementById("profileLogoutButton");
+
     const setStatus = (text, kind="") => {
         const el = document.getElementById("profileMessage");
         if (el) { el.textContent = text || ""; el.dataset.state = kind; }
@@ -20,19 +29,67 @@ document.addEventListener("DOMContentLoaded", async () => {
             return fallback;
         }
     };
+    const showGuestView = () => {
+        if (authView) authView.hidden = false;
+        if (authenticatedView) authenticatedView.hidden = true;
+        page?.classList.remove("is-loading", "is-ready");
+    };
 
-    // Pintamos la estructura primero. Las consultas lentas son secundarias.
+    authForm?.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (!authEmail?.value.trim() || !authPassword?.value) return;
+        authSubmit.disabled = true;
+        authSubmit.textContent = "Entrando…";
+        if (authMessage) { authMessage.textContent = ""; authMessage.dataset.state = ""; }
+        try {
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email: authEmail.value.trim().toLowerCase(),
+                password: authPassword.value
+            });
+            if (error) throw error;
+            window.location.reload();
+        } catch (error) {
+            console.error("Error iniciando sesión desde el perfil:", error);
+            if (authMessage) {
+                authMessage.textContent = getSupabaseErrorMessage(error, "No se ha podido iniciar sesión. Comprueba tus datos.");
+                authMessage.dataset.state = "error";
+            }
+            authSubmit.disabled = false;
+            authSubmit.textContent = "Iniciar sesión";
+        }
+    });
+
+    logoutButton?.addEventListener("click", async () => {
+        logoutButton.disabled = true;
+        logoutButton.textContent = "Cerrando sesión…";
+        try {
+            const ok = await signOut();
+            if (!ok) throw new Error("No se ha podido cerrar la sesión.");
+            window.location.reload();
+        } catch (error) {
+            console.error("Error cerrando sesión:", error);
+            logoutButton.disabled = false;
+            logoutButton.textContent = "Cerrar sesión";
+            setStatus(getSupabaseErrorMessage(error, "No se ha podido cerrar la sesión."), "error");
+        }
+    });
+
+    // La página de perfil también es accesible como invitado. La autenticación
+    // se comprueba aquí, sin depender del shell privado ni de un grupo activo.
     page?.classList.add("is-loading");
-    const access = await safe(window.curruscosReady, null, "auth");
-    if (!access) {
-        page?.classList.remove("is-loading");
+    const user = await safe(getCurrentUser(true), null, "auth");
+    if (!user) {
+        showGuestView();
         return;
     }
+    if (authView) authView.hidden = true;
+    if (authenticatedView) authenticatedView.hidden = false;
+    const access = { user };
 
-    const profile = await safe(getCurrentProfile(), null, "profile");
+    const profile = await safe(getCurrentProfile(true), null, "profile");
     if (!profile) {
         page?.classList.remove("is-loading");
-        setStatus("No se ha podido cargar tu perfil. Recarga la página.", "error");
+        setStatus("No se ha podido cargar tu perfil. Comprueba tu conexión y recarga la página.", "error");
         return;
     }
 

@@ -55,6 +55,74 @@ const exploreResultIds=["featuredEventsGrid","publicEventsGrid","peopleGrid","te
 function setLoading(){exploreResultIds.forEach(id=>{const root=document.getElementById(id);if(!root)return;root.setAttribute("aria-busy","true");if(!root.childElementCount)root.innerHTML='<div class="explore-loading" role="status">'+escapeHtml(t("common.searching"))+'</div>';});}
 function finishLoading(){exploreResultIds.forEach(id=>document.getElementById(id)?.removeAttribute("aria-busy"));}
 function syncExploreUrl(){if(!window.history?.replaceState)return;const params=new URLSearchParams(window.location.search);["category","event_type","q","sort","filter"].forEach(key=>params.delete(key));const category=document.getElementById("eventCategory")?.value||"all",type=document.getElementById("eventType")?.value||"all",search=(document.getElementById("eventSearch")?.value||"").trim(),sort=document.getElementById("eventSort")?.value||"date",quick=document.querySelector(".explore-chip.active")?.dataset.filter||"all";if(category!=="all")params.set("category",category);if(type!=="all")params.set("event_type",type);if(search)params.set("q",search);if(sort!=="date")params.set("sort",sort);if(quick!=="all")params.set("filter",quick);const query=params.toString();window.history.replaceState(window.history.state,"",window.location.pathname+(query?"?"+query:"")+window.location.hash);}
+
+let currentExploreScope="events";
+let publicGroupsCache=null;
+function setExploreScope(scope){
+  currentExploreScope=scope==="groups"?"groups":"events";
+  document.body.dataset.exploreScope=currentExploreScope;
+  document.querySelectorAll(".explore-scope-tab").forEach(button=>{
+    const active=button.dataset.scope===currentExploreScope;
+    button.setAttribute("aria-pressed",String(active));
+  });
+  const eventOnly=[
+    document.querySelector(".explore-intent"),
+    document.querySelector(".category-scroll"),
+    document.querySelector(".advanced-filters"),
+    document.getElementById("exploreChips"),
+    document.getElementById("recommendationsSection"),
+    document.getElementById("featuredSection"),
+    document.querySelector(".explore-all-events"),
+    document.getElementById("teamsSection"),
+    document.getElementById("peopleSection")
+  ];
+  eventOnly.forEach(section=>{if(section)section.style.display=currentExploreScope==="events"?"":"none";});
+  const groupsSection=document.getElementById("groupsSection");
+  if(groupsSection){groupsSection.hidden=currentExploreScope!=="groups";groupsSection.style.display=currentExploreScope==="groups"?"block":"none";}
+  const search=document.getElementById("eventSearch");
+  if(search)search.placeholder=currentExploreScope==="groups"?"Buscar comunidades por nombre o descripción…":"Buscar eventos, lugares o personas…";
+  if(currentExploreScope==="groups")loadPublicGroups();
+  else loadPublicEvents();
+}
+async function loadPublicGroups(){
+  const root=document.getElementById("publicGroupsGrid");
+  if(!root)return;
+  const query=(document.getElementById("eventSearch")?.value||"").trim().toLocaleLowerCase("es");
+  root.setAttribute("aria-busy","true");
+  root.innerHTML='<div class="explore-groups-empty" role="status">Buscando comunidades…</div>';
+  try{
+    if(publicGroupsCache===null){
+      const {data,error}=await supabaseClient.from("groups")
+        .select("id,name,description,visibility,avatar_url,workspace_type")
+        .eq("visibility","public").order("name",{ascending:true}).limit(100);
+      if(error)throw error;
+      publicGroupsCache=data||[];
+    }
+    const groups=publicGroupsCache.filter(group=>{
+      if(!query)return true;
+      return [group.name,group.description,group.workspace_type].filter(Boolean)
+        .join(" ").toLocaleLowerCase("es").includes(query);
+    });
+    if(!groups.length){
+      root.innerHTML='<div class="explore-groups-empty"><strong>No encontramos comunidades.</strong><br>Prueba con otro nombre o vuelve a explorar eventos.</div>';
+      return;
+    }
+    root.innerHTML=groups.map(group=>{
+      const name=escapeHtml(group.name||"Comunidad sin nombre");
+      const description=escapeHtml(group.description||"Un espacio público para compartir planes e intereses.");
+      const initial=escapeHtml((group.name||"C").trim().charAt(0).toUpperCase());
+      const avatar=group.avatar_url?'<img src="'+escapeHtml(group.avatar_url)+'" alt="" loading="lazy">':initial;
+      const type=escapeHtml(({sports:"Deporte",study:"Estudio",travel:"Viajes",community:"Comunidad"})[group.workspace_type]||"Comunidad pública");
+      return '<article class="public-group-card"><span class="public-group-avatar" aria-hidden="true">'+avatar+'</span><div class="public-group-copy"><strong>'+name+'</strong><p>'+description+'</p><span class="public-group-meta">'+type+'</span></div></article>';
+    }).join("");
+  }catch(error){
+    console.error("No se pudieron cargar las comunidades públicas.",error);
+    root.innerHTML='<div class="explore-groups-empty" role="status"><strong>No se han podido cargar las comunidades.</strong><br>Es posible que no haya comunidades públicas accesibles o que la consulta no esté disponible. Puedes seguir explorando eventos.</div>';
+  }finally{
+    root.setAttribute("aria-busy","false");
+  }
+}
+
 let savedEventIds=new Set(),currentEvents=[],searchTimer=null;
 function applyAndRender(){
   updateExploreControls();syncExploreUrl();
@@ -91,10 +159,11 @@ document.addEventListener("DOMContentLoaded",async()=>{
   if(search&&initialSearch)search.value=initialSearch;
   if(["date","newest","capacity"].includes(initialSort)&&document.getElementById("eventSort"))document.getElementById("eventSort").value=initialSort;
   document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter===initialQuickFilter;chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});
-  let timer=null;const instant=()=>{clearTimeout(timer);applyAndRender();updateExploreControls();timer=setTimeout(()=>loadPublicEvents(),500);};
+  document.querySelectorAll(".explore-scope-tab").forEach(button=>button.addEventListener("click",()=>setExploreScope(button.dataset.scope)));
+  let timer=null;const instant=()=>{clearTimeout(timer);if(currentExploreScope==="groups"){timer=setTimeout(loadPublicGroups,180);return;}applyAndRender();updateExploreControls();timer=setTimeout(()=>loadPublicEvents(),500);};
   search?.addEventListener("input",instant);
   ["eventCategory","eventType","eventSort"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{applyAndRender();if(id!=="eventSort")loadPublicEvents();}));
   document.querySelectorAll(".explore-chip").forEach(chip=>chip.addEventListener("click",()=>{document.querySelectorAll(".explore-chip").forEach(item=>{const active=item===chip;item.classList.toggle("active",active);item.setAttribute("aria-pressed",String(active));});applyAndRender();}));
-  document.getElementById("clearExploreFilters")?.addEventListener("click",()=>{if(search)search.value="";document.getElementById("eventType").value="all";document.getElementById("eventCategory").value="all";document.getElementById("eventSort").value="date";document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter==="all";chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});syncExploreUrl();loadPublicEvents();});
+  document.getElementById("clearExploreFilters")?.addEventListener("click",()=>{if(search)search.value="";document.getElementById("eventType").value="all";document.getElementById("eventCategory").value="all";document.getElementById("eventSort").value="date";document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter==="all";chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});syncExploreUrl();if(currentExploreScope==="groups")loadPublicGroups();else loadPublicEvents();});
   bindExploreIntent();await loadPublicEvents();
 });
