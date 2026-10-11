@@ -29,14 +29,14 @@
 
 These are functional checks against the remote schema, not conclusions drawn from migration names alone.
 
-| Area | Observed remotely | Local migration to reconcile |
+| Area | Observed remotely | Local migration to reconcile | Initial classification |
 |---|---|---|
-| Public event registration | `join_public_event(uuid)` does not reject a registration solely because the event's start time has passed, and does not derive the start instant using the group's timezone. | `20261009190000_harden_public_event_registration_lifecycle.sql` |
-| Participant status authorization | `set_event_participant_status(uuid, uuid, text)` still uses nullable authorization comparisons without the newer null-safe guards. | `20261010120000_null_safe_participant_status_authorization.sql` |
-| Public participant counts | `public.get_public_event_participant_counts(uuid[])` was not present in the remote function catalogue queried during this audit. | `20261010140000_safe_public_event_participant_counts.sql` |
-| Anonymous event detail policies | Remote policy `Event team members visible to event viewers` still targets `{authenticated,anon}`; `Public can view race results for public events` also targets `{authenticated,anon}`. | `20261010150000_restrict_anonymous_event_details.sql` |
-| Public profile privacy | `get_public_profile(uuid)` does not require the target to have qualifying public activity before returning a profile. | `20261010130000_require_public_activity_for_public_profile.sql` |
-| Event/trip creation wrappers | `create_group_event` and `create_trip` definitions still show a non-empty `search_path` and are not `SECURITY DEFINER`. | `20261010160000_fix_event_trip_wrapper_permissions.sql` |
+| Public event registration | `join_public_event(uuid)` does not reject a registration solely because the event's start time has passed, and does not derive the start instant using the group's timezone. | `20261009190000_harden_public_event_registration_lifecycle.sql` | **Not reflected in live function** |
+| Participant status authorization | `set_event_participant_status(uuid, uuid, text)` still uses nullable authorization comparisons without the newer null-safe guards. | `20261010120000_null_safe_participant_status_authorization.sql` | **Not reflected in live function** |
+| Public participant counts | `public.get_public_event_participant_counts(uuid[])` was not present in the remote function catalogue queried during this audit. | `20261010140000_safe_public_event_participant_counts.sql` | **Partial/ambiguous**: aggregate RPC absent; compare all table policies and UI calls |
+| Anonymous event detail policies | Remote policy `Event team members visible to event viewers` still targets `{authenticated,anon}`; `Public can view race results for public events` also targets `{authenticated,anon}`. | `20261010150000_restrict_anonymous_event_details.sql` | **Not reflected in live policies** |
+| Public profile privacy | `get_public_profile(uuid)` does not require the target to have qualifying public activity before returning a profile. | `20261010130000_require_public_activity_for_public_profile.sql` | **Not reflected in live function** |
+| Event/trip creation wrappers | `create_group_event` and `create_trip` definitions still show a non-empty `search_path` and are not `SECURITY DEFINER`. | `20261010160000_fix_event_trip_wrapper_permissions.sql` | **Not reflected in live functions** |
 
 Other recent files requiring explicit policy/function comparison include:
 
