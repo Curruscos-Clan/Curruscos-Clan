@@ -806,117 +806,83 @@ function createAccountMenu() {
     return wrapper;
 }
 
-async function initAccountMenu() {
-    const navbar =
-        document.querySelector(".navbar");
+function initAccountMenu() {
+    const navbar = document.querySelector(".navbar");
+    if (!navbar) return;
 
-    if (!navbar) {
-        return;
-    }
-
-    let wrapper =
-        navbar.querySelector(".account-wrapper");
-
+    let wrapper = navbar.querySelector(".account-wrapper");
     if (!wrapper) {
         wrapper = createAccountMenu();
-
-        const menuButton =
-            navbar.querySelector("#menuButton");
-
-        navbar.insertBefore(
-            wrapper,
-            menuButton || null
-        );
+        const menuButton = navbar.querySelector("#menuButton");
+        navbar.insertBefore(wrapper, menuButton || null);
     }
 
-    const button =
-        wrapper.querySelector("#accountButton");
+    const button = wrapper.querySelector("#accountButton");
+    const panel = wrapper.querySelector("#accountPanel");
+    const logout = wrapper.querySelector("#signOutButton");
+    if (!button || !panel || button.dataset.ready) return;
 
-    const panel =
-        wrapper.querySelector("#accountPanel");
-
-    if (!button || button.dataset.ready) {
-        return;
-    }
-
+    // Wire the menu before requesting profile data. A slow profile query must
+    // not hold up curruscosReady and make the whole private page look stuck.
     button.dataset.ready = "true";
 
-    const profile =
-        await getCurrentProfile();
+    const renderProfile = profile => {
+        const name = profile?.display_name || profile?.username || "Cuenta";
+        const username = profile?.username ? "@" + profile.username : "";
+        const accountName = wrapper.querySelector("#accountName");
+        const accountDisplayName = wrapper.querySelector("#accountDisplayName");
+        const accountUsername = wrapper.querySelector("#accountUsername");
+        const accountInitial = wrapper.querySelector("#accountInitial");
 
-    const name =
-        profile?.display_name ||
-        profile?.username ||
-        "Cuenta";
+        if (accountName) accountName.textContent = name;
+        if (accountDisplayName) accountDisplayName.textContent = name;
+        if (accountUsername) accountUsername.textContent = username;
+        if (accountInitial) accountInitial.textContent = name.charAt(0).toUpperCase();
+    };
 
-    const username =
-        profile?.username
-            ? "@" + profile.username
-            : "";
+    button.addEventListener("click", event => {
+        event.stopPropagation();
+        panel.hidden = !panel.hidden;
+        button.setAttribute("aria-expanded", String(!panel.hidden));
+    });
 
-    wrapper.querySelector(
-        "#accountName"
-    ).textContent = name;
+    panel.addEventListener("click", event => event.stopPropagation());
+    document.addEventListener("click", () => {
+        panel.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+    });
 
-    wrapper.querySelector(
-        "#accountDisplayName"
-    ).textContent = name;
+    logout?.addEventListener("click", async () => {
+        logout.disabled = true;
+        logout.textContent = "Cerrando...";
 
-    wrapper.querySelector(
-        "#accountUsername"
-    ).textContent = username;
-
-    wrapper.querySelector(
-        "#accountInitial"
-    ).textContent =
-        name.charAt(0).toUpperCase();
-
-    button.addEventListener(
-        "click",
-        event => {
-            event.stopPropagation();
-            panel.hidden = !panel.hidden;
-        }
-    );
-
-    panel.addEventListener(
-        "click",
-        event => event.stopPropagation()
-    );
-
-    document.addEventListener(
-        "click",
-        () => {
-            panel.hidden = true;
-        }
-    );
-
-    const logout =
-        wrapper.querySelector("#signOutButton");
-
-    logout.addEventListener(
-        "click",
-        async () => {
-            logout.disabled = true;
-            logout.textContent = "Cerrando...";
-
-            const success =
-                await signOut();
-
+        try {
+            const success = await signOut();
             if (success) {
-                window.location.replace(
-                    "login.html"
-                );
-            } else {
-                logout.disabled = false;
-                logout.textContent =
-                    "Cerrar sesión";
-                alert(
-                    "No se ha podido cerrar la sesión."
-                );
+                window.location.replace("login.html");
+                return;
             }
+        } catch (error) {
+            console.error("No se ha podido cerrar la sesión:", error);
         }
-    );
+
+        logout.disabled = false;
+        logout.textContent = "Cerrar sesión";
+        alert("No se ha podido cerrar la sesión.");
+    });
+
+    window.addEventListener("curruscos:profile-updated", event => {
+        renderProfile(event.detail || {});
+    });
+
+    // Profile details are an enhancement, not a prerequisite for the shell.
+    Promise.resolve()
+        .then(() => getCurrentProfile())
+        .then(renderProfile)
+        .catch(error => {
+            console.error("No se ha podido cargar el perfil del menú:", error);
+            renderProfile(null);
+        });
 }
 
 /* =========================================================
