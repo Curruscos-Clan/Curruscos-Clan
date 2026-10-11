@@ -1,6 +1,6 @@
 /* Recomendación heurística inicial. No usa decisiones automatizadas sensibles. */
 function eventStartDate(event){
-  const raw=event?.start_time || (event?.date ? String(event.date)+(event?.time ? "T"+String(event.time).slice(0,8) : "T23:59:00") : "");
+  const raw=event?.start_time || (event?.date ? String(event.date)+(event?.time ? "T"+String(event.time).slice(0,8) : "T00:00:00") : "");
   const date=raw?new Date(raw):new Date(NaN);
   return Number.isNaN(date.getTime())?null:date;
 }
@@ -26,7 +26,9 @@ function calculateEventScore(event,userContext={}){
   return {score,primaryReason:reasons[0]||"Descubre este plan"};
 }
 function rankEvents(events,userContext={}){
-  return (events||[]).map(event=>({...event,_score:calculateEventScore(event,userContext).score,_recommendationReason:calculateEventScore(event,userContext).primaryReason}))
-    .filter(event=>event._score>-500)
+  return (events||[]).map(event=>{
+    const evaluation=calculateEventScore(event,userContext);
+    return {...event,_score:evaluation.score,_recommendationReason:evaluation.primaryReason};
+  }).filter(event=>event._score>-500)
     .sort((a,b)=>b._score-a._score || (eventStartDate(a)?.getTime()||0)-(eventStartDate(b)?.getTime()||0));
 }
