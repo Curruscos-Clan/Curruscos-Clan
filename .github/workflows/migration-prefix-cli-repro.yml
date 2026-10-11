@@ -1,6 +1,10 @@
 name: Supabase CLI duplicate migration prefix reproduction
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/migration-prefix-cli-repro.yml"
   workflow_dispatch:
 
 permissions:
