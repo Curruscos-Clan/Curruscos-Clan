@@ -21,6 +21,7 @@ on:
       - "js/dashboard.js"
       - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
+      - "tests/test_my_plans_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
   push:
     paths:
@@ -42,6 +43,7 @@ on:
       - "js/dashboard.js"
       - "css/style.css"
       - "tests/test_visual_refresh_regression.py"
+      - "tests/test_my_plans_regression.py"
       - ".github/workflows/visual-refresh-regression.yml"
 
 permissions:
