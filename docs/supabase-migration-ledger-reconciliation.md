@@ -229,3 +229,38 @@ Source links: [v2.120.0 migration-list.ts](https://github.com/supabase/cli/blob/
 The reproduction has now been executed in GitHub Actions with Supabase CLI `v2.120.0` and a disposable PostgreSQL 16 service. Two harmless fixture migrations, `20260101000000_collision_a.sql` and `20260101000000_collision_b.sql`, shared a version but created separate test tables. The CLI attempted both, then exited with status 1 on `SQLSTATE 23505` (`schema_migrations_pkey`): version `20260101000000` already existed. The resulting fixture had exactly one ledger row for that version, `collision_a` existed, and `collision_b` did not. This confirms that the duplicate prefix is a real replay blocker for this CLI version, not just a source-level concern.
 
 The isolated workflow is [`migration-prefix-cli-repro.yml`](../.github/workflows/migration-prefix-cli-repro.yml); its run and downloadable log are linked from the PR checks. It is configured only for this pull request path and manual dispatch, and uses no production credentials or project link. This fixture establishes the CLI behavior only; it does not establish which duplicate files, if any, were applied to production or justify renaming them without reconciling the remote ledger.
+
+### Fresh live-ledger candidate inventory (2026-10-11)
+
+I re-read the remote migration ledger through the connected Supabase project and compared it with the migration filenames in the audit branch. This is a **candidate inventory only**: basename and version matches are not proof that a particular SQL body produced the current schema.
+
+| Comparison signal | Count | Interpretation |
+|---|---:|---|
+| Local SQL migration files | 155 | Files in `supabase/migrations/` on the audit branch |
+| Remote migration ledger records | 178 | Read-only snapshot from the connected project |
+| Local files with exact basename present in at least one remote record | 97 | Name correspondence only |
+| Local files matching both remote version and exact name | 30 | Stronger identifier match, still not proof of SQL-body equivalence |
+| Local files with a name match but no exact version+name pair | 67 | Version drift, historical rename, or ambiguous mapping to investigate |
+| Local files with no exact basename match | 58 | Includes possible version suffix variants and files with no direct candidate |
+| Remote records whose name appears on multiple ledger rows | 5 distinct names | The remote ledger itself has repeated names at different versions |
+| Remote records with no exact local basename | 77 | Includes renamed/suffixed historical entries and potential unmatched history |
+
+Two candidate CSV inventories accompany this audit:
+
+- [Local migrations and candidate remote mappings](audit/local-migration-ledger-candidates-2026-10-11.csv) — one row per local migration, including Git blob SHA, exact-name candidates, normalized `_vN` candidates, exact-version candidates, and a conservative match classification.
+- [Remote ledger and candidate local mappings](audit/remote-ledger-local-candidates-2026-10-11.csv) — one row per remote ledger record, including exact-name, normalized-name, and exact-version local candidates.
+
+The inventories preserve ambiguity rather than selecting a candidate automatically. In particular, a repeated remote name, a timestamp-only match, or a suffix-normalized match is not sufficient to mark a migration as applied.
+
+#### Historical evidence that filenames were realigned before
+
+The repository's Git history contains earlier explicit migration-version alignment operations, including:
+
+- [Align team membership migration with Supabase history](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/0881c99cc895a75206144b5773b866dc13a41c63)
+- [Align event match migration with applied Supabase version](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/e5445a90eb52a9700c93c23479a5616264389851)
+- [Align quota-lock migration with applied database version](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/a98172b251220df1f5bb57195a83ab209389cde0)
+- [Remove migration with mismatched version](https://github.com/Curruscos-Clan/Curruscos-Clan/commit/09489ffe9966b32aa659ea4724cb414b8a8f9301)
+
+This is direct evidence that the current local filenames are not a pristine record of the historical applied sequence: at least some files were deliberately aligned to versions already used by the database, and at least one mismatched file was removed. The original commits and their patches should be included in the migration-to-ledger mapping review before proposing any further rename or deletion. This strengthens the case against inferring deployment solely from today's filenames.
+
+**Next safe step:** use the two inventories to investigate the 67 name-only/version-mismatch cases and the 77 remote rows without an exact local basename, starting with the historical alignment commits and the five repeated remote names. Do not change the remote ledger or production schema.
