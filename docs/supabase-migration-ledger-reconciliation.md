@@ -90,3 +90,17 @@ The following GitHub Actions checks passed on the audit branch after adding a de
 The new test is `supabase/tests/test_anonymous_event_detail_policies_postgres.sql`. It reproduces both legacy policies targeting `anon`, applies the migration in disposable PostgreSQL, and verifies that the resulting team-member and race-result policies target only `authenticated` and preserve visibility/status predicates.
 
 **Scope limitation:** these are isolated tests for selected recent migrations, not a complete replay of all 155 repository migrations. Do not interpret them as production rollout approval.
+
+
+## Follow-up runtime impact check (2026-10-11)
+
+A second read-only query confirmed that the missing aggregate-count RPC has a direct frontend impact:
+
+- The live schema has **no** `public.get_public_event_participant_counts(uuid[])` function.
+- `js/supabase.js` calls that RPC in both the single-event participant count helper and the public event discovery feed.
+- The discovery-feed error branch deliberately returns each event with `participant_count: 0`; therefore, until the RPC is deployed or the client is made compatible with the live schema, public event cards can show zero participants even when confirmed participants exist.
+- The live `event_participants` SELECT policy is still the older broad policy `Authenticated users can view event participation`, which exposes participant rows for public published/finished events to signed-in users. This differs from the latest local migration that limits row access to the user themselves and event managers.
+- Live `event_team_members` and `event_race_results` policies still include `anon`. The local restriction migration is not reflected in the live policy catalog.
+- Live `create_group_event` and `create_trip` wrappers are callable by `authenticated` and not by `anon`, but remain invoker functions with a non-empty search path. Their private helper functions are protected from direct client execution. This means the wrapper-permission migration is only partially reflected: grants are compatible, but the requested execution/search-path hardening is not.
+
+These results increase confidence that the recent local migrations have not been applied as a coherent batch, but they do **not** establish which deployment operation should be performed next. The safe next step remains to reconstruct the migration sequence in an isolated database, verify frontend behavior against that schema, and prepare a separately reviewed rollout plan. No production changes were made during this follow-up.
