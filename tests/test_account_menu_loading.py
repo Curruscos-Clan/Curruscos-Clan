@@ -26,8 +26,8 @@ class AccountMenuLoadingTests(unittest.TestCase):
         start = APP.index("function initAccountMenu()")
         end = APP.index("/* ========================================================", start)
         menu = APP[start:end]
+        self.assertIn('aria-expanded="false" aria-controls="accountPanel"', APP)
         for expected in (
-            'aria-expanded="false" aria-controls="accountPanel"',
             'event.key === "Escape"',
             'button.setAttribute("aria-expanded", "false")',
             "button.focus()",
