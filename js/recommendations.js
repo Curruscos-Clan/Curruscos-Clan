@@ -1,13 +1,16 @@
 /* Recomendación heurística inicial. No usa decisiones automatizadas sensibles. */
 function eventStartDate(event){
-  const raw=event?.start_time || (event?.date ? String(event.date)+(event?.time ? "T"+String(event.time).slice(0,8) : "T00:00:00") : "");
+  const dateValue=event?.date||event?.event_date;
+  const timeValue=event?.time||event?.event_time;
+  const raw=event?.start_time || (dateValue ? String(dateValue)+(timeValue ? "T"+String(timeValue).slice(0,8) : "T00:00:00") : "");
   const date=raw?new Date(raw):new Date(NaN);
   return Number.isNaN(date.getTime())?null:date;
 }
 function calculateEventScore(event,userContext={}){
   const now=new Date();
   const eventDate=eventStartDate(event);
-  if(!eventDate || eventDate<=now || ["cancelled","finished","draft"].includes(String(event.status||"").toLowerCase())){
+  const status=String(event.status||"").toLowerCase();
+  if(["cancelled","finished","draft"].includes(status) || (status!=="live" && (!eventDate || eventDate<=now))){
     return {score:-999,primaryReason:"No disponible"};
   }
   if(userContext.joinedEventIds?.has(event.id)){
