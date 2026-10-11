@@ -59,3 +59,20 @@ Other recent files requiring explicit policy/function comparison include:
 - Do not apply these migrations to production as part of this reconciliation.
 - Do not rename duplicate-timestamp files until the deployment mapping is established.
 - Do not merge a reconciliation branch merely because static checks pass; the isolated replay and security regression tests must pass first.
+
+
+## Additional Supabase advisor review
+
+The live security advisor reports **10 functions executable by `anon` as `SECURITY DEFINER`**. This count is not, by itself, proof of a vulnerability: several are explicitly named public discovery APIs (public people, teams, rankings, public event relationships, and public profiles). Their intended anonymous access should be preserved only where the function body enforces public visibility and excludes private-only data.
+
+Read-only inspection of representative definitions found public-event/status filters in `get_public_active_people`, `get_public_active_teams`, `get_public_event_participants`, `get_public_event_team_members`, `get_public_persistent_team`, `get_public_persistent_team_events`, `get_public_profile_activity`, `get_public_profile_teams`, `get_public_race_results`, and `get_public_rankings`. The main `get_public_profile` still lacks the public-activity row guard in the live definition, as noted above.
+
+The advisor also reports **78 authenticated-executable SECURITY DEFINER functions**. This is likewise a review signal rather than a recommendation to revoke all access: RPCs are used for authorized mutations and reads, and each must retain the correct grant boundary plus internal authorization checks. Do not blanket-revoke or convert these functions without call-site and behavior tests.
+
+## Suggested next regression coverage
+
+- Assert anonymous users cannot read raw participant/team-member/race-result rows through table policies, while intended public RPCs return only public-event data.
+- Assert the public-profile RPC returns zero rows for users whose only activity is private, draft, or cancelled.
+- Assert event registration fails after the event start instant in the group's timezone and after the registration deadline, while respecting capacity under concurrent attempts.
+- Assert wrapper RPCs remain callable by authenticated users but not `anon`, and that private helper functions cannot be called directly by either client role.
+- Re-run the Supabase security advisor after a reviewed rollout; classify expected public discovery RPCs separately from unintended exposure.
