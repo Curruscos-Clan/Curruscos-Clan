@@ -151,3 +151,21 @@ No production schema or remote migration history was changed during these checks
 ### Baseline history cross-check
 
 Git history strengthens this blocker: the parent commit immediately before `20261003000000_add_trip_smart_search_preferences.sql` already contained ten earlier migration files, but those are also incremental feature/security changes (for example, recommendations, team follows, and group-sense functions), not a foundational schema creation. The first migration in the current 155-file tree is therefore not the start of the database's schema history. Replaying only the tracked migration directory from an empty PostgreSQL instance cannot be a faithful reconstruction of the application database without recovering that earlier schema baseline and the required Supabase-managed objects.
+
+
+### Duplicate-prefix Git-history ordering evidence
+
+The author timestamps of the commits that introduced the eight duplicate-prefix pairs do not consistently match filename sort order. This is useful historical evidence, but it is **not sufficient by itself** to decide replay order: dependencies and the actual deployment order must also be checked.
+
+| Shared filename prefix | Earlier introducing commit (UTC) | Later introducing commit (UTC) | Does filename order match commit chronology? |
+|---|---|---|---|
+| `20261004162000` | `harden_invitation_mutation.sql` — 2026-10-04 13:36:06 | `harden_plan_request_rpc_access.sql` — 2026-10-04 14:48:06 | Yes |
+| `20261004163500` | `harden_race_result_participant_scope.sql` — 2026-10-04 13:36:36 | `centralize_event_trip_creation.sql` — 2026-10-04 14:49:34 | **No** |
+| `20261004170000` | `harden_competition_cross_event_integrity.sql` — 2026-10-04 13:38:28 | `harden_trip_tenant_creator_immutability.sql` — 2026-10-04 14:55:04 | Yes |
+| `20261004220000` | `harden_workspace_owner_invariants.sql` — 2026-10-04 14:25:15 | `harden_team_follow_privacy.sql` — 2026-10-04 18:59:07 | **No** |
+| `20261005170000` | `harden_chat_message_identity.sql` — 2026-10-05 15:09:24 | `harden_persistent_team_event_registration_concurrency.sql` — 2026-10-05 15:42:27 | Yes |
+| `20261005172000` | `harden_direct_chat_creation_concurrency.sql` — 2026-10-05 15:47:30 | `add_group_encryption_key_envelopes.sql` — 2026-10-05 15:53:01 | **No** |
+| `20261005173000` | `harden_chat_invitation_role_concurrency_batch.sql` — 2026-10-05 15:48:45 | `add_e2ee_payload_columns.sql` — 2026-10-05 15:55:56 | **No** |
+| `20261009163000` | `move_public_event_editor_to_private_schema.sql` — 2026-10-09 14:52:25 | `protect_task_identity_and_assignment.sql` — 2026-10-09 16:13:26 | Yes |
+
+**Operational implication:** four pairs have a lexical filename order that conflicts with the commits' introduction chronology. Before a full replay, inspect the SQL dependencies for these pairs and establish which ordering is valid; never assume sorting the filenames or sorting commit dates alone recreates production history.
