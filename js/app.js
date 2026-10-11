@@ -215,7 +215,12 @@ function setupMobileMenu() {
         return;
     }
 
-    if (menuButton.dataset.ready === "true") {
+    // js/navigation.js owns the accessible menu on pages that load it.
+    // Avoid registering a second click handler that would toggle the menu twice.
+    if (
+        menuButton.dataset.ready === "true" ||
+        menuButton.dataset.navReady === "true"
+    ) {
         return;
     }
 
@@ -790,7 +795,7 @@ function createAccountMenu() {
         "account-wrapper";
 
     wrapper.innerHTML =
-        '<button id="accountButton" class="account-button" type="button" aria-label="Cuenta">' +
+        '<button id="accountButton" class="account-button" type="button" aria-label="Cuenta" aria-expanded="false" aria-controls="accountPanel">' +
             '<span id="accountInitial" class="account-initial">C</span>' +
             '<span id="accountName" class="account-name">Cuenta</span>' +
         '</button>' +
@@ -806,117 +811,95 @@ function createAccountMenu() {
     return wrapper;
 }
 
-async function initAccountMenu() {
-    const navbar =
-        document.querySelector(".navbar");
+function initAccountMenu() {
+    const navbar = document.querySelector(".navbar");
+    if (!navbar) return;
 
-    if (!navbar) {
-        return;
-    }
-
-    let wrapper =
-        navbar.querySelector(".account-wrapper");
-
+    let wrapper = navbar.querySelector(".account-wrapper");
     if (!wrapper) {
         wrapper = createAccountMenu();
-
-        const menuButton =
-            navbar.querySelector("#menuButton");
-
-        navbar.insertBefore(
-            wrapper,
-            menuButton || null
-        );
+        const menuButton = navbar.querySelector("#menuButton");
+        navbar.insertBefore(wrapper, menuButton || null);
     }
 
-    const button =
-        wrapper.querySelector("#accountButton");
+    const button = wrapper.querySelector("#accountButton");
+    const panel = wrapper.querySelector("#accountPanel");
+    const logout = wrapper.querySelector("#signOutButton");
+    if (!button || !panel || button.dataset.ready) return;
 
-    const panel =
-        wrapper.querySelector("#accountPanel");
-
-    if (!button || button.dataset.ready) {
-        return;
-    }
-
+    // Wire the menu before requesting profile data. A slow profile query must
+    // not hold up curruscosReady and make the whole private page look stuck.
     button.dataset.ready = "true";
 
-    const profile =
-        await getCurrentProfile();
+    const renderProfile = profile => {
+        const name = profile?.display_name || profile?.username || "Cuenta";
+        const username = profile?.username ? "@" + profile.username : "";
+        const accountName = wrapper.querySelector("#accountName");
+        const accountDisplayName = wrapper.querySelector("#accountDisplayName");
+        const accountUsername = wrapper.querySelector("#accountUsername");
+        const accountInitial = wrapper.querySelector("#accountInitial");
 
-    const name =
-        profile?.display_name ||
-        profile?.username ||
-        "Cuenta";
+        if (accountName) accountName.textContent = name;
+        if (accountDisplayName) accountDisplayName.textContent = name;
+        if (accountUsername) accountUsername.textContent = username;
+        if (accountInitial) accountInitial.textContent = name.charAt(0).toUpperCase();
+    };
 
-    const username =
-        profile?.username
-            ? "@" + profile.username
-            : "";
+    button.addEventListener("click", event => {
+        event.stopPropagation();
+        panel.hidden = !panel.hidden;
+        button.setAttribute("aria-expanded", String(!panel.hidden));
+    });
 
-    wrapper.querySelector(
-        "#accountName"
-    ).textContent = name;
-
-    wrapper.querySelector(
-        "#accountDisplayName"
-    ).textContent = name;
-
-    wrapper.querySelector(
-        "#accountUsername"
-    ).textContent = username;
-
-    wrapper.querySelector(
-        "#accountInitial"
-    ).textContent =
-        name.charAt(0).toUpperCase();
-
-    button.addEventListener(
-        "click",
-        event => {
-            event.stopPropagation();
-            panel.hidden = !panel.hidden;
-        }
-    );
-
-    panel.addEventListener(
-        "click",
-        event => event.stopPropagation()
-    );
-
-    document.addEventListener(
-        "click",
-        () => {
+    panel.addEventListener("click", event => event.stopPropagation());
+    document.addEventListener("click", () => {
+        panel.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+    });
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && !panel.hidden) {
             panel.hidden = true;
+            button.setAttribute("aria-expanded", "false");
+            button.focus();
         }
-    );
+    });
 
-    const logout =
-        wrapper.querySelector("#signOutButton");
+    logout?.addEventListener("click", async () => {
+        logout.disabled = true;
+        logout.textContent = "Cerrando...";
 
-    logout.addEventListener(
-        "click",
-        async () => {
-            logout.disabled = true;
-            logout.textContent = "Cerrando...";
-
-            const success =
-                await signOut();
-
+        try {
+            const success = await signOut();
             if (success) {
-                window.location.replace(
-                    "login.html"
-                );
-            } else {
-                logout.disabled = false;
-                logout.textContent =
-                    "Cerrar sesión";
-                alert(
-                    "No se ha podido cerrar la sesión."
-                );
+                window.location.replace("login.html");
+                return;
             }
+        } catch (error) {
+            console.error("No se ha podido cerrar la sesión:", error);
         }
-    );
+
+        logout.disabled = false;
+        logout.textContent = "Cerrar sesión";
+        alert("No se ha podido cerrar la sesión.");
+    });
+
+    let profileUpdatedDuringLoad = false;
+    window.addEventListener("curruscos:profile-updated", event => {
+        profileUpdatedDuringLoad = true;
+        renderProfile(event.detail || {});
+    });
+
+    // Profile details are an enhancement, not a prerequisite for the shell.
+    // Ignore a stale response if the user saved a newer profile in the meantime.
+    Promise.resolve()
+        .then(() => getCurrentProfile())
+        .then(profile => {
+            if (!profileUpdatedDuringLoad) renderProfile(profile);
+        })
+        .catch(error => {
+            console.error("No se ha podido cargar el perfil del menú:", error);
+            if (!profileUpdatedDuringLoad) renderProfile(null);
+        });
 }
 
 /* =========================================================
@@ -926,6 +909,25 @@ async function initAccountMenu() {
 function ensureProductNavigation() {
     const nav = document.getElementById("mainNav");
     if (!nav) return;
+    const page = getCurrentPage();
+    const usesPrimaryTabs = document.body.matches(
+        ".social-app, .group-events-app, .my-events-app, .profile-app, .group-dashboard-app"
+    );
+    if (usesPrimaryTabs) {
+        const items = [
+            { href: "index.html", text: "Inicio", pages: ["index.html"] },
+            { href: "explorar.html", text: "Buscar", pages: ["explorar.html"] },
+            { href: "eventos.html", text: "Mi grupo", pages: ["eventos.html", "dashboard.html"] },
+            { href: "perfil.html", text: "Mi perfil", pages: ["perfil.html"] }
+        ];
+        nav.innerHTML = items.map(item => {
+            const active = item.pages.includes(page);
+            return '<a href="' + item.href + '"' +
+                (active ? ' class="active" aria-current="page"' : '') +
+                '>' + item.text + '</a>';
+        }).join("");
+        return;
+    }
     const links = [
         { href: "index.html", text: "Inicio" },
         { href: "explorar.html", text: "Explorar" },
@@ -934,7 +936,6 @@ function ensureProductNavigation() {
         { href: "crear.html", text: "Crear", className: "nav-create" }
     ];
     nav.innerHTML = links.map(item => '<a href="' + item.href + '"' + (item.className ? ' class="' + item.className + '"' : '') + '>' + item.text + '</a>').join("");
-    const page = getCurrentPage();
     nav.querySelectorAll("a").forEach(link => link.classList.toggle("active", link.getAttribute("href") === page));
 }
 

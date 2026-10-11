@@ -1,0 +1,41 @@
+name: Groups page regression checks
+
+on:
+  pull_request:
+    paths:
+      - "grupos.html"
+      - "js/supabase.js"
+      - "tests/test_groups_load_error_state.py"
+      - ".github/workflows/groups-page-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "grupos.html"
+      - "js/supabase.js"
+      - "tests/test_groups_load_error_state.py"
+      - ".github/workflows/groups-page-regression.yml"
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Check JavaScript syntax
+        run: |
+          node --check js/supabase.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html = Path("grupos.html").read_text(encoding="utf-8")
+          scripts = re.findall(r"<script>(.*?)</script>", html, flags=re.S)
+          Path("/tmp/grupos-inline.js").write_text(scripts[-1], encoding="utf-8")
+          PY
+          node --check /tmp/grupos-inline.js
+      - name: Run group-loading regression tests
+        run: python -m unittest discover -s tests -p 'test_groups_load_error_state.py'

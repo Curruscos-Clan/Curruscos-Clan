@@ -1,0 +1,32 @@
+name: Account menu loading regression checks
+
+on:
+  pull_request:
+    paths:
+      - "js/app.js"
+      - "tests/test_account_menu_loading.py"
+      - ".github/workflows/account-menu-regression.yml"
+  push:
+    paths:
+      - "js/app.js"
+      - "tests/test_account_menu_loading.py"
+      - ".github/workflows/account-menu-regression.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  account-menu-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check account-menu loading regression
+        run: python -m unittest discover -s tests -p 'test_account_menu_loading.py'
+      - name: Check app JavaScript syntax
+        run: node --check js/app.js

@@ -1,0 +1,29 @@
+name: Secondary navigation regression checks
+
+on:
+  pull_request:
+    paths:
+      - "js/app.js"
+      - "js/navigation.js"
+      - "tests/test_secondary_navigation_state.py"
+      - ".github/workflows/secondary-navigation-regression.yml"
+  push:
+    paths:
+      - "js/app.js"
+      - "js/navigation.js"
+      - "tests/test_secondary_navigation_state.py"
+      - ".github/workflows/secondary-navigation-regression.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  secondary-navigation-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check secondary navigation state
+        run: python tests/test_secondary_navigation_state.py
