@@ -6488,7 +6488,7 @@ body.group-panel-open{overflow:hidden}
 @media(max-width:760px){
  .navbar .menu-button{display:grid!important;place-items:center;width:42px;height:42px;margin-left:auto;border:1px solid rgba(23,24,27,.1)!important;border-radius:50%;background:rgba(255,255,255,.75)!important;color:#17181b!important;font-size:21px!important;line-height:1;cursor:pointer}
  .navbar #mainNav{display:none!important}
- .bottom-nav{display:none!important}
+ /* Keep the four primary bottom tabs visible on mobile. */
  body{padding-bottom:env(safe-area-inset-bottom)}
 }
 @media(min-width:761px){.cc-drawer-backdrop,.cc-nav-drawer{display:none!important}}
