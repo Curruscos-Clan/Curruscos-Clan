@@ -1,0 +1,325 @@
+/* Archivo: css/design-system.css */
+:root {
+  /* Paleta cromática - Identidad Curruscos Clan */
+  --color-primary: #ff5722;
+  --color-primary-hover: #f44336;
+  --color-primary-subtle: #fff3e0;
+  --color-accent: #2979ff;
+  
+  /* Superficies y Neutros */
+  --bg-app: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-muted: #f1f5f9;
+  
+  /* Jerarquía de Texto */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --text-inverse: #ffffff;
+  
+  /* Bordes y Líneas */
+  --border-light: #e2e8f0;
+  --border-focus: #ff5722;
+  
+  /* Estados */
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+
+  /* Tipografía y Espaciado */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* Radios de curvatura */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Sombras sutiles */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+
+  /* Layout y Navegación */
+  --nav-bottom-height: 64px;
+  --header-height: 60px;
+  --max-width-feed: 640px;
+}
+
+/* Reseteo y Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: calc(var(--nav-bottom-height) + var(--space-lg));
+}
+
+/* Tipografía */
+h1, h2, h3 {
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Botones Base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-muted);
+  color: var(--text-main);
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--border-light);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Insignias (Badges) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+.badge-subtle {
+  background-color: var(--bg-muted);
+  color: var(--text-muted);
+}
+.badge-urgent {
+  background-color: #fee2e2;
+  color: var(--status-danger);
+}
+.badge-joined {
+  background-color: #d1fae5;
+  color: var(--status-success);
+}
+
+/* Tarjetas de Eventos */
+.event-card {
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-bottom: var(--space-md);
+}
+.event-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.event-card-media {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  background-color: var(--bg-muted);
+  overflow: hidden;
+}
+.event-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-card-body {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.event-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.event-date-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.event-card-title {
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.event-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.event-card-footer {
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Navegación Inferior (Bottom Nav) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-bottom-height);
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-decoration: none;
+  flex: 1;
+  height: 100%;
+  transition: color 0.15s ease;
+}
+.nav-tab.active {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.nav-tab svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
+}
+
+/* Header Superior Fijo */
+.top-header {
+  position: sticky;
+  top: 0;
+  height: var(--header-height);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
+  z-index: 90;
+}
+
+.app-brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.03em;
+}
+
+/* Toast de Notificaciones */
+#toast-container {
+  position: fixed;
+  top: calc(var(--header-height) + var(--space-sm));
+  right: var(--space-md);
+  left: var(--space-md);
+  max-width: 400px;
+  margin: 0 auto;
+  z-index: 999;
+  pointer-events: none;
+}
+.toast {
+  background: var(--text-main);
+  color: var(--text-inverse);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--space-xs);
+  font-size: 0.9rem;
+  animation: toastFadeIn 0.2s ease;
+  pointer-events: auto;
+}
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive: Adaptación a Escritorio */
+@media (min-width: 768px) {
+  body {
+    padding-bottom: 0;
+  }
+  .app-container {
+    max-width: var(--max-width-feed);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-md);
+  }
+  .bottom-nav {
+    position: static;
+    height: auto;
+    border-top: none;
+    background: transparent;
+    gap: var(--space-md);
+  }
+  .top-header {
+    max-width: var(--max-width-feed);
+    margin: 0 auto;
+  }
+}
