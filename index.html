@@ -1,441 +1,67 @@
-<!DOCTYPE html><html lang="es" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Curruscos — Para ti</title><meta name="description" content="Tu espacio para descubrir planes, organizarte con tu grupo y poner ideas en marcha.">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<link rel="canonical" href="https://curruscos-clan.github.io/Curruscos-Clan/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Curruscos — Eventos y grupos">
-<meta property="og:description" content="Descubre planes, guarda ideas y organiza lo que quieras hacer con tu grupo.">
-<meta property="og:url" content="https://curruscos-clan.github.io/Curruscos-Clan/"><link rel="stylesheet" href="css/style.css"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#ff4d2e"><style>
-body{margin:0;background:#f5f5f7;color:#111}.landing{min-height:100vh}.landing-header{max-width:1200px;margin:auto;padding:22px 28px;display:flex;align-items:center;justify-content:space-between}.landing-logo{color:#111;text-decoration:none;font-size:22px;font-weight:800;letter-spacing:-.04em}.landing-login{color:#111;text-decoration:none;font-size:13px;font-weight:700;border:1px solid #ddd;border-radius:999px;padding:9px 14px;background:#fff}.landing-nav{display:flex;gap:8px;align-items:center}.landing-hero{max-width:1100px;margin:auto;padding:105px 28px 100px;text-align:center}.landing-eyebrow{display:inline-block;color:#777;font-size:11px;font-weight:800;letter-spacing:.15em}.landing-hero h1{max-width:900px;margin:20px auto 0;font-size:clamp(54px,9vw,100px);line-height:.9;letter-spacing:-.075em}.landing-hero h1 span{color:#777}.landing-hero p{max-width:650px;margin:30px auto 0;color:#666;font-size:19px;line-height:1.6}.landing-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:32px}.landing-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;text-decoration:none;font-size:14px;font-weight:800}.landing-button-primary{background:#111;color:#fff}.landing-button-secondary{background:#fff;color:#111;border:1px solid #ddd}.landing-preview{max-width:1050px;margin:0 auto 110px;padding:0 28px}.preview-window{padding:28px;background:#fff;border:1px solid #e5e5e2;border-radius:25px;box-shadow:0 30px 80px rgba(0,0,0,.07)}.preview-label{font-size:10px;font-weight:800;letter-spacing:.13em;color:#999}.preview-title{margin-top:9px;font-size:30px;font-weight:800;letter-spacing:-.045em}.preview-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-top:22px}.preview-card{min-height:120px;padding:20px;background:#f7f7f5;border-radius:16px}.preview-card small{display:block;color:#888;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.preview-card strong{display:block;margin-top:15px;font-size:21px}.preview-card p{margin:7px 0 0;color:#777;font-size:13px}.landing-section{max-width:1100px;margin:auto;padding:0 28px 110px}.section-heading{max-width:720px;margin-bottom:35px}.section-heading span{color:#888;font-size:11px;font-weight:800;letter-spacing:.12em}.section-heading h2{margin:12px 0 0;font-size:clamp(36px,5vw,58px);line-height:.98;letter-spacing:-.06em}.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature{min-height:185px;padding:26px;background:#fff;border:1px solid #e8e8e5;border-radius:20px}.feature-number{font-size:11px;color:#999;font-weight:800}.feature h3{margin:50px 0 8px;font-size:22px;letter-spacing:-.035em}.feature p{margin:0;color:#777;line-height:1.5;font-size:14px}.landing-message{max-width:1100px;margin:auto;padding:30px 28px 110px}.message-box{padding:60px 35px;background:#111;color:#fff;border-radius:28px;text-align:center}.message-box h2{max-width:750px;margin:auto;font-size:clamp(38px,6vw,64px);line-height:.95;letter-spacing:-.06em}.message-box p{max-width:600px;margin:22px auto 0;color:#aaa;line-height:1.6}.message-box .landing-button{margin-top:30px;background:#fff;color:#111}.landing-footer{max-width:1100px;margin:auto;padding:25px 28px;border-top:1px solid #e5e5e2;display:flex;justify-content:space-between;color:#999;font-size:12px}.landing-footer a{color:#555;text-decoration:none}@media(max-width:700px){.landing-header{padding:18px 16px}.landing-nav .landing-login:first-child{display:none}.landing-hero{padding:75px 20px}.landing-hero h1{font-size:54px}.landing-hero p{font-size:17px}.landing-actions{flex-direction:column}.landing-button{width:100%;box-sizing:border-box}.landing-preview{padding:0 16px;margin-bottom:75px}.preview-grid{grid-template-columns:1fr}.landing-section{padding:0 16px 80px}.features-grid{grid-template-columns:1fr}.feature{min-height:150px}.feature h3{margin-top:35px}.landing-message{padding:10px 16px 80px}.message-box{padding:45px 22px}.landing-footer{padding:24px 16px}}
-</style><style>.nav-badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--text);color:var(--surface);font-size:8px;font-weight:900;line-height:1;vertical-align:middle}</style><style>
-.landing{background:transparent}.landing-header{max-width:1280px;padding:18px max(20px,4vw)}.landing-logo{color:var(--text);font-size:17px;font-weight:950}.landing-logo::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 1px 2px;border-radius:50%;background:var(--accent)}.landing-login{border:1px solid var(--border-strong);background:rgba(255,255,255,.68);transition:.2s}.landing-login:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);border-color:rgba(17,19,24,.16)}.landing-hero{position:relative;overflow:hidden;max-width:1240px;padding:clamp(90px,12vw,150px) 24px 90px}.landing-hero::before,.landing-hero::after{content:"";position:absolute;border-radius:50%;pointer-events:none}.landing-hero::before{width:520px;height:520px;right:-170px;top:40px;background:radial-gradient(circle,rgba(255,77,46,.16),transparent 68%)}.landing-hero::after{width:340px;height:340px;left:-180px;bottom:-120px;background:radial-gradient(circle,rgba(90,106,255,.10),transparent 68%)}.landing-eyebrow{position:relative;z-index:2;color:var(--accent);font-size:10px;letter-spacing:.18em}.landing-hero h1{position:relative;z-index:2;font-size:clamp(64px,10vw,132px);letter-spacing:-.095em;line-height:.80}.landing-hero h1 span{color:#777d86}.landing-hero p{position:relative;z-index:2;color:var(--muted);font-size:clamp(17px,2vw,21px);max-width:670px}.landing-actions{position:relative;z-index:2}.landing-button{transition:transform .2s ease,box-shadow .2s ease}.landing-button:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}.landing-button-primary{background:linear-gradient(135deg,#ff5a3c,#ff3b1f);box-shadow:0 14px 30px rgba(255,77,46,.20)}.landing-button-primary b{margin-left:9px;font-size:15px}.landing-button-secondary{border-color:var(--border-strong);background:rgba(255,255,255,.75)}.landing-proof{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:18px;margin-top:24px;color:var(--muted);font-size:10px;font-weight:800}.landing-proof span{display:flex;align-items:center;gap:7px}.landing-proof i{width:7px;height:7px;border-radius:50%;background:#20a765;box-shadow:0 0 0 4px rgba(32,167,101,.10)}.landing-preview{max-width:1190px;padding:0 20px;margin-bottom:130px}.preview-window{position:relative;overflow:hidden;padding:23px;border:1px solid rgba(17,19,24,.10);border-radius:30px;background:rgba(255,255,255,.73);box-shadow:0 35px 100px rgba(15,18,25,.12);backdrop-filter:blur(24px)}.preview-window::after{content:"";position:absolute;right:-80px;bottom:-130px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,77,46,.12),transparent 68%);pointer-events:none}.preview-topbar{display:flex;align-items:center;gap:10px;padding-bottom:19px;border-bottom:1px solid var(--border);font-size:9px;font-weight:900;letter-spacing:.12em}.preview-brand{font-size:12px;letter-spacing:-.03em}.preview-brand span{color:var(--accent)}.preview-live{margin-left:auto;color:var(--accent)}.preview-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}.preview-hero-line{display:flex;justify-content:space-between;gap:20px;align-items:end;padding:29px 4px 20px}.preview-hero-line span{color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.14em}.preview-hero-line strong{display:block;margin-top:7px;font-size:28px;letter-spacing:-.055em}.preview-arrow{font-size:23px;color:var(--muted)!important}.preview-grid{gap:13px}.preview-card{position:relative;overflow:hidden;min-height:160px;padding:22px;border:1px solid var(--border);background:rgba(243,244,246,.82);border-radius:20px;transition:.25s}.preview-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm)}.preview-main-card{background:linear-gradient(135deg,#181a1e,#090a0c);color:#fff}.preview-card small{color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.12em}.preview-main-card p,.preview-main-card .preview-card-link{color:#a8adb5}.preview-card strong{margin-top:18px;font-size:25px;letter-spacing:-.045em}.preview-card p{font-size:12px;line-height:1.5}.preview-card-link{position:absolute;left:22px;bottom:20px;font-size:10px;font-weight:800}.preview-mini-mark{position:absolute;right:20px;bottom:17px;display:grid;place-items:center;width:33px;height:33px;border-radius:11px;background:var(--surface-solid);color:var(--accent);font-size:14px}.preview-bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.preview-bottom span{padding:9px 10px;border-radius:10px;background:rgba(17,19,24,.045);color:var(--muted);font-size:8px;font-weight:900;letter-spacing:.11em;text-align:center}.landing-section{max-width:1190px;padding-left:20px;padding-right:20px}.section-heading h2{max-width:850px}.feature{border-radius:22px;background:rgba(255,255,255,.72);box-shadow:var(--shadow-sm);transition:.22s}.feature:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:rgba(17,19,24,.13)}.feature-number{color:var(--accent)}.feature h3{margin-top:44px}.landing-message{max-width:1190px;padding-left:20px;padding-right:20px}.message-box{position:relative;overflow:hidden;border-radius:30px;background:radial-gradient(circle at 90% 0,rgba(255,77,46,.28),transparent 27rem),linear-gradient(135deg,#17191e,#08090b);box-shadow:var(--shadow-lg)}.message-box::after{content:"";position:absolute;right:-130px;bottom:-180px;width:460px;height:460px;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 0 70px rgba(255,255,255,.025),0 0 0 140px rgba(255,255,255,.015)}.message-box>*{position:relative;z-index:2}.message-box .landing-button{box-shadow:none}.landing-footer{max-width:1190px}.landing-footer a:hover{color:var(--accent)}
-@media(max-width:700px){.landing-header{padding:15px 16px}.landing-hero{padding:78px 18px 70px}.landing-hero h1{font-size:clamp(58px,16vw,82px)}.landing-preview{padding:0 12px;margin-bottom:85px}.preview-window{padding:16px;border-radius:23px}.preview-grid{grid-template-columns:1fr}.preview-card{min-height:145px}.preview-bottom{grid-template-columns:repeat(2,1fr)}.landing-proof{gap:10px}.landing-section{padding-left:16px;padding-right:16px}.landing-message{padding-left:16px;padding-right:16px}.landing-footer{padding-left:16px;padding-right:16px}}
-</style><script src="js/i18n.js"></script>
-<script src="js/navigation.js"></script><style>
-.home-intent{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 0 28px}
-.home-intent a{display:flex;flex-direction:column;gap:6px;padding:15px 16px;border:1px solid rgba(17,19,24,.08);border-radius:17px;background:rgba(255,255,255,.72);color:#111;text-decoration:none;transition:.2s}
-.home-intent a:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(17,19,24,.06)}
-.home-intent strong{font-size:11px}.home-intent span{font-size:9px;color:#888;line-height:1.35}
-@media(max-width:620px){.home-intent{grid-template-columns:1fr}.home-intent a{flex-direction:row;align-items:center;justify-content:space-between}.home-intent span{max-width:170px;text-align:right}}
-</style><style>.home-group-feed{display:grid;gap:8px}.home-group-card{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:13px;padding:12px;background:#111;color:#fff;border-radius:19px;text-decoration:none}.home-group-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:#292a2e}.home-group-date strong{font-size:18px;line-height:1}.home-group-date small{color:#aaa;font-size:7px;font-weight:900;text-transform:uppercase}.home-group-card b{display:block;font-size:12px}.home-group-card span>small{display:block;color:#aaa;font-size:9px;margin-top:4px}.home-group-card i{font-style:normal;color:#aaa}.home-group-empty{display:flex;flex-direction:column;gap:7px;padding:22px;border:1px dashed rgba(17,19,24,.15);border-radius:20px;background:#fff}.home-group-empty strong{font-size:13px}.home-group-empty span{color:#888;font-size:10px;line-height:1.45}.home-group-empty a{margin-top:5px;color:#ff4d2e;font-size:10px;font-weight:900;text-decoration:none}</style><style id="home-product-v2">
-.home-navbar{position:sticky;top:0;z-index:100;background:rgba(246,246,244,.9)!important;backdrop-filter:blur(18px)}
-.home-create-link{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--text);color:var(--surface);text-decoration:none;font-size:20px;font-weight:500}
-.home-feed{max-width:760px;padding:28px 18px 120px}
-.feed-hero{padding:30px 2px 20px}
-.feed-hero h1{max-width:560px}
-.home-search-card{margin:0 0 12px}
-.home-search-card a{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 17px;border:1px solid rgba(17,19,24,.08);border-radius:18px;background:#fff;color:#777;text-decoration:none;box-shadow:0 8px 25px rgba(17,19,24,.04)}
-.home-search-card a span:first-child{font-size:22px;color:#111}.home-search-card a strong{flex:1;font-size:11px;color:#777}.home-search-card a span:last-child{font-size:18px;color:#aaa}
-.home-chips{display:flex;gap:8px;overflow:auto;padding:2px 0 10px;scrollbar-width:none}.home-chips::-webkit-scrollbar{display:none}
-.home-chips a{flex:none;padding:9px 13px;border-radius:999px;background:#eceef1;color:#555;text-decoration:none;font-size:9px;font-weight:850}
-.feed-section{margin-top:32px}.feed-section-head{margin-bottom:14px}.feed-section-head h2{font-size:26px}
-.home-event-card{grid-template-columns:78px 1fr;min-height:145px;border-radius:21px;box-shadow:0 8px 25px rgba(17,19,24,.045)}
-.home-event-date{padding:8px}.home-event-date strong{font-size:27px}.home-event-copy{padding:17px}.home-event-copy h3{font-size:20px;margin:6px 0}.home-event-reason{display:inline-block;margin-top:7px;padding:5px 8px;border-radius:999px;background:#f0f1f3;color:#666;font-size:8px;font-weight:850}.home-event-wrap{position:relative}.home-event-dismiss{position:absolute;right:10px;bottom:10px;border:0;background:rgba(0,0,0,.06);border-radius:999px;padding:6px 9px;font-size:8px;font-weight:800;color:var(--muted);cursor:pointer}.home-event-dismiss:hover{background:rgba(0,0,0,.11)}.home-event-copy p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.home-group-section{margin-top:42px}
-.home-empty,.home-login-card{display:flex;flex-direction:column;gap:7px;padding:22px;border:1px solid rgba(17,19,24,.08);border-radius:20px;background:#fff}
-.home-empty strong,.home-login-card strong{font-size:13px}.home-empty span,.home-login-card span{color:#888;font-size:10px;line-height:1.45}.home-empty a,.home-login-card a{margin-top:5px;color:#ff4d2e;text-decoration:none;font-size:10px;font-weight:900}
-.home-login-card.muted{background:#f0f1f2;border:0}
-.home-bottom-cta{display:flex;flex-direction:column;gap:6px;margin-top:42px;padding:24px;border-radius:23px;background:#111;color:#fff}
-.home-bottom-cta strong{font-size:20px;letter-spacing:-.04em}.home-bottom-cta span{color:#aaa;font-size:11px}.home-bottom-cta a{align-self:flex-start;margin-top:8px;padding:10px 13px;border-radius:11px;background:#fff;color:#111;text-decoration:none;font-size:10px;font-weight:850}
-.bottom-nav{display:grid}
-@media(min-width:721px){.bottom-nav{display:none}.home-create-link{margin-left:auto}}
-@media(max-width:720px){.home-navbar #mainNav{display:none}.home-navbar .home-create-link{margin-left:auto;margin-right:4px}.home-feed{padding-top:18px}.feed-hero{padding-top:22px}.home-event-card{grid-template-columns:70px 1fr}}
-@media(prefers-reduced-motion:reduce){.home-event-card,.home-search-card a{transition:none!important}}
-</style><style id="home-social-feed-v1">
-.home-social-feed{display:grid;gap:7px}.home-social-item{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:12px 13px;border:1px solid var(--border);border-radius:16px;background:var(--surface);text-decoration:none;color:var(--text)}.home-social-avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#111;color:#fff;font-size:12px;font-weight:900}.home-social-item strong{font-size:10px}.home-social-item p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.35}.home-social-item small{display:block;margin-top:4px;color:var(--muted);font-size:8px}.home-social-item b{font-weight:900}@media(max-width:600px){.home-social-item{padding:11px}}
-</style><style id="home-feed-visual-refresh">
-/* CURRUSCOS — visual refresh: feed-first, clean and mobile-first */
-body.social-app{--home-bg:#f6f6f3;--home-ink:#17181b;--home-muted:#686d76;--home-line:#e6e6e1;--home-card:#fff;--home-accent:#ff4d2e;background:var(--home-bg)!important;color:var(--home-ink)!important;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
-body.social-app .navbar.home-navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2));background:rgba(246,246,243,.88)!important;border-bottom:1px solid rgba(23,24,27,.07)!important;color:var(--home-ink);box-shadow:none}
-.home-navbar .logo{font-size:16px;font-weight:950;letter-spacing:-.075em;color:var(--home-ink)}
-.home-navbar #mainNav{gap:6px}
-.home-navbar #mainNav a{padding:9px 12px;border-radius:999px;color:#777a80;font-size:12px;font-weight:750}
-.home-navbar #mainNav a.active,.home-navbar #mainNav a:hover{background:#ecece7;color:var(--home-ink)}
-.home-navbar #mainNav a.active::after{display:none}
-.home-navbar .home-create-link{width:38px;height:38px;margin-left:14px;border-radius:50%;background:var(--home-accent);color:#fff;font-size:24px;box-shadow:0 7px 18px rgba(255,77,46,.2);transition:transform .18s ease,box-shadow .18s ease}
-.home-navbar .home-create-link:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(255,77,46,.27)}
-.home-navbar .menu-button{color:var(--home-ink)}
-.home-feed{width:min(100% - 40px,1040px);max-width:1040px;margin:0 auto;padding:40px 0 90px}
-.feed-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:24px 0 28px}
-.feed-kicker{display:inline-flex;align-items:center;gap:8px;color:var(--home-accent);font-size:10px;font-weight:900;letter-spacing:.18em}
-.feed-kicker::before{content:"";width:20px;height:2px;background:var(--home-accent);border-radius:4px}
-.feed-hero h1{margin:12px 0 8px;color:var(--home-ink);font-size:clamp(38px,5.2vw,64px);font-weight:850;letter-spacing:-.075em;line-height:.98}
-.feed-hero p{max-width:510px;color:var(--home-muted);font-size:15px;line-height:1.65}
-.feed-profile-mini{display:flex;align-items:center;gap:10px;flex:none;padding:8px 13px 8px 8px;border:1px solid var(--home-line);border-radius:999px;background:rgba(255,255,255,.72);color:var(--home-ink);font-size:11px;font-weight:800;transition:border-color .18s ease,transform .18s ease}
-.feed-profile-mini:hover{transform:translateY(-2px);border-color:#c9c9c1}
-#homeAvatar{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#1a1b1e;color:#fff;font-size:12px;font-weight:900}
-.home-search-card{margin:0 0 14px}
-.home-search-card a{display:flex;align-items:center;gap:13px;min-height:62px;padding:0 20px;border:1px solid var(--home-line);border-radius:18px;background:var(--home-card);color:var(--home-muted);text-decoration:none;box-shadow:0 5px 18px rgba(20,20,18,.025);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
-.home-search-card a:hover{transform:translateY(-2px);border-color:#d2d2ca;box-shadow:0 12px 28px rgba(20,20,18,.06)}
-.home-search-card a span:first-child{font-size:25px;color:var(--home-ink)}
-.home-search-card a strong{flex:1;font-size:12px;font-weight:650;color:#777a80}
-.home-search-card a span:last-child{font-size:20px;color:var(--home-accent)}
-.home-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
-.home-chips::-webkit-scrollbar{display:none}
-.home-chips a{flex:none;padding:9px 14px;border:1px solid #e6e6e1;border-radius:999px;background:rgba(255,255,255,.55);color:#4e5054;text-decoration:none;font-size:11px;font-weight:800;transition:background .18s ease,border-color .18s ease,color .18s ease}
-.home-chips a:hover{border-color:var(--home-ink);background:var(--home-ink);color:#fff}
-.feed-section{margin-top:38px}
-.feed-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:16px}
-.feed-section-head span,.feed-section-head>div>span{color:var(--home-accent);font-size:9px;font-weight:950;letter-spacing:.16em}
-.feed-section-head h2{margin:6px 0 0;color:var(--home-ink);font-size:clamp(22px,3vw,30px);font-weight:850;letter-spacing:-.06em;line-height:1.08}
-.feed-section-head>a{flex:none;padding-bottom:3px;color:#5e6065;text-decoration:none;font-size:11px;font-weight:850}
-.feed-section-head>a:hover{color:var(--home-accent)}
-.home-event-feed{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.home-event-wrap{position:relative;min-width:0}
-.home-event-card{display:grid;grid-template-columns:76px minmax(0,1fr);height:100%;min-height:168px;overflow:hidden;border:1px solid var(--home-line);border-radius:20px;background:var(--home-card);color:var(--home-ink);text-decoration:none;box-shadow:0 4px 16px rgba(20,20,18,.025);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
-.home-event-card:hover{transform:translateY(-3px);border-color:#d3d3cb;box-shadow:0 14px 30px rgba(20,20,18,.07)}
-.home-event-feed.has-single-event{grid-template-columns:minmax(0,1fr)}
-.home-event-feed.has-single-event .home-event-card{grid-template-columns:96px minmax(0,1fr);min-height:190px;background:radial-gradient(circle at 100% 0,rgba(255,77,46,.1),transparent 24rem),var(--home-card)}
-.home-event-feed.has-single-event .home-event-date{background:#1b1c1f;color:#fff}
-.home-event-feed.has-single-event .home-event-date span{color:#b9babd}
-.home-event-feed.has-single-event .home-event-copy{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(200px,.9fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:30px;align-items:start;padding:23px 27px}
-.home-event-feed.has-single-event .home-event-copy>small{grid-column:1;grid-row:1}
-.home-event-feed.has-single-event .home-event-copy h3{grid-column:1;grid-row:2;font-size:clamp(22px,3vw,30px)}
-.home-event-feed.has-single-event .home-event-copy p{grid-column:1;grid-row:3;max-width:600px}
-.home-event-feed.has-single-event .home-event-reason{grid-column:2;grid-row:2;align-self:start;margin-top:8px;font-size:9px}
-.home-event-feed.has-single-event .home-event-meta{grid-column:2;grid-row:3;align-self:end;margin:0;padding:0}
-.home-event-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px;background:#f0f0eb;color:var(--home-ink);text-align:center}
-.home-event-date strong{font-size:31px;font-weight:900;letter-spacing:-.08em;line-height:1}
-.home-event-date span{color:#73756f;font-size:9px;font-weight:850;text-transform:uppercase}
-.home-event-copy{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:17px 17px 18px}
-.home-event-copy>small{color:var(--home-accent);font-size:9px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
-.home-event-copy h3{margin:6px 0 5px;color:var(--home-ink);font-size:18px;font-weight:850;letter-spacing:-.045em;line-height:1.13;overflow-wrap:anywhere}
-.home-event-copy p{display:-webkit-box;margin:0;color:var(--home-muted);font-size:11px;line-height:1.5;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.home-event-reason{display:inline-block;margin-top:9px;padding:5px 8px;border-radius:999px;background:#fff0eb;color:#c74329;font-size:8px;font-weight:850;line-height:1.3}
-.home-event-meta{margin-top:auto;padding-top:10px;color:#777a80;font-size:9px;line-height:1.35}
-.home-event-dismiss{position:absolute;right:10px;top:10px;z-index:2;border:1px solid rgba(23,24,27,.08);border-radius:999px;padding:6px 9px;background:rgba(255,255,255,.9);color:#686a6f;font-size:8px;font-weight:800;cursor:pointer;backdrop-filter:blur(8px)}
-.home-event-dismiss:hover{background:var(--home-ink);color:#fff}
-.home-social-feed,.home-group-feed{display:grid;gap:9px}
-.home-social-item{display:grid;grid-template-columns:42px minmax(0,1fr);gap:12px;align-items:center;padding:13px 15px;border:1px solid var(--home-line);border-radius:17px;background:var(--home-card);color:var(--home-ink);text-decoration:none;transition:transform .18s ease,border-color .18s ease}
-.home-social-item:hover{transform:translateX(2px);border-color:#d3d3cb}
-.home-social-avatar{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#1b1c1f;color:#fff;font-size:12px;font-weight:900}
-.home-social-item strong,.home-social-item b{font-size:11px;font-weight:900}
-.home-social-item small{display:block;margin-top:4px;color:var(--home-muted);font-size:9px}
-.home-group-card{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:13px;padding:13px;border:1px solid #26272a;border-radius:18px;background:#1b1c1f;color:#fff;text-decoration:none;transition:transform .18s ease,background .18s ease}
-.home-group-card:hover{transform:translateY(-2px);background:#242529}
-.home-group-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:#303136}
-.home-group-date strong{font-size:20px;line-height:1;letter-spacing:-.05em}
-.home-group-date small{margin-top:3px;color:#b9babd;font-size:8px;font-weight:900;text-transform:uppercase}
-.home-group-card b{display:block;font-size:12px;font-weight:850}
-.home-group-card span>small{display:block;margin-top:4px;color:#b9babd;font-size:10px}
-.home-group-card i{font-style:normal;color:#b9babd}
-.home-empty,.home-login-card{display:flex;flex-direction:column;gap:7px;padding:24px;border:1px dashed #dcdcd5;border-radius:20px;background:rgba(255,255,255,.65);color:var(--home-ink)}
-.home-empty strong,.home-login-card strong{font-size:14px;font-weight:850}
-.home-empty span,.home-login-card span{color:var(--home-muted);font-size:11px;line-height:1.55}
-.home-empty a,.home-login-card a{align-self:flex-start;margin-top:5px;color:var(--home-accent);text-decoration:none;font-size:11px;font-weight:900}
-.home-bottom-cta{display:flex;flex-direction:row;align-items:center;gap:12px;margin-top:42px;padding:24px 26px;border:1px solid #28292d;border-radius:22px;background:radial-gradient(circle at 100% 0,rgba(255,77,46,.28),transparent 18rem),#191a1d;color:#fff}
-.home-bottom-cta strong{font-size:18px;font-weight:900;letter-spacing:-.045em}
-.home-bottom-cta span{flex:1;color:#b9babd;font-size:11px}
-.home-bottom-cta a{flex:none;padding:11px 15px;border-radius:999px;background:#fff;color:#191a1d;text-decoration:none;font-size:10px;font-weight:900;transition:transform .18s ease}
-.home-bottom-cta a:hover{transform:translateY(-2px)}
-.bottom-nav{display:none}
-@media(max-width:760px){
- body.social-app .navbar.home-navbar{height:60px;padding:0 17px}
- .home-navbar #mainNav{display:none}
- .home-navbar .home-create-link{margin-left:auto;margin-right:8px}
- .home-navbar .menu-button{display:block;font-size:22px}
- .home-feed{width:calc(100% - 32px);padding:20px 0 100px}
- .feed-hero{align-items:flex-start;padding:22px 0 20px}
- .feed-hero h1{font-size:clamp(36px,10vw,50px)}
- .feed-hero p{max-width:360px;font-size:13px}
- .feed-profile-mini{gap:0;padding:5px;border-radius:50%}
- .feed-profile-mini #homeName{display:none}
- #homeAvatar{width:35px;height:35px}
- .home-search-card a{min-height:56px;padding:0 14px;border-radius:16px}
- .home-search-card a strong{font-size:11px}
- .home-chips{margin-right:-16px;padding-right:16px}
- .home-chips a{min-height:44px;display:inline-flex;align-items:center}
- .feed-section{margin-top:30px}
- .feed-section-head{align-items:flex-end;margin-bottom:12px}
- .feed-section-head h2{font-size:23px}
- .feed-section-head>a{font-size:10px}
- .home-event-feed{grid-template-columns:1fr;gap:10px}
- .home-event-card{grid-template-columns:67px minmax(0,1fr);min-height:150px;border-radius:18px}
- .home-event-feed.has-single-event .home-event-card{grid-template-columns:67px minmax(0,1fr);min-height:165px}
- .home-event-feed.has-single-event .home-event-copy{display:flex;gap:0;padding:15px 14px}
- .home-event-feed.has-single-event .home-event-copy h3{font-size:19px}
- .home-event-feed.has-single-event .home-event-reason{margin-top:9px}
- .home-event-date strong{font-size:27px}
- .home-event-copy{padding:15px 14px}
- .home-event-copy h3{font-size:17px}
- .home-event-copy p{font-size:10px}
- .home-event-dismiss{right:7px;top:7px;padding:5px 7px}
- .home-bottom-cta{align-items:flex-start;flex-direction:column;gap:7px;margin-top:30px;padding:22px}
- .home-bottom-cta a{margin-top:5px}
- .bottom-nav{position:fixed;left:12px;right:12px;bottom:max(10px,env(safe-area-inset-bottom));z-index:2000;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;padding:7px;border:1px solid rgba(23,24,27,.08);border-radius:21px;background:rgba(255,255,255,.94);box-shadow:0 10px 36px rgba(20,20,18,.14);backdrop-filter:blur(18px)}
- .bottom-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#66686d;text-decoration:none}
- .bottom-nav-item b{font-size:20px;font-weight:500;line-height:1}
- .bottom-nav-item span{font-size:10px;font-weight:800}
- .bottom-nav-item.active{background:#191a1d;color:#fff}
-}
-@media(max-width:390px){.feed-hero h1{font-size:35px}.feed-section-head h2{font-size:21px}.home-event-card{grid-template-columns:59px minmax(0,1fr)}.home-event-copy{padding:13px 11px}.home-event-copy h3{font-size:16px}}
-@media(min-width:761px){.home-social-section,.home-next-section{margin-top:42px}}
-@media(prefers-reduced-motion:reduce){.home-event-card,.home-search-card a,.home-navbar .home-create-link,.home-social-item,.home-group-card{transition:none!important}}
-</style>
-<style id="curruscos-mobile-nav-emergency-fix">
-/* Keep the four-tab mobile bar anchored to the viewport bottom.
-   This overrides legacy global nav rules that can turn every nav into an overlay. */
-@media (max-width: 760px) {
-  html body.social-app nav.bottom-nav {
-    position: fixed !important;
-    inset: auto 12px max(10px, env(safe-area-inset-bottom)) 12px !important;
-    top: auto !important;
-    right: 12px !important;
-    bottom: max(10px, env(safe-area-inset-bottom)) !important;
-    left: 12px !important;
-    width: auto !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: 76px !important;
-    box-sizing: border-box !important;
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    align-items: stretch !important;
-    justify-content: stretch !important;
-    padding: 7px !important;
-    margin: 0 !important;
-    gap: 3px !important;
-    transform: none !important;
-    z-index: 2000 !important;
-    background: rgba(255,255,255,.96) !important;
-    color: #17181b !important;
-    border: 1px solid rgba(23,24,27,.08) !important;
-    border-radius: 21px !important;
-    box-shadow: 0 10px 36px rgba(20,20,18,.14) !important;
-    backdrop-filter: blur(18px) !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    flex-direction: row !important;
-  }
-  html body.social-app nav.bottom-nav > a.bottom-nav-item {
-    position: static !important;
-    display: flex !important;
-    min-width: 0 !important;
-    min-height: 48px !important;
-    width: auto !important;
-    height: auto !important;
-    padding: 4px 2px !important;
-    margin: 0 !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 3px !important;
-    transform: none !important;
-  }
-}
-</style>
-</head><body class="social-app">
-<header class="navbar home-navbar">
-  <a href="index.html" class="logo" aria-label="Curruscos, inicio">CURRUSCOS.</a>
-  <nav id="mainNav" aria-label="Navegación principal"></nav>
-  <a class="home-create-link" href="crear-evento.html" aria-label="Crear un evento">＋</a>
-  <button id="menuButton" class="menu-button" type="button" aria-label="Abrir menú" aria-expanded="false">☰</button>
-</header>
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Curruscos — Planes para ti</title>
+  <meta name="description" content="Descubre eventos, encuentra planes y únete a actividades en Curruscos.">
+  <meta name="theme-color" content="#f7f7f5">
+  <link rel="canonical" href="https://curruscos-clan.github.io/Curruscos-Clan/">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/design-system.css">
+</head>
+<body>
+  <header class="top-header">
+    <a class="app-brand" href="index.html" aria-label="Curruscos, inicio">Curruscos</a>
+    <span class="header-subtitle">Planes que merecen la pena</span>
+    <div id="auth-header-action"><a class="btn btn-secondary" href="perfil.html?action=login">Entrar</a></div>
+  </header>
 
-<main class="home-feed">
-  <section class="feed-hero">
-    <div>
-      <span class="feed-kicker">INICIO</span>
-      <h1>¿Qué quieres hacer?</h1>
-      <p>Descubre eventos, encuentra gente y apúntate a tu próximo plan.</p>
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <main class="app-container">
+    <section class="feed-intro" aria-labelledby="feed-title">
+      <span class="eyebrow">DESCUBRIR · COMPARTIR · QUEDAR</span>
+      <h1 id="feed-title">Planes para ti<span aria-hidden="true">.</span></h1>
+      <p>Ideas para salir, gente con quien compartirlas y próximos planes de la comunidad.</p>
+    </section>
+
+    <div class="feed-toolbar">
+      <div><h2>Tu próximo plan</h2><p>Eventos públicos seleccionados para descubrir.</p></div>
+      <a href="explorar.html" class="btn btn-secondary">Ver todos ↗</a>
     </div>
-    <a class="feed-profile-mini" href="perfil.html" aria-label="Abrir mi perfil">
-      <span id="homeAvatar">C</span><span id="homeName">Tu perfil</span>
+
+    <div class="filter-row" role="group" aria-label="Filtrar eventos">
+      <button type="button" class="filter-chip active" data-filter="all" aria-pressed="true">Todos</button>
+      <button type="button" class="filter-chip" data-filter="today" aria-pressed="false">Hoy</button>
+      <button type="button" class="filter-chip" data-filter="weekend" aria-pressed="false">Fin de semana</button>
+    </div>
+
+    <section id="feed-list" class="feed-list" aria-label="Eventos recomendados" aria-live="polite" aria-busy="true">
+      <div class="feed-state" role="status"><h2>Cargando planes destacados…</h2><p>Estamos buscando actividades para ti.</p></div>
+    </section>
+    <p class="feed-footer-note">Las recomendaciones se basan en la fecha de los eventos y, cuando están disponibles, tus intereses y grupos.</p>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" class="nav-tab active" aria-current="page">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></svg><span>Inicio</span>
     </a>
-  </section>
+    <a href="explorar.html" class="nav-tab">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><span>Buscar</span>
+    </a>
+    <a href="eventos.html" class="nav-tab">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span>Mi grupo</span>
+    </a>
+    <a href="perfil.html" class="nav-tab">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mi perfil</span>
+    </a>
+  </nav>
 
-  <section class="home-search-card" aria-label="Buscar eventos">
-    <a href="explorar.html"><span aria-hidden="true">⌕</span><strong>Buscar eventos, actividades o lugares</strong><span aria-hidden="true">→</span></a>
-  </section>
-
-  <section class="home-chips" aria-label="Categorías">
-    <a href="explorar.html?category=sport">Deporte</a>
-    <a href="explorar.html?category=gaming">Gaming</a>
-    <a href="explorar.html?category=social">Social</a>
-    <a href="explorar.html?category=activity">Actividades</a>
-  </section>
-
-  <section class="feed-section">
-    <div class="feed-section-head">
-      <div><span id="homeRecommendationEyebrow">PARA TI</span><h2 id="homeRecommendationTitle">Eventos que pueden encajarte</h2></div>
-      <a href="explorar.html">Ver todos →</a>
-    </div>
-    <div id="homeRecommendations" class="home-event-feed">
-      <div class="feed-loading" aria-label="Cargando eventos"><i></i><i></i><i></i></div>
-    </div>
-  </section>
-
-  <section class="feed-section home-social-section" id="homeSocialSection" hidden>
-    <div class="feed-section-head">
-      <div><span>COMUNIDAD</span><h2>Lo que está pasando</h2></div>
-      <a href="explorar.html">Descubrir →</a>
-    </div>
-    <div id="homeSocialFeed" class="home-social-feed"></div>
-  </section>
-
-  <section class="feed-section home-next-section">
-    <div class="feed-section-head">
-      <div><span>TUS PLANES</span><h2>Lo que tienes en marcha</h2></div>
-      <a href="mis-eventos.html">Ver mis planes →</a>
-    </div>
-    <div id="homeGroupFeed" class="home-group-feed"></div>
-  </section>
-
-  <section class="home-bottom-cta">
-    <strong>¿Tienes una idea?</strong>
-    <span>Crea un evento y deja que la gente se apunte.</span>
-    <a href="crear-evento.html">Crear evento →</a>
-  </section>
-</main>
-
-<nav class="bottom-nav" aria-label="Navegación móvil">
-  <a class="bottom-nav-item active" href="index.html"><b aria-hidden="true">⌂</b><span>Inicio</span></a>
-  <a class="bottom-nav-item" href="explorar.html"><b aria-hidden="true">⌕</b><span>Buscar</span></a>
-  <a class="bottom-nav-item" href="eventos.html"><b aria-hidden="true">▦</b><span>Mi grupo</span></a>
-  <a class="bottom-nav-item" href="perfil.html"><b aria-hidden="true">◉</b><span>Mi perfil</span></a>
-</nav>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/i18n.js"></script>
-<script src="js/app.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  await window.curruscosI18n?.ready;
-  const user = await getCurrentUser();
-  const rec = document.getElementById("homeRecommendations");
-  const gf = document.getElementById("homeGroupFeed");
-
-  const profile = user ? await getCurrentProfile().catch(() => null) : null;
-  const interests = user ? await getMyInterests().catch(() => []) : [];
-  const recEyebrow = document.getElementById("homeRecommendationEyebrow");
-  const recTitle = document.getElementById("homeRecommendationTitle");
-  if (!user) {
-    if (recEyebrow) recEyebrow.textContent = "DESCUBRIR";
-    if (recTitle) recTitle.textContent = "Eventos que pueden interesarte";
-  }
-  if (profile) {
-    const display = profile.display_name || profile.username || "Tu perfil";
-    document.getElementById("homeName").textContent = display;
-    document.getElementById("homeAvatar").textContent = display.charAt(0).toUpperCase();
-  }
-
-  let events = [];
-  let isRecommendationFeed = true;
-  try {
-    events = await getRecommendedPublicEvents("", "all") || [];
-  } catch (e) {
-    isRecommendationFeed = false;
-  }
-  if (!events.length) {
-    isRecommendationFeed = false;
-    try { events = await getPublicEvents({search:"", category:"all", event_type:"all"}) || []; } catch (e) {}
-  }
-
-  // Apply the upcoming-event rule to both personalized recommendations and
-  // the public-query fallback; either source can contain stale event records.
-  const now = new Date();
-  events = events.filter(event => {
-    if (event.status === "live") return true;
-    const date = event.date || event.event_date;
-    const time = event.time || event.event_time || "23:59";
-    if (!date) return false;
-    const timestamp = new Date(date + "T" + time).getTime();
-    return Number.isFinite(timestamp) && timestamp >= now.getTime();
-  });
-
-  rec.innerHTML = events.slice(0, 5).map(event => {
-    const id = event.id || event.event_id;
-    const eventDate = event.date || event.event_date;
-    const eventTime = event.time || event.event_time;
-    const d = eventDate ? new Date(eventDate + "T" + (eventTime || "00:00")) : null;
-    const hasValidDate = d && Number.isFinite(d.getTime());
-    const dateMarkup = hasValidDate
-      ? '<strong>' + d.getDate() + '</strong><span>' + d.toLocaleDateString("es-ES",{weekday:"short",month:"short"}) + '</span>'
-      : '<strong>—</strong><span>Fecha pendiente</span>';
-    const category = String(event.event_type || event.category || "evento").replaceAll("_", " ");
-    const rawKey = String(event.event_type || event.category || "").trim().toLowerCase();
-    const aliases = {
-      "social":"planes sociales","planes_sociales":"planes sociales","sociales":"planes sociales",
-      "padel":"pádel","futbol":"fútbol","baloncesto":"baloncesto","tenis":"tenis",
-      "ajedrez":"ajedrez","gaming":"gaming","running":"running","viajes":"viajes",
-      "senderismo":"senderismo","musica":"música","cine":"cine"
-    };
-    const interestMatch = interests.find(interest => {
-      const normalized = String(interest || "").trim().toLowerCase();
-      return normalized === rawKey || normalized === (aliases[rawKey] || rawKey) || (aliases[normalized] || normalized) === rawKey;
-    });
-    const participantCount = Number(event.participant_count ?? event.event_participants?.[0]?.count ?? 0);
-    const reason = user ? (interestMatch
-      ? "Porque te interesa " + String(interestMatch).trim()
-      : participantCount >= 5 ? "Popular en Curruscos"
-      : "Nuevo en Curruscos") : "Descubre este plan en Curruscos";
-    return '<div class="home-event-wrap" data-event-id="' + escapeHtml(id) + '" data-event-type="' + escapeHtml(event.event_type || "") + '"><a class="home-event-card" href="evento-publico.html?id=' + encodeURIComponent(id) + '">' +
-      '<span class="home-event-date">' + dateMarkup + '</span>' +
-      '<span class="home-event-copy"><small>' + escapeHtml(category) + '</small><h3>' + escapeHtml(event.title || "Evento") + '</h3><p>' + escapeHtml(event.description || "Descubre este evento en Curruscos.") + '</p><span class="home-event-reason">' + escapeHtml(reason) + '</span><span class="home-event-meta">⌖ ' + escapeHtml(event.location || "Lugar por confirmar") + '</span></span></a>' + (user ? '<button class="home-event-dismiss" type="button">No me interesa</button>' : '') + '</div>';
-  }).join("") || '<div class="home-empty"><strong>No hay eventos públicos todavía.</strong><span>Cuando haya nuevos planes aparecerán aquí para descubrirlos.</span><a href="explorar.html">Explorar eventos →</a></div>';
-  rec.classList.toggle("has-single-event", events.length === 1);
-
-  rec.querySelectorAll(".home-event-wrap").forEach((card, index) => {
-    const eventData = events[index];
-    if (user && isRecommendationFeed) {
-      logRecommendationImpression(
-        card.dataset.eventId,
-        "home",
-        index + 1,
-        eventData?.score ?? eventData?.recommendation_score ?? null,
-        card.querySelector(".home-event-reason")?.textContent || null
-      );
-    }
-    if (user) card.querySelector("a")?.addEventListener("click", () => logActivitySignal("view", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"}), {once:true});
-    if (user) card.querySelector(".home-event-dismiss")?.addEventListener("click", async event => {
-      event.preventDefault(); event.stopPropagation();
-      const button=event.currentTarget; button.disabled=true;
-      const saved = await logActivitySignal("dismiss", card.dataset.eventId, card.dataset.eventType || null, null, {source:"home"});
-      if (saved) {
-        card.remove();
-      } else {
-        button.disabled=false;
-        button.textContent="Reintentar";
-        button.title="No se ha podido guardar tu preferencia. Vuelve a intentarlo.";
-      }
-    });
-  });
-
-  try {
-    const socialSection = document.getElementById("homeSocialSection");
-    const socialRoot = document.getElementById("homeSocialFeed");
-    const social = await getSocialActivity();
-    if (socialSection && socialRoot && social.length) {
-      socialSection.hidden = false;
-      socialRoot.innerHTML = social.slice(0, 5).map(item => {
-        const name = escapeHtml(item.actor_name || "Alguien");
-        const title = escapeHtml(item.event_title || "un evento");
-        const activityType = String(item.activity_type || "");
-        const kind = activityType === "join" ? "se ha apuntado a" : activityType === "create" || activityType === "organize" ? "ha organizado" : "ha participado en";
-        const avatar = escapeHtml((item.actor_name || "?").charAt(0).toUpperCase());
-        return '<a class="home-social-item" href="evento-publico.html?id=' + encodeURIComponent(item.event_id) + '">' +
-          '<span class="home-social-avatar">' + avatar + '</span><span><strong>' + name + '</strong> ' + kind + ' <b>' + title + '</b><small>' + escapeHtml(String(item.event_type || "Evento").replaceAll("_"," ")) + '</small></span></a>';
-      }).join("");
-    }
-  } catch (e) {}
-
-  try {
-    const group = await getCurrentGroup();
-    const groupEvents = group ? await getGroupEvents() : [];
-    const now = new Date();
-    const upcoming = groupEvents.filter(event => {
-      const date = new Date((event.date || "") + "T" + (event.time || "23:59"));
-      return date >= now && event.status !== "cancelled";
-    }).sort((a,b) => new Date(a.date+"T"+(a.time||"23:59")) - new Date(b.date+"T"+(b.time||"23:59")));
-
-    gf.innerHTML = upcoming.slice(0,3).map(event => {
-      const d = new Date(event.date + "T" + (event.time || "00:00"));
-      return '<a class="home-group-card" href="evento.html?id=' + encodeURIComponent(event.id) + '">' +
-        '<span class="home-group-date"><strong>' + d.getDate() + '</strong><small>' + d.toLocaleDateString("es-ES",{month:"short"}) + '</small></span>' +
-        '<span><b>' + escapeHtml(event.title || "Próximo plan") + '</b><small>' + escapeHtml(event.location || "Lugar por confirmar") + '</small></span><i>→</i></a>';
-    }).join("") || '<div class="home-empty"><strong>Tu agenda está libre.</strong><span>Aquí aparecerán tus próximos planes.</span><a href="crear-evento.html">Crear un evento →</a></div>';
-  } catch (e) {
-    gf.innerHTML = '<div class="home-empty"><span>No se ha podido cargar tus planes ahora mismo.</span></div>';
-  }
-});
-</script>
-</body></html>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/recommendations.js"></script>
+  <script src="js/feed.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
