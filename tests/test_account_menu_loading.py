@@ -22,6 +22,19 @@ class AccountMenuLoadingTests(unittest.TestCase):
         self.assertLess(menu.index('button.addEventListener("click"'), menu.index("Promise.resolve()"))
         self.assertLess(menu.index('logout?.addEventListener("click"'), menu.index("Promise.resolve()"))
 
+    def test_account_menu_supports_keyboard_dismissal(self):
+        start = APP.index("function initAccountMenu()")
+        end = APP.index("/* ========================================================", start)
+        menu = APP[start:end]
+        for expected in (
+            'aria-expanded="false" aria-controls="accountPanel"',
+            'event.key === "Escape"',
+            'button.setAttribute("aria-expanded", "false")',
+            "button.focus()",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, menu)
+
     def test_profile_updates_refresh_the_account_menu(self):
         self.assertIn('window.addEventListener("curruscos:profile-updated"', APP)
         self.assertIn("profileUpdatedDuringLoad = true", APP)
