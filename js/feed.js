@@ -19,7 +19,7 @@
     toastContainer.appendChild(item);window.setTimeout(()=>item.remove(),duration);
   }
   function startDate(event){
-    const raw=event?.start_time||(event?.date?String(event.date)+(event?.time?"T"+String(event.time).slice(0,8):"T23:59:00"):"");
+    const raw=event?.start_time||(event?.date?String(event.date)+(event?.time?"T"+String(event.time).slice(0,8):"T00:00:00"):"");
     const parsed=raw?new Date(raw):new Date(NaN);
     return Number.isNaN(parsed.getTime())?null:parsed;
   }
@@ -101,7 +101,7 @@
         (description?'<p class="event-description">'+esc(description)+'</p>':"")+
         '<div class="event-card-meta"><span>⌖ '+place+'</span><span>'+category+'</span></div>'+
         '<div class="event-card-footer"><span class="event-capacity">'+esc(capacity)+'</span>'+
-        (joined?'<button class="btn btn-secondary rsvp-btn" disabled>Ya estás apuntado</button>':'<button class="btn btn-primary rsvp-btn" data-event-id="'+esc(event.id)+'">Apuntarme <span aria-hidden="true">↗</span></button>')+
+        (joined?'<button class="btn btn-secondary rsvp-btn" disabled>Ya estás apuntado</button>':event.status==="published"?'<button class="btn btn-primary rsvp-btn" data-event-id="'+esc(event.id)+'">Apuntarme <span aria-hidden="true">↗</span></button>':'<button class="btn btn-secondary rsvp-btn" disabled>Inscripción no disponible</button>')+
         '</div></div>';
       const button=card.querySelector(".rsvp-btn");
       if(button&&!joined)button.addEventListener("click",()=>handleJoin(event.id,button));
