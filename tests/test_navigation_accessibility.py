@@ -21,6 +21,12 @@ class NavigationAccessibilityTests(unittest.TestCase):
             with self.subTest(expected=expected):
                 self.assertIn(expected, source)
 
+    def test_mobile_menu_css_does_not_hide_the_four_tab_bottom_navigation(self):
+        css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertIn("nav.mobile-open", css)
+        self.assertIn(".navbar #mainNav.mobile-open", css)
+        self.assertNotIn(".bottom-nav{display:none!important}", css.replace(" ", ""))
+
     def test_create_hub_does_not_claim_a_primary_tab(self):
         source = (ROOT / "js" / "navigation.js").read_text(encoding="utf-8")
         self.assertNotIn('"crear.html"]', source)
