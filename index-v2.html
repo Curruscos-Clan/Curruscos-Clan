@@ -1,0 +1,68 @@
+<!-- Archivo: index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Curruscos Clan | Planes y Actividades</title>
+  <link rel="stylesheet" href="css/design-system.css">
+</head>
+<body>
+
+  <!-- Cabecera Superior -->
+  <header class="top-header">
+    <span class="app-brand">Curruscos</span>
+    <div id="auth-header-action">
+      <button id="btn-login-header" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">Entrar</button>
+    </div>
+  </header>
+
+  <!-- Contenedor de Alertas Toast -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Contenedor Principal del Feed -->
+  <main class="app-container">
+    <div style="margin-bottom: var(--space-md);">
+      <h1 style="font-size: 1.5rem; margin-bottom: 4px;">Planes para ti</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Descubre actividades cercanas y súmate en un clic.</p>
+    </div>
+
+    <!-- Filtros de Inmediatez -->
+    <div style="display: flex; gap: var(--space-xs); overflow-x: auto; padding-bottom: var(--space-sm); margin-bottom: var(--space-sm);">
+      <button class="badge badge-subtle filter-chip active" data-filter="all">Todos</button>
+      <button class="badge badge-subtle filter-chip" data-filter="today">Hoy</button>
+      <button class="badge badge-subtle filter-chip" data-filter="weekend">Fin de semana</button>
+    </div>
+
+    <!-- Lista de Eventos -->
+    <section id="feed-list" aria-busy="true">
+      <!-- Indicador de Carga Inicial -->
+      <div id="feed-loader" style="text-align: center; padding: var(--space-xl) 0; color: var(--text-muted);">
+        <p>Cargando planes destacados...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Navegación Inferior (Mobile-First) -->
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" class="nav-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+      <span>Inicio</span>
+    </a>
+    <a href="explorar.html" class="nav-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <span>Explorar</span>
+    </a>
+    <a href="mis-planes.html" class="nav-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <span>Mis Planes</span>
+    </a>
+    <a href="perfil.html" class="nav-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <span>Perfil</span>
+    </a>
+  </nav>
+
+  <script type="module" src="js/feed.js"></script>
+</body>
+</html>
