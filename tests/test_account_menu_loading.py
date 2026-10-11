@@ -24,6 +24,8 @@ class AccountMenuLoadingTests(unittest.TestCase):
 
     def test_profile_updates_refresh_the_account_menu(self):
         self.assertIn('window.addEventListener("curruscos:profile-updated"', APP)
+        self.assertIn("profileUpdatedDuringLoad = true", APP)
+        self.assertIn("if (!profileUpdatedDuringLoad) renderProfile(profile)", APP)
 
 
 if __name__ == "__main__":
