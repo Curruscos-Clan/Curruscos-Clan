@@ -125,3 +125,24 @@ The remote ledger ends at version `20261009172455` (`secure_public_event_detail_
 The timestamp boundary plus the live-definition mismatches make these post-boundary migrations strong candidates for **not deployed**, rather than merely renamed. This is still not proof that every SQL file is absent from the schema: some changes may have been applied manually or combined into other migrations. Treat each row as a candidate for isolated replay and rollout planning, not as authorization to run it against production.
 
 The public event-count helper is defined by more than one local migration, so the intended final definition and grants must be resolved by replaying the ordered files together. Do not deploy only the later file or manually insert a ledger row to make the history look aligned.
+
+
+## Regression suite outcome and clean-replay blocker (2026-10-11)
+
+The consolidated workflow `.github/workflows/migration-reconciliation-regression.yml` completed successfully on the audit branch (run **38128441422**). All steps passed: static migration/frontend checks, participant authorization plus aggregate counts, public-profile privacy, event/trip wrapper permissions, and anonymous event-detail policy restrictions. The existing wrapper-permission, lifecycle-static/participant, and public-profile workflows also completed successfully on the same commit.
+
+These successes validate the targeted migrations against their test fixtures. They do **not** establish that all 155 migrations replay cleanly from an empty PostgreSQL database.
+
+A repository-tree inspection found that `supabase/` currently contains only `migrations/` and `tests/`: there is no `supabase/config.toml`, seed, or checked-in baseline schema in that directory. The migration sequence is not self-contained from an empty database: the earliest file, `20261003000000_add_trip_smart_search_preferences.sql`, alters an existing `public.trips` table; other early files reference pre-existing objects such as `auth.users`, `public.teams`, personalization tables, and Supabase roles/functions. The current PostgreSQL tests work by declaring a small fixture schema before including one migration, rather than by reconstructing the entire application schema.
+
+**Conclusion:** do not add a naive “apply every SQL file to empty PostgreSQL” job and interpret its failure as a migration defect. A valid full replay requires a versioned, reproducible Supabase baseline (or a sanitized schema-only snapshot from a known-good checkpoint), the expected Supabase roles/extensions/auth helpers, and a verified ordering strategy for the eight duplicate timestamp prefixes. A production schema dump must exclude application data and secrets; it should be reviewed before being committed or used in CI.
+
+### Next safe steps
+
+1. Identify the source and exact commit/version for the baseline schema used when the first migration in this directory was authored.
+2. Obtain or reconstruct a schema-only baseline in a disposable environment, with no production data.
+3. Define deterministic ordering for duplicate-timestamp migrations only after checking their dependencies and historical commits; do not rename them speculatively.
+4. Replay the complete sequence in disposable Supabase/PostgreSQL and record the first failure with the responsible file and missing dependency.
+5. Compare the final replayed functions, policies, and grants with the live schema and rerun all targeted regressions before proposing a separately reviewed deployment.
+
+No production schema or remote migration history was changed during these checks.
