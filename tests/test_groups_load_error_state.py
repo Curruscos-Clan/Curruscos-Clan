@@ -16,6 +16,8 @@ class GroupsLoadErrorRegressionTests(unittest.TestCase):
     def test_groups_page_uses_strict_mode_and_has_retry_action(self):
         source = (ROOT / "grupos.html").read_text(encoding="utf-8")
         self.assertIn("getUserGroups(true,{throwOnError:true})", source)
+        self.assertIn("function escapeHtml(value)", source)
+        self.assertIn("char=>({\"&\":\"&amp;\"", source)
         self.assertIn('role="alert"', source)
         self.assertIn("Tus grupos no se han eliminado", source)
         self.assertIn('id="retryGroupsButton"', source)
