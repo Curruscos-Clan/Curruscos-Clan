@@ -163,6 +163,24 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
 }
 </style>
 
+
+<style id="explore-scope-v1">
+.explore-scope-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;margin:17px 0 10px;border:1px solid var(--home-line,#e6e6e1);border-radius:16px;background:#eeefeb}
+.explore-scope-tab{min-height:43px;border:0;border-radius:12px;background:transparent;color:#676a70;font:inherit;font-size:12px;font-weight:850;cursor:pointer}
+.explore-scope-tab[aria-pressed="true"]{background:#fff;color:#17181b;box-shadow:0 2px 8px rgba(20,20,18,.06)}
+.public-groups-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.public-group-card{display:flex;gap:13px;align-items:flex-start;padding:18px;border:1px solid var(--home-line,#e6e6e1);border-radius:20px;background:#fff;min-width:0}
+.public-group-avatar{display:grid;place-items:center;flex:0 0 46px;height:46px;border-radius:15px;background:#fce9e3;color:#c9452a;font-size:17px;font-weight:900;overflow:hidden}
+.public-group-avatar img{width:100%;height:100%;object-fit:cover}
+.public-group-copy{min-width:0}
+.public-group-copy strong{display:block;font-size:14px;letter-spacing:-.025em;overflow-wrap:anywhere}
+.public-group-copy p{margin:5px 0 8px;color:var(--muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.public-group-meta{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f3f3f0;color:#696b70;font-size:9px;font-weight:800}
+.explore-groups-empty{grid-column:1/-1;padding:36px 20px;border:1px dashed var(--home-line,#e6e6e1);border-radius:20px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+.explore-app[data-explore-scope="groups"] .explore-scope-tab[data-scope="groups"]{background:#fff;color:#17181b}
+@media(max-width:650px){.public-groups-grid{grid-template-columns:1fr}.explore-scope-tabs{margin-top:12px}}
+</style>
+
 </head>
 <body class="explore-app">
 <header class="navbar explore-navbar">
@@ -182,6 +200,11 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
     <span aria-hidden="true">⌕</span>
     <input id="eventSearch" type="search" aria-label="Buscar eventos, lugares o personas" placeholder="Buscar eventos, lugares o personas..." autocomplete="off">
     <button id="clearExploreFilters" type="button" aria-label="Limpiar búsqueda">×</button>
+  </section>
+
+  <section class="explore-scope-tabs" role="group" aria-label="Tipo de contenido">
+    <button class="explore-scope-tab" type="button" data-scope="events" aria-pressed="true">Eventos y planes</button>
+    <button class="explore-scope-tab" type="button" data-scope="groups" aria-pressed="false">Comunidades</button>
   </section>
 
   <section class="explore-intent" aria-label="Qué quieres encontrar">
@@ -217,6 +240,13 @@ body.explore-app .explore-navbar{height:68px;padding:0 max(22px,calc((100vw - 11
     <button type="button" class="explore-chip" data-filter="soon" aria-pressed="false">Próximos</button>
     <button type="button" class="explore-chip" data-filter="live" aria-pressed="false">En directo</button>
   </div>
+
+  <section id="groupsSection" class="explore-section" hidden>
+    <div class="section-title"><div><span class="eyebrow">COMUNIDAD</span><h2>Encuentra tu gente.</h2><p>Comunidades públicas para compartir intereses y organizar planes.</p></div></div>
+    <div id="publicGroupsGrid" class="public-groups-grid" aria-live="polite" aria-busy="true">
+      <div class="explore-groups-empty" role="status">Cargando comunidades públicas…</div>
+    </div>
+  </section>
 
   <section id="recommendationsSection" class="explore-section recommendation-section" hidden>
     <div class="section-title"><div><span class="eyebrow">PARA TI</span><h2>Puede interesarte</h2><p>Seleccionados según tu actividad en Curruscos.</p></div></div>
