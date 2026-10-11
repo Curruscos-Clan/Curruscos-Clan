@@ -107,6 +107,19 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
   html body nav.bottom-nav > a.bottom-nav-item b { line-height: 1 !important; }
   html body main { padding-bottom: max(105px, calc(90px + env(safe-area-inset-bottom))) !important; }
 }
+
+.profile-auth-card{max-width:470px;margin:0 auto 18px;padding:26px!important}
+.profile-auth-card[hidden]{display:none!important}
+.profile-auth-card h1{margin:0;font-size:clamp(32px,6vw,46px);letter-spacing:-.07em;line-height:.98}
+.profile-auth-card>p{margin:10px 0 20px;color:var(--profile-muted);font-size:12px;line-height:1.6}
+.profile-auth-form{display:grid;gap:8px}
+.profile-auth-form label{margin-top:6px;color:#515359;font-size:10px;font-weight:850}
+.profile-auth-form input{width:100%;min-height:46px;padding:0 13px;border:1px solid var(--profile-line);border-radius:13px;background:#fafaf8;color:var(--profile-ink);font:inherit;font-size:12px;box-sizing:border-box}
+.profile-auth-form input:focus{border-color:#ffb3a3;outline:3px solid rgba(255,77,46,.1)}
+.profile-auth-actions{display:grid;gap:8px;margin-top:8px}
+.profile-auth-message{min-height:18px;margin:5px 0 0;color:var(--profile-muted);font-size:11px;line-height:1.5}
+.profile-auth-message[data-state="error"]{color:#b42318}.profile-auth-message[data-state="success"]{color:#16804a}
+.profile-logout-button{width:100%;margin-top:9px}
 </style>
 
 </head>
@@ -132,7 +145,24 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 
 
 <main class="profile-page is-loading">
-<div class="profile-layout">
+<section id="profileAuthView" class="profile-card profile-auth-card" hidden aria-labelledby="profileAuthTitle">
+  <span class="interest-eyebrow">TU CUENTA</span>
+  <h1 id="profileAuthTitle">Vuelve a Curruscos.</h1>
+  <p>Inicia sesión para acceder a tu perfil, guardar tus intereses y continuar con tus grupos y eventos.</p>
+  <form id="profileAuthForm" class="profile-auth-form">
+    <label for="profileAuthEmail">Correo electrónico</label>
+    <input id="profileAuthEmail" type="email" autocomplete="email" required>
+    <label for="profileAuthPassword">Contraseña</label>
+    <input id="profileAuthPassword" type="password" autocomplete="current-password" minlength="8" required>
+    <button id="profileAuthSubmit" class="button button-primary" type="submit">Iniciar sesión</button>
+    <p id="profileAuthMessage" class="profile-auth-message" role="status" aria-live="polite"></p>
+  </form>
+  <div class="profile-auth-actions">
+    <a class="button button-secondary" href="login.html?mode=register">Crear una cuenta</a>
+    <a class="button button-secondary" href="login.html">¿Has olvidado la contraseña?</a>
+  </div>
+</section>
+<div id="profileAuthenticatedView" class="profile-layout">
 <section class="profile-card">
 <div class="profile-hero"><div id="profileAvatar" class="profile-avatar">C</div><div class="profile-header"><h1>Tu perfil.</h1><p id="profileEmail">Preparando tu cuenta…</p></div></div>
 <section class="profile-section">
@@ -148,7 +178,8 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 <button type="button" class="interest-chip" data-interest="padel" aria-pressed="false">Pádel</button><button type="button" class="interest-chip" data-interest="futbol" aria-pressed="false">Fútbol</button><button type="button" class="interest-chip" data-interest="baloncesto" aria-pressed="false">Baloncesto</button><button type="button" class="interest-chip" data-interest="tenis" aria-pressed="false">Tenis</button><button type="button" class="interest-chip" data-interest="ajedrez" aria-pressed="false">Ajedrez</button><button type="button" class="interest-chip" data-interest="gaming" aria-pressed="false">Gaming</button><button type="button" class="interest-chip" data-interest="running" aria-pressed="false">Running</button><button type="button" class="interest-chip" data-interest="social" aria-pressed="false">Planes sociales</button><button type="button" class="interest-chip" data-interest="viajes" aria-pressed="false">Viajes</button><button type="button" class="interest-chip" data-interest="senderismo" aria-pressed="false">Senderismo</button><button type="button" class="interest-chip" data-interest="musica" aria-pressed="false">Música</button><button type="button" class="interest-chip" data-interest="cine" aria-pressed="false">Cine</button></div><button id="saveInterestsButton" type="button" class="button button-primary">Guardar intereses</button><p id="interestMessage" class="profile-message" aria-live="polite"></p></div></section>
 <section class="profile-section"><div class="profile-activity"><div class="profile-activity-head"><h2>Tu actividad</h2><a class="profile-activity-link" href="mis-eventos.html">Ver mis planes →</a></div><div id="profileActivityStats" class="profile-activity-grid"><div class="profile-activity-card"><span>Eventos</span><strong>—</strong></div><div class="profile-activity-card"><span>Próximos</span><strong>—</strong></div><div class="profile-activity-card"><span>Partidos</span><strong>—</strong></div></div><div id="profileTeams" class="profile-activity-list"></div><div id="profileResults" class="profile-activity-list"></div></div></section>
 </section>
-<aside class="profile-side-card"><div class="profile-side-title">Tu identidad en Curruscos</div><p class="profile-side-note">Este perfil alimenta invitaciones, equipos, eventos y tu presencia pública. No necesitas completar veinte campos para empezar.</p><a class="button button-secondary" href="perfil-publico.html">Vista pública</a><a class="button button-secondary" href="notificaciones.html">Actividad y avisos</a></aside>
+<aside class="profile-side-card"><div class="profile-side-title">Tu identidad en Curruscos</div><p class="profile-side-note">Este perfil alimenta invitaciones, equipos, eventos y tu presencia pública. No necesitas completar veinte campos para empezar.</p><a class="button button-secondary" href="perfil-publico.html">Vista pública</a><a class="button button-secondary" href="notificaciones.html">Actividad y avisos</a><button id="profileLogoutButton" type="button" class="button button-secondary profile-logout-button">Cerrar sesión</button></aside>
+</div>
 </div>
 </main>
 
