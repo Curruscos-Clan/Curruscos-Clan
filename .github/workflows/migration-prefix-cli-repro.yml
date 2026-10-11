@@ -75,15 +75,18 @@ jobs:
           set -e
 
           echo "CLI_EXIT_STATUS=$cli_status" | tee -a "$log"
-          psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "
-            SELECT 'LEDGER_ROWS=' || count(*)
-            FROM supabase_migrations.schema_migrations
-            WHERE version = '20260101000000';
-            SELECT 'COLLISION_A_EXISTS=' || (to_regclass('public.collision_a') IS NOT NULL);
-            SELECT 'COLLISION_B_EXISTS=' || (to_regclass('public.collision_b') IS NOT NULL);
-          " | tee -a "$log"
+          ledger_rows="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM supabase_migrations.schema_migrations WHERE version = '20260101000000'")"
+          collision_a="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT to_regclass('public.collision_a') IS NOT NULL")"
+          collision_b="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT to_regclass('public.collision_b') IS NOT NULL")"
+          printf 'LEDGER_ROWS=%s\nCOLLISION_A_EXISTS=%s\nCOLLISION_B_EXISTS=%s\n' "$ledger_rows" "$collision_a" "$collision_b" | tee -a "$log"
 
-          echo "Observed CLI output is evidence only; no remote database is configured or contacted."
+          # This is the observed result for v2.120.0: the first file is applied,
+          # the second collides when the CLI tries to insert the same ledger version.
+          test "$cli_status" -ne 0
+          test "$ledger_rows" = "1"
+          test "$collision_a" = "t"
+          test "$collision_b" = "f"
+          echo "Confirmed duplicate-version ledger collision in disposable PostgreSQL; no production database was configured or contacted." | tee -a "$log"
 
       - name: Upload reproduction log
         if: always()
