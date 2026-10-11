@@ -76,3 +76,17 @@ The advisor also reports **78 authenticated-executable SECURITY DEFINER function
 - Assert event registration fails after the event start instant in the group's timezone and after the registration deadline, while respecting capacity under concurrent attempts.
 - Assert wrapper RPCs remain callable by authenticated users but not `anon`, and that private helper functions cannot be called directly by either client role.
 - Re-run the Supabase security advisor after a reviewed rollout; classify expected public discovery RPCs separately from unintended exposure.
+
+
+## Isolated regression test results (2026-10-11)
+
+The following GitHub Actions checks passed on the audit branch after adding a dedicated PostgreSQL test for `20261010150000_restrict_anonymous_event_details.sql`:
+
+- Public profile privacy regression tests: **success**.
+- Event/trip wrapper permission tests: **success**.
+- Anonymous event-detail row-access test: **success**.
+- Public event lifecycle regression tests, including the participant authorization PostgreSQL test: **success**.
+
+The new test is `supabase/tests/test_anonymous_event_detail_policies_postgres.sql`. It reproduces both legacy policies targeting `anon`, applies the migration in disposable PostgreSQL, and verifies that the resulting team-member and race-result policies target only `authenticated` and preserve visibility/status predicates.
+
+**Scope limitation:** these are isolated tests for selected recent migrations, not a complete replay of all 155 repository migrations. Do not interpret them as production rollout approval.
