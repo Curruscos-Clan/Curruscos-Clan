@@ -61,4 +61,4 @@ jobs:
             node --check "$file"
           done
       - name: Check navigation and HTML style blocks
-        run: python -m unittest tests/test_visual_refresh_regression.py
+        run: python -m unittest discover -s tests -p 'test_*.py'
