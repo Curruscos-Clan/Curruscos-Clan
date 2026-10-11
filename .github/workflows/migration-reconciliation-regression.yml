@@ -1,0 +1,82 @@
+name: Migration reconciliation regression suite
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - ".github/workflows/migration-reconciliation-regression.yml"
+      - "js/supabase.js"
+      - "js/evento-publico.js"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  targeted-regressions:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run static migration and frontend regression tests
+        run: python -m unittest discover -s supabase/tests -p "test_*_static.py" -v
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client
+
+      - name: Run participant authorization and aggregate-count integration test
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb --host=localhost --username=postgres participant_regression
+          psql "postgresql://postgres:postgres@localhost:5432/participant_regression" --set ON_ERROR_STOP=1 --file supabase/tests/test_participant_authorization_postgres.sql
+
+      - name: Run public profile privacy integration test
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb --host=localhost --username=postgres profile_privacy_regression
+          psql "postgresql://postgres:postgres@localhost:5432/profile_privacy_regression" --set ON_ERROR_STOP=1 --file supabase/tests/test_public_profile_privacy_postgres.sql
+
+      - name: Run event and trip wrapper permission integration test
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb --host=localhost --username=postgres wrapper_permissions_regression
+          psql "postgresql://postgres:postgres@localhost:5432/wrapper_permissions_regression" --set ON_ERROR_STOP=1 --file supabase/tests/event_trip_wrapper_permissions_postgres.sql
+
+      - name: Run anonymous event-detail policy integration test
+        env:
+          PGPASSWORD: postgres
+        run: |
+          createdb --host=localhost --username=postgres anon_event_details_regression
+          psql "postgresql://postgres:postgres@localhost:5432/anon_event_details_regression" --set ON_ERROR_STOP=1 --file supabase/tests/test_anonymous_event_detail_policies_postgres.sql
+
+      - name: Report scope limitation
+        run: |
+          echo "All targeted tests above use disposable PostgreSQL databases."
+          echo "This suite does not replay the full repository migration history and does not authorize a production rollout."
