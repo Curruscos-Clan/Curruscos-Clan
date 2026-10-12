@@ -302,6 +302,46 @@ async function renderPublicEvent(){
 
     if (window.CommentsModule) window.CommentsModule.init(event, user).catch(error => console.error("No se pudo iniciar el módulo de comentarios:", error));
 
+    // Acciones de calendario visibles en la ficha pública (usa el esquema real date + time).
+    if (window.CalendarExport) {
+        const calendarPanel = document.createElement("section");
+        calendarPanel.className = "event-action-panel";
+        const calendarCopy = document.createElement("div");
+        const calendarLabel = document.createElement("span");
+        calendarLabel.className = "public-tournament-label";
+        calendarLabel.textContent = "TU AGENDA";
+        const calendarTitle = document.createElement("h3");
+        calendarTitle.textContent = "No te pierdas este plan";
+        const calendarDescription = document.createElement("p");
+        calendarDescription.textContent = "Guarda la fecha en tu calendario y ten a mano los detalles del evento.";
+        calendarCopy.append(calendarLabel, calendarTitle, calendarDescription);
+        const calendarButtons = document.createElement("div");
+        calendarButtons.className = "event-action-buttons";
+        try {
+            const googleButton = document.createElement("a");
+            googleButton.className = "event-calendar-button";
+            googleButton.href = window.CalendarExport.getGoogleCalendarUrl(event);
+            googleButton.target = "_blank";
+            googleButton.rel = "noopener noreferrer";
+            googleButton.textContent = "Añadir a Google Calendar";
+            const icsButton = document.createElement("button");
+            icsButton.className = "event-calendar-button";
+            icsButton.type = "button";
+            icsButton.textContent = "Descargar .ics";
+            icsButton.addEventListener("click", () => {
+                try { window.CalendarExport.downloadICS(event); }
+                catch (error) { console.error("No se pudo exportar el calendario:", error); alert(error?.message || "No se ha podido exportar el evento."); }
+            });
+            calendarButtons.append(googleButton, icsButton);
+        } catch (error) {
+            console.warn("No se han podido preparar las acciones de calendario:", error);
+        }
+        calendarPanel.append(calendarCopy, calendarButtons);
+        const eventShell = root.querySelector(".public-event-shell");
+        if (eventShell) eventShell.insertAdjacentElement("afterend", calendarPanel);
+    }
+
+
     if (event.location) {
         const shell = root.querySelector(".public-event-shell");
         if (shell) {
