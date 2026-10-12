@@ -7,7 +7,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 class EventCommentsContracts(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.migration = (ROOT / "supabase/migrations/20261012100000_add_event_comments_and_notifications.sql").read_text()
+        cls.migration = (ROOT / "supabase/migrations/20261012094111_add_event_comments_and_notifications.sql").read_text()
         cls.comments = (ROOT / "js/comments.js").read_text()
         cls.event_page = (ROOT / "js/evento-publico.js").read_text()
         cls.event_html = (ROOT / "evento-publico.html").read_text()
