@@ -1,0 +1,64 @@
+name: Storage and tilt regression checks
+
+on:
+  pull_request:
+    paths:
+      - "js/tilt-3d.js"
+      - "js/storage.js"
+      - "js/supabase.js"
+      - "js/perfil.js"
+      - "js/crear-evento.js"
+      - "js/feed.js"
+      - "js/explorar.js"
+      - "js/evento-publico.js"
+      - "index.html"
+      - "explorar.html"
+      - "crear-evento.html"
+      - "perfil.html"
+      - "evento-publico.html"
+      - "css/design-system.css"
+      - "supabase/migrations/*public_image_storage_buckets.sql"
+      - "tests/test_storage_tilt_contracts.py"
+      - ".github/workflows/storage-and-tilt-checks.yml"
+  push:
+    paths:
+      - "js/tilt-3d.js"
+      - "js/storage.js"
+      - "js/supabase.js"
+      - "js/perfil.js"
+      - "js/crear-evento.js"
+      - "js/feed.js"
+      - "js/explorar.js"
+      - "js/evento-publico.js"
+      - "index.html"
+      - "explorar.html"
+      - "crear-evento.html"
+      - "perfil.html"
+      - "evento-publico.html"
+      - "css/design-system.css"
+      - "supabase/migrations/*public_image_storage_buckets.sql"
+      - "tests/test_storage_tilt_contracts.py"
+      - ".github/workflows/storage-and-tilt-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  storage-and-tilt-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check modified JavaScript syntax
+        run: |
+          set -e
+          for file in js/tilt-3d.js js/storage.js js/supabase.js js/perfil.js js/crear-evento.js js/feed.js js/explorar.js js/evento-publico.js; do
+            node --check "$file"
+          done
+      - name: Check storage and tilt contracts
+        run: python -m unittest discover -s tests -p 'test_storage_tilt_contracts.py' -v
