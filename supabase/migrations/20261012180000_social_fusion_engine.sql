@@ -119,7 +119,7 @@ BEGIN
  INSERT INTO public.fusion_proposals(spark_ids,suggested_title,category,proposed_start,proposed_end,proposed_location,geo_zone,quorum_required,accepted_user_ids,expires_at)
  VALUES(v_ids,
    'Plan espontáneo: '||initcap(v_new.category)||' · '||initcap(v_new.energy_type::text),
-   v_new.category,v_start,v_end,'Zona '||v_new.geo_zone,v_new.geo_zone,4,ARRAY[auth.uid()],least(v_end,now()+interval '2 hours'))
+   v_new.category,v_start,v_end,'Zona '||v_new.geo_zone,v_new.geo_zone,4,ARRAY[]::uuid[],least(v_end,now()+interval '2 hours'))
  RETURNING id INTO v_proposal;
 
  UPDATE public.sparks SET status='resonando' WHERE id=ANY(v_ids);
@@ -146,9 +146,10 @@ BEGIN
    RAISE EXCEPTION 'Solo quienes participan en esta fusión pueden responder.';
  END IF;
  IF NOT accept THEN
-   UPDATE public.sparks SET status='viva' WHERE id=ANY(p.spark_ids) AND status='resonando';
-   UPDATE public.fusion_proposals SET status='discarded' WHERE id=p.id;
-   RETURN jsonb_build_object('accepted',false,'status','discarded');
+   UPDATE public.fusion_proposals
+   SET accepted_user_ids=array_remove(accepted_user_ids,auth.uid())
+   WHERE id=p.id RETURNING * INTO p;
+   RETURN jsonb_build_object('accepted',false,'confirmed',false,'accepted_count',cardinality(p.accepted_user_ids),'required',p.quorum_required);
  END IF;
  IF NOT auth.uid()=ANY(p.accepted_user_ids) THEN
    UPDATE public.fusion_proposals SET accepted_user_ids=array_append(accepted_user_ids,auth.uid()) WHERE id=p.id RETURNING * INTO p;
