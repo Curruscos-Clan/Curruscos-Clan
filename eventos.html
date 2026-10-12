@@ -113,6 +113,29 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
 @media(max-width:760px){.group-overview-section .container{width:calc(100% - 32px)!important}.group-overview-card{grid-template-columns:1fr;gap:16px;padding:16px}.group-overview-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.group-overview-stat{padding:11px 9px}.group-overview-stat strong{font-size:21px}.group-overview-bottom{grid-column:auto;display:grid;align-items:start}.group-overview-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.group-overview-actions a{padding:0 6px;font-size:9px}}
 @media(max-width:440px){.group-overview-stats{gap:5px}.group-overview-stat{padding:9px 7px}.group-overview-stat strong{font-size:19px}.group-member-chip{max-width:145px}}
 </style>
+
+<style id="group-wall-tabs-style">
+.group-view-tabs{display:flex;gap:5px;width:fit-content;max-width:100%;margin:0 auto 18px;padding:5px;border:1px solid var(--group-line);border-radius:999px;background:#eeeee9}
+.group-view-tab{min-height:40px;padding:0 17px;border:0;border-radius:999px;background:transparent;color:var(--group-muted);font:inherit;font-size:11px;font-weight:850;cursor:pointer}
+.group-view-tab[aria-selected="true"]{background:#fff;color:var(--group-ink);box-shadow:0 2px 8px rgba(20,20,18,.06)}
+.group-wall-panel{padding-top:0!important}
+.group-wall-panel[hidden],#group-plans-panel[hidden],#group-create-plan-panel[hidden]{display:none!important}
+.group-wall-panel .container{width:min(100% - 40px,820px)!important;max-width:820px!important}
+.group-wall-panel .community-wall-heading h3{margin:0 0 5px;font-size:24px;font-weight:900;letter-spacing:-.05em}
+.group-wall-panel .community-wall-heading p,.group-wall-panel .community-wall-status,.group-wall-panel .community-wall-hint{font-size:12px;line-height:1.6;color:var(--group-muted)}
+.group-wall-panel .community-post-form,.group-wall-panel .community-post{display:grid;gap:12px;margin-top:14px;padding:18px;border:1px solid var(--group-line);border-radius:18px;background:#fff}
+.group-wall-panel .community-post-form input,.group-wall-panel .community-post-form textarea,.group-wall-panel .community-post-comment-form input{width:100%;box-sizing:border-box;padding:12px;border:1px solid var(--group-line);border-radius:12px;background:#fafaf8;color:var(--group-ink);font:inherit;font-size:12px}
+.group-wall-panel .community-post-form button,.group-wall-panel .community-post-comment-form button{justify-self:start;min-height:38px;padding:0 15px;border:0;border-radius:999px;background:var(--group-accent);color:#fff;font-size:11px;font-weight:850;cursor:pointer}
+.group-wall-panel .community-post-author{display:flex;align-items:center;gap:9px}
+.group-wall-panel .community-post-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee}
+.group-wall-panel .community-post-identity{display:grid;gap:3px}.group-wall-panel .community-post-identity strong{font-size:11px}.group-wall-panel .community-post-identity small,.group-wall-panel .community-post-comment small{font-size:10px;color:var(--group-muted)}
+.group-wall-panel .community-post-title{margin:0;font-size:15px;font-weight:900}.group-wall-panel .community-post-content{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.7}
+.group-wall-panel .community-post-pinned{margin-left:auto;padding:5px 8px;border-radius:999px;background:#fff1ed;color:#d43d22;font-size:9px;font-weight:900}
+.group-wall-panel .community-post-comments{display:grid;gap:10px;padding-top:12px;border-top:1px solid var(--group-line)}
+.group-wall-panel .community-post-comment{display:flex;gap:8px;align-items:flex-start}.group-wall-panel .community-post-comment-copy{min-width:0}.group-wall-panel .community-post-comment-copy strong{font-size:10px}.group-wall-panel .community-post-comment-copy p{margin:3px 0;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.group-wall-panel .community-post-comment-list{display:grid;gap:10px}.group-wall-panel .community-post-comment-form{display:flex;gap:7px}.group-wall-panel .community-post-comment-form button{flex:none}
+@media(max-width:600px){.group-view-tabs{width:100%;box-sizing:border-box}.group-view-tab{flex:1;padding:0 9px;font-size:10px}.group-wall-panel .container{width:calc(100% - 32px)!important}.group-wall-panel .community-post{padding:14px}}
+</style>
 </head>
 <body class="group-events-app">
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
@@ -145,10 +168,14 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
     </div>
   </div>
 </section>
-<section class="section"><div class="container"><div class="section-heading"><span class="eyebrow">PLANES</span><h2>Actividad del grupo</h2><p>Planes del espacio activo, con acceso rápido a sus miembros y a la información del grupo.</p></div>
+<nav class="group-view-tabs" role="tablist" aria-label="Contenido del grupo">
+<button class="group-view-tab" id="tab-group-plans" type="button" role="tab" aria-controls="group-plans-panel" aria-selected="true">Planes del grupo</button>
+<button class="group-view-tab" id="tab-group-wall" type="button" role="tab" aria-controls="group-wall-panel" aria-selected="false">Muro de debate</button>
+</nav>
+<section class="section" id="group-plans-panel"><div class="container"><div class="section-heading"><span class="eyebrow">PLANES</span><h2>Actividad del grupo</h2><p>Planes del espacio activo, con acceso rápido a sus miembros y a la información del grupo.</p></div>
 <div class="events-toolbar"><label class="events-search"><span>Buscar</span><input id="eventsSearch" type="search" placeholder="Buscar por nombre o lugar..." autocomplete="off"></label><div class="events-filters" id="eventsFilters" role="group" aria-label="Filtrar planes"><button type="button" class="events-filter active" data-event-filter="upcoming">Próximos</button><button type="button" class="events-filter" data-event-filter="all">Todos</button><button type="button" class="events-filter" data-event-filter="past">Pasados</button></div></div>
 <div id="eventsResultsMeta" class="events-results-meta"></div><div id="eventsList" class="events-list"></div></div></section>
-<section class="section create-event-section"><div class="container"><div class="section-heading"><span class="eyebrow">NUEVO PLAN</span><h2>Crear algo para el grupo</h2><p>Un plan privado es el punto de partida para organizar fecha, lugar, descripción y, después, el resto de la actividad.</p></div>
+<section class="section create-event-section" id="group-create-plan-panel"><div class="container"><div class="section-heading"><span class="eyebrow">NUEVO PLAN</span><h2>Crear algo para el grupo</h2><p>Un plan privado es el punto de partida para organizar fecha, lugar, descripción y, después, el resto de la actividad.</p></div>
 <form id="eventForm" class="event-form">
 <div class="form-group"><label for="eventTitle">¿Qué vais a hacer?<input type="text" id="eventTitle" placeholder="Ej. Cena del viernes" required></label></div>
 <div class="form-row"><div class="form-group"><label for="eventDate">Fecha<input type="date" id="eventDate" required></label></div><div class="form-group"><label for="eventTime">Hora<input type="time" id="eventTime" required></label></div></div>
@@ -157,6 +184,9 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
 <div class="form-group"><label for="eventDescription">Descripción<textarea id="eventDescription" placeholder="Qué hay que saber antes de ir..." rows="4"></textarea></label></div>
 <button type="submit" class="button button-primary">Crear plan</button>
 </form></div></section>
+<section class="section group-wall-panel" id="group-wall-panel" role="tabpanel" aria-labelledby="tab-group-wall" hidden>
+<div class="container"><div id="group-community-wall"><p class="community-wall-status" role="status">Cargando muro del grupo…</p></div></div>
+</section>
 </main>
 <style>
 .events-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:13px}.events-search{display:grid;gap:5px;flex:1;max-width:420px}.events-search span{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#888}.events-search input{height:42px;box-sizing:border-box;padding:0 12px;border:1px solid #ddd;border-radius:10px;background:#fff;color:#222;font:inherit;font-size:13px;outline:none}.events-search input:focus{border-color:#111}.events-filters{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.events-filter{min-height:34px;padding:0 11px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#777;font-size:10px;font-weight:800;cursor:pointer}.events-filter.active{border-color:#111;background:#111;color:#fff}.events-results-meta{min-height:16px;margin:0 0 9px;color:#888;font-size:10px;font-weight:700}@media(max-width:650px){.events-toolbar{align-items:stretch;flex-direction:column}.events-search{max-width:none}.events-filters{justify-content:flex-start}}
@@ -168,6 +198,51 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
 <a class="bottom-nav-item active" href="eventos.html"><b aria-hidden="true">▦</b><span>Mi grupo</span></a>
 <a class="bottom-nav-item" href="perfil.html"><b aria-hidden="true">◉</b><span>Mi perfil</span></a>
 </nav>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script><script src="js/eventos-overview.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script><script src="js/community-chat.js"></script><script src="js/eventos-overview.js"></script>
+<script>
+(function(){
+  "use strict";
+  const plansTab=document.getElementById("tab-group-plans");
+  const wallTab=document.getElementById("tab-group-wall");
+  const plansPanel=document.getElementById("group-plans-panel");
+  const createPanel=document.getElementById("group-create-plan-panel");
+  const wallPanel=document.getElementById("group-wall-panel");
+  const wallRoot=document.getElementById("group-community-wall");
+  let mounted=false;
+  function activate(tab){
+    const showWall=tab===wallTab;
+    plansTab.setAttribute("aria-selected",String(!showWall));
+    wallTab.setAttribute("aria-selected",String(showWall));
+    plansPanel.hidden=showWall;
+    createPanel.hidden=showWall;
+    wallPanel.hidden=!showWall;
+    if(showWall&&!mounted) mountWall();
+  }
+  async function mountWall(){
+    mounted=true;
+    try{
+      const access=await window.curruscosReady;
+      if(!access?.user||!access?.currentGroup?.id){
+        wallRoot.textContent="Inicia sesión y selecciona un grupo para consultar el muro.";
+        mounted=false;
+        return;
+      }
+      if(!window.CommunityChat){
+        wallRoot.textContent="El muro no está disponible ahora mismo.";
+        mounted=false;
+        return;
+      }
+      const group={...access.currentGroup,is_member:true};
+      await window.CommunityChat.mount(group,wallRoot);
+    }catch(error){
+      console.error("No se pudo iniciar el muro del grupo:",error);
+      wallRoot.textContent="No se ha podido cargar el muro. Inténtalo de nuevo.";
+      mounted=false;
+    }
+  }
+  plansTab.addEventListener("click",()=>activate(plansTab));
+  wallTab.addEventListener("click",()=>activate(wallTab));
+})();
+</script>
 </body>
 </html>
