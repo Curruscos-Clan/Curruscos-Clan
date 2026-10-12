@@ -131,6 +131,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 .pub-avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .pub-bio{max-width:640px;margin:10px 0 0!important;color:var(--muted);font-size:13px!important;line-height:1.65}
 </style>
+<style id="profile-storage-input">.profile-form input[type="file"]{padding:10px;font-size:11px;max-width:100%}.profile-form input[type="file"]::file-selector-button{margin-right:10px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);padding:7px 10px;font:inherit;font-weight:800;cursor:pointer}</style>
 </head>
 
 <body class="profile-app">
@@ -182,8 +183,10 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 <p class="profile-help">Entre 3 y 24 caracteres: letras, números y _.</p>
 <label for="profileCity">Localidad (opcional)</label><input id="profileCity" type="text" maxlength="80" autocomplete="address-level2" placeholder="Ciudad o localidad">
 <label for="profileBio">Sobre mí (opcional)</label><textarea id="profileBio" maxlength="280" rows="3" placeholder="Qué te gusta hacer, tus intereses o qué planes buscas…"></textarea>
-<label for="profileAvatarUrl">Foto de perfil (opcional)</label><input id="profileAvatarUrl" type="url" maxlength="2048" inputmode="url" placeholder="https://…">
-<p class="profile-help">Usa un enlace HTTPS directo a una imagen. Tu localidad no se muestra en el perfil público.</p>
+<label for="profileAvatarFile">Subir foto de perfil</label><input id="profileAvatarFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+<p class="profile-help">La foto se recorta a cuadrado y se optimiza antes de subirla (máximo 20 MB de archivo original).</p>
+<label for="profileAvatarUrl">O usar una URL de imagen</label><input id="profileAvatarUrl" type="url" maxlength="2048" inputmode="url" placeholder="https://…">
+<p class="profile-help">Tu localidad no se muestra en el perfil público.</p>
 <div class="profile-actions"><a href="index.html" class="button button-secondary">Volver</a><button id="saveProfileButton" type="submit" class="button button-primary">Guardar cambios</button></div>
 <p id="profileMessage" class="profile-message" aria-live="polite"></p>
 </form></section>
@@ -204,6 +207,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/app.js"></script>
 <script src="js/perfil.js"></script>
 
