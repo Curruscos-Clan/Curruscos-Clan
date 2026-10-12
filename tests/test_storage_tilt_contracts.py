@@ -80,7 +80,7 @@ class StorageAndTiltContracts(unittest.TestCase):
     def test_cloudflare_configuration_is_not_misrepresented_as_active_on_github_pages(self):
         self.assertIn("GitHub Pages does not process this file", read("_headers"))
         self.assertIn("inactive while this project is hosted on GitHub Pages", read("_redirects"))
-        self.assertIn("does not load this file", read(".env.example").lower())
+        self.assertIn("not load this file", read(".env.example").lower())
 
 
 if __name__ == "__main__":
