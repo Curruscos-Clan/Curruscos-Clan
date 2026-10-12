@@ -348,6 +348,17 @@ BEGIN
       UPDATE public.group_members
       SET role = 'owner'
       WHERE group_id = group_row.group_id AND user_id = replacement_user_id;
+    ELSE
+      -- The user is the only member. Keep the workspace's data, make it private,
+      -- and demote the departing owner so the deferred last-owner guard does not
+      -- block Auth deletion. No other member's content is removed.
+      UPDATE public.groups
+      SET visibility = 'private'
+      WHERE id = group_row.group_id;
+
+      UPDATE public.group_members
+      SET role = 'admin'
+      WHERE group_id = group_row.group_id AND user_id = target_user_id;
     END IF;
   END LOOP;
 
