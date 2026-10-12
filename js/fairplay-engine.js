@@ -309,15 +309,23 @@
       await refreshExpenses();
       if (isOrganizer) {
         const form = document.createElement('form');
-        form.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,130px) auto;gap:7px;margin-top:12px';
+        form.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) minmax(80px,110px) minmax(100px,150px) auto;gap:7px;margin-top:12px';
         const titleInput = document.createElement('input');
         titleInput.name = 'title'; titleInput.required = true; titleInput.maxLength = 100; titleInput.placeholder = 'Alquiler de pista';
         titleInput.setAttribute('aria-label', 'Concepto del gasto');
         const amountInput = document.createElement('input');
         amountInput.name = 'amount'; amountInput.type = 'number'; amountInput.min = '0.01'; amountInput.max = '100000'; amountInput.step = '0.01'; amountInput.required = true; amountInput.placeholder = '€';
         amountInput.setAttribute('aria-label', 'Importe del gasto');
+        const payerSelect = document.createElement('select');
+        payerSelect.name = 'payer_id'; payerSelect.required = true;
+        payerSelect.setAttribute('aria-label', 'Quién pagó el gasto');
+        players.forEach(player => {
+          const option = document.createElement('option'); option.value = player.id; option.textContent = player.name;
+          if (player.id === user.id) option.selected = true;
+          payerSelect.appendChild(option);
+        });
         const submit = el('button', 'fairplay-commit', 'Añadir gasto'); submit.type = 'submit';
-        form.append(titleInput, amountInput, submit);
+        form.append(titleInput, amountInput, payerSelect, submit);
         form.addEventListener('submit', async e => {
           e.preventDefault();
           const amount = Number(amountInput.value);
@@ -325,7 +333,7 @@
           submit.disabled = true;
           const { error } = await supabase.from('expenses').insert({
             event_id: event.id, title: titleInput.value.trim(), amount,
-            paid_by: user.id, created_by: user.id
+            paid_by: payerSelect.value, created_by: user.id
           });
           submit.disabled = false;
           if (error) {
