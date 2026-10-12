@@ -1,7 +1,7 @@
 {
-  "name": "Curruscos",
+  "name": "Curruscos Clan",
   "short_name": "Curruscos",
-  "description": "Organiza grupos, eventos, viajes y competiciones en un solo lugar.",
+  "description": "Organiza grupos, descubre planes, participa en comunidades y gestiona eventos.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -17,5 +17,51 @@
     }
   ],
   "lang": "es",
-  "dir": "auto"
+  "dir": "auto",
+  "categories": [
+    "social",
+    "lifestyle",
+    "sports"
+  ],
+  "shortcuts": [
+    {
+      "name": "Explorar planes",
+      "short_name": "Buscar",
+      "description": "Descubre eventos y actividades",
+      "url": "./explorar.html",
+      "icons": [
+        {
+          "src": "assets/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Mis eventos",
+      "short_name": "Mis eventos",
+      "description": "Consulta tus planes y actividades",
+      "url": "./mis-eventos.html",
+      "icons": [
+        {
+          "src": "assets/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Comunidades",
+      "short_name": "Grupos",
+      "description": "Encuentra comunidades y grupos",
+      "url": "./comunidades.html",
+      "icons": [
+        {
+          "src": "assets/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
 }
