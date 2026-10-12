@@ -30,7 +30,7 @@ CREATE POLICY sparks_read_active ON public.sparks FOR SELECT TO authenticated
  USING (user_id = (SELECT auth.uid()));
 DROP POLICY IF EXISTS sparks_insert_own ON public.sparks;
 CREATE POLICY sparks_insert_own ON public.sparks FOR INSERT TO authenticated
- WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND time_window_start > now() AND expires_at <= time_window_end AND expires_at > now());
+ WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND time_window_start > now() AND expires_at <= LEAST(time_window_end, now() + interval '2 hours') AND expires_at > now());
 DROP POLICY IF EXISTS sparks_update_own ON public.sparks;
 CREATE POLICY sparks_update_own ON public.sparks FOR UPDATE TO authenticated
  USING (user_id = (SELECT auth.uid()) AND status IN ('viva','resonando'))
