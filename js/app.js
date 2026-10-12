@@ -440,6 +440,12 @@ function notificationIcon(type) {
     switch (type) {
         case "event":
             return "📅";
+        case "new_comment":
+            return "💬";
+        case "participant_joined":
+            return "👋";
+        case "event_cancelled":
+            return "⚠️";
         case "task":
             return "✅";
         case "expense":
@@ -487,6 +493,13 @@ function notificationTarget(notification) {
         notification.type === "invitation"
     ) {
         return "miembros.html#invitaciones";
+    }
+
+    if (
+        ["new_comment", "participant_joined", "event_cancelled"].includes(notification.type)
+        && notification.reference_id
+    ) {
+        return "evento-publico.html?id=" + encodeURIComponent(notification.reference_id);
     }
 
     if (
