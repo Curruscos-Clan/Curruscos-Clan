@@ -8,4 +8,4 @@
 /login              /login.html            200
 
 # Unknown routes render the home document with a 404 status.
- /*                 /index.html             404
+/*                  /index.html             404
