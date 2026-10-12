@@ -2672,6 +2672,7 @@ async function getPublicEvent(eventId) {
         .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,rules,organizer_name,created_by,participant_mode,team_size,event_type,scoring_system,cover_url,created_at")
         .eq("id", eventId)
         .eq("visibility", "public")
+        .eq("is_hidden", false)
         .in("status", ["published", "preparing", "live", "finished"])
         .maybeSingle();
     if (error) {
@@ -2686,6 +2687,7 @@ async function getPublicEvents(filters = {}) {
         .from("events")
         .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,cover_url,created_at")
         .eq("visibility", "public")
+        .eq("is_hidden", false)
         .in("status", ["published", "preparing", "live"])
         .order("date", { ascending: true })
         .order("time", { ascending: true })
