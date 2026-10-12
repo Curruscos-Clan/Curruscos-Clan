@@ -157,6 +157,91 @@
       balanceRoot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
     panel.append(balanceButton, balanceRoot);
+
+    // Expense management uses the existing group-scoped expenses table; no payments are executed.
+    const expensesPanel = el('div', 'fairplay-expenses');
+    expensesPanel.style.marginTop = '20px';
+    expensesPanel.appendChild(el('h3', '', 'Cuentas claras'));
+    expensesPanel.appendChild(el('p', 'fairplay-copy', 'Registra gastos compartidos y calcula las transferencias mínimas. Los pagos se realizan fuera de Curruscos.'));
+    panel.appendChild(expensesPanel);
+
+    if (!event.group_id) {
+      expensesPanel.appendChild(el('p', 'fairplay-note', 'El registro compartido de gastos requiere que el evento esté vinculado a un grupo.'));
+    } else {
+      const expenseList = el('div', 'fairplay-roster');
+      expensesPanel.appendChild(expenseList);
+      async function refreshExpenses() {
+        expenseList.replaceChildren();
+        const { data: expenses, error } = await supabase.from('expenses')
+          .select('id,title,amount,paid_by,created_by,created_at')
+          .eq('event_id', event.id).order('created_at', { ascending: true });
+        if (error) {
+          expenseList.appendChild(el('p', 'fairplay-note', 'No se han podido leer los gastos de este grupo con tus permisos actuales.'));
+          return;
+        }
+        (expenses || []).forEach(expense => {
+          const payer = players.find(p => p.id === expense.paid_by);
+          const row = el('div', 'fairplay-roster-row');
+          row.appendChild(el('span', '', (expense.title || 'Gasto') + ' · ' + Number(expense.amount || 0).toFixed(2) + ' €'));
+          row.appendChild(el('small', '', 'Pagó: ' + (payer?.name || 'Miembro del grupo')));
+          expenseList.appendChild(row);
+        });
+        if (!expenses?.length) expenseList.appendChild(el('p', 'fairplay-note', 'Todavía no hay gastos registrados.'));
+        const transfers = window.SplitPot?.calculateSettlements(
+          (expenses || []).map(x => ({ payer_id: x.paid_by, amount: x.amount })),
+          players.map(p => ({ id: p.id, name: p.name }))
+        ) || [];
+        expenseList.appendChild(el('h4', '', 'Liquidación sugerida'));
+        if (!transfers.length) {
+          expenseList.appendChild(el('p', 'fairplay-note', 'No hay deudas pendientes con los gastos registrados.'));
+        } else {
+          transfers.forEach(transfer => {
+            const row = el('div', 'fairplay-roster-row');
+            row.appendChild(el('span', '', transfer.from + ' → ' + transfer.to + ': ' + transfer.amount.toFixed(2) + ' €'));
+            const link = document.createElement('a');
+            link.href = window.SplitPot.getPaymentMessageLink(transfer, event.title);
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = 'Coordinar pago';
+            link.className = 'fairplay-note';
+            row.appendChild(link);
+            expenseList.appendChild(row);
+          });
+        }
+      }
+      await refreshExpenses();
+      if (isOrganizer) {
+        const form = document.createElement('form');
+        form.style.cssText = 'display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,130px) auto;gap:7px;margin-top:12px';
+        const titleInput = document.createElement('input');
+        titleInput.name = 'title'; titleInput.required = true; titleInput.maxLength = 100; titleInput.placeholder = 'Alquiler de pista';
+        titleInput.setAttribute('aria-label', 'Concepto del gasto');
+        const amountInput = document.createElement('input');
+        amountInput.name = 'amount'; amountInput.type = 'number'; amountInput.min = '0.01'; amountInput.max = '100000'; amountInput.step = '0.01'; amountInput.required = true; amountInput.placeholder = '€';
+        amountInput.setAttribute('aria-label', 'Importe del gasto');
+        const submit = el('button', 'fairplay-commit', 'Añadir gasto'); submit.type = 'submit';
+        form.append(titleInput, amountInput, submit);
+        form.addEventListener('submit', async e => {
+          e.preventDefault();
+          const amount = Number(amountInput.value);
+          if (!titleInput.value.trim() || !Number.isFinite(amount) || amount <= 0) return;
+          submit.disabled = true;
+          const { error } = await supabase.from('expenses').insert({
+            event_id: event.id, title: titleInput.value.trim(), amount,
+            paid_by: user.id, created_by: user.id
+          });
+          submit.disabled = false;
+          if (error) {
+            notice.textContent = 'No se pudo guardar el gasto. Comprueba que eres miembro autorizado del grupo.';
+            return;
+          }
+          form.reset();
+          await refreshExpenses();
+        });
+        expensesPanel.appendChild(form);
+      }
+    }
+
     if (profilesResult.error) notice.textContent = 'No se han podido cargar todos los perfiles; se usarán nombres genéricos donde falten.';
     if (ratingsResult.error) notice.textContent += ' Las puntuaciones históricas no están disponibles, se usará ELO 1200.';
     if (pledgesResult.error) notice.textContent += ' No se ha podido cargar el registro de compromisos.';
