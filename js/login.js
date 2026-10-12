@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const trust = document.querySelector(".auth-trust");
 
     let registerMode = false;
+    password.autocomplete = "current-password";
     let lastSignupEmail = "";
     let resendLocked = false;
 
