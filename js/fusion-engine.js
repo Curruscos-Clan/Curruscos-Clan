@@ -5,7 +5,7 @@ const energyLabels={competitiva:'Competitiva',chill:'Tranquila',activa:'Activa',
 const categoryLabels={sport:'Deporte',social:'Social',activity:'Actividad',gaming:'Videojuegos',other:'Otro'};
 const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;};
 const client=()=>window.supabaseClient;
-const status=$('#fusion-status'), stage=$('#fusion-stage'), radar=$('#fusion-radar'), proposalMount=$('#fusion-proposal');
+const status=$('#fusion-status'), stage=$('#fusion-stage'), radar=$('#fusion-radar'), proposalMount=$('#fusion-proposal');\nlet activeSparkId=null;
 function say(message,isError=false){status.textContent=message;status.classList.toggle('is-error',isError);}
 function dateLocal(date){const offset=date.getTimezoneOffset();return new Date(date.getTime()-offset*60000).toISOString().slice(0,16);}
 function drawRadar(count=1,required=4){radar.replaceChildren();const wrap=el('div','fusion-radar');wrap.setAttribute('role','img');wrap.setAttribute('aria-label',count+' de '+required+' personas han aceptado');wrap.append(el('span','fusion-wave fusion-wave-one'),el('span','fusion-wave fusion-wave-two'));const core=el('div','fusion-core');core.append(el('strong','',count+'/'+required),el('small','','SINTONÍA'));wrap.append(core);radar.append(wrap,el('p','fusion-muted','La propuesta solo se convierte en evento cuando suficientes personas aceptan.'));stage.hidden=false;}
@@ -18,11 +18,11 @@ function drawProposal(p,acceptedCount=1){
  const actions=el('div','fusion-actions');const accept=el('button','fusion-primary','Me apunto');accept.type='button';
  const pass=el('button','fusion-secondary','Paso');pass.type='button';actions.append(accept,pass);card.append(actions);proposalMount.append(card);
  accept.addEventListener('click',async()=>{accept.disabled=true;pass.disabled=true;say('Registrando tu respuesta…');try{const {data,error}=await client().rpc('respond_fusion_proposal',{target_proposal_id:p.id,accept:true});if(error)throw error;if(data.confirmed){say('¡Plan creado! Abriendo el evento…');location.href='evento-publico.html?id='+encodeURIComponent(data.event_id);}else{drawRadar(data.accepted_count,data.required);say('Has aceptado. Esperando a que más personas confirmen.');accept.textContent='Ya estás dentro';accept.disabled=true;}}catch(e){say(e.message||'No se ha podido aceptar la propuesta.',true);accept.disabled=false;pass.disabled=false;}});
- pass.addEventListener('click',async()=>{pass.disabled=true;accept.disabled=true;try{const {error}=await client().rpc('respond_fusion_proposal',{target_proposal_id:p.id,accept:false});if(error)throw error;proposalMount.replaceChildren();say('Propuesta descartada. Puedes lanzar otra chispa más adelante.');}catch(e){say(e.message||'No se ha podido descartar.',true);pass.disabled=false;accept.disabled=false;}});
+ pass.addEventListener('click',async()=>{pass.disabled=true;accept.disabled=true;try{const {error}=await client().rpc('respond_fusion_proposal',{target_proposal_id:p.id,accept:false});if(error)throw error;proposalMount.replaceChildren();say('Has pasado de esta propuesta. Sigue disponible para las demás personas.');}catch(e){say(e.message||'No se ha podido descartar.',true);pass.disabled=false;accept.disabled=false;}});
 }
 async function loadProposal(id){const {data,error}=await client().from('fusion_proposals').select('id,suggested_title,proposed_start,proposed_end,proposed_location,geo_zone,quorum_required,accepted_user_ids,status,expires_at').eq('id',id).maybeSingle();if(error)throw error;if(data&&data.status==='pending'){drawProposal(data,(data.accepted_user_ids||[]).length);drawRadar((data.accepted_user_ids||[]).length,data.quorum_required);} }
 document.addEventListener('DOMContentLoaded',()=>{
- const now=new Date(),end=new Date(now.getTime()+2*60*60*1000);
+ const now=new Date(Date.now()+5*60*1000),end=new Date(now.getTime()+2*60*60*1000);
  $('#fusion-start').value=dateLocal(now);$('#fusion-end').value=dateLocal(end);
  let selectedEnergy='competitiva';document.querySelectorAll('[data-energy]').forEach(button=>button.addEventListener('click',()=>{selectedEnergy=button.dataset.energy;document.querySelectorAll('[data-energy]').forEach(b=>{const active=b===button;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});}));
  const form=$('#fusion-form');
@@ -43,6 +43,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   }catch(err){say(err.message||'No se ha podido lanzar la chispa.',true);}
   finally{button.disabled=false;button.textContent='Encender mi chispa ⚡';}
  });
- const cancel=$('#fusion-cancel');cancel.addEventListener('click',()=>{form.reset();form.hidden=false;stage.hidden=true;proposalMount.replaceChildren();say('Puedes ajustar tu intención y volver a intentarlo.');});
+ const cancel=$('#fusion-cancel');cancel.addEventListener('click',async()=>{cancel.disabled=true;try{if(activeSparkId&&client()){const {error}=await client().from('sparks').update({status:'expirada'}).eq('id',activeSparkId);if(error)throw error;}activeSparkId=null;form.reset();form.hidden=false;stage.hidden=true;proposalMount.replaceChildren();say('Chispa cerrada. Ya puedes lanzar otra intención.');}catch(e){say(e.message||'No se ha podido cerrar la chispa.',true);}finally{cancel.disabled=false;}});
 });
 })();
