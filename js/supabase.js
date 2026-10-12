@@ -1086,15 +1086,8 @@ async function getEventParticipants(eventId) {
 
 
 async function getEventParticipantCounts(eventId) {
-    const { data: publicCounts, error: publicCountError } = await supabaseClient.rpc("get_public_event_participant_counts", {
-        target_event_ids: [eventId]
-    });
-    let yes = 0;
-    if (publicCountError) {
-        console.error("Error contando participantes confirmados:", publicCountError);
-    } else {
-        yes = Number(publicCounts?.[0]?.participant_count) || 0;
-    }
+    const publicCounts = await getPublicEventParticipantCountMap([eventId]);
+    let yes = Number(publicCounts.get(eventId)) || 0;
 
     const privateStatuses = ["pending", "no"];
     const privateCounts = await Promise.all(privateStatuses.map(async status => {
@@ -2717,18 +2710,11 @@ async function getPublicEvents(filters = {}) {
     const events = data || [];
     if (!events.length) return events;
 
-    const { data: counts, error: countError } = await supabaseClient.rpc("get_public_event_participant_counts", {
-        target_event_ids: events.map(event => event.id)
-    });
-    if (countError) {
-        console.error("Error obteniendo recuentos públicos:", countError);
-        return events.map(event => ({ ...event, participant_count: 0, event_participants: [{ count: 0 }] }));
-    }
-
-    const countByEvent = new Map((counts || []).map(row => [row.event_id, Number(row.participant_count) || 0]));
+    const countByEvent = await getPublicEventParticipantCountMap(events.map(event => event.id));
     return events.map(event => {
-        const participantCount = countByEvent.get(event.id) || 0;
-        return { ...event, participant_count: participantCount, event_participants: [{ count: participantCount }] };
+        const participantCount = countByEvent.get(event.id);
+        const safeCount = participantCount == null ? 0 : participantCount;
+        return { ...event, participant_count: safeCount, event_participants: [{ count: safeCount }] };
     });
 }
 
@@ -2800,6 +2786,35 @@ async function getPublicEventParticipants(eventId) {
         return [];
     }
     return data || [];
+}
+
+async function getPublicEventParticipantCountMap(eventIds) {
+    const ids = [...new Set((eventIds || []).filter(Boolean))];
+    if (!ids.length) return new Map();
+
+    const { data, error } = await supabaseClient.rpc("get_public_event_participant_counts", {
+        target_event_ids: ids
+    });
+    if (!error) {
+        const counts = new Map(ids.map(id => [id, 0]));
+        (data || []).forEach(row => counts.set(row.event_id, Number(row.participant_count) || 0));
+        return counts;
+    }
+
+    // Compatibility fallback: this project has the public attendee RPC, but
+    // some deployed schemas may not yet have the batched count RPC.
+    console.warn("El recuento agrupado de asistentes no está disponible; usando la consulta pública compatible.", error);
+    const entries = await Promise.all(ids.map(async eventId => {
+        const result = await supabaseClient.rpc("get_public_event_participants", {
+            target_event_id: eventId
+        });
+        if (result.error) {
+            console.error("No se pudo contar a los asistentes de " + eventId + ":", result.error);
+            return [eventId, null];
+        }
+        return [eventId, (result.data || []).length];
+    }));
+    return new Map(entries);
 }
 
 async function joinPublicEvent(eventId) {
@@ -2957,14 +2972,8 @@ async function getMyPublicEvents(){
     }
     const owned=organizing||[];
     if(owned.length){
-        const {data:counts,error:countError}=await supabaseClient.rpc("get_public_event_participant_counts",{target_event_ids:owned.map(event=>event.id)});
-        if(countError){
-            console.error("Error obteniendo aforos de mis eventos:",countError);
-            owned.forEach(event=>event.participant_count=null);
-        }else{
-            const countById=new Map((counts||[]).map(row=>[row.event_id,Number(row.participant_count)||0]));
-            owned.forEach(event=>event.participant_count=countById.get(event.id)||0);
-        }
+        const countById=await getPublicEventParticipantCountMap(owned.map(event=>event.id));
+        owned.forEach(event=>event.participant_count=countById.get(event.id));
     }
     return {participating,organizing:owned};
 }
