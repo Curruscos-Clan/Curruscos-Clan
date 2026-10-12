@@ -30,7 +30,7 @@ CREATE POLICY sparks_read_active ON public.sparks FOR SELECT TO authenticated
  USING (user_id = (SELECT auth.uid()));
 DROP POLICY IF EXISTS sparks_insert_own ON public.sparks;
 CREATE POLICY sparks_insert_own ON public.sparks FOR INSERT TO authenticated
- WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND expires_at <= time_window_end AND expires_at > now());
+ WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND time_window_start > now() AND expires_at <= time_window_end AND expires_at > now());
 DROP POLICY IF EXISTS sparks_update_own ON public.sparks;
 CREATE POLICY sparks_update_own ON public.sparks FOR UPDATE TO authenticated
  USING (user_id = (SELECT auth.uid()) AND status IN ('viva','resonando'))
@@ -38,7 +38,7 @@ CREATE POLICY sparks_update_own ON public.sparks FOR UPDATE TO authenticated
 DROP POLICY IF EXISTS sparks_delete_own ON public.sparks;
 CREATE POLICY sparks_delete_own ON public.sparks FOR DELETE TO authenticated
  USING (user_id = (SELECT auth.uid()) AND status IN ('viva','expirada'));
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.sparks TO authenticated;
+GRANT SELECT, INSERT, DELETE ON public.sparks TO authenticated;\nREVOKE UPDATE ON public.sparks FROM authenticated;\nGRANT UPDATE(status) ON public.sparks TO authenticated;
 REVOKE ALL ON public.sparks FROM anon;
 
 CREATE TABLE IF NOT EXISTS public.fusion_proposals (
@@ -149,6 +149,7 @@ BEGIN
    UPDATE public.fusion_proposals
    SET accepted_user_ids=array_remove(accepted_user_ids,auth.uid())
    WHERE id=p.id RETURNING * INTO p;
+   UPDATE public.sparks SET status='expirada' WHERE id=ANY(p.spark_ids) AND user_id=auth.uid() AND status='resonando';
    RETURN jsonb_build_object('accepted',false,'confirmed',false,'accepted_count',cardinality(p.accepted_user_ids),'required',p.quorum_required);
  END IF;
  IF NOT auth.uid()=ANY(p.accepted_user_ids) THEN
