@@ -93,7 +93,7 @@
       if (!window.supabaseClient) { status.textContent = "La conexión no está disponible."; return; }
       const { data, error } = await window.supabaseClient.from("community_posts")
         .select("id, group_id, author_id, title, content, pinned, created_at, profiles(display_name, username, avatar_url)")
-        .eq("group_id", group.id).order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(50);
+        .eq("group_id", group.id).eq("is_hidden", false).order("pinned", { ascending: false }).order("created_at", { ascending: false }).limit(50);
       if (error) {
         status.textContent = "No se ha podido cargar el muro. Comprueba que la migración esté aplicada y tus permisos.";
         console.warn("CommunityChat load:", error); return;
@@ -148,7 +148,7 @@
     async loadComments(postId, container) {
       const { data, error } = await window.supabaseClient.from("community_post_comments")
         .select("id, author_id, content, created_at, profiles(display_name, username, avatar_url)")
-        .eq("post_id", postId).order("created_at", { ascending: true }).limit(100);
+        .eq("post_id", postId).eq("is_hidden", false).order("created_at", { ascending: true }).limit(100);
       if (error) { container.replaceChildren(el("p", "community-wall-error", "No se han podido cargar las respuestas.")); return; }
       container.replaceChildren();
       for (const comment of data || []) {
