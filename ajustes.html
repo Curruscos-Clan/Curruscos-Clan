@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ajustes y privacidad · Curruscos</title>
+  <meta name="description" content="Configura la privacidad, seguridad y notificaciones de tu cuenta de Curruscos Clan.">
+  <link rel="stylesheet" href="css/style.css">
+  <style id="settings-page-styles">
+    body.settings-app{background:#f6f6f3;color:#17181b;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .settings-page{width:min(100% - 36px,860px);margin:0 auto;padding:38px 0 90px}
+    .settings-heading{margin-bottom:22px}.settings-back{display:inline-flex;margin-bottom:15px;color:#6b7078;text-decoration:none;font-size:12px;font-weight:800}
+    .settings-heading h1{margin:0;font-size:clamp(34px,6vw,48px);font-weight:950;letter-spacing:-.075em;line-height:1.02}
+    .settings-heading p{max-width:580px;margin:10px 0 0;color:#696e76;font-size:13px;line-height:1.6}
+    .settings-stack{display:grid;gap:13px}
+    .settings-card{padding:24px;border:1px solid #e5e5df;border-radius:22px;background:#fff;box-shadow:0 5px 22px rgba(20,20,18,.035)}
+    .settings-card-head{display:flex;gap:12px;align-items:center;margin-bottom:13px}
+    .settings-icon{display:grid;place-items:center;width:40px;height:40px;border-radius:13px;background:#fff0eb;color:#ff4d2e;flex:none}
+    .settings-card h2{margin:0;font-size:18px;font-weight:900;letter-spacing:-.04em}
+    .settings-card-intro{margin:4px 0 8px;color:#747982;font-size:11px;line-height:1.55}
+    .settings-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 0;border-top:1px solid #eee;min-height:42px}
+    .settings-copy{display:grid;gap:4px;min-width:0}.settings-label{font-size:12px;font-weight:850}.settings-desc{color:#717780;font-size:11px;line-height:1.5}
+    .settings-switch{position:relative;display:inline-flex;flex:none;width:46px;height:26px;cursor:pointer}
+    .settings-switch input{position:absolute;width:1px;height:1px;opacity:0}
+    .settings-switch-track{position:absolute;inset:0;border-radius:999px;background:#d6d7d2;transition:background .18s}
+    .settings-switch-track:before{position:absolute;content:"";width:20px;height:20px;top:3px;left:3px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0002;transition:transform .18s}
+    .settings-switch input:checked+.settings-switch-track{background:#ff4d2e}.settings-switch input:checked+.settings-switch-track:before{transform:translateX(20px)}
+    .settings-switch input:focus-visible+.settings-switch-track{outline:3px solid #ff4d2e55;outline-offset:3px}
+    .settings-switch input:disabled+.settings-switch-track{opacity:.55;cursor:wait}
+    .settings-form{display:grid;gap:9px;max-width:510px}.settings-form label{font-size:11px;font-weight:850;color:#41444a}
+    .settings-form input{box-sizing:border-box;width:100%;min-height:45px;padding:0 13px;border:1px solid #e3e3dd;border-radius:12px;background:#fafaf8;color:#17181b;font:inherit;font-size:12px}
+    .settings-form input:focus{outline:3px solid #ff4d2e22;border-color:#ffb4a2}
+    .settings-message{min-height:17px;margin:4px 0 0;color:#6c7179;font-size:11px;line-height:1.5}
+    .settings-message[data-state="error"]{color:#b42318}.settings-message[data-state="success"]{color:#18794e}
+    .settings-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .settings-danger{border-color:#f0d5d2}.settings-danger .settings-icon{background:#fff0ef;color:#c8342c}
+    .settings-danger .settings-card-head h2,.settings-danger .settings-label{color:#b42318}
+    .settings-danger-copy{max-width:550px;color:#77757a;font-size:11px;line-height:1.6}
+    .settings-modal{position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;padding:18px;background:#101114a8;backdrop-filter:blur(5px)}
+    .settings-modal.open{display:flex}.settings-modal-card{width:min(100%,440px);padding:25px;border:1px solid #eadcda;border-radius:22px;background:#fff;box-shadow:0 24px 80px #0003}
+    .settings-modal-card h2{margin:0 0 8px;color:#b42318;font-size:24px;font-weight:950;letter-spacing:-.06em}
+    .settings-modal-card p{font-size:12px;line-height:1.6;color:#666d76}
+    .settings-confirm-input{box-sizing:border-box;width:100%;min-height:45px;margin:8px 0 5px;padding:0 12px;border:1px solid #deded8;border-radius:12px;background:#fafaf8;color:#17181b;font:inherit;font-size:12px}
+    .settings-modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .settings-delete-button{background:#c8342c!important;border-color:#c8342c!important;color:#fff!important}
+    .settings-delete-button:disabled{opacity:.45;cursor:not-allowed}
+    @media(max-width:600px){.settings-page{width:calc(100% - 26px);padding:25px 0 90px}.settings-card{padding:18px;border-radius:18px}.settings-row{gap:12px}.settings-desc{max-width:34ch}.settings-card h2{font-size:16px}.settings-modal-card{padding:20px}}
+    @media(prefers-reduced-motion:reduce){.settings-switch-track,.settings-switch-track:before{transition:none}}
+  </style>
+  <script src="js/i18n.js"></script>
+  <script src="js/navigation.js"></script>
+</head>
+<body class="settings-app">
+  <header class="navbar">
+    <a href="index.html" class="logo">CURRUSCOS<span>.</span></a>
+    <nav id="mainNav" aria-label="Navegación principal">
+      <a href="index.html">Inicio</a><a href="explorar.html">Buscar</a><a href="eventos.html">Mi grupo</a><a href="perfil.html">Mi perfil</a>
+    </nav>
+    <button id="menuButton" class="menu-button" type="button" aria-label="Abrir menú">☰</button>
+  </header>
+
+  <main class="settings-page">
+    <div class="settings-heading">
+      <a class="settings-back" href="perfil.html">← Volver a mi perfil</a>
+      <h1>Ajustes y privacidad.</h1>
+      <p>Decide quién puede ver tu perfil, qué avisos quieres recibir y protege el acceso a tu cuenta.</p>
+    </div>
+
+    <div class="settings-stack">
+      <section class="settings-card" aria-labelledby="privacyHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">◉</span><div><h2 id="privacyHeading">Privacidad del perfil</h2><p class="settings-card-intro">Estas preferencias se aplican también en los resultados de Explorar y en el historial del perfil.</p></div></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-public-profile">Perfil público</label><span class="settings-desc">Permite que cualquier persona descubra tu perfil en Explorar. Si lo desactivas, solo tú y los miembros de tus clanes podrán abrirlo.</span></div><label class="settings-switch"><input id="setting-public-profile" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-show-history">Mostrar historial de planes</label><span class="settings-desc">Muestra en tu perfil los eventos públicos en los que participas, los equipos y las estadísticas. Tú siempre podrás ver tu propio historial.</span></div><label class="settings-switch"><input id="setting-show-history" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <p id="settings-privacy-message" class="settings-message" role="status" aria-live="polite">Cargando tus preferencias…</p>
+      </section>
+
+      <section class="settings-card" aria-labelledby="notificationsHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">♢</span><div><h2 id="notificationsHeading">Notificaciones</h2><p class="settings-card-intro">Configura qué categorías aparecen en el centro de avisos y en el contador de notificaciones.</p></div></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-events">Eventos y cambios</label><span class="settings-desc">Cambios de estado, actualizaciones y avisos generales de eventos.</span></div><label class="settings-switch"><input id="setting-notify-events" data-notification-preference="event_updates" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-comments">Comentarios</label><span class="settings-desc">Avisos cuando alguien comenta en tus eventos.</span></div><label class="settings-switch"><input id="setting-notify-comments" data-notification-preference="comments" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-participants">Participantes</label><span class="settings-desc">Avisos cuando alguien se apunta a tus eventos públicos.</span></div><label class="settings-switch"><input id="setting-notify-participants" data-notification-preference="participants" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-invitations">Invitaciones y miembros</label><span class="settings-desc">Avisos de invitaciones y actividad de miembros.</span></div><label class="settings-switch"><input id="setting-notify-invitations" data-notification-preference="invitations" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-chat">Chats</label><span class="settings-desc">Avisos de conversaciones y mensajes.</span></div><label class="settings-switch"><input id="setting-notify-chat" data-notification-preference="chat" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-notify-social">Actividad social</label><span class="settings-desc">Avisos de actividad pública y comunidad.</span></div><label class="settings-switch"><input id="setting-notify-social" data-notification-preference="social" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
+        <p id="settings-notifications-message" class="settings-message" role="status" aria-live="polite">Cargando tus preferencias…</p>
+      </section>
+
+      <section class="settings-card" aria-labelledby="securityHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">⌑</span><div><h2 id="securityHeading">Seguridad de la cuenta</h2><p class="settings-card-intro">Elige una contraseña nueva. Por seguridad, utiliza una que no uses en otras páginas.</p></div></div>
+        <form id="settings-password-form" class="settings-form">
+          <label for="settings-new-password">Nueva contraseña</label>
+          <input id="settings-new-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Mínimo 8 caracteres">
+          <label for="settings-confirm-password">Confirmar contraseña</label>
+          <input id="settings-confirm-password" type="password" autocomplete="new-password" minlength="8" maxlength="128" required placeholder="Repite la nueva contraseña">
+          <div class="settings-actions"><button id="settings-password-button" type="submit" class="button button-secondary">Actualizar contraseña</button></div>
+          <p id="settings-password-message" class="settings-message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="settings-card settings-danger" aria-labelledby="deleteHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">!</span><div><h2 id="deleteHeading">Zona crítica</h2><p class="settings-card-intro">Eliminar la cuenta es una acción permanente.</p></div></div>
+        <p class="settings-danger-copy">Se eliminará tu usuario de acceso y se borrarán en cascada los datos asociados al perfil. Los clanes con más miembros conservarán sus planes y transferirán la propiedad al siguiente administrador o miembro disponible.</p>
+        <div class="settings-actions"><button id="settings-request-delete" class="button button-secondary" type="button">Solicitar eliminación de cuenta</button></div>
+        <p id="settings-delete-message" class="settings-message" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+  </main>
+
+  <div id="settings-delete-modal" class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-delete-title" aria-describedby="settings-delete-description">
+    <div class="settings-modal-card">
+      <h2 id="settings-delete-title">¿Borrar tu cuenta?</h2>
+      <p id="settings-delete-description">Esta acción no se puede deshacer. Para continuar, escribe <strong>BORRAR</strong>. No se hará ningún cambio hasta que confirmes esta segunda etapa.</p>
+      <label class="settings-label" for="settings-delete-confirmation">Confirmación</label>
+      <input id="settings-delete-confirmation" class="settings-confirm-input" type="text" autocomplete="off" maxlength="10" placeholder="Escribe BORRAR">
+      <p id="settings-delete-modal-message" class="settings-message" role="status" aria-live="polite"></p>
+      <div class="settings-modal-actions"><button id="settings-cancel-delete" type="button" class="button button-secondary">Cancelar</button><button id="settings-confirm-delete" type="button" class="button settings-delete-button" disabled>Eliminar definitivamente</button></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const defaults = { event_updates: true, comments: true, participants: true, invitations: true, chat: true, social: true };
+    const byId = id => document.getElementById(id);
+    const userClient = () => window.supabaseClient;
+    const states = { privacy: false, notification: false };
+    let user = null;
+    let profile = null;
+    let pendingSave = Promise.resolve();
+
+    function message(id, text, state) {
+      const el = byId(id);
+      if (!el) return;
+      el.textContent = text || "";
+      if (state) el.dataset.state = state; else delete el.dataset.state;
+    }
+
+    function setSwitch(id, checked, disabled) {
+      const input = byId(id);
+      if (!input) return;
+      input.checked = !!checked;
+      input.disabled = !!disabled;
+      input.setAttribute("aria-checked", String(!!checked));
+    }
+
+    function normalizePreferences(value) {
+      const result = Object.assign({}, defaults);
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        Object.keys(defaults).forEach(key => {
+          if (typeof value[key] === "boolean") result[key] = value[key];
+        });
+      }
+      return result;
+    }
+
+    async function saveProfileChanges(changes, statusId) {
+      pendingSave = pendingSave.then(async () => {
+        message(statusId, "Guardando…");
+        const { error } = await userClient().from("profiles").update(changes).eq("id", user.id);
+        if (error) throw error;
+        Object.assign(profile, changes);
+        message(statusId, "Preferencias guardadas.", "success");
+        window.dispatchEvent(new CustomEvent("curruscos:settings-updated", { detail: changes }));
+      });
+      try { await pendingSave; }
+      catch (error) {
+        message(statusId, error?.message || "No se han podido guardar los ajustes.", "error");
+        await loadProfile(true);
+      }
+    }
+
+    async function loadProfile(preserveMessages) {
+      const { data, error } = await userClient().from("profiles")
+        .select("id,is_public,show_history,notification_preferences")
+        .eq("id", user.id).single();
+      if (error) throw error;
+      profile = data;
+      setSwitch("setting-public-profile", data.is_public, false);
+      setSwitch("setting-show-history", data.show_history, false);
+      const prefs = normalizePreferences(data.notification_preferences);
+      document.querySelectorAll("[data-notification-preference]").forEach(input => {
+        setSwitch(input.id, prefs[input.dataset.notificationPreference], false);
+      });
+      if (!preserveMessages) {
+        message("settings-privacy-message", "Los cambios se guardan automáticamente.");
+        message("settings-notifications-message", "Los cambios se guardan automáticamente.");
+      }
+    }
+
+    async function init() {
+      if (!userClient()) {
+        message("settings-privacy-message", "No se ha podido conectar con Supabase. Recarga la página.", "error");
+        return;
+      }
+      const { data, error } = await userClient().auth.getUser();
+      if (error || !data?.user) {
+        window.location.replace("login.html");
+        return;
+      }
+      user = data.user;
+      try {
+        await loadProfile(false);
+        states.privacy = true;
+        states.notification = true;
+      } catch (error) {
+        console.error("No se han podido cargar los ajustes:", error);
+        message("settings-privacy-message", error?.message || "No se han podido cargar tus ajustes.", "error");
+      }
+
+      byId("setting-public-profile").addEventListener("change", async e => {
+        if (!states.privacy) { await loadProfile(true); return; }
+        const next = e.currentTarget.checked;
+        e.currentTarget.disabled = true;
+        await saveProfileChanges({ is_public: next }, "settings-privacy-message");
+        e.currentTarget.disabled = false;
+      });
+      byId("setting-show-history").addEventListener("change", async e => {
+        if (!states.privacy) { await loadProfile(true); return; }
+        const next = e.currentTarget.checked;
+        e.currentTarget.disabled = true;
+        await saveProfileChanges({ show_history: next }, "settings-privacy-message");
+        e.currentTarget.disabled = false;
+      });
+
+      document.querySelectorAll("[data-notification-preference]").forEach(input => {
+        input.addEventListener("change", async e => {
+          if (!states.notification) { await loadProfile(true); return; }
+          const key = e.currentTarget.dataset.notificationPreference;
+          const previous = normalizePreferences(profile.notification_preferences);
+          const next = Object.assign({}, previous, { [key]: e.currentTarget.checked });
+          document.querySelectorAll("[data-notification-preference]").forEach(el => { el.disabled = true; });
+          try {
+            await saveProfileChanges({ notification_preferences: next }, "settings-notifications-message");
+          } finally {
+            document.querySelectorAll("[data-notification-preference]").forEach(el => { el.disabled = false; });
+          }
+        });
+      });
+
+      byId("settings-password-form").addEventListener("submit", async e => {
+        e.preventDefault();
+        const pass = byId("settings-new-password").value;
+        const confirm = byId("settings-confirm-password").value;
+        const button = byId("settings-password-button");
+        if (pass.length < 8) return message("settings-password-message", "La contraseña debe tener al menos 8 caracteres.", "error");
+        if (pass !== confirm) return message("settings-password-message", "Las contraseñas no coinciden.", "error");
+        button.disabled = true; button.textContent = "Actualizando…";
+        message("settings-password-message", "");
+        try {
+          const result = await userClient().auth.updateUser({ password: pass });
+          if (result.error) throw result.error;
+          byId("settings-password-form").reset();
+          message("settings-password-message", "Contraseña actualizada correctamente.", "success");
+        } catch (error) {
+          message("settings-password-message", error?.message || "No se ha podido actualizar la contraseña.", "error");
+        } finally {
+          button.disabled = false; button.textContent = "Actualizar contraseña";
+        }
+      });
+
+      const modal = byId("settings-delete-modal");
+      const deleteInput = byId("settings-delete-confirmation");
+      const confirmButton = byId("settings-confirm-delete");
+      const cancelButton = byId("settings-cancel-delete");
+      const openButton = byId("settings-request-delete");
+      const closeModal = () => { modal.classList.remove("open"); deleteInput.value = ""; confirmButton.disabled = true; message("settings-delete-modal-message", ""); openButton.focus(); };
+      openButton.addEventListener("click", () => {
+        modal.classList.add("open"); deleteInput.value = ""; confirmButton.disabled = true; message("settings-delete-modal-message", "");
+        deleteInput.focus();
+      });
+      cancelButton.addEventListener("click", closeModal);
+      modal.addEventListener("click", e => { if (e.target === modal && !confirmButton.dataset.busy) closeModal(); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open") && !confirmButton.dataset.busy) closeModal(); });
+      deleteInput.addEventListener("input", () => {
+        confirmButton.disabled = deleteInput.value.trim().toUpperCase() !== "BORRAR" || !!confirmButton.dataset.busy;
+      });
+      confirmButton.addEventListener("click", async () => {
+        if (deleteInput.value.trim().toUpperCase() !== "BORRAR" || confirmButton.dataset.busy) return;
+        confirmButton.dataset.busy = "true";
+        confirmButton.disabled = true; cancelButton.disabled = true; openButton.disabled = true;
+        confirmButton.textContent = "Eliminando…";
+        message("settings-delete-modal-message", "Solicitando el borrado seguro de la cuenta…");
+        try {
+          const { data: sessionData, error: sessionError } = await userClient().auth.getSession();
+          if (sessionError || !sessionData?.session) throw new Error("La sesión ha caducado. Inicia sesión de nuevo.");
+          const { data, error } = await userClient().functions.invoke("delete-account", {
+            body: { confirmation: "BORRAR" },
+          });
+          if (error) {
+            let detail = error.message || "No se ha podido eliminar la cuenta.";
+            try { const response = error.context; if (response && typeof response.json === "function") { const parsed = await response.json(); if (parsed?.error) detail = parsed.error; } } catch (_) {}
+            throw new Error(detail);
+          }
+          if (!data?.success) throw new Error(data?.error || "El servidor no ha confirmado el borrado.");
+          await userClient().auth.signOut().catch(() => {});
+          window.location.replace("index.html?accountDeleted=1");
+        } catch (error) {
+          console.error("No se ha podido eliminar la cuenta:", error);
+          message("settings-delete-modal-message", error?.message || "No se ha podido eliminar la cuenta.", "error");
+          confirmButton.textContent = "Reintentar eliminación";
+          delete confirmButton.dataset.busy;
+          cancelButton.disabled = false; openButton.disabled = false;
+          confirmButton.disabled = deleteInput.value.trim().toUpperCase() !== "BORRAR";
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  })();
+  </script>
+</body>
+</html>
