@@ -149,7 +149,7 @@
           time_window_end: endDate.toISOString(),
           geo_zone: zone,
           resources_offered: resources,
-          expires_at: endDate.toISOString()
+          expires_at: new Date(Math.min(endDate.getTime(), Date.now() + 2 * 60 * 60 * 1000)).toISOString()
         }).select('id').single();
         if (insertError) throw insertError;
         activeSparkId = spark.id;
