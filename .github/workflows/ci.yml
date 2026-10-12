@@ -1,0 +1,52 @@
+name: Curruscos Clan · CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validar estructura y sintaxis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Comprobar sintaxis de JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+            echo "✓ $file"
+          done < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
+
+      - name: Comprobar páginas y recursos esenciales
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in index.html explorar.html evento-publico.html crear-evento.html perfil.html eventos.html login.html comunidades.html css/style.css css/design-system.css js/supabase.js; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error file=$file::Falta el archivo requerido: $file"
+              exit 1
+            fi
+          done
+          echo "✓ Estructura principal presente"
+
+      - name: Comprobar errores de whitespace en el diff
+        run: git diff --check "${{ github.event.pull_request.base.sha || github.event.before }}" "${{ github.sha }}" || git diff --check
