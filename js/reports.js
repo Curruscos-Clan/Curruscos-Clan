@@ -95,7 +95,6 @@
     if (!options || !["event", "comment", "community_post", "profile"].includes(options.type) || !UUID_RE.test(String(options.id || ""))) return;
     target = { type: options.type, id: String(options.id) };
     const dialog = createModal();
-    dialog.querySelector("#curruscos-report-description");
     dialog.querySelector("#report-dialog-description").textContent = options.title
       ? "Vas a denunciar: " + String(options.title).slice(0, 120) + ". Las denuncias se revisan de forma confidencial."
       : "Indica el motivo. Las denuncias se revisan de forma confidencial.";
@@ -110,6 +109,13 @@
 
   function attachReportButtons() {
     if (!document.body) return;
+    const eventId = new URLSearchParams(window.location.search).get("id");
+    const eventRoot = document.querySelector(".public-event-main");
+    if (eventRoot && eventId && UUID_RE.test(eventId) && !eventRoot.querySelector("[data-event-report-attached]")) {
+      const button = node("button", { type: "button", class: "content-report-button", "data-event-report-attached": "", "aria-label": "Denunciar evento" }, "Denunciar evento");
+      button.addEventListener("click", () => openReportModal({ type: "event", id: eventId, title: eventRoot.querySelector("h1")?.textContent || "evento" }));
+      eventRoot.append(button);
+    }
     document.querySelectorAll(".event-comment[data-comment-id]").forEach(item => {
       if (item.querySelector("[data-report-attached]")) return;
       const id = item.dataset.commentId;
