@@ -3,13 +3,14 @@
  * Network-first para mantener la app actualizada y fallback offline seguro.
  * No intercepta servicios externos, Supabase ni operaciones que modifiquen datos.
  */
-const CACHE_NAME = "curruscos-v10";
+const CACHE_NAME = "curruscos-v11";
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./evento-publico.html",
   "./comunidades.html",
   "./explorar.html",
+  "./chispas.html",
   "./eventos.html",
   "./mis-eventos.html",
   "./mis-planes.html",
@@ -29,6 +30,7 @@ const CORE_ASSETS = [
   "./js/evento-publico.js",
   "./js/community-chat.js",
   "./js/reports.js",
+  "./js/fusion-engine.js",
   "./manifest.webmanifest",
   "./assets/icon.svg",
   "./js/i18n.js",
