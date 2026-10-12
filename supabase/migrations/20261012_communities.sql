@@ -298,7 +298,7 @@ RETURNS TABLE (
   id uuid,
   title text,
   date date,
-  time time,
+  event_time time without time zone,
   location text,
   description text,
   category text
@@ -308,7 +308,7 @@ STABLE
 SECURITY DEFINER
 SET search_path = pg_catalog, public, auth, pg_temp
 AS $$
-  SELECT e.id, e.title, e.date, e.time, e.location, e.description, e.category
+  SELECT e.id, e.title, e.date, e.time AS event_time, e.location, e.description, e.category
   FROM public.events e
   JOIN public.groups g ON g.id = e.group_id
   WHERE e.group_id = target_group_id
