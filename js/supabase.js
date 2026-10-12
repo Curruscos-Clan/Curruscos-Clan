@@ -2788,14 +2788,23 @@ async function getPublicEventParticipants(eventId) {
     return data || [];
 }
 
+let publicEventCountRpcUnavailable = false;
+
 async function getPublicEventParticipantCountMap(eventIds) {
     const ids = [...new Set((eventIds || []).filter(Boolean))];
     if (!ids.length) return new Map();
 
-    const { data, error } = await supabaseClient.rpc("get_public_event_participant_counts", {
-        target_event_ids: ids
-    });
-    if (!error) {
+    let data = null;
+    let error = null;
+    if (!publicEventCountRpcUnavailable) {
+        const result = await supabaseClient.rpc("get_public_event_participant_counts", {
+            target_event_ids: ids
+        });
+        data = result.data;
+        error = result.error;
+        if (error) publicEventCountRpcUnavailable = true;
+    }
+    if (!error && !publicEventCountRpcUnavailable) {
         const counts = new Map(ids.map(id => [id, 0]));
         (data || []).forEach(row => counts.set(row.event_id, Number(row.participant_count) || 0));
         return counts;
