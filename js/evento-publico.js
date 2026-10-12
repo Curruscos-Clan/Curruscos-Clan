@@ -351,20 +351,31 @@ async function renderPublicEvent(){
                 '<div id="eventMapContainer" aria-label="Mapa de ubicación del evento"></div>' +
                 '<p id="eventMapNotice" class="event-map-notice" role="status" aria-live="polite">Localizando el lugar…</p></section>');
             const mapNotice = document.getElementById("eventMapNotice");
+            const showMapFallback = message => {
+                if (!mapNotice) return;
+                mapNotice.replaceChildren(document.createTextNode(message + " "));
+                const link = document.createElement("a");
+                link.href = "https://www.openstreetmap.org/search?query=" + encodeURIComponent(event.location);
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = "Buscar lugar en OpenStreetMap";
+                mapNotice.appendChild(link);
+            };
             if (window.MapView) {
                 window.MapView.renderEventMap("eventMapContainer", event.location).then(result => {
                     if (!mapNotice) return;
-                    if (result?.ok) mapNotice.textContent = result.displayName;
-                    else {
-                        mapNotice.textContent = result?.reason === "not-found"
+                    if (result?.ok) {
+                        mapNotice.textContent = result.displayName;
+                    } else {
+                        showMapFallback(result?.reason === "not-found"
                             ? "No se ha encontrado esta dirección en el mapa. Comprueba el lugar indicado por el organizador."
-                            : "El mapa no está disponible ahora mismo. Dirección indicada: " + event.location;
+                            : "El mapa no está disponible ahora mismo. Dirección indicada: " + event.location);
                     }
                 }).catch(() => {
-                    if (mapNotice) mapNotice.textContent = "El mapa no está disponible ahora mismo. Dirección indicada: " + event.location;
+                    showMapFallback("El mapa no está disponible ahora mismo. Dirección indicada: " + event.location);
                 });
-            } else if (mapNotice) {
-                mapNotice.textContent = "Mapa interactivo no disponible. Dirección indicada: " + event.location;
+            } else {
+                showMapFallback("Mapa interactivo no disponible. Dirección indicada: " + event.location);
             }
         }
     }
