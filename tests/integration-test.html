@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Pruebas de integración · Curruscos</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Panel de diagnóstico no destructivo de la conexión y los contratos de Curruscos.">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body{background:var(--background);color:var(--text);min-height:100vh}
+    .qa-shell{width:min(880px,calc(100% - 32px));margin:38px auto 90px}
+    .qa-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px}
+    .qa-top h1{font-size:clamp(32px,6vw,52px);line-height:.98;letter-spacing:-.07em;margin:8px 0 10px}
+    .qa-top p{font-size:12px;line-height:1.65;color:var(--muted);max-width:580px;margin:0}
+    .qa-button{border:1px solid var(--border);background:var(--text);color:var(--surface);padding:12px 17px;border-radius:999px;font-size:11px;font-weight:850;cursor:pointer;white-space:nowrap}
+    .qa-button:disabled{opacity:.55;cursor:wait}
+    .qa-panel{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:22px;box-shadow:var(--shadow-sm)}
+    .qa-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:15px 0;border-bottom:1px solid var(--border)}
+    .qa-row:last-child{border-bottom:0}
+    .qa-row strong{display:block;font-size:12px;margin-bottom:4px}
+    .qa-row p{font-size:11px;line-height:1.5;color:var(--muted);margin:0}
+    .qa-badge{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:7px 10px;border-radius:999px;background:var(--background);color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;text-align:center}
+    .qa-badge.pass{background:#e5f6eb;color:#16713b}.qa-badge.fail{background:#fff0ed;color:#b72d1c}.qa-badge.skip{background:#f3f1eb;color:#777264}
+    .qa-log{margin-top:18px;padding:15px;border-radius:14px;background:#17191d;color:#e5e7eb;font:11px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:310px;overflow:auto}
+    .qa-note{font-size:11px;line-height:1.65;color:var(--muted);margin:18px 2px}
+    .qa-back{display:inline-block;margin-top:17px;color:var(--text);font-size:11px;font-weight:850;text-decoration:none}
+    @media(max-width:600px){.qa-shell{margin-top:24px}.qa-top{flex-direction:column}.qa-button{width:100%}.qa-panel{padding:15px}.qa-row{gap:9px}.qa-badge{min-width:82px;padding:7px 6px}}
+  </style>
+</head>
+<body>
+  <main class="qa-shell">
+    <div class="qa-top">
+      <div>
+        <span class="eyebrow">CURRUSCOS · CALIDAD</span>
+        <h1>Panel de integración.</h1>
+        <p>Comprobaciones reales y de solo lectura contra el esquema que utiliza la aplicación. Las pruebas que necesitan crear o alterar inscripciones se marcan como no ejecutadas para no modificar datos reales.</p>
+      </div>
+      <button class="qa-button" id="runTests" type="button">Ejecutar comprobaciones</button>
+    </div>
+
+    <section class="qa-panel" aria-label="Resultados de las comprobaciones">
+      <div class="qa-row" data-test="client">
+        <div><strong>1. Cliente Supabase</strong><p>Comprueba que la aplicación inicializó el cliente que comparte con el resto de páginas.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="session">
+        <div><strong>2. Servicio de autenticación</strong><p>Consulta la sesión sin mostrar correo, identificadores ni tokens.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="events">
+        <div><strong>3. Lectura de eventos y RLS</strong><p>Prueba una consulta pública con las columnas reales de Curruscos.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="integrity">
+        <div><strong>4. Coherencia de datos existentes</strong><p>Valida fechas, precios y aforo de las filas devueltas, sin insertar datos.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="profile">
+        <div><strong>5. Acceso al perfil propio</strong><p>Si has iniciado sesión, comprueba que puedes recuperar tu perfil mediante las políticas activas.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="attendees">
+        <div><strong>6. Lectura de asistentes públicos</strong><p>Si hay un evento público disponible, comprueba que la RPC solo devuelve asistentes confirmados.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="capacity">
+        <div><strong>7. Condición de carrera / aforo</strong><p>Requiere un entorno aislado y varias transacciones concurrentes. No se simula como si estuviera probado.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+      <div class="qa-row" data-test="write">
+        <div><strong>8. Inserción duplicada y RLS de escritura</strong><p>Requiere una cuenta de prueba y un evento desechable. No modifica las inscripciones reales.</p></div>
+        <span class="qa-badge">Pendiente</span>
+      </div>
+    </section>
+
+    <div id="testLogs" class="qa-log" role="log" aria-live="polite">Pulsa «Ejecutar comprobaciones» para empezar.</div>
+    <p class="qa-note"><strong>Importante:</strong> un resultado correcto en el navegador no reemplaza las pruebas transaccionales en PostgreSQL ni demuestra por sí solo todas las reglas RLS. Los controles destructivos quedan marcados «No ejecutado» y no se cuentan como aprobados.</p>
+    <a class="qa-back" href="../index.html">← Volver a Curruscos</a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script>
+  (function(){
+    "use strict";
+    const button=document.getElementById("runTests");
+    const logs=document.getElementById("testLogs");
+    const results=new Map();
+    function log(message){logs.textContent+="\n"+message;logs.scrollTop=logs.scrollHeight;}
+    function setResult(key,status,detail){
+      results.set(key,{status,detail});
+      const row=document.querySelector('[data-test="'+key+'"]');
+      if(!row)return;
+      const badge=row.querySelector(".qa-badge");
+      badge.className="qa-badge"+(status==="PASÓ"?" pass":status==="FALLÓ"?" fail":" skip");
+      badge.textContent=status;
+      if(detail)row.querySelector("p").textContent=detail;
+      log(status+" · "+row.querySelector("strong").textContent+(detail?" — "+detail:""));
+    }
+    async function execute(){
+      button.disabled=true;
+      button.textContent="Comprobando…";
+      logs.textContent="[DIAGNÓSTICO DE SOLO LECTURA]";
+      document.querySelectorAll(".qa-badge").forEach(b=>{b.className="qa-badge";b.textContent="En curso";});
+      try{
+        const hasClient=typeof supabaseClient!=="undefined"&&!!supabaseClient?.auth;
+        setResult("client",hasClient?"PASÓ":"FALLÓ",hasClient?"Cliente inicializado en la aplicación.":"No se encuentra el cliente compartido; revisa la carga de js/supabase.js.");
+        if(!hasClient){
+          ["session","events","integrity","profile","attendees"].forEach(k=>setResult(k,"NO EJECUTADO","No puede probarse sin el cliente Supabase."));
+          setResult("capacity","NO EJECUTADO","No se ejecutan escrituras ni concurrencia contra datos reales.");
+          setResult("write","NO EJECUTADO","No se intentan insertar inscripciones ni provocar errores RLS.");
+          return;
+        }
+
+        let sessionData=null;
+        try{
+          const result=await supabaseClient.auth.getSession();
+          if(result.error)throw result.error;
+          sessionData=result.data?.session||null;
+          setResult("session","PASÓ",sessionData?"Servicio disponible; sesión autenticada detectada.":"Servicio disponible; no hay sesión activa.");
+        }catch(error){
+          setResult("session","FALLÓ",error?.message||"No se pudo consultar la sesión.");
+        }
+
+        let events=[];
+        try{
+          const result=await supabaseClient.from("events")
+            .select("id,title,date,time,location,visibility,status,category,capacity,entry_fee,created_by")
+            .eq("visibility","public")
+            .in("status",["published","finished"])
+            .order("date",{ascending:true})
+            .limit(10);
+          if(result.error)throw result.error;
+          events=result.data||[];
+          setResult("events","PASÓ","La consulta pública se completó correctamente ("+events.length+" filas).");
+          if(events.length){
+            const invalid=events.filter(e=>!e.id||!e.title||!e.date||Number.isNaN(Date.parse(String(e.date)+"T"+String(e.time||"00:00")))||(Number(e.entry_fee)<0)||(e.capacity!=null&&Number(e.capacity)<=0));
+            setResult("integrity",invalid.length?"FALLÓ":"PASÓ",invalid.length?invalid.length+" fila(s) contienen campos incoherentes.":"Las "+events.length+" filas consultadas tienen fechas y valores económicos/aforo coherentes.");
+          }else{
+            setResult("integrity","NO EJECUTADO","La consulta funcionó, pero no devolvió eventos que validar.");
+          }
+        }catch(error){
+          setResult("events","FALLÓ",error?.message||"La consulta pública no se completó.");
+          setResult("integrity","NO EJECUTADO","No se recibieron filas para validar.");
+        }
+
+        if(sessionData?.user){
+          try{
+            const profile=await getCurrentProfile(true);
+            setResult("profile",profile?"PASÓ":"FALLÓ",profile?"Se ha podido recuperar el perfil de la sesión sin mostrar datos personales.":"Hay sesión, pero no se ha podido recuperar el perfil propio.");
+          }catch(error){setResult("profile","FALLÓ",error?.message||"Error al recuperar el perfil.");}
+        }else{
+          setResult("profile","NO EJECUTADO","Inicia sesión y vuelve a ejecutar la batería para comprobar el acceso al perfil propio.");
+        }
+
+        const sample=events.find(e=>e.status==="published");
+        if(sample){
+          try{
+            if(typeof getPublicEventParticipants!=="function")throw new Error("La función de lectura de asistentes no está disponible.");
+            const attendees=await getPublicEventParticipants(sample.id);
+            const invalid=(attendees||[]).some(a=>a.status!=="yes");
+            setResult("attendees",invalid?"FALLÓ":"PASÓ",invalid?"La RPC devolvió registros sin estado confirmado.":"La RPC respondió y los "+(attendees||[]).length+" asistentes devueltos figuran como confirmados.");
+          }catch(error){setResult("attendees","FALLÓ",error?.message||"No se pudo consultar la RPC pública de asistentes.");}
+        }else{
+          setResult("attendees","NO EJECUTADO","No hay evento publicado en la consulta para comprobar asistentes.");
+        }
+
+        setResult("capacity","NO EJECUTADO","Esta prueba necesita una base de ensayo y solicitudes concurrentes; no se declara aprobada desde el navegador.");
+        setResult("write","NO EJECUTADO","Para probar duplicados y RLS de escritura hay que preparar una cuenta y un evento desechable fuera de los datos reales.");
+
+        const passed=[...results.values()].filter(v=>v.status==="PASÓ").length;
+        const failed=[...results.values()].filter(v=>v.status==="FALLÓ").length;
+        const skipped=[...results.values()].filter(v=>v.status==="NO EJECUTADO").length;
+        log( "\n[FINAL] "+passed+" aprobadas · "+failed+" fallidas · "+skipped+" no ejecutadas.");
+      }catch(error){
+        log("\\n[ERROR GENERAL] "+(error?.message||String(error)));
+      }finally{
+        button.disabled=false;
+        button.textContent="Volver a ejecutar";
+      }
+    }
+    button.addEventListener("click",execute);
+  })();
+  </script>
+</body>
+</html>

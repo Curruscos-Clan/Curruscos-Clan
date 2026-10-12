@@ -1086,15 +1086,8 @@ async function getEventParticipants(eventId) {
 
 
 async function getEventParticipantCounts(eventId) {
-    const { data: publicCounts, error: publicCountError } = await supabaseClient.rpc("get_public_event_participant_counts", {
-        target_event_ids: [eventId]
-    });
-    let yes = 0;
-    if (publicCountError) {
-        console.error("Error contando participantes confirmados:", publicCountError);
-    } else {
-        yes = Number(publicCounts?.[0]?.participant_count) || 0;
-    }
+    const publicCounts = await getPublicEventParticipantCountMap([eventId]);
+    let yes = Number(publicCounts.get(eventId)) || 0;
 
     const privateStatuses = ["pending", "no"];
     const privateCounts = await Promise.all(privateStatuses.map(async status => {
@@ -2608,66 +2601,58 @@ async function getTasksForEvents(eventIds) {
 }
 
 
-async function updateProfile(displayName, username) {
+async function updateProfile(displayName, username, details = {}) {
     const user = await getCurrentUser();
+    if (!user) throw new Error("No hay una sesión activa.");
 
-    if (!user) {
-        throw new Error("No hay una sesión activa.");
+    const cleanName = String(displayName || "").trim();
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    const cleanBio = String(details?.bio || "").trim();
+    const cleanCity = String(details?.city || "").trim();
+    const rawAvatarUrl = String(details?.avatar_url || "").trim();
+
+    if (!cleanName) throw new Error("El nombre visible es obligatorio.");
+    if (cleanName.length > 80) throw new Error("El nombre visible no puede superar los 80 caracteres.");
+    if (cleanUsername.length < 3 || cleanUsername.length > 24 || !/^[a-z0-9_]+$/.test(cleanUsername)) {
+        throw new Error("El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _.");
+    }
+    if (cleanBio.length > 280) throw new Error("La biografía no puede superar los 280 caracteres.");
+    if (cleanCity.length > 80) throw new Error("La localidad no puede superar los 80 caracteres.");
+
+    let cleanAvatarUrl = null;
+    if (rawAvatarUrl) {
+        let parsed;
+        try {
+            parsed = new URL(rawAvatarUrl);
+        } catch (_) {
+            throw new Error("Introduce un enlace válido para la foto de perfil.");
+        }
+        if (parsed.protocol !== "https:" || parsed.username || parsed.password) {
+            throw new Error("La foto de perfil debe usar un enlace HTTPS público.");
+        }
+        cleanAvatarUrl = parsed.href;
     }
 
-    const cleanName =
-        String(displayName || "").trim();
-
-    const cleanUsername =
-        String(username || "")
-            .trim()
-            .toLowerCase();
-
-    if (!cleanName) {
-        throw new Error("El nombre visible es obligatorio.");
-    }
-
-    if (
-        cleanUsername.length < 3 ||
-        cleanUsername.length > 24 ||
-        !/^[a-z0-9_]+$/.test(cleanUsername)
-    ) {
-        throw new Error(
-            "El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _. "
-        );
-    }
-
-    const { data, error } =
-        await supabaseClient
-            .from("profiles")
-            .update({
-                display_name: cleanName,
-                username: cleanUsername
-            })
-            .eq("id", user.id)
-            .select()
-            .single();
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .update({
+            display_name: cleanName,
+            username: cleanUsername,
+            bio: cleanBio || null,
+            city: cleanCity || null,
+            avatar_url: cleanAvatarUrl
+        })
+        .eq("id", user.id)
+        .select()
+        .single();
 
     if (error) {
-        console.error(
-            "Error actualizando perfil:",
-            error
-        );
-
-        if (error.code === "23505") {
-            throw new Error(
-                "Ese nombre de usuario ya está en uso."
-            );
-        }
-
-        throw new Error(
-            getSupabaseErrorMessage(
-                error,
-                "No se ha podido actualizar el perfil."
-            )
-        );
+        console.error("Error actualizando perfil:", error);
+        if (error.code === "23505") throw new Error("Ese nombre de usuario ya está en uso.");
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido actualizar el perfil."));
     }
 
+    currentProfileCache = data;
     return data;
 }
 
@@ -2725,17 +2710,9 @@ async function getPublicEvents(filters = {}) {
     const events = data || [];
     if (!events.length) return events;
 
-    const { data: counts, error: countError } = await supabaseClient.rpc("get_public_event_participant_counts", {
-        target_event_ids: events.map(event => event.id)
-    });
-    if (countError) {
-        console.error("Error obteniendo recuentos públicos:", countError);
-        return events.map(event => ({ ...event, participant_count: 0, event_participants: [{ count: 0 }] }));
-    }
-
-    const countByEvent = new Map((counts || []).map(row => [row.event_id, Number(row.participant_count) || 0]));
+    const countByEvent = await getPublicEventParticipantCountMap(events.map(event => event.id));
     return events.map(event => {
-        const participantCount = countByEvent.get(event.id) || 0;
+        const participantCount = Number(countByEvent.get(event.id)) || 0;
         return { ...event, participant_count: participantCount, event_participants: [{ count: participantCount }] };
     });
 }
@@ -2808,6 +2785,44 @@ async function getPublicEventParticipants(eventId) {
         return [];
     }
     return data || [];
+}
+
+let publicEventCountRpcUnavailable = false;
+
+async function getPublicEventParticipantCountMap(eventIds) {
+    const ids = [...new Set((eventIds || []).filter(Boolean))];
+    if (!ids.length) return new Map();
+
+    let data = null;
+    let error = null;
+    if (!publicEventCountRpcUnavailable) {
+        const result = await supabaseClient.rpc("get_public_event_participant_counts", {
+            target_event_ids: ids
+        });
+        data = result.data;
+        error = result.error;
+        if (error) publicEventCountRpcUnavailable = true;
+    }
+    if (!error && !publicEventCountRpcUnavailable) {
+        const counts = new Map(ids.map(id => [id, 0]));
+        (data || []).forEach(row => counts.set(row.event_id, Number(row.participant_count) || 0));
+        return counts;
+    }
+
+    // Compatibility fallback: this project has the public attendee RPC, but
+    // some deployed schemas may not yet have the batched count RPC.
+    console.warn("El recuento agrupado de asistentes no está disponible; usando la consulta pública compatible.", error);
+    const entries = await Promise.all(ids.map(async eventId => {
+        const result = await supabaseClient.rpc("get_public_event_participants", {
+            target_event_id: eventId
+        });
+        if (result.error) {
+            console.error("No se pudo contar a los asistentes de " + eventId + ":", result.error);
+            return [eventId, null];
+        }
+        return [eventId, (result.data || []).length];
+    }));
+    return new Map(entries);
 }
 
 async function joinPublicEvent(eventId) {
@@ -2948,7 +2963,28 @@ async function leaveEventTeam(teamId){const {data,error}=await supabaseClient.rp
 
 async function generateSwissRound(eventId){const {data,error}=await supabaseClient.rpc("generate_swiss_round",{target_event_id:eventId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido generar la ronda suiza."));return data;}
 
-async function getMyPublicEvents(){const user=await getCurrentUser();if(!user)return {participating:[],organizing:[]};const base="id,title,date,time,location,category,format,status,visibility,event_type,participant_mode";const {data:organizing,error:oe}=await supabaseClient.from("events").select(base).eq("created_by",user.id).eq("visibility","public").order("date",{ascending:true});if(oe)console.error("Error obteniendo eventos organizados:",oe);const {data:rows,error:pe}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");if(pe)console.error("Error obteniendo participaciones:",pe);const ids=(rows||[]).map(r=>r.event_id);let participating=[];if(ids.length){const {data,error}=await supabaseClient.from("events").select(base).in("id",ids).eq("visibility","public").order("date",{ascending:true});if(error)console.error("Error obteniendo eventos participados:",error);participating=data||[];}return {participating,organizing:organizing||[]};}
+async function getMyPublicEvents(){
+    const user=await getCurrentUser();
+    if(!user)return {participating:[],organizing:[]};
+    const base="id,title,date,time,location,category,format,status,visibility,event_type,participant_mode,capacity,entry_fee,organizer_name,created_by";
+    const {data:organizing,error:oe}=await supabaseClient.from("events").select(base).eq("created_by",user.id).eq("visibility","public").order("date",{ascending:true});
+    if(oe)console.error("Error obteniendo eventos organizados:",oe);
+    const {data:rows,error:pe}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");
+    if(pe)console.error("Error obteniendo participaciones:",pe);
+    const ids=[...new Set((rows||[]).map(r=>r.event_id).filter(Boolean))];
+    let participating=[];
+    if(ids.length){
+        const {data,error}=await supabaseClient.from("events").select(base).in("id",ids).eq("visibility","public").order("date",{ascending:true});
+        if(error)console.error("Error obteniendo eventos participados:",error);
+        participating=data||[];
+    }
+    const owned=organizing||[];
+    if(owned.length){
+        const countById=await getPublicEventParticipantCountMap(owned.map(event=>event.id));
+        owned.forEach(event=>event.participant_count=countById.get(event.id));
+    }
+    return {participating,organizing:owned};
+}
 
 async function getMyEventActivity(){const user=await getCurrentUser();if(!user)return {participating:[],organizing:[],teams:[],matches:[]};const {data:parts}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");const ids=(parts||[]).map(x=>x.event_id);let participating=[];if(ids.length){const {data}=await supabaseClient.from("events").select("id,title,date,time,location,event_type,format,category,status,participant_mode").in("id",ids).eq("visibility","public");participating=data||[];}const {data:organizing}=await supabaseClient.from("events").select("id,title,date,time,location,event_type,format,category,status,participant_mode").eq("created_by",user.id).eq("visibility","public");const {data:members}=await supabaseClient.from("event_team_members").select("team_id").eq("user_id",user.id);let teams=[];if((members||[]).length){const teamIds=members.map(x=>x.team_id);const {data}=await supabaseClient.from("event_teams").select("id,event_id,name,seed").in("id",teamIds);teams=data||[];}let matches=[];if(ids.length){const {data:all}=await supabaseClient.from("event_matches").select("id,event_id,home_team_id,away_team_id,home_score,away_score,status,round_number,match_number").in("event_id",ids).eq("status","finished");const teamIds=new Set(teams.map(t=>t.id));matches=(all||[]).filter(m=>teamIds.has(m.home_team_id)||teamIds.has(m.away_team_id));}const activityTypes=[...new Set(participating.map(e=>e.event_type).filter(Boolean))];return {participating,organizing:organizing||[],teams,matches,activityTypes};}
 
@@ -3009,6 +3045,12 @@ async function getPublicActiveTeams(search="",eventType="all"){const {data,error
 async function getPublicTeam(teamId){const {data,error}=await supabaseClient.rpc("get_public_team",{target_team_id:teamId});if(error){console.error("Error obteniendo equipo público:",error);return null;}return data?.[0]||null;}
 
 async function getPublicProfile(userId){const {data,error}=await supabaseClient.rpc("get_public_profile",{target_user_id:userId});if(error){console.error("Error obteniendo perfil público:",error);return null;}return data?.[0]||null;}
+
+async function getPublicProfileDetails(userId){
+    const {data,error}=await supabaseClient.rpc("get_public_profile_details",{target_user_id:userId});
+    if(error){console.error("Error obteniendo presentación pública del perfil:",error);return null;}
+    return data?.[0]||null;
+}
 
 
 async function getPublicProfileActivity(userId){
