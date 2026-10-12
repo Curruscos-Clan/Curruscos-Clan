@@ -38,7 +38,9 @@ CREATE POLICY sparks_update_own ON public.sparks FOR UPDATE TO authenticated
 DROP POLICY IF EXISTS sparks_delete_own ON public.sparks;
 CREATE POLICY sparks_delete_own ON public.sparks FOR DELETE TO authenticated
  USING (user_id = (SELECT auth.uid()) AND status IN ('viva','expirada'));
-GRANT SELECT, INSERT, DELETE ON public.sparks TO authenticated;\nREVOKE UPDATE ON public.sparks FROM authenticated;\nGRANT UPDATE(status) ON public.sparks TO authenticated;
+GRANT SELECT, INSERT, DELETE ON public.sparks TO authenticated;
+REVOKE UPDATE ON public.sparks FROM authenticated;
+GRANT UPDATE(status) ON public.sparks TO authenticated;
 REVOKE ALL ON public.sparks FROM anon;
 
 CREATE TABLE IF NOT EXISTS public.fusion_proposals (
