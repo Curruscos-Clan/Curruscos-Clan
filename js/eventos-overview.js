@@ -58,10 +58,20 @@
             const group = access?.currentGroup;
             if (!access?.user || !group?.id) return;
 
-            const [members, events] = await Promise.all([
+            // Una consulta secundaria fallida no debe ocultar los datos básicos del grupo.
+            const [membersResult, eventsResult] = await Promise.allSettled([
                 getGroupMembers(group.id),
                 getGroupEvents()
             ]);
+            const members = membersResult.status === "fulfilled" ? (membersResult.value || []) : [];
+            const eventsAvailable = eventsResult.status === "fulfilled";
+            const events = eventsAvailable ? (eventsResult.value || []) : [];
+            if (membersResult.status === "rejected") {
+                console.warn("No se pudieron cargar los miembros del grupo:", membersResult.reason);
+            }
+            if (!eventsAvailable) {
+                console.warn("No se pudieron cargar los planes del grupo:", eventsResult.reason);
+            }
 
             const setText = (id, value) => {
                 const node = document.getElementById(id);
@@ -80,7 +90,7 @@
                 const timestamp = eventTimestamp(event);
                 return timestamp !== null && timestamp >= now;
             });
-            setText("groupOverviewPlanCount", formatCount(upcoming.length));
+            setText("groupOverviewPlanCount", eventsAvailable ? formatCount(upcoming.length) : "—");
 
             const memberRoot = document.getElementById("groupOverviewMembers");
             if (memberRoot) {
