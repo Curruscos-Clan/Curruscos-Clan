@@ -97,14 +97,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const username = document.getElementById("username");
     const email = document.getElementById("profileEmail");
     const avatar = document.getElementById("profileAvatar");
+    const cityInput = document.getElementById("profileCity");
+    const bioInput = document.getElementById("profileBio");
+    const avatarUrlInput = document.getElementById("profileAvatarUrl");
     const interestGrid = document.getElementById("interestGrid");
     const interestSave = document.getElementById("saveInterestsButton");
     const interestMessage = document.getElementById("interestMessage");
 
     displayName.value = profile.display_name || "";
     username.value = profile.username || "";
+    cityInput.value = profile.city || "";
+    bioInput.value = profile.bio || "";
+    avatarUrlInput.value = profile.avatar_url || "";
     email.textContent = access.user.email || "";
-    avatar.textContent = (profile.display_name || profile.username || "C").charAt(0).toUpperCase();
+
+    const paintAvatar = (url, displayLabel) => {
+        const fallback = String(displayLabel || "C").trim().charAt(0).toUpperCase() || "C";
+        avatar.replaceChildren();
+        let safeUrl = "";
+        try {
+            const parsed = new URL(String(url || "").trim());
+            if (parsed.protocol === "https:" && !parsed.username && !parsed.password) safeUrl = parsed.href;
+        } catch (_) {}
+        if (!safeUrl) {
+            avatar.textContent = fallback;
+            return;
+        }
+        const img = document.createElement("img");
+        img.src = safeUrl;
+        img.alt = "Foto de perfil";
+        img.referrerPolicy = "no-referrer";
+        img.loading = "lazy";
+        img.addEventListener("error", () => { avatar.textContent = fallback; }, { once: true });
+        avatar.appendChild(img);
+    };
+    paintAvatar(profile.avatar_url, profile.display_name || profile.username);
 
     page?.classList.remove("is-loading");
     page?.classList.add("is-ready");
@@ -159,6 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const upcoming=(activity.participating||[]).filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;
     const cards=[
         [t("profile.events"),activity.participating.length],
+        ["Organizados",activity.organizing.length],
         [t("profile.upcoming"),upcoming],
         [t("profile.matches"),finished.length],
         [t("profile.wins"),wins],
@@ -182,8 +210,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         button.textContent=t("profile.saving");
         setStatus("", "");
         try {
-            const updated=await updateProfile(displayName.value,username.value);
-            avatar.textContent=(updated.display_name||updated.username||"C").charAt(0).toUpperCase();
+            const updated=await updateProfile(displayName.value, username.value, {
+                city: cityInput.value,
+                bio: bioInput.value,
+                avatar_url: avatarUrlInput.value
+            });
+            cityInput.value = updated.city || "";
+            bioInput.value = updated.bio || "";
+            avatarUrlInput.value = updated.avatar_url || "";
+            paintAvatar(updated.avatar_url, updated.display_name || updated.username);
             setStatus(t("profile.saved"), "success");
             window.dispatchEvent(new CustomEvent("curruscos:profile-updated",{detail:updated}));
         } catch(error) {
