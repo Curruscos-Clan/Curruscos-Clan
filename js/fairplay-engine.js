@@ -148,6 +148,103 @@
       });
     }
     renderRoster();
+    // SplitPot: expense ledger and suggested transfers. This never performs a payment.
+    const expensePanel = el('section', 'fairplay-panel');
+    expensePanel.setAttribute('aria-labelledby', 'splitPotHeading');
+    const expenseTitle = el('h2', '', 'Cuentas claras');
+    expenseTitle.id = 'splitPotHeading';
+    expensePanel.append(expenseTitle, el('p', 'fairplay-copy', 'Anota gastos compartidos y consulta una propuesta de reparto. Los pagos se realizan fuera de Curruscos; los enlaces solo preparan un mensaje.'));
+    const expenseForm = document.createElement('form');
+    expenseForm.style.cssText = 'display:grid;grid-template-columns:minmax(0,2fr) minmax(90px,1fr);gap:8px;margin-top:12px';
+    const expenseDescription = document.createElement('input');
+    expenseDescription.type = 'text'; expenseDescription.maxLength = 160; expenseDescription.required = true;
+    expenseDescription.placeholder = 'Ej. Alquiler de pista'; expenseDescription.setAttribute('aria-label', 'Concepto del gasto');
+    const expenseAmount = document.createElement('input');
+    expenseAmount.type = 'number'; expenseAmount.min = '0.01'; expenseAmount.max = '100000'; expenseAmount.step = '0.01'; expenseAmount.required = true;
+    expenseAmount.placeholder = 'Importe €'; expenseAmount.setAttribute('aria-label', 'Importe en euros');
+    const payerSelect = document.createElement('select');
+    payerSelect.setAttribute('aria-label', 'Quién pagó'); payerSelect.required = true;
+    players.forEach(player => { const option = document.createElement('option'); option.value = player.id; option.textContent = player.name; payerSelect.appendChild(option); });
+    payerSelect.style.cssText = 'min-width:0;padding:10px;border:1px solid var(--event-line,var(--border));border-radius:10px;background:var(--background);color:inherit';
+    const expenseSubmit = el('button', 'fairplay-commit', 'Añadir gasto');
+    expenseSubmit.type = 'submit'; expenseSubmit.style.gridColumn = '1 / -1';
+    expenseForm.append(expenseDescription, expenseAmount, payerSelect, expenseSubmit);
+    const expenseNotice = el('p', 'fairplay-note', 'Cargando gastos…');
+    expenseNotice.setAttribute('role', 'status');
+    const expenseList = el('div', 'fairplay-roster');
+    const settlementList = el('div', 'fairplay-roster');
+    expensePanel.append(expenseForm, expenseNotice, expenseList, el('h3', '', 'Propuesta de liquidación'), settlementList);
+    panel.appendChild(expensePanel);
+
+    let expenses = [];
+    async function loadExpenses() {
+      const result = await supabase.from('event_expenses')
+        .select('id,description,amount,payer_id,created_by,created_at')
+        .eq('event_id', event.id).order('created_at', { ascending: true });
+      if (result.error) {
+        expenseNotice.textContent = 'El registro de gastos aún no está disponible. Comprueba que la migración de Split-Bote está aplicada.';
+        expenseForm.hidden = true;
+        return;
+      }
+      expenses = result.data || [];
+      renderExpenses();
+    }
+    function renderExpenses() {
+      expenseList.replaceChildren(); settlementList.replaceChildren();
+      if (!expenses.length) expenseList.appendChild(el('p', 'fairplay-note', 'Todavía no hay gastos registrados.'));
+      expenses.forEach(expense => {
+        const payer = players.find(p => p.id === expense.payer_id);
+        const row = el('div', 'fairplay-roster-row');
+        const label = document.createElement('div');
+        label.append(el('span', '', expense.description), el('small', '', 'Pagó ' + (payer?.name || 'participante') + ' · ' + Number(expense.amount).toFixed(2) + ' €'));
+        row.appendChild(label);
+        if (expense.created_by === user.id || isOrganizer) {
+          const remove = el('button', '', 'Eliminar');
+          remove.type = 'button';
+          remove.addEventListener('click', async () => {
+            remove.disabled = true;
+            const { error } = await supabase.from('event_expenses').delete().eq('id', expense.id);
+            if (error) { expenseNotice.textContent = 'No se ha podido eliminar el gasto.'; remove.disabled = false; return; }
+            expenses = expenses.filter(item => item.id !== expense.id); renderExpenses();
+          });
+          row.appendChild(remove);
+        }
+        expenseList.appendChild(row);
+      });
+      if (!window.SplitPot) { expenseNotice.textContent = 'Calculadora de gastos no disponible.'; return; }
+      const settlements = window.SplitPot.calculateSettlements(expenses, players);
+      expenseNotice.textContent = expenses.length + ' gasto(s) · Total ' + expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0).toFixed(2) + ' €. Importes informativos, sin cobros dentro de la app.';
+      if (!settlements.length) settlementList.appendChild(el('p', 'fairplay-note', 'Las cuentas están cuadradas o aún no hay gastos que repartir.'));
+      settlements.forEach(transfer => {
+        const row = el('div', 'fairplay-roster-row');
+        const label = el('span', '', transfer.from + ' → ' + transfer.to + ': ' + transfer.amount.toFixed(2) + ' €');
+        const link = el('a', 'fairplay-status', 'Preparar mensaje');
+        link.href = window.SplitPot.getPaymentMessageLink(transfer, event.title || 'evento');
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
+        row.append(label, link); settlementList.appendChild(row);
+      });
+    }
+    expenseForm.addEventListener('submit', async eventSubmit => {
+      eventSubmit.preventDefault();
+      const description = expenseDescription.value.trim();
+      const amount = Number(expenseAmount.value);
+      if (!description || !Number.isFinite(amount) || amount <= 0 || amount > 100000) {
+        expenseNotice.textContent = 'Introduce un concepto y un importe válido.'; return;
+      }
+      expenseSubmit.disabled = true;
+      const { data, error } = await supabase.from('event_expenses').insert({
+        event_id: event.id, payer_id: payerSelect.value, created_by: user.id,
+        description, amount: Math.round(amount * 100) / 100
+      }).select('id,description,amount,payer_id,created_by,created_at').single();
+      if (error) {
+        expenseNotice.textContent = 'No se ha podido guardar el gasto. Comprueba que sigues participando en el evento.';
+      } else {
+        expenses.push(data); expenseDescription.value = ''; expenseAmount.value = ''; renderExpenses();
+      }
+      expenseSubmit.disabled = false;
+    });
+    loadExpenses();
+
     const balanceButton = el('button', 'fairplay-commit', 'Equilibrar equipos');
     balanceButton.type = 'button';
     const balanceRoot = el('div', '');
