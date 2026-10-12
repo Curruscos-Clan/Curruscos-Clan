@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const cityInput = document.getElementById("profileCity");
     const bioInput = document.getElementById("profileBio");
     const avatarUrlInput = document.getElementById("profileAvatarUrl");
+    const avatarFileInput = document.getElementById("profileAvatarFile");
     const interestGrid = document.getElementById("interestGrid");
     const interestSave = document.getElementById("saveInterestsButton");
     const interestMessage = document.getElementById("interestMessage");
@@ -209,19 +210,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         button.disabled=true;
         button.textContent=t("profile.saving");
         setStatus("", "");
+        const originalAvatarUrl = avatarUrlInput.value;
+        let uploadedAvatarUrl = "";
         try {
+            let avatarUrl = avatarUrlInput.value.trim();
+            const avatarFile = avatarFileInput?.files?.[0];
+            if (avatarFile) {
+                if (!window.AppStorage?.uploadUserAvatar) {
+                    throw new Error("La subida de fotos no está disponible. Recarga la página e inténtalo de nuevo.");
+                }
+                setStatus("Optimizando y subiendo tu foto…", "");
+                uploadedAvatarUrl = await window.AppStorage.uploadUserAvatar(avatarFile, access.user.id);
+                avatarUrl = uploadedAvatarUrl;
+                avatarUrlInput.value = avatarUrl;
+            }
             const updated=await updateProfile(displayName.value, username.value, {
                 city: cityInput.value,
                 bio: bioInput.value,
-                avatar_url: avatarUrlInput.value
+                avatar_url: avatarUrl
             });
+            if (uploadedAvatarUrl && originalAvatarUrl && originalAvatarUrl !== uploadedAvatarUrl && window.AppStorage?.removeUserAvatar) {
+                try { await window.AppStorage.removeUserAvatar(originalAvatarUrl); }
+                catch (cleanupError) { console.warn("No se pudo limpiar el avatar anterior; el perfil ya está guardado.", cleanupError); }
+            }
             cityInput.value = updated.city || "";
             bioInput.value = updated.bio || "";
             avatarUrlInput.value = updated.avatar_url || "";
+            if (avatarFileInput) avatarFileInput.value = "";
             paintAvatar(updated.avatar_url, updated.display_name || updated.username);
             setStatus(t("profile.saved"), "success");
             window.dispatchEvent(new CustomEvent("curruscos:profile-updated",{detail:updated}));
         } catch(error) {
+            if (uploadedAvatarUrl && window.AppStorage?.removeUserAvatar) {
+                try { await window.AppStorage.removeUserAvatar(uploadedAvatarUrl); } catch (cleanupError) { console.warn("No se pudo limpiar la subida de avatar fallida.", cleanupError); }
+            }
+            avatarUrlInput.value = originalAvatarUrl;
             setStatus(getSupabaseErrorMessage(error,t("profile.saveError")), "error");
         } finally {
             button.disabled=false;

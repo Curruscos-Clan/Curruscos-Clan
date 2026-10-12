@@ -40,6 +40,7 @@ body.public-create-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180
  .public-create-app .bottom-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;border-radius:14px;color:#66686d;text-decoration:none}.public-create-app .bottom-nav-item b{font-size:20px;font-weight:500;line-height:1}.public-create-app .bottom-nav-item span{font-size:10px;font-weight:800}.public-create-app .bottom-nav-item.active{background:#191a1d;color:#fff}
 }
 </style>
+<style id="event-cover-upload-styles">.public-create-form input[type=file]{padding:10px;font-size:11px;max-width:100%}.event-cover-preview{margin:0 0 14px;border:1px solid var(--border);border-radius:16px;overflow:hidden}.event-cover-preview[hidden]{display:none}.event-cover-preview img{display:block;width:100%;max-height:270px;aspect-ratio:16/9;object-fit:cover}.event-cover-preview{background:var(--background)}</style>
 </head>
 <body class="public-create-app">
 <header class="navbar">
@@ -60,6 +61,7 @@ body.public-create-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180
 <label>Actividad<select id="publicEventType"><option value="padel">Pádel</option><option value="futbol">Fútbol</option><option value="baloncesto">Baloncesto</option><option value="tenis">Tenis</option><option value="ajedrez">Ajedrez</option><option value="gaming">Gaming</option><option value="running">Running</option><option value="otro">Otro</option></select></label><label>Formato<select id="publicEventFormat"><option value="standard">Evento libre</option><option value="knockout">Eliminación directa</option><option value="round_robin">Liga / todos contra todos</option><option value="swiss">Sistema suizo</option><option value="race">Carrera / clasificación</option><option value="custom">Formato personalizado</option></select></label><label>Puntuación<select id="publicEventScoring"><option value="auto">Automática</option><option value="win_draw_loss">Victoria / empate / derrota</option><option value="points">Puntos</option><option value="chess">Ajedrez</option><option value="race">Tiempo / posición</option></select></label><label>Participación<select id="publicEventParticipantMode"><option value="individual">Personas individuales</option><option value="team">Equipos</option></select></label><label id="teamSizeField" style="display:none">Jugadores por equipo<input id="publicEventTeamSize" type="number" min="2" max="50" placeholder="Ej. 2"></label>
 <label>Plazas<input id="publicEventCapacity" type="number" min="1" placeholder="Sin límite"></label>
 </div>
+<label for="publicEventCover">Portada del evento (opcional)<input id="publicEventCover" type="file" accept="image/jpeg,image/png,image/webp,image/avif"></label><p class="create-note" id="eventCoverHelp">La foto se optimizará antes de subirla. JPG, PNG, WebP o AVIF; máximo 20 MB originales.</p><div id="eventCoverPreview" class="event-cover-preview" hidden><img id="eventCoverPreviewImage" alt="Vista previa de la portada seleccionada"></div>
 <div class="create-section-label">Cuándo y dónde</div><div class="public-create-grid">
 <label>Fecha<input id="publicEventDate" type="date" required></label>
 <label>Hora<input id="publicEventTime" type="time"></label>
@@ -85,6 +87,7 @@ body.public-create-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180
 </nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/crear-evento.js"></script>
 </body>
 </html>

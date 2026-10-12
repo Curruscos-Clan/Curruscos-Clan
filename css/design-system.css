@@ -76,3 +76,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid rgba(
 .feed-footer-note{margin:18px 0 0;color:var(--text-subtle);font-size:.7rem;text-align:center}
 @media(min-width:768px){.app-container{padding-top:42px}.feed-intro{margin-bottom:30px}.event-card-media{height:175px}.event-card-body{padding:20px 22px 17px}.event-card-title{font-size:1.3rem}.header-subtitle{display:block;margin-left:auto;margin-right:18px}.top-header{gap:15px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Public event cover images */
+.event-card-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.event-card-media[data-has-cover="true"]::after{background:linear-gradient(0deg,rgba(0,0,0,.45),rgba(0,0,0,.04) 75%)}

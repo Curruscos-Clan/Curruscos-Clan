@@ -7,6 +7,10 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
+// Shared public client for standalone modules such as image storage.
+// This is the same client/session, not a second Supabase instance.
+window.supabaseClient = supabaseClient;
+window.CURRUSCOS_SUPABASE_URL = SUPABASE_URL;
 
 function getSupabaseErrorMessage(error, fallback = "Ha ocurrido un error.") {
     return error?.message || error?.details || error?.hint || fallback;
@@ -2665,7 +2669,7 @@ async function updateProfile(displayName, username, details = {}) {
 async function getPublicEvent(eventId) {
     const { data, error } = await supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,rules,organizer_name,created_by,participant_mode,team_size,event_type,scoring_system,created_at")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,rules,organizer_name,created_by,participant_mode,team_size,event_type,scoring_system,cover_url,created_at")
         .eq("id", eventId)
         .eq("visibility", "public")
         .in("status", ["published", "preparing", "live", "finished"])
@@ -2680,7 +2684,7 @@ async function getPublicEvent(eventId) {
 async function getPublicEvents(filters = {}) {
     let query = supabaseClient
         .from("events")
-        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,created_at")
+        .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,cover_url,created_at")
         .eq("visibility", "public")
         .in("status", ["published", "preparing", "live"])
         .order("date", { ascending: true })
@@ -2766,7 +2770,8 @@ async function createPublicEvent(eventData) {
             participant_mode: eventData.participant_mode || "individual",
             team_size: eventData.team_size || null,
             event_type: eventData.event_type || "otro",
-            scoring_system: eventData.scoring_system || "win_draw_loss"
+            scoring_system: eventData.scoring_system || "win_draw_loss",
+            cover_url: eventData.cover_url || null
         })
         .select()
         .single();
@@ -2966,7 +2971,7 @@ async function generateSwissRound(eventId){const {data,error}=await supabaseClie
 async function getMyPublicEvents(){
     const user=await getCurrentUser();
     if(!user)return {participating:[],organizing:[]};
-    const base="id,title,date,time,location,category,format,status,visibility,event_type,participant_mode,capacity,entry_fee,organizer_name,created_by";
+    const base="id,title,date,time,location,category,format,status,visibility,event_type,participant_mode,capacity,entry_fee,organizer_name,created_by,cover_url";
     const {data:organizing,error:oe}=await supabaseClient.from("events").select(base).eq("created_by",user.id).eq("visibility","public").order("date",{ascending:true});
     if(oe)console.error("Error obteniendo eventos organizados:",oe);
     const {data:rows,error:pe}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");
