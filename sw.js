@@ -79,8 +79,8 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   const isDocument = request.mode === "navigate" || request.destination === "document";
-  const isStatic = /\\.(?:css|js|mjs|svg|png|jpe?g|webp|ico|woff2?)$/i.test(url.pathname) ||
-    url.pathname.endsWith(".webmanifest") || /\\.json$/i.test(url.pathname);
+  const isStatic = /\.(?:css|js|mjs|svg|png|jpe?g|webp|ico|woff2?)$/i.test(url.pathname) ||
+    url.pathname.endsWith(".webmanifest") || /\.json$/i.test(url.pathname);
   if (!isDocument && !isStatic) return;
 
   event.respondWith((async () => {
