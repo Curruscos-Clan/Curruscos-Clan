@@ -139,6 +139,49 @@
         }
         card.append(list);
       }
+      async function loadMembershipRequests(card, group, button) {
+        button.disabled = true;
+        button.textContent = 'Cargando…';
+        card.querySelector('.community-requests')?.remove();
+        const panel = node('div','community-events community-requests');
+        const {data,error} = await client.rpc('get_group_membership_requests',{target_group_id:group.id});
+        if (error) {
+          panel.append(node('p','community-meta','No se han podido cargar las solicitudes.'));
+        } else if (!data?.length) {
+          panel.append(node('p','community-meta','No hay solicitudes pendientes.'));
+        } else {
+          data.forEach(request => {
+            const row = node('div','community-event');
+            const name = request.display_name || (request.username ? '@' + request.username : 'Usuario');
+            row.append(node('strong','',name));
+            row.append(node('span','', 'Solicitó acceso el ' + dateFormatter.format(new Date(request.created_at))));
+            const controls = node('div','community-actions');
+            const approve = node('button','join-button','Aceptar');
+            const reject = node('button','','Rechazar');
+            [approve,reject].forEach(control => { control.type='button'; });
+            approve.addEventListener('click',()=>resolveRequest(request.id,true,card,group,button,approve,reject));
+            reject.addEventListener('click',()=>resolveRequest(request.id,false,card,group,button,approve,reject));
+            controls.append(approve,reject); row.append(controls); panel.append(row);
+          });
+        }
+        card.append(panel);
+        button.disabled = false;
+        button.textContent = 'Actualizar solicitudes';
+      }
+      async function resolveRequest(requestId, approve, card, group, refreshButton, approveButton, rejectButton) {
+        approveButton.disabled = true; rejectButton.disabled = true;
+        const {error} = await client.rpc('review_group_membership_request',{
+          target_request_id:requestId,
+          approve_request:approve
+        });
+        if (error) {
+          window.alert(error.message || 'No se ha podido resolver la solicitud.');
+          approveButton.disabled = false; rejectButton.disabled = false;
+          return;
+        }
+        await loadMembershipRequests(card,group,refreshButton);
+        await loadCommunities();
+      }
       async function loadEvents(card, group, button) {
         button.disabled = true;
         button.textContent = 'Cargando…';
@@ -195,6 +238,12 @@
           join.disabled = group.request_status === 'pending';
           join.addEventListener('click',()=>handleJoin(group,join));
           actions.append(join);
+        }
+        if (group.is_admin) {
+          const requestsButton = node('button','', 'Solicitudes');
+          requestsButton.type = 'button';
+          requestsButton.addEventListener('click',()=>loadMembershipRequests(card,group,requestsButton));
+          actions.append(requestsButton);
         }
         const eventsButton = node('button','', 'Ver eventos');
         eventsButton.type = 'button';
