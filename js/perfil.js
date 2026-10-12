@@ -229,6 +229,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 bio: bioInput.value,
                 avatar_url: avatarUrl
             });
+            if (uploadedAvatarUrl && originalAvatarUrl && originalAvatarUrl !== uploadedAvatarUrl && window.AppStorage?.removeUserAvatar) {
+                try { await window.AppStorage.removeUserAvatar(originalAvatarUrl); }
+                catch (cleanupError) { console.warn("No se pudo limpiar el avatar anterior; el perfil ya está guardado.", cleanupError); }
+            }
             cityInput.value = updated.city || "";
             bioInput.value = updated.bio || "";
             avatarUrlInput.value = updated.avatar_url || "";
