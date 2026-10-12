@@ -68,6 +68,7 @@
     if (panel.dataset.loaded === "true") {
       panel.hidden = !panel.hidden;
       button.setAttribute("aria-expanded", String(!panel.hidden));
+      button.textContent = panel.hidden ? "Ver asistentes" : "Ocultar asistentes";
       return;
     }
     panel.hidden = false;
@@ -107,14 +108,13 @@
     }
     button.disabled = false;
     button.textContent = "Ocultar asistentes";
-    button.dataset.open = "true";
   }
 
   function eventCard(event, mode) {
     const organizing = mode === "organizing";
     const past = isHistorical(event);
     const capacity = Number(event.capacity) > 0 ? Number(event.capacity) : null;
-    const count = Number(event.participant_count) || 0;
+    const count = event.participant_count == null ? null : (Number(event.participant_count) || 0);
     const remaining = capacity === null ? null : Math.max(0, capacity - count);
     const article = document.createElement("article");
     article.className = "my-event-card";
@@ -141,7 +141,9 @@
     if (organizing) {
       const capacityBox = document.createElement("div");
       capacityBox.className = "event-capacity";
-      if (capacity === null) {
+      if (count === null) {
+        capacityBox.textContent = "No se ha podido consultar el número de plazas confirmadas.";
+      } else if (capacity === null) {
         capacityBox.innerHTML = "<strong>"+count+"</strong> personas confirmadas · sin límite de plazas configurado";
       } else {
         capacityBox.innerHTML = "<strong>"+count+" / "+capacity+"</strong> plazas ocupadas · "+(remaining === 0 ? "aforo completo" : remaining+" libres");
