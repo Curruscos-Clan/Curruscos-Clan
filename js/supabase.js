@@ -2712,9 +2712,8 @@ async function getPublicEvents(filters = {}) {
 
     const countByEvent = await getPublicEventParticipantCountMap(events.map(event => event.id));
     return events.map(event => {
-        const participantCount = countByEvent.get(event.id);
-        const safeCount = participantCount == null ? 0 : participantCount;
-        return { ...event, participant_count: safeCount, event_participants: [{ count: safeCount }] };
+        const participantCount = Number(countByEvent.get(event.id)) || 0;
+        return { ...event, participant_count: participantCount, event_participants: [{ count: participantCount }] };
     });
 }
 
