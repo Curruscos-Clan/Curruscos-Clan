@@ -87,11 +87,64 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
 }
 </style>
 
+<style id="group-overview-integration">
+.group-overview-section{padding:0 0 25px!important}
+.group-overview-section .container{width:min(100% - 40px,1040px)!important;max-width:1040px!important}
+.group-overview-card{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:22px;padding:20px 22px;border:1px solid var(--group-line);border-radius:22px;background:var(--group-card);box-shadow:0 5px 20px rgba(20,20,18,.025)}
+.group-overview-main{display:flex;align-items:flex-start;gap:13px;min-width:0}
+.group-overview-avatar{display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:17px;background:var(--group-ink);color:#fff;font-size:19px;font-weight:900}
+.group-overview-copy{min-width:0}.group-overview-copy .eyebrow{color:var(--group-accent);font-size:9px;font-weight:950;letter-spacing:.13em}
+.group-overview-copy h2{margin:5px 0 5px;font-size:clamp(20px,3vw,28px);font-weight:900;letter-spacing:-.06em;overflow-wrap:anywhere}
+.group-overview-copy p{margin:0;color:var(--group-muted);font-size:11px;line-height:1.55}
+.group-overview-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-self:center}
+.group-overview-stat{padding:12px 13px;border:1px solid var(--group-line);border-radius:14px;background:#fafaf8;min-width:0}
+.group-overview-stat strong{display:block;color:var(--group-ink);font-size:23px;font-weight:900;letter-spacing:-.06em;overflow-wrap:anywhere}
+.group-overview-stat span{display:block;margin-top:3px;color:var(--group-muted);font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.06em}
+.group-overview-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:14px;border-top:1px solid var(--group-line)}
+.group-overview-members{display:flex;flex-wrap:wrap;align-items:center;gap:7px;min-width:0}
+.group-member-chip{display:flex;align-items:center;gap:7px;max-width:180px;padding:5px 9px 5px 5px;border:1px solid var(--group-line);border-radius:999px;background:#fafaf8}
+.group-member-chip strong{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group-member-avatar{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:50%;background:#ecece7;color:var(--group-ink);font-size:10px;font-weight:900;overflow:hidden}
+.group-member-avatar img{width:100%;height:100%;object-fit:cover}
+.group-member-more{color:var(--group-muted);font-size:10px;font-weight:800}
+.group-overview-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:7px;flex:none}
+.group-overview-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 12px;border:1px solid var(--group-line);border-radius:999px;color:var(--group-ink);background:#fff;text-decoration:none;font-size:9px;font-weight:900}
+.group-overview-actions a.primary{border-color:var(--group-accent);background:var(--group-accent);color:#fff}
+@media(max-width:760px){.group-overview-section .container{width:calc(100% - 32px)!important}.group-overview-card{grid-template-columns:1fr;gap:16px;padding:16px}.group-overview-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.group-overview-stat{padding:11px 9px}.group-overview-stat strong{font-size:21px}.group-overview-bottom{grid-column:auto;display:grid;align-items:start}.group-overview-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.group-overview-actions a{padding:0 6px;font-size:9px}}
+@media(max-width:440px){.group-overview-stats{gap:5px}.group-overview-stat{padding:9px 7px}.group-overview-stat strong{font-size:19px}.group-member-chip{max-width:145px}}
+</style>
 </head>
 <body class="group-events-app">
 <header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"></nav><button id="menuButton" class="menu-button" type="button" aria-label="Menú">☰</button></header>
 <main>
 <section class="page-hero"><div class="container"><span class="eyebrow">GRUPO ACTIVO · PLANES</span><h1>¿Qué tenemos<br>por delante?</h1><p>Organiza lo que vais a hacer juntos, consulta lo que ya está decidido y vuelve a los planes pasados cuando lo necesites.</p></div></section>
+<section class="section group-overview-section" aria-label="Resumen del grupo activo">
+  <div class="container">
+    <div class="group-overview-card" id="groupOverviewPanel" aria-live="polite">
+      <div class="group-overview-main">
+        <div class="group-overview-avatar" id="groupOverviewAvatar">G</div>
+        <div class="group-overview-copy">
+          <span class="eyebrow">GRUPO ACTIVO</span>
+          <h2 id="groupOverviewName">Cargando grupo…</h2>
+          <p id="groupOverviewDescription">Recuperando los datos de tu workspace.</p>
+        </div>
+      </div>
+      <div class="group-overview-stats">
+        <div class="group-overview-stat"><strong id="groupOverviewMemberCount">—</strong><span>Miembros</span></div>
+        <div class="group-overview-stat"><strong id="groupOverviewPlanCount">—</strong><span>Planes próximos</span></div>
+        <div class="group-overview-stat"><strong id="groupOverviewRole">—</strong><span>Tu rol</span></div>
+      </div>
+      <div class="group-overview-bottom">
+        <div id="groupOverviewMembers" class="group-overview-members"><span class="group-member-more">Cargando miembros…</span></div>
+        <div class="group-overview-actions">
+          <a href="grupos.html">Cambiar grupo</a>
+          <a href="miembros.html">Ver miembros</a>
+          <a class="primary" href="dashboard.html">Abrir espacio ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <section class="section"><div class="container"><div class="section-heading"><span class="eyebrow">PLANES</span><h2>Actividad del grupo</h2><p>Todo lo que pertenece al workspace actual.</p></div>
 <div class="events-toolbar"><label class="events-search"><span>Buscar</span><input id="eventsSearch" type="search" placeholder="Buscar por nombre o lugar..." autocomplete="off"></label><div class="events-filters" id="eventsFilters" role="group" aria-label="Filtrar planes"><button type="button" class="events-filter active" data-event-filter="upcoming">Próximos</button><button type="button" class="events-filter" data-event-filter="all">Todos</button><button type="button" class="events-filter" data-event-filter="past">Pasados</button></div></div>
 <div id="eventsResultsMeta" class="events-results-meta"></div><div id="eventsList" class="events-list"></div></div></section>
@@ -115,6 +168,6 @@ body.group-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180p
 <a class="bottom-nav-item active" href="eventos.html"><b aria-hidden="true">▦</b><span>Mi grupo</span></a>
 <a class="bottom-nav-item" href="perfil.html"><b aria-hidden="true">◉</b><span>Mi perfil</span></a>
 </nav>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script><script src="js/eventos-overview.js"></script>
 </body>
 </html>
