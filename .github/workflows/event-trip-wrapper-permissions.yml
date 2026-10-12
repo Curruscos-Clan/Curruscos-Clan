@@ -46,3 +46,7 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
         run: psql "$DATABASE_URL" --set ON_ERROR_STOP=1 --file supabase/tests/event_trip_wrapper_permissions_postgres.sql
+      - name: Run anonymous event-detail row-access regression test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: psql "$DATABASE_URL" --set ON_ERROR_STOP=1 --file supabase/tests/test_anonymous_event_detail_policies_postgres.sql

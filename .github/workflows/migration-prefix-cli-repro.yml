@@ -1,0 +1,97 @@
+name: Supabase CLI duplicate migration prefix reproduction
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/migration-prefix-cli-repro.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-cli-reproduction:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Install pinned Supabase CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="2.120.0"
+          archive="$RUNNER_TEMP/supabase_${version}_linux_amd64.tar.gz"
+          curl --fail --location --silent --show-error \
+            "https://github.com/supabase/cli/releases/download/v${version}/supabase_${version}_linux_amd64.tar.gz" \
+            --output "$archive"
+          tar -xzf "$archive" -C "$RUNNER_TEMP"
+          sudo install "$RUNNER_TEMP/supabase" /usr/local/bin/supabase
+          supabase --version
+
+      - name: Create isolated duplicate-prefix fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture="$RUNNER_TEMP/duplicate-prefix-fixture"
+          mkdir -p "$fixture/supabase/migrations"
+          cat > "$fixture/supabase/config.toml" <<'EOF'
+          project_id = "duplicate-prefix-reproduction"
+          EOF
+          cat > "$fixture/supabase/migrations/20260101000000_collision_a.sql" <<'EOF'
+          CREATE TABLE public.collision_a (id integer PRIMARY KEY);
+          EOF
+          cat > "$fixture/supabase/migrations/20260101000000_collision_b.sql" <<'EOF'
+          CREATE TABLE public.collision_b (id integer PRIMARY KEY);
+          EOF
+          printf '%s\n' "$fixture" > "$RUNNER_TEMP/fixture-path"
+
+      - name: Run CLI against disposable PostgreSQL and record collision behavior
+        shell: bash
+        env:
+          PGPASSWORD: postgres
+        run: |
+          set -uo pipefail
+          fixture="$(cat "$RUNNER_TEMP/fixture-path")"
+          db_url="postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+          log="$RUNNER_TEMP/duplicate-prefix-cli.log"
+
+          cd "$fixture"
+          set +e
+          supabase migration up --db-url "$db_url" 2>&1 | tee "$log"
+          cli_status=${PIPESTATUS[0]}
+          set -e
+
+          echo "CLI_EXIT_STATUS=$cli_status" | tee -a "$log"
+          ledger_rows="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM supabase_migrations.schema_migrations WHERE version = '20260101000000'")"
+          collision_a="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT to_regclass('public.collision_a') IS NOT NULL")"
+          collision_b="$(psql "$db_url" -X -v ON_ERROR_STOP=1 -Atc "SELECT to_regclass('public.collision_b') IS NOT NULL")"
+          printf 'LEDGER_ROWS=%s\nCOLLISION_A_EXISTS=%s\nCOLLISION_B_EXISTS=%s\n' "$ledger_rows" "$collision_a" "$collision_b" | tee -a "$log"
+
+          # This is the observed result for v2.120.0: the first file is applied,
+          # the second collides when the CLI tries to insert the same ledger version.
+          test "$cli_status" -ne 0
+          test "$ledger_rows" = "1"
+          test "$collision_a" = "t"
+          test "$collision_b" = "f"
+          echo "Confirmed duplicate-version ledger collision in disposable PostgreSQL; no production database was configured or contacted." | tee -a "$log"
+
+      - name: Upload reproduction log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-cli-duplicate-prefix-reproduction
+          path: ${{ runner.temp }}/duplicate-prefix-cli.log
+          if-no-files-found: warn
