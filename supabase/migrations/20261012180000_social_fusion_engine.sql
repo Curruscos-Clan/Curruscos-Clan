@@ -27,7 +27,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS sparks_one_live_per_user ON public.sparks(user
 ALTER TABLE public.sparks ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS sparks_read_active ON public.sparks;
 CREATE POLICY sparks_read_active ON public.sparks FOR SELECT TO authenticated
- USING (user_id = (SELECT auth.uid()) OR (status IN ('viva','resonando') AND expires_at > now()));
+ USING (user_id = (SELECT auth.uid()));
 DROP POLICY IF EXISTS sparks_insert_own ON public.sparks;
 CREATE POLICY sparks_insert_own ON public.sparks FOR INSERT TO authenticated
  WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND expires_at <= time_window_end AND expires_at > now());
