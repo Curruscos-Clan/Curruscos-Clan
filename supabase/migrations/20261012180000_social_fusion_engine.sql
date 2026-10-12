@@ -30,7 +30,7 @@ CREATE POLICY sparks_read_active ON public.sparks FOR SELECT TO authenticated
  USING (user_id = (SELECT auth.uid()));
 DROP POLICY IF EXISTS sparks_insert_own ON public.sparks;
 CREATE POLICY sparks_insert_own ON public.sparks FOR INSERT TO authenticated
- WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND time_window_start > now() AND expires_at <= LEAST(time_window_end, now() + interval '2 hours') AND expires_at > now());
+ WITH CHECK (user_id = (SELECT auth.uid()) AND status = 'viva' AND fused_event_id IS NULL AND time_window_start > now() AND expires_at <= LEAST(time_window_end, now() + interval '2 hours') AND expires_at > now() AND jsonb_typeof(resources_offered) = 'object');
 DROP POLICY IF EXISTS sparks_update_own ON public.sparks;
 CREATE POLICY sparks_update_own ON public.sparks FOR UPDATE TO authenticated
  USING (user_id = (SELECT auth.uid()) AND status IN ('viva','resonando'))
@@ -112,10 +112,13 @@ BEGIN
 
  -- Avoid duplicate live proposals for overlapping sparks.
  SELECT p.id INTO v_proposal FROM public.fusion_proposals p
- WHERE p.status='pending' AND p.expires_at>now() AND p.spark_ids && v_ids
+ WHERE p.status='pending' AND p.expires_at>now() AND new_spark_id = ANY(p.spark_ids)
  ORDER BY p.created_at DESC LIMIT 1;
  IF v_proposal IS NOT NULL THEN
-   RETURN jsonb_build_object('matched',true,'existing_proposal',true,'proposal_id',v_proposal,'participants_count',cardinality(v_users));
+   RETURN jsonb_build_object('matched',true,'existing_proposal',true,'proposal_id',v_proposal,'participants_count',cardinality(v_users),'accepted_count',0,'required',4);
+ END IF;
+ IF EXISTS (SELECT 1 FROM public.fusion_proposals p WHERE p.status='pending' AND p.expires_at>now() AND p.spark_ids && v_ids) THEN
+   RETURN jsonb_build_object('matched',false,'reason','overlapping_proposal','participants_count',cardinality(v_users),'required',4);
  END IF;
 
  INSERT INTO public.fusion_proposals(spark_ids,suggested_title,category,proposed_start,proposed_end,proposed_location,geo_zone,quorum_required,accepted_user_ids,expires_at)
@@ -125,7 +128,7 @@ BEGIN
  RETURNING id INTO v_proposal;
 
  UPDATE public.sparks SET status='resonando' WHERE id=ANY(v_ids);
- RETURN jsonb_build_object('matched',true,'proposal_id',v_proposal,'participants_count',cardinality(v_users),'accepted_count',1);
+ RETURN jsonb_build_object('matched',true,'proposal_id',v_proposal,'participants_count',cardinality(v_users),'accepted_count',0,'required',4);
 END $$;
 REVOKE ALL ON FUNCTION public.evaluate_spark_resonance(uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.evaluate_spark_resonance(uuid) TO authenticated;
@@ -149,11 +152,13 @@ BEGIN
  END IF;
  IF NOT accept THEN
    UPDATE public.fusion_proposals
-   SET accepted_user_ids=array_remove(accepted_user_ids,auth.uid())
+   SET accepted_user_ids=array_remove(accepted_user_ids,auth.uid()),
+       declined_user_ids=CASE WHEN auth.uid()=ANY(declined_user_ids) THEN declined_user_ids ELSE array_append(declined_user_ids,auth.uid()) END
    WHERE id=p.id RETURNING * INTO p;
    UPDATE public.sparks SET status='expirada' WHERE id=ANY(p.spark_ids) AND user_id=auth.uid() AND status='resonando';
    RETURN jsonb_build_object('accepted',false,'confirmed',false,'accepted_count',cardinality(p.accepted_user_ids),'required',p.quorum_required);
  END IF;
+ IF auth.uid() = ANY(p.declined_user_ids) THEN RAISE EXCEPTION 'Ya has pasado de esta propuesta.'; END IF;
  IF NOT (auth.uid() = ANY(p.accepted_user_ids)) THEN
    UPDATE public.fusion_proposals SET accepted_user_ids=array_append(accepted_user_ids,auth.uid()) WHERE id=p.id RETURNING * INTO p;
  END IF;
@@ -174,7 +179,7 @@ BEGIN
  SELECT v_event_id,uid,'yes' FROM unnest(p.accepted_user_ids) uid
  ON CONFLICT(event_id,user_id) DO NOTHING;
  UPDATE public.fusion_proposals SET status='confirmed',fused_event_id=v_event_id WHERE id=p.id;
- UPDATE public.sparks SET status='cristalizada',fused_event_id=v_event_id WHERE id=ANY(p.spark_ids);
+ UPDATE public.sparks SET status='cristalizada',fused_event_id=v_event_id WHERE id=ANY(p.spark_ids) AND status='resonando';
  RETURN jsonb_build_object('accepted',true,'confirmed',true,'event_id',v_event_id,'accepted_count',cardinality(p.accepted_user_ids));
 END $$;
 REVOKE ALL ON FUNCTION public.respond_fusion_proposal(uuid,boolean) FROM PUBLIC, anon;
