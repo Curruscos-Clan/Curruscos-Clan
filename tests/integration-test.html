@@ -157,10 +157,11 @@
         const sample=events.find(e=>e.status==="published");
         if(sample){
           try{
-            if(typeof getPublicEventParticipants!=="function")throw new Error("La función de lectura de asistentes no está disponible.");
-            const attendees=await getPublicEventParticipants(sample.id);
-            const invalid=(attendees||[]).some(a=>a.status!=="yes");
-            setResult("attendees",invalid?"FALLÓ":"PASÓ",invalid?"La RPC devolvió registros sin estado confirmado.":"La RPC respondió y los "+(attendees||[]).length+" asistentes devueltos figuran como confirmados.");
+            const result=await supabaseClient.rpc("get_public_event_participants",{target_event_id:sample.id});
+            if(result.error)throw result.error;
+            const attendees=Array.isArray(result.data)?result.data:[];
+            const invalid=attendees.some(a=>a.status!=="yes");
+            setResult("attendees",invalid?"FALLÓ":"PASÓ",invalid?"La RPC devolvió registros sin estado confirmado.":"La RPC respondió directamente y los "+attendees.length+" asistentes devueltos figuran como confirmados.");
           }catch(error){setResult("attendees","FALLÓ",error?.message||"No se pudo consultar la RPC pública de asistentes.");}
         }else{
           setResult("attendees","NO EJECUTADO","No hay evento publicado en la consulta para comprobar asistentes.");
