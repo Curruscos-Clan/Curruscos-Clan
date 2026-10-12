@@ -41,6 +41,7 @@
       const result = window.supabaseClient ? await window.supabaseClient.auth.getUser() : { data: { user: null } };
       const user = result.data?.user || null;
       const canPost = Boolean(user && group.is_member);
+      group._viewerCanPost = canPost;
       const heading = el("div", "community-wall-heading");
       heading.append(el("h3", "", "Muro de la comunidad"), el("p", "", "Publicaciones y conversación del grupo."));
       container.append(heading);
@@ -120,7 +121,7 @@
         input.type = "text"; input.name = "content"; input.maxLength = 800; input.required = true; input.placeholder = "Escribe una respuesta…";
         input.setAttribute("aria-label", "Respuesta a " + (post.title || "la publicación"));
         const send = el("button", "", "Responder"); send.type = "submit";
-        if (!group.is_member || !userSignedIn()) { input.disabled = true; send.disabled = true; }
+        if (!group._viewerCanPost) { input.disabled = true; send.disabled = true; }
         form.append(input, send);
         form.addEventListener("submit", async event => {
           event.preventDefault();
@@ -184,8 +185,5 @@
       channels.delete(groupId);
     }
   };
-  function userSignedIn() {
-    return Boolean(window.supabaseClient && window.supabaseClient.auth && window.supabaseClient.auth.getSession);
-  }
   window.CommunityChat = CommunityChat;
 })();
