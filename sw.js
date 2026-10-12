@@ -1,5 +1,5 @@
-const CACHE="curruscos-v7";
-const ASSETS=["./","./index.html","./css/style.css","./js/app.js","./js/supabase.js","./manifest.webmanifest","./assets/icon.svg","./js/i18n.js","./js/cookies.js","./cookies.html","./locales/es.json","./locales/en.json","./locales/fr.json","./locales/de.json","./locales/it.json","./locales/pt.json","./locales/zh.json","./locales/ar.json"];
+const CACHE="curruscos-v8";
+const ASSETS=["./","./index.html","./evento-publico.html","./comunidades.html","./explorar.html","./eventos.html","./mis-eventos.html","./mis-planes.html","./crear-evento.html","./perfil.html","./login.html","./ajustes.html","./notificaciones.html","./chat.html","./css/design-system.css","./js/app.js","./js/supabase.js","./js/pwa.js","./js/comments.js","./js/calendar-export.js","./js/map-view.js","./js/evento-publico.js","./js/community-chat.js","./manifest.webmanifest","./assets/icon.svg","./js/i18n.js","./js/cookies.js","./cookies.html","./locales/es.json","./locales/en.json","./locales/fr.json","./locales/de.json","./locales/it.json","./locales/pt.json","./locales/zh.json","./locales/ar.json"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener("fetch",event=>{
