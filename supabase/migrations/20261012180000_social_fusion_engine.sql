@@ -152,7 +152,7 @@ BEGIN
    UPDATE public.sparks SET status='expirada' WHERE id=ANY(p.spark_ids) AND user_id=auth.uid() AND status='resonando';
    RETURN jsonb_build_object('accepted',false,'confirmed',false,'accepted_count',cardinality(p.accepted_user_ids),'required',p.quorum_required);
  END IF;
- IF NOT auth.uid()=ANY(p.accepted_user_ids) THEN
+ IF NOT (auth.uid() = ANY(p.accepted_user_ids)) THEN
    UPDATE public.fusion_proposals SET accepted_user_ids=array_append(accepted_user_ids,auth.uid()) WHERE id=p.id RETURNING * INTO p;
  END IF;
  IF cardinality(p.accepted_user_ids) < p.quorum_required THEN
