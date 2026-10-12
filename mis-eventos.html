@@ -39,7 +39,7 @@ body.my-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/
 </style>
 <style id="my-events-management">
 .my-events-tabs{display:inline-flex;gap:4px;padding:4px;margin:0 0 15px;border:1px solid var(--my-line);border-radius:999px;background:#eeeee9;max-width:100%}
-.my-events-tab{appearance:none;border:0;border-radius:999px;padding:10px 15px;background:transparent;color:var(--my-muted);font:800 11px/1.2 inherit;cursor:pointer;transition:background .18s,color .18s}
+.my-events-tab{appearance:none;border:0;border-radius:999px;padding:10px 15px;background:transparent;color:var(--my-muted);font:inherit;font-size:11px;font-weight:800;line-height:1.2;cursor:pointer;transition:background .18s,color .18s}
 .my-events-tab.active{background:#fff;color:var(--my-ink);box-shadow:0 1px 5px rgba(20,20,18,.08)}
 .my-event-card{min-width:0;display:flex;flex-direction:column;padding:18px;border:1px solid var(--my-line);border-radius:19px;background:#fff;color:var(--my-ink);box-shadow:0 4px 16px rgba(20,20,18,.025)}
 .my-event-card h3{overflow-wrap:anywhere}
@@ -47,7 +47,7 @@ body.my-events-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/
 .event-capacity{margin-top:13px;padding:10px 11px;border:1px solid var(--my-line);border-radius:12px;background:#fafaf8;color:var(--my-muted);font-size:10px;line-height:1.5}
 .event-capacity strong{color:var(--my-ink)}
 .my-event-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
-.my-event-action{appearance:none;display:inline-flex;justify-content:center;align-items:center;min-height:34px;padding:0 11px;border:1px solid var(--my-line);border-radius:999px;background:#fff;color:var(--my-ink);font:800 10px/1.2 inherit;text-decoration:none;cursor:pointer}
+.my-event-action{appearance:none;display:inline-flex;justify-content:center;align-items:center;min-height:34px;padding:0 11px;border:1px solid var(--my-line);border-radius:999px;background:#fff;color:var(--my-ink);font:inherit;font-size:10px;font-weight:800;line-height:1.2;text-decoration:none;cursor:pointer}
 .my-event-action.danger{border-color:#f2d5d0;background:#fff8f6;color:#b72d1c}
 .my-event-action:disabled{opacity:.6;cursor:wait}
 .my-attendee-list{margin-top:10px;padding-top:10px;border-top:1px solid var(--my-line);display:grid;gap:7px}
