@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS public.fusion_proposals (
  geo_zone text NOT NULL,
  quorum_required integer NOT NULL DEFAULT 4 CHECK (quorum_required BETWEEN 2 AND 30),
  accepted_user_ids uuid[] NOT NULL DEFAULT '{}'::uuid[],
+  declined_user_ids uuid[] NOT NULL DEFAULT '{}'::uuid[],
  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','discarded','expired')),
  fused_event_id uuid REFERENCES public.events(id) ON DELETE SET NULL,
  expires_at timestamptz NOT NULL,
