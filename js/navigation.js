@@ -3,7 +3,7 @@
     {href:"index.html",label:"Inicio",pages:["index.html"]},
     {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
     {href:"eventos.html",label:"Mi grupo",pages:["eventos.html","dashboard.html"]},
-    {href:"perfil.html",label:"Mi perfil",pages:["perfil.html","mis-eventos.html"]}
+    {href:"perfil.html",label:"Mi perfil",pages:["perfil.html"]}
   ];
   function init(){
     const nav=document.getElementById("mainNav");
