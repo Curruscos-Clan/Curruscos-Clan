@@ -21,9 +21,23 @@
   "categories": [
     "social",
     "lifestyle",
-    "sports"
+    "sports",
+    "events"
   ],
   "shortcuts": [
+    {
+      "name": "Crear plan",
+      "short_name": "Nuevo plan",
+      "description": "Publica una nueva actividad para tu grupo",
+      "url": "./crear-evento.html",
+      "icons": [
+        {
+          "src": "assets/icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
     {
       "name": "Explorar planes",
       "short_name": "Buscar",
