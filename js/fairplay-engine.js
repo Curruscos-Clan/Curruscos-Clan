@@ -178,8 +178,8 @@
 
     let expenses = [];
     async function loadExpenses() {
-      const result = await supabase.from('event_expenses')
-        .select('id,description,amount,payer_id,created_by,created_at')
+      const result = await supabase.from('expenses')
+        .select('id,title,amount,paid_by,created_by,created_at')
         .eq('event_id', event.id).order('created_at', { ascending: true });
       if (result.error) {
         expenseNotice.textContent = 'El registro de gastos aún no está disponible. Comprueba que la migración de Split-Bote está aplicada.';
@@ -193,17 +193,17 @@
       expenseList.replaceChildren(); settlementList.replaceChildren();
       if (!expenses.length) expenseList.appendChild(el('p', 'fairplay-note', 'Todavía no hay gastos registrados.'));
       expenses.forEach(expense => {
-        const payer = players.find(p => p.id === expense.payer_id);
+        const payer = players.find(p => p.id === expense.paid_by);
         const row = el('div', 'fairplay-roster-row');
         const label = document.createElement('div');
-        label.append(el('span', '', expense.description), el('small', '', 'Pagó ' + (payer?.name || 'participante') + ' · ' + Number(expense.amount).toFixed(2) + ' €'));
+        label.append(el('span', '', expense.title), el('small', '', 'Pagó ' + (payer?.name || 'participante') + ' · ' + Number(expense.amount).toFixed(2) + ' €'));
         row.appendChild(label);
         if (expense.created_by === user.id || isOrganizer) {
           const remove = el('button', '', 'Eliminar');
           remove.type = 'button';
           remove.addEventListener('click', async () => {
             remove.disabled = true;
-            const { error } = await supabase.from('event_expenses').delete().eq('id', expense.id);
+            const { error } = await supabase.from('expenses').delete().eq('id', expense.id);
             if (error) { expenseNotice.textContent = 'No se ha podido eliminar el gasto.'; remove.disabled = false; return; }
             expenses = expenses.filter(item => item.id !== expense.id); renderExpenses();
           });
@@ -212,7 +212,7 @@
         expenseList.appendChild(row);
       });
       if (!window.SplitPot) { expenseNotice.textContent = 'Calculadora de gastos no disponible.'; return; }
-      const settlements = window.SplitPot.calculateSettlements(expenses, players);
+      const settlements = window.SplitPot.calculateSettlements(expenses.map(e => ({ ...e, payer_id: e.paid_by, description: e.title })), players);
       expenseNotice.textContent = expenses.length + ' gasto(s) · Total ' + expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0).toFixed(2) + ' €. Importes informativos, sin cobros dentro de la app.';
       if (!settlements.length) settlementList.appendChild(el('p', 'fairplay-note', 'Las cuentas están cuadradas o aún no hay gastos que repartir.'));
       settlements.forEach(transfer => {
@@ -232,12 +232,12 @@
         expenseNotice.textContent = 'Introduce un concepto y un importe válido.'; return;
       }
       expenseSubmit.disabled = true;
-      const { data, error } = await supabase.from('event_expenses').insert({
-        event_id: event.id, payer_id: payerSelect.value, created_by: user.id,
-        description, amount: Math.round(amount * 100) / 100
-      }).select('id,description,amount,payer_id,created_by,created_at').single();
+      const { data, error } = await supabase.from('expenses').insert({
+        event_id: event.id, paid_by: payerSelect.value, created_by: user.id,
+        title: description, amount: Math.round(amount * 100) / 100
+      }).select('id,title,amount,paid_by,created_by,created_at').single();
       if (error) {
-        expenseNotice.textContent = 'No se ha podido guardar el gasto. Comprueba que sigues participando en el evento.';
+        expenseNotice.textContent = 'No se ha podido guardar el gasto. Comprueba que perteneces al grupo del evento y que el pagador es miembro.';
       } else {
         expenses.push(data); expenseDescription.value = ''; expenseAmount.value = ''; renderExpenses();
       }
