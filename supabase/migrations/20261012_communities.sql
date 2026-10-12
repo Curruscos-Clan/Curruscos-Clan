@@ -54,6 +54,7 @@ RETURNS TABLE (
   created_at timestamptz,
   member_count bigint,
   is_member boolean,
+  is_admin boolean,
   request_status text
 )
 LANGUAGE sql
@@ -83,6 +84,7 @@ AS $$
       SELECT 1 FROM public.group_members gm
       WHERE gm.group_id = g.id AND gm.user_id = auth.uid()
     ) AS is_member,
+    public.is_group_admin(g.id) AS is_admin,
     (
       SELECT r.status
       FROM public.group_membership_requests r
@@ -334,3 +336,35 @@ GRANT EXECUTE ON FUNCTION public.request_group_membership(uuid) TO authenticated
 GRANT EXECUTE ON FUNCTION public.review_group_membership_request(uuid, boolean) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.create_discoverable_group(text, text, text, text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_discoverable_group_events(uuid) TO anon, authenticated;
+
+
+CREATE OR REPLACE FUNCTION public.get_group_membership_requests(target_group_id uuid)
+RETURNS TABLE (
+  id uuid,
+  user_id uuid,
+  display_name text,
+  username text,
+  created_at timestamptz
+)
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, auth, pg_temp
+AS $$
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.is_group_admin(target_group_id) THEN
+    RAISE EXCEPTION 'Solo los administradores del grupo pueden ver estas solicitudes.'
+      USING ERRCODE = '42501';
+  END IF;
+
+  RETURN QUERY
+  SELECT r.id, r.user_id, p.display_name, p.username, r.created_at
+  FROM public.group_membership_requests r
+  LEFT JOIN public.profiles p ON p.id = r.user_id
+  WHERE r.group_id = target_group_id AND r.status = 'pending'
+  ORDER BY r.created_at ASC;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.get_group_membership_requests(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_group_membership_requests(uuid) TO authenticated;
