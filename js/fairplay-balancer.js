@@ -25,7 +25,8 @@
         if (chosen.length === target) {
           const ids = new Set(chosen.map(p => p.id));
           const other = sorted.filter(p => !ids.has(p.id));
-          const diff = Math.abs(sum - total(other));
+          const otherTotal = total(other);
+          const diff = Math.abs(sum / Math.max(chosen.length, 1) - otherTotal / Math.max(other.length, 1));
           if (diff < bestDiff) { bestDiff = diff; bestA = chosen.slice(); bestB = other; }
           return;
         }
@@ -39,13 +40,13 @@
     } else {
       // O(n log n) snake draft prevents combinatorial blow-up for large events.
       sorted.forEach((p, i) => ((Math.floor(i / 2) % 2 === 0) ? (i % 2 === 0 ? bestA : bestB) : (i % 2 === 0 ? bestB : bestA)).push(p));
-      bestDiff = Math.abs(total(bestA) - total(bestB));
+      bestDiff = Math.abs(total(bestA) / Math.max(bestA.length, 1) - total(bestB) / Math.max(bestB.length, 1));
     }
     const eloA = total(bestA), eloB = total(bestB);
     const scale = Math.max(eloA, eloB, 1);
     return {
-      teamA: bestA, teamB: bestB, eloA, eloB, difference: Math.round(Math.abs(eloA - eloB)),
-      qualityPercentage: Math.max(0, Math.min(100, Math.round(100 * (1 - Math.abs(eloA - eloB) / scale))))
+      teamA: bestA, teamB: bestB, eloA, eloB, difference: Math.round(Math.abs(eloA / Math.max(bestA.length, 1) - eloB / Math.max(bestB.length, 1))),
+      qualityPercentage: Math.max(0, Math.min(100, Math.round(100 * (1 - Math.abs(eloA / Math.max(bestA.length, 1) - eloB / Math.max(bestB.length, 1)) / 2500))))
     };
   }
 
