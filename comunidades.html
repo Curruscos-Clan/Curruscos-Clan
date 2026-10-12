@@ -130,7 +130,7 @@
           events.forEach(event => {
             const item = node('div','community-event');
             item.append(node('strong','',event.title || 'Evento'));
-            item.append(node('span','',formatDate(event.date,event.time) + (event.location ? ' · ' + event.location : '')));
+            item.append(node('span','',formatDate(event.date,event.event_time) + (event.location ? ' · ' + event.location : '')));
             const link = node('a','','Abrir evento');
             link.href = 'evento-publico.html?id=' + encodeURIComponent(event.id);
             link.style.display = 'inline-block'; link.style.marginTop = '7px'; link.style.fontWeight = '800';
