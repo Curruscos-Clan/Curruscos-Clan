@@ -57,7 +57,6 @@ class StorageAndTiltContracts(unittest.TestCase):
         sql = self.migration
         self.assertIn("avatar and public-event cover images are public assets", sql)
         self.assertIn("private groups and encrypted group events must not use these buckets", sql)
-        self.assertIn("public.event-covers", sql) if False else None
 
     def test_tilt_respects_reduced_motion_and_avoids_touch_input(self):
         self.assertIn('"(prefers-reduced-motion: reduce)"', self.tilt)
