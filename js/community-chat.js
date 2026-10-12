@@ -123,6 +123,7 @@
       status.textContent = data.length ? data.length + (data.length === 1 ? " publicación" : " publicaciones") : "Todavía no hay publicaciones.";
       for (const post of data) {
         const card = el("article", "community-post");
+        card.dataset.postId = post.id;
         const header = el("div", "community-post-author");
         const profile = post.profiles || {};
         const name = profile.display_name || profile.username || "Miembro";
@@ -146,7 +147,7 @@
         input.setAttribute("aria-label", "Respuesta a " + (post.title || "la publicación"));
         const send = el("button", "", "Responder");
         send.type = "submit";
-        if (!group.is_member) { input.disabled = true; send.disabled = true; }
+        if (!group.is_member || !user) { input.disabled = true; send.disabled = true; }
         commentForm.append(input, send);
         commentForm.addEventListener("submit", async event => {
           event.preventDefault();
@@ -199,12 +200,29 @@
 
     subscribe(group, list, status) {
       if (!window.supabaseClient) return;
+      const active = [];
       const groupChannel = window.supabaseClient
         .channel("community-posts-" + group.id)
         .on("postgres_changes", { event: "*", schema: "public", table: "community_posts", filter: "group_id=eq." + group.id },
-          () => this.load(group, list, status))
+          async () => {
+            await this.cleanup(group.id);
+            await this.load(group, list, status);
+            this.subscribe(group, list, status);
+          })
         .subscribe();
-      channels.set(group.id, [groupChannel]);
+      active.push(groupChannel);
+      list.querySelectorAll(".community-post[data-post-id]").forEach(card => {
+        const postId = card.dataset.postId;
+        const comments = card.querySelector(".community-post-comment-list");
+        if (!postId || !comments) return;
+        const commentChannel = window.supabaseClient
+          .channel("community-post-comments-" + postId)
+          .on("postgres_changes", { event: "*", schema: "public", table: "community_post_comments", filter: "post_id=eq." + postId },
+            () => this.loadComments(postId, comments))
+          .subscribe();
+        active.push(commentChannel);
+      });
+      channels.set(group.id, active);
     },
 
     async cleanup(groupId) {
