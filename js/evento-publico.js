@@ -302,6 +302,46 @@ async function renderPublicEvent(){
 
     if (window.CommentsModule) window.CommentsModule.init(event, user).catch(error => console.error("No se pudo iniciar el módulo de comentarios:", error));
 
+    // Acciones visibles de exportación de calendario, compatibles con date + time del producto.
+    if (window.CalendarExport) {
+        const panel = document.createElement("section");
+        panel.className = "event-action-panel";
+        const copy = document.createElement("div");
+        const label = document.createElement("span");
+        label.className = "public-tournament-label";
+        label.textContent = "TU AGENDA";
+        const title = document.createElement("h3");
+        title.textContent = "No te pierdas este plan";
+        const description = document.createElement("p");
+        description.textContent = "Guarda la fecha en tu calendario para tener los detalles a mano.";
+        copy.append(label, title, description);
+        const buttons = document.createElement("div");
+        buttons.className = "event-action-buttons";
+        try {
+            const google = document.createElement("a");
+            google.className = "event-calendar-button";
+            google.href = window.CalendarExport.getGoogleCalendarUrl(event);
+            google.target = "_blank";
+            google.rel = "noopener noreferrer";
+            google.textContent = "Añadir a Google Calendar";
+            const ics = document.createElement("button");
+            ics.className = "event-calendar-button";
+            ics.type = "button";
+            ics.textContent = "Descargar .ics";
+            ics.addEventListener("click", () => {
+                try { window.CalendarExport.downloadICS(event); }
+                catch (error) { console.error("No se pudo exportar el calendario:", error); alert(error?.message || "No se ha podido exportar el evento."); }
+            });
+            buttons.append(google, ics);
+        } catch (error) {
+            console.warn("No se han podido preparar las acciones de calendario:", error);
+        }
+        panel.append(copy, buttons);
+        const shell = root.querySelector(".public-event-shell");
+        if (shell) shell.insertAdjacentElement("afterend", panel);
+    }
+
+
     if (event.location) {
         const shell = root.querySelector(".public-event-shell");
         if (shell) {
