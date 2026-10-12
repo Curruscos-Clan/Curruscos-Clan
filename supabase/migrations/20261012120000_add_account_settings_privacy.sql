@@ -377,3 +377,59 @@ $function$;
 
 REVOKE ALL ON FUNCTION public.prepare_account_deletion(uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.prepare_account_deletion(uuid) TO service_role;
+
+
+-- Keep stored notification preferences effective in the existing notification centre and unread badge.
+DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notifications;
+CREATE POLICY "Users can view their own notifications"
+ON public.notifications
+FOR SELECT TO authenticated
+USING (
+  user_id = (SELECT auth.uid())
+  AND COALESCE((
+    SELECT CASE
+      WHEN notifications.type = 'new_comment' THEN p.notification_preferences->>'comments' IS DISTINCT FROM 'false'
+      WHEN notifications.type = 'participant_joined' OR notifications.type = 'participant' THEN p.notification_preferences->>'participants' IS DISTINCT FROM 'false'
+      WHEN notifications.type IN ('invitation','group_invitation','event_invitation','team_invitation','member') THEN p.notification_preferences->>'invitations' IS DISTINCT FROM 'false'
+      WHEN notifications.type IN ('chat','message') THEN p.notification_preferences->>'chat' IS DISTINCT FROM 'false'
+      WHEN notifications.type IN ('social','follow','activity') THEN p.notification_preferences->>'social' IS DISTINCT FROM 'false'
+      ELSE p.notification_preferences->>'event_updates' IS DISTINCT FROM 'false'
+    END
+    FROM public.profiles p
+    WHERE p.id = (SELECT auth.uid())
+  ), true)
+);
+
+CREATE OR REPLACE FUNCTION public.get_unread_activity_counts()
+RETURNS jsonb
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path TO ''
+AS $function$
+SELECT jsonb_build_object(
+  'notifications', (
+    SELECT count(*)
+    FROM public.notifications n
+    JOIN public.profiles p ON p.id = n.user_id
+    WHERE n.user_id = (SELECT auth.uid())
+      AND NOT n.is_read
+      AND CASE
+        WHEN n.type = 'new_comment' THEN p.notification_preferences->>'comments' IS DISTINCT FROM 'false'
+        WHEN n.type = 'participant_joined' OR n.type = 'participant' THEN p.notification_preferences->>'participants' IS DISTINCT FROM 'false'
+        WHEN n.type IN ('invitation','group_invitation','event_invitation','team_invitation','member') THEN p.notification_preferences->>'invitations' IS DISTINCT FROM 'false'
+        WHEN n.type IN ('chat','message') THEN p.notification_preferences->>'chat' IS DISTINCT FROM 'false'
+        WHEN n.type IN ('social','follow','activity') THEN p.notification_preferences->>'social' IS DISTINCT FROM 'false'
+        ELSE p.notification_preferences->>'event_updates' IS DISTINCT FROM 'false'
+      END
+  ),
+  'invitations', (
+    SELECT count(*)
+    FROM public.invitations i
+    WHERE i.invitee_id = (SELECT auth.uid()) AND i.status = 'pending'
+      AND COALESCE((
+        SELECT p.notification_preferences->>'invitations' IS DISTINCT FROM 'false'
+        FROM public.profiles p WHERE p.id = (SELECT auth.uid())
+      ), true)
+  )
+);
+$function$;
