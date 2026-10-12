@@ -1,0 +1,48 @@
+name: Event comments and notifications checks
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/*event_comments_and_notifications.sql"
+      - "js/comments.js"
+      - "js/evento-publico.js"
+      - "js/notificaciones.js"
+      - "js/app.js"
+      - "evento-publico.html"
+      - "README.md"
+      - "tests/test_event_comments_contracts.py"
+      - ".github/workflows/event-comments-checks.yml"
+  push:
+    paths:
+      - "supabase/migrations/*event_comments_and_notifications.sql"
+      - "js/comments.js"
+      - "js/evento-publico.js"
+      - "js/notificaciones.js"
+      - "js/app.js"
+      - "evento-publico.html"
+      - "README.md"
+      - "tests/test_event_comments_contracts.py"
+      - ".github/workflows/event-comments-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  event-comments-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Check JavaScript syntax
+        run: |
+          set -e
+          for file in js/comments.js js/evento-publico.js js/notificaciones.js js/app.js js/supabase.js; do
+            node --check "$file"
+          done
+      - name: Check comment and notification contracts
+        run: python -m unittest discover -s tests -p 'test_event_comments_contracts.py' -v
