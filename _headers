@@ -1,7 +1,7 @@
 # Cloudflare Pages only. GitHub Pages does not process this file.
 # Remove this file from the published root or migrate hosting to Cloudflare Pages
 # before relying on these headers for production security.
- /*
+/*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
