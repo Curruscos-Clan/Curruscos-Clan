@@ -115,6 +115,7 @@
           .from('event_comments')
           .select('id, event_id, user_id, content, author_display_name, author_avatar_url, created_at')
           .eq('event_id', activeEventId)
+          .eq('is_hidden', false)
           .order('created_at', { ascending: true })
           .limit(200);
         if (error) throw error;
