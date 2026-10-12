@@ -179,25 +179,16 @@ function renderEventContext(event,yes){
 }
 
 function buildCalendarFile(event){
-    const start=new Date(event.date+"T"+(event.time||"12:00"));
-    const end=new Date(start.getTime()+2*60*60*1000);
-    const pad=n=>String(n).padStart(2,"0");
-    const utc=d=>d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
-    const escapeICS=v=>String(v||"").replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\\n/g,"\\n");
-    const lines=[
-        "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Curruscos//Eventos//ES","BEGIN:VEVENT",
-        "UID:"+event.id+"@curruscos","DTSTAMP:"+utc(new Date()),"DTSTART:"+utc(start),"DTEND:"+utc(end),
-        "SUMMARY:"+escapeICS(event.title),"DESCRIPTION:"+escapeICS(event.description||""),
-        "LOCATION:"+escapeICS(event.location||""),"END:VEVENT","END:VCALENDAR"
-    ];
-    return lines.join("\r\n");
+    if(window.CalendarExport?.buildICS)return window.CalendarExport.buildICS(event);
+    throw new Error("No se ha cargado el módulo de exportación de calendarios.");
 }
 function downloadEventCalendar(event){
+    if(window.CalendarExport?.downloadICS)return window.CalendarExport.downloadICS(event);
     const blob=new Blob([buildCalendarFile(event)],{type:"text/calendar;charset=utf-8"});
     const url=URL.createObjectURL(blob);
     const a=document.createElement("a");
     a.href=url;a.download=(String(event.title||"evento").replace(/[^a-z0-9áéíóúüñ -]/gi,"").trim()||"evento")+".ics";
-    document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    document.body.appendChild(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function renderParticipantActions(event,user,mine,isOrganizer){
     const actions=[];
@@ -206,11 +197,14 @@ function renderParticipantActions(event,user,mine,isOrganizer){
     }else if(mine?.status==="yes"){
         if(event.status==="live")actions.push('<button class="button button-primary event-action-main" id="eventResultsButton" type="button">Ver evento en directo</button>');
         else if(event.status==="finished")actions.push('<button class="button button-primary event-action-main" id="eventResultsButton" type="button">Ver resultados</button>');
-        else if(event.participant_mode==="team")actions.push('<button class="button button-primary event-action-main" id="eventParticipationButton" type="button">Ver mi participación</button>');
         else actions.push('<button class="button button-primary event-action-main" id="eventParticipationButton" type="button">Ver mi participación</button>');
     }
     if(mine?.status==="yes"||isOrganizer){
-        actions.push('<button class="event-calendar-button" id="addCalendarButton" type="button">Añadir al calendario</button>');
+        if(window.CalendarExport){
+            const googleUrl=window.CalendarExport.getGoogleCalendarUrl(event);
+            actions.push('<a class="event-calendar-button" id="googleCalendarButton" href="'+escapeHtml(googleUrl)+'" target="_blank" rel="noopener noreferrer">Añadir a Google Calendar</a>');
+        }
+        actions.push('<button class="event-calendar-button" id="addCalendarButton" type="button">Descargar .ics</button>');
     }
     if(!actions.length)return "";
     return '<section class="event-action-panel"><div><span class="public-tournament-label">SIGUIENTE PASO</span><h3>'+escapeHtml(isOrganizer?"Tienes el control del evento":event.status==="live"?"El evento está en directo":event.status==="finished"?"El evento ha terminado":"Tu participación está confirmada")+'</h3><p>'+escapeHtml(isOrganizer?"Gestiona inscripciones, equipos, resultados y estado desde este mismo evento.":event.participant_mode==="team"&&mine?.status==="yes"?"Consulta tu equipo y la competición desde aquí.":"Tu inscripción queda vinculada a tu cuenta y podrás seguir la actividad desde esta página.")+'</p></div><div class="event-action-buttons">'+actions.join("")+'</div></section>';
@@ -307,6 +301,33 @@ async function renderPublicEvent(){
     root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span>'+coverMarkup+'<div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> <a class="public-organizer-link" href="perfil-publico.html?id='+encodeURIComponent(event.created_by)+'">'+escapeHtml(event.organizer_name)+'</a></p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div>'+(isOrganizer&&!["finished","cancelled"].includes(event.status)?renderPublicEventEditForm(event):"")+'</article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?(event.status==="finished"?"Participación cerrada":"Salir del evento"):(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div><section class="event-comments-panel" id="eventCommentsPanel"><div class="event-comments-head"><div><span class="public-tournament-label">CONVERSACIÓN</span><h2>Preguntas y comentarios</h2></div><span class="event-comments-live">En directo</span></div><p class="event-comments-intro">Resuelve dudas y comparte información útil sobre este plan.</p><form id="eventCommentsForm" class="event-comments-form"><label class="event-comments-sr-only" for="eventCommentInput">Escribe una pregunta o comentario</label><textarea id="eventCommentInput" name="content" rows="3" maxlength="500" placeholder="Escribe una pregunta o comentario…" required></textarea><div class="event-comments-form-footer"><span id="eventCommentsCounter" class="event-comments-counter">0/500</span><button class="button button-primary" type="submit">Publicar comentario</button></div><p id="eventCommentsNotice" class="event-comments-notice" role="status" aria-live="polite" hidden></p></form><div id="eventCommentsList" class="event-comments-list" aria-live="polite" aria-busy="true"><p class="event-comments-empty">Cargando comentarios…</p></div></section>';
 
     if (window.CommentsModule) window.CommentsModule.init(event, user).catch(error => console.error("No se pudo iniciar el módulo de comentarios:", error));
+
+    if (event.location) {
+        const shell = root.querySelector(".public-event-shell");
+        if (shell) {
+            shell.insertAdjacentHTML("afterend",
+                '<section class="public-tournament-panel event-map-panel" id="eventMapSection">' +
+                '<span class="public-tournament-label">UBICACIÓN</span><h2>Cómo llegar</h2>' +
+                '<div id="eventMapContainer" aria-label="Mapa de ubicación del evento"></div>' +
+                '<p id="eventMapNotice" class="event-map-notice" role="status" aria-live="polite">Localizando el lugar…</p></section>');
+            const mapNotice = document.getElementById("eventMapNotice");
+            if (window.MapView) {
+                window.MapView.renderEventMap("eventMapContainer", event.location).then(result => {
+                    if (!mapNotice) return;
+                    if (result?.ok) mapNotice.textContent = result.displayName;
+                    else {
+                        mapNotice.textContent = result?.reason === "not-found"
+                            ? "No se ha encontrado esta dirección en el mapa. Comprueba el lugar indicado por el organizador."
+                            : "El mapa no está disponible ahora mismo. Dirección indicada: " + event.location;
+                    }
+                }).catch(() => {
+                    if (mapNotice) mapNotice.textContent = "El mapa no está disponible ahora mismo. Dirección indicada: " + event.location;
+                });
+            } else if (mapNotice) {
+                mapNotice.textContent = "Mapa interactivo no disponible. Dirección indicada: " + event.location;
+            }
+        }
+    }
 
     const editButton=document.getElementById("editPublicEventButton");
     const editForm=document.getElementById("editPublicEventForm");
