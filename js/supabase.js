@@ -2608,66 +2608,58 @@ async function getTasksForEvents(eventIds) {
 }
 
 
-async function updateProfile(displayName, username) {
+async function updateProfile(displayName, username, details = {}) {
     const user = await getCurrentUser();
+    if (!user) throw new Error("No hay una sesión activa.");
 
-    if (!user) {
-        throw new Error("No hay una sesión activa.");
+    const cleanName = String(displayName || "").trim();
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    const cleanBio = String(details?.bio || "").trim();
+    const cleanCity = String(details?.city || "").trim();
+    const rawAvatarUrl = String(details?.avatar_url || "").trim();
+
+    if (!cleanName) throw new Error("El nombre visible es obligatorio.");
+    if (cleanName.length > 80) throw new Error("El nombre visible no puede superar los 80 caracteres.");
+    if (cleanUsername.length < 3 || cleanUsername.length > 24 || !/^[a-z0-9_]+$/.test(cleanUsername)) {
+        throw new Error("El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _.");
+    }
+    if (cleanBio.length > 280) throw new Error("La biografía no puede superar los 280 caracteres.");
+    if (cleanCity.length > 80) throw new Error("La localidad no puede superar los 80 caracteres.");
+
+    let cleanAvatarUrl = null;
+    if (rawAvatarUrl) {
+        let parsed;
+        try {
+            parsed = new URL(rawAvatarUrl);
+        } catch (_) {
+            throw new Error("Introduce un enlace válido para la foto de perfil.");
+        }
+        if (parsed.protocol !== "https:" || parsed.username || parsed.password) {
+            throw new Error("La foto de perfil debe usar un enlace HTTPS público.");
+        }
+        cleanAvatarUrl = parsed.href;
     }
 
-    const cleanName =
-        String(displayName || "").trim();
-
-    const cleanUsername =
-        String(username || "")
-            .trim()
-            .toLowerCase();
-
-    if (!cleanName) {
-        throw new Error("El nombre visible es obligatorio.");
-    }
-
-    if (
-        cleanUsername.length < 3 ||
-        cleanUsername.length > 24 ||
-        !/^[a-z0-9_]+$/.test(cleanUsername)
-    ) {
-        throw new Error(
-            "El nombre de usuario debe tener entre 3 y 24 caracteres y solo puede usar letras, números y _. "
-        );
-    }
-
-    const { data, error } =
-        await supabaseClient
-            .from("profiles")
-            .update({
-                display_name: cleanName,
-                username: cleanUsername
-            })
-            .eq("id", user.id)
-            .select()
-            .single();
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .update({
+            display_name: cleanName,
+            username: cleanUsername,
+            bio: cleanBio || null,
+            city: cleanCity || null,
+            avatar_url: cleanAvatarUrl
+        })
+        .eq("id", user.id)
+        .select()
+        .single();
 
     if (error) {
-        console.error(
-            "Error actualizando perfil:",
-            error
-        );
-
-        if (error.code === "23505") {
-            throw new Error(
-                "Ese nombre de usuario ya está en uso."
-            );
-        }
-
-        throw new Error(
-            getSupabaseErrorMessage(
-                error,
-                "No se ha podido actualizar el perfil."
-            )
-        );
+        console.error("Error actualizando perfil:", error);
+        if (error.code === "23505") throw new Error("Ese nombre de usuario ya está en uso.");
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido actualizar el perfil."));
     }
 
+    currentProfileCache = data;
     return data;
 }
 
@@ -3009,6 +3001,12 @@ async function getPublicActiveTeams(search="",eventType="all"){const {data,error
 async function getPublicTeam(teamId){const {data,error}=await supabaseClient.rpc("get_public_team",{target_team_id:teamId});if(error){console.error("Error obteniendo equipo público:",error);return null;}return data?.[0]||null;}
 
 async function getPublicProfile(userId){const {data,error}=await supabaseClient.rpc("get_public_profile",{target_user_id:userId});if(error){console.error("Error obteniendo perfil público:",error);return null;}return data?.[0]||null;}
+
+async function getPublicProfileDetails(userId){
+    const {data,error}=await supabaseClient.rpc("get_public_profile_details",{target_user_id:userId});
+    if(error){console.error("Error obteniendo presentación pública del perfil:",error);return null;}
+    return data?.[0]||null;
+}
 
 
 async function getPublicProfileActivity(userId){
