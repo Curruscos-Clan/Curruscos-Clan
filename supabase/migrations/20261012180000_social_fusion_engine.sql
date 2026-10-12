@@ -108,8 +108,11 @@ BEGIN
  END IF;
 
  -- Avoid duplicate live proposals for overlapping sparks.
- IF EXISTS (SELECT 1 FROM public.fusion_proposals p WHERE p.status='pending' AND p.expires_at>now() AND p.spark_ids && v_ids) THEN
-   RETURN jsonb_build_object('matched',true,'existing_proposal',true,'participants_count',cardinality(v_users));
+ SELECT p.id INTO v_proposal FROM public.fusion_proposals p
+ WHERE p.status='pending' AND p.expires_at>now() AND p.spark_ids && v_ids
+ ORDER BY p.created_at DESC LIMIT 1;
+ IF v_proposal IS NOT NULL THEN
+   RETURN jsonb_build_object('matched',true,'existing_proposal',true,'proposal_id',v_proposal,'participants_count',cardinality(v_users));
  END IF;
 
  INSERT INTO public.fusion_proposals(spark_ids,suggested_title,category,proposed_start,proposed_end,proposed_location,geo_zone,quorum_required,accepted_user_ids,expires_at)
