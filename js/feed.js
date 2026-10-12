@@ -1,3 +1,15 @@
+
+function safePublicEventCover(value) {
+  try {
+    const url = new URL(String(value || ""));
+    const base = new URL(window.CURRUSCOS_SUPABASE_URL || "https://prltjzwguleuaexpcbvi.supabase.co");
+    if (url.protocol !== "https:" || url.username || url.password || url.origin !== base.origin) return "";
+    return url.pathname.startsWith("/storage/v1/object/public/event-covers/") ? url.href : "";
+  } catch (_) {
+    return "";
+  }
+}
+
 /* Curruscos Clan — feed principal. Usa los helpers y RPC ya existentes del proyecto. */
 (function(){
   "use strict";
@@ -95,7 +107,7 @@
       const description=String(event.description||"").trim();
       const capacity=event.capacity?("Aforo: "+Number(event.capacity)):"Plazas por confirmar";
       card.innerHTML=
-        '<div class="event-card-media" data-category="'+esc(categoryClass(event))+'" aria-hidden="true"><span class="event-card-symbol">'+categorySymbol(event)+'</span></div>'+
+        '<div class="event-card-media" data-category="'+esc(categoryClass(event))+'" data-has-cover="'+(safePublicEventCover(event.cover_url)?"true":"false")+'" aria-hidden="true">'+(safePublicEventCover(event.cover_url)?'<img class="event-card-cover" alt="" loading="lazy" decoding="async" src="'+esc(safePublicEventCover(event.cover_url))+'">':"")+'<span class="event-card-symbol">'+categorySymbol(event)+'</span></div>'+
         '<div class="event-card-body"><div class="event-card-header"><span class="badge badge-subtle">'+reason+'</span>'+
         (joined?'<span class="badge badge-joined">✓ Inscrito</span>':"")+'</div>'+
         '<div class="event-date-row">'+esc(dateLabel(event))+'</div><h2 class="event-card-title">'+title+'</h2>'+
