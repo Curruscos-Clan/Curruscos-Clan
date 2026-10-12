@@ -148,7 +148,7 @@
     async loadComments(postId, container) {
       const { data, error } = await window.supabaseClient.from("community_post_comments")
         .select("id, author_id, content, created_at, profiles(display_name, username, avatar_url)")
-        .eq("post_id", postId).eq("is_hidden", false).order("created_at", { ascending: true }).limit(100);
+        .eq("post_id", postId).order("created_at", { ascending: true }).limit(100);
       if (error) { container.replaceChildren(el("p", "community-wall-error", "No se han podido cargar las respuestas.")); return; }
       container.replaceChildren();
       for (const comment of data || []) {
