@@ -284,7 +284,6 @@
           wallPanel.hidden = !opening;
           wallButton.textContent = opening ? 'Cerrar muro' : 'Muro';
           if (opening) {
-            if (wallPanel.dataset.loaded === 'true') return;
             wallPanel.dataset.loaded = 'true';
             await window.CommunityChat?.mount(group, wallPanel);
           } else {
