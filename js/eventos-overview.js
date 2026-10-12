@@ -78,7 +78,7 @@
             const upcoming = (events || []).filter(event => {
                 if (["finished", "cancelled"].includes(String(event.status || "").toLowerCase())) return false;
                 const timestamp = eventTimestamp(event);
-                return timestamp === null || timestamp >= now;
+                return timestamp !== null && timestamp >= now;
             });
             setText("groupOverviewPlanCount", formatCount(upcoming.length));
 
