@@ -1,0 +1,11 @@
+# Cloudflare Pages only — inactive while this project is hosted on GitHub Pages.
+# These routes are intended for a future Cloudflare Pages deployment at the domain root.
+/explorar          /explorar.html          200
+/eventos            /eventos.html           200
+/mis-eventos        /mis-eventos.html      200
+/perfil             /perfil.html           200
+/crear-evento       /crear-evento.html     200
+/login              /login.html            200
+
+# Unknown routes render the home document with a 404 status.
+ /*                 /index.html             404
