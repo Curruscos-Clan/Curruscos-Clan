@@ -87,7 +87,7 @@
     const button=document.getElementById("runTests");
     const logs=document.getElementById("testLogs");
     const results=new Map();
-    function log(message){logs.textContent+="\\n"+message;logs.scrollTop=logs.scrollHeight;}
+    function log(message){logs.textContent+="\n"+message;logs.scrollTop=logs.scrollHeight;}
     function setResult(key,status,detail){
       results.set(key,{status,detail});
       const row=document.querySelector('[data-test="'+key+'"]');
@@ -172,7 +172,7 @@
         const passed=[...results.values()].filter(v=>v.status==="PASÓ").length;
         const failed=[...results.values()].filter(v=>v.status==="FALLÓ").length;
         const skipped=[...results.values()].filter(v=>v.status==="NO EJECUTADO").length;
-        log("\\n[FINAL] "+passed+" aprobadas · "+failed+" fallidas · "+skipped+" no ejecutadas.");
+        log( "\n[FINAL] "+passed+" aprobadas · "+failed+" fallidas · "+skipped+" no ejecutadas.");
       }catch(error){
         log("\\n[ERROR GENERAL] "+(error?.message||String(error)));
       }finally{
