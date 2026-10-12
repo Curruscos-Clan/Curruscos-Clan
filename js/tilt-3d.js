@@ -15,7 +15,7 @@
   const PERSPECTIVE = 1000;
   const LERP = 0.16;
   const THRESHOLD = 0.035;
-  const SELECTOR = ".event-card, .public-event-card, .recommendation-card-wrap, [data-tilt]";
+  const SELECTOR = ".event-card, .public-event-card, [data-tilt]";
   const initialized = new WeakSet();
 
   function clamp(value, min, max) {
