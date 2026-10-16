@@ -169,7 +169,6 @@
         secondRing.rotation.x = 0.4 + Math.sin(t * 0.18) * 0.12;
         innerRing.rotation.z = 0.42 + Math.sin(t * 0.16) * 0.08;
         handGroup.rotation.z = t * 0.12;
-        tickGroup.rotation.z = t * -0.12;
       } else {
         core.rotation.y = currentX * 0.12;
         core.rotation.x = -currentY * 0.12;
