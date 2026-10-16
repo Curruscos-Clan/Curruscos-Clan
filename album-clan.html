@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#09090d">
+  <meta name="description" content="El álbum dinámico de Curruscos: cromos del grupo con estadísticas basadas en la actividad real.">
+  <title>Álbum del Clan · Curruscos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{color-scheme:dark;--album-bg:#09090d;--album-panel:#13131a;--album-line:rgba(255,255,255,.1);--album-muted:#a09eac;--album-orange:#ff5a1f;--album-purple:#9b8cff}
+    body.album-app{margin:0;background:var(--album-bg)!important;color:#f7f6fb!important;font-family:'DM Sans',sans-serif!important;min-height:100vh;padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+    body.album-app:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 75% -10%,rgba(255,90,31,.14),transparent 42%),radial-gradient(ellipse at 0 42%,rgba(115,85,255,.1),transparent 45%)}
+    .album-shell{width:min(100% - 30px,1000px);margin:auto;padding:28px 0 44px}
+    .album-kicker,.album-mono{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+    .album-kicker{color:#ff865d;font-weight:700;display:flex;align-items:center;gap:8px}
+    .album-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--album-orange);box-shadow:0 0 16px var(--album-orange)}
+    .album-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:12px 0 22px}
+    .album-heading h1{font-family:'Syne',sans-serif;font-size:clamp(35px,7vw,62px);letter-spacing:-.075em;line-height:.96;margin:0;max-width:650px}
+    .album-heading h1 span{color:var(--album-orange)}
+    .album-heading p{color:var(--album-muted);font-size:13px;line-height:1.7;max-width:520px;margin:13px 0 0}
+    .album-season{flex-shrink:0;border:1px solid var(--album-line);border-radius:14px;padding:12px 14px;background:rgba(255,255,255,.025);text-align:right}
+    .album-season strong{display:block;font-family:'Syne',sans-serif;font-size:18px}.album-season span{color:var(--album-muted);font-size:9px;letter-spacing:.12em}
+    .album-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(235px,.72fr);gap:16px;align-items:start}
+    .album-panel{background:rgba(19,19,26,.82);border:1px solid var(--album-line);border-radius:23px;box-shadow:0 24px 70px rgba(0,0,0,.16);overflow:hidden}
+    .panel-heading{padding:17px 18px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--album-line)}
+    .panel-heading h2{font:700 14px 'Syne',sans-serif;margin:0;letter-spacing:-.02em}.panel-heading p{margin:4px 0 0;color:var(--album-muted);font-size:10px}
+    .album-count{font:600 10px 'JetBrains Mono',monospace;color:#ff936d;border:1px solid rgba(255,90,31,.25);background:rgba(255,90,31,.08);padding:6px 8px;border-radius:9px;white-space:nowrap}
+    .card-stage{min-height:510px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:23px 16px 19px;perspective:1200px;position:relative;isolation:isolate}
+    .card-stage:before{content:"";position:absolute;z-index:-1;width:260px;height:300px;top:90px;background:radial-gradient(ellipse,rgba(139,101,255,.15),transparent 70%);filter:blur(18px)}
+    .trading-card{--rx:0deg;--ry:0deg;--shine-x:50%;--shine-y:35%;width:min(100%,290px);aspect-ratio: .68;position:relative;isolation:isolate;border-radius:20px;padding:7px;background:linear-gradient(135deg,#ffd7a0,#9d7cff 24%,#ffb56b 42%,#5f5ce2 62%,#f9d8a0 80%,#ff5a1f);box-shadow:0 22px 45px rgba(0,0,0,.42),0 0 34px rgba(150,115,255,.16);transform:rotateX(var(--rx)) rotateY(var(--ry));transition:transform .12s ease-out;transform-style:preserve-3d;touch-action:pan-y}
+    .trading-card:before{content:"";position:absolute;inset:7px;border-radius:14px;background:linear-gradient(155deg,#24233c 0%,#11111a 38%,#201a31 72%,#111116 100%);z-index:-1}
+    .trading-card:after{content:"";position:absolute;inset:7px;border-radius:14px;pointer-events:none;background:radial-gradient(circle at var(--shine-x) var(--shine-y),rgba(255,255,255,.42),transparent 18%),linear-gradient(120deg,transparent 18%,rgba(255,255,255,.1) 35%,rgba(255,115,31,.15) 48%,rgba(140,115,255,.12) 60%,transparent 76%);mix-blend-mode:screen;opacity:.85}
+    .card-inner{height:100%;position:relative;z-index:1;padding:15px 14px 12px;display:flex;flex-direction:column}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .card-rating{font:800 34px 'Syne',sans-serif;line-height:1;letter-spacing:-.08em}.card-position{font:700 9px 'JetBrains Mono',monospace;letter-spacing:.13em;color:#ffbc9f;margin-top:5px}
+    .card-badge{font:700 8px 'JetBrains Mono',monospace;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 7px;background:rgba(255,255,255,.06);text-align:right}
+    .card-portrait{position:relative;flex:1;min-height:0;margin:9px -4px 0;overflow:hidden;border-radius:12px;background:linear-gradient(145deg,rgba(135,111,255,.23),rgba(255,90,31,.13));display:grid;place-items:center}
+    .card-portrait:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#14121f 0%,transparent 48%,rgba(255,255,255,.05));pointer-events:none}
+    .card-portrait img{width:100%;height:100%;object-fit:cover;object-position:center 35%;filter:saturate(.82);display:block}
+    .card-monogram{font:800 78px 'Syne',sans-serif;color:rgba(255,255,255,.84);letter-spacing:-.1em}
+    .card-name{font:800 clamp(17px,4vw,22px) 'Syne',sans-serif;letter-spacing:-.06em;line-height:1.02;margin:11px 0 3px;overflow-wrap:anywhere}
+    .card-nickname{font-size:10px;color:#b7b4c6;min-height:14px}
+    .card-rule{height:1px;background:linear-gradient(90deg,rgba(255,255,255,.35),transparent);margin:10px 0 8px}
+    .card-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}
+    .card-stat{display:grid;grid-template-columns:1fr auto;gap:2px 6px;align-items:center}.card-stat span{font-size:8px;color:#c4c0d0}.card-stat strong{font:700 11px 'JetBrains Mono',monospace;color:#fff}.stat-track{grid-column:1/-1;height:3px;border-radius:5px;background:rgba(255,255,255,.12);overflow:hidden}.stat-track i{height:100%;display:block;background:linear-gradient(90deg,#9b8cff,#ff895e);border-radius:5px}
+    .card-foot{display:flex;justify-content:space-between;gap:8px;margin-top:10px;color:#aaa6bb;font:600 7px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase}
+    .card-controls{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+    .album-btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#f7f6fb;border-radius:11px;padding:10px 13px;font:700 11px 'DM Sans',sans-serif;cursor:pointer;transition:background .2s,border-color .2s}
+    .album-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}.album-btn.primary{background:var(--album-orange);border-color:var(--album-orange);color:#1a0b05}.album-btn:disabled{opacity:.5;cursor:not-allowed}
+    .card-hint{font-size:10px;color:#797786;text-align:center;margin:11px 0 0;line-height:1.5}
+    .roster-list{display:grid;gap:0}.roster-item{display:flex;align-items:center;gap:11px;width:100%;padding:12px 15px;border:0;border-bottom:1px solid rgba(255,255,255,.065);background:transparent;color:inherit;text-align:left;cursor:pointer;transition:background .2s}
+    .roster-item:last-child{border-bottom:0}.roster-item:hover,.roster-item[aria-pressed="true"]{background:rgba(255,255,255,.055)}
+    .roster-item[aria-pressed="true"]{box-shadow:inset 3px 0 var(--album-orange)}
+    .roster-avatar{width:43px;height:43px;border-radius:13px;background:linear-gradient(145deg,#393050,#20202b);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;overflow:hidden;flex-shrink:0;font:800 14px 'Syne',sans-serif;color:#fff}
+    .roster-avatar img{width:100%;height:100%;object-fit:cover}.roster-main{min-width:0;flex:1}.roster-name{display:block;font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.roster-sub{display:block;color:var(--album-muted);font-size:9px;margin-top:3px}.roster-score{font:700 15px 'JetBrains Mono',monospace;color:#ff916a}
+    .roster-state{padding:22px 17px;color:var(--album-muted);font-size:12px;line-height:1.6}
+    .lineup-panel{margin-top:16px}.lineup-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:13px}
+    .lineup-player{border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 8px;background:rgba(255,255,255,.025);text-align:center;cursor:pointer;color:inherit;min-width:0}
+    .lineup-player:hover{border-color:rgba(255,90,31,.4)}.lineup-player .roster-avatar{margin:0 auto 7px;width:38px;height:38px;border-radius:12px}.lineup-player strong{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lineup-player small{display:block;margin-top:4px;color:#ff936d;font:600 9px 'JetBrains Mono',monospace}
+    .album-message{padding:12px 14px;border:1px solid var(--album-line);border-radius:12px;color:var(--album-muted);font-size:11px;line-height:1.55;background:rgba(255,255,255,.025);margin-top:14px}
+    .album-message[data-kind="error"]{border-color:rgba(255,110,100,.3);color:#ffaaa3}.album-message[data-kind="success"]{border-color:rgba(102,220,164,.25);color:#9de7bd}
+    .album-empty{padding:24px 18px;text-align:center;color:var(--album-muted);font-size:12px;line-height:1.6}
+    .album-empty strong{display:block;color:#fff;font:700 15px 'Syne',sans-serif;margin-bottom:6px}
+    .album-footer-note{color:#777583;font-size:10px;line-height:1.6;margin:15px 2px 0}
+    .album-app .navbar{background:rgba(9,9,13,.86)!important;border-bottom:1px solid rgba(255,255,255,.09)!important;backdrop-filter:blur(20px)}
+    .album-app .logo{color:#fff!important;font-family:'Syne',sans-serif}
+    .album-app #mainNav a{color:#aaa7b5}.album-app #mainNav a:hover,.album-app #mainNav a.active{color:#fff}
+    .album-app .bottom-nav{background:rgba(13,13,19,.92)!important;border-top:1px solid rgba(255,255,255,.1)!important;padding-bottom:env(safe-area-inset-bottom)}
+    @media(max-width:760px){.album-layout{grid-template-columns:1fr}.album-heading{align-items:flex-start}.album-season{padding:9px 10px}.album-season strong{font-size:15px}.card-stage{min-height:auto;padding:20px 12px}.trading-card{width:min(78vw,285px)}.lineup-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:420px){.album-shell{width:calc(100% - 22px);padding-top:20px}.album-heading{display:block}.album-season{display:inline-block;margin-top:15px;text-align:left}.card-stage{padding-inline:8px}.trading-card{width:min(83vw,275px)}.lineup-list{gap:5px;padding:9px}.lineup-player{padding:9px 4px}.roster-item{padding:11px 12px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body class="album-app">
+  <header class="navbar">
+    <a class="logo" href="index.html" aria-label="Curruscos, inicio">curruscos<span style="color:#ff5a1f">.</span></a>
+    <nav id="mainNav" aria-label="Navegación principal"></nav>
+    <button id="menuButton" class="menu-button" type="button" aria-label="Abrir menú">☰</button>
+  </header>
+
+  <main class="album-shell">
+    <div class="album-kicker">Colección dinámica · temporada 2026</div>
+    <section class="album-heading" aria-labelledby="album-title">
+      <div>
+        <h1 id="album-title">El álbum<br><span>del clan.</span></h1>
+        <p>Cromos con estadísticas calculadas a partir de la actividad del grupo. Selecciona un miembro, inclina el móvil o mueve el cursor para descubrir el efecto holográfico.</p>
+      </div>
+      <div class="album-season"><span>EDICIÓN</span><strong>VOL. 01</strong><span id="album-member-count">CARGANDO PLANTILLA</span></div>
+    </section>
+
+    <div class="album-layout">
+      <section class="album-panel" aria-labelledby="active-card-title">
+        <div class="panel-heading"><div><h2 id="active-card-title">Cromo destacado</h2><p id="active-card-subtitle">Estadísticas de la plantilla</p></div><span class="album-count" id="active-card-rating">— OVR</span></div>
+        <div class="card-stage">
+          <div id="holographic-card-mount" class="trading-card" role="img" aria-label="Cromo dinámico del miembro seleccionado">
+            <div class="card-inner">
+              <div class="card-top"><div><div class="card-rating" id="card-rating">—</div><div class="card-position">CLAN · OVR</div></div><div class="card-badge" id="card-tier">EDICIÓN<br>DINÁMICA</div></div>
+              <div class="card-portrait" id="card-portrait"><div class="card-monogram" id="card-monogram">C.</div></div>
+              <div class="card-name" id="card-name">Cargando álbum…</div><div class="card-nickname" id="card-nickname">Conectando con Curruscos</div>
+              <div class="card-rule"></div>
+              <div class="card-stats" id="card-stats"></div>
+              <div class="card-foot"><span id="card-foot-left">CURRUSCOS CLAN</span><span id="card-foot-right">TEMP. 2026</span></div>
+            </div>
+          </div>
+          <div class="card-controls"><button type="button" id="btn-share-my-card" class="album-btn primary">↗ Compartir cromo</button><button type="button" id="btn-motion" class="album-btn">Activar inclinación</button></div>
+          <p class="card-hint" id="card-hint">El brillo sigue el cursor. En móvil puedes activar el movimiento del dispositivo.</p>
+        </div>
+      </section>
+
+      <aside>
+        <section class="album-panel" aria-labelledby="roster-title">
+          <div class="panel-heading"><div><h2 id="roster-title">Plantilla de cromos</h2><p>Miembros de tus grupos</p></div><span class="album-count" id="roster-count">—</span></div>
+          <div id="roster-container" class="roster-list"><div class="roster-state">Cargando miembros de tus grupos…</div></div>
+        </section>
+        <section class="album-panel lineup-panel" aria-labelledby="lineup-title">
+          <div class="panel-heading"><div><h2 id="lineup-title">Alineación estelar</h2><p>Actividad registrada · últimos 7 días</p></div><span class="album-count">TOP 3</span></div>
+          <div id="lineup-container" class="lineup-list"><div class="roster-state">Calculando alineación…</div></div>
+        </section>
+        <div id="album-message" class="album-message" role="status" aria-live="polite">Conectando con tu sesión…</div>
+        <p class="album-footer-note">Las medias son estimaciones lúdicas calculadas con datos disponibles. Si un dato no está registrado, no se inventa: se muestra como pendiente.</p>
+      </aside>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación inferior móvil">
+    <a href="index.html" class="bottom-nav-item"><span>⌂</span><span>Inicio</span></a>
+    <a href="explorar.html" class="bottom-nav-item"><span>⌕</span><span>Buscar</span></a>
+    <a href="eventos.html" class="bottom-nav-item"><span>♧</span><span>Mi grupo</span></a>
+    <a href="perfil.html" class="bottom-nav-item"><span>◉</span><span>Mi perfil</span></a>
+  </nav>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/navigation.js"></script>
+  <script>
+  (() => {
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const mount = $('holographic-card-mount');
+    const rosterEl = $('roster-container');
+    const lineupEl = $('lineup-container');
+    const messageEl = $('album-message');
+    const statDefinitions = [
+      {key:'punctuality', label:'Puntualidad'},
+      {key:'level', label:'Nivel'},
+      {key:'chemistry', label:'Química'},
+      {key:'reliability', label:'Fiabilidad'},
+      {key:'fairplay', label:'Fair play'}
+    ];
+    let players = [];
+    let selectedId = null;
+    let orientationEnabled = false;
+    let orientationHandler = null;
+
+    function setMessage(text, kind='info') {
+      messageEl.textContent = text;
+      messageEl.dataset.kind = kind;
+    }
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function initials(name) {
+      return String(name || 'C').trim().split(/\s+/).slice(0,2).map(part => part[0] || '').join('').toUpperCase() || 'C';
+    }
+    function scoreText(value) { return Number.isFinite(value) ? String(Math.round(value)) : '—'; }
+    function average(values) {
+      const valid = values.filter(Number.isFinite);
+      return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
+    }
+    function overall(player) {
+      const score = average([player.stats.punctuality, player.stats.level, player.stats.chemistry, player.stats.reliability, player.stats.fairplay]);
+      return score === null ? null : Math.round(score);
+    }
+    function rating(player) { return overall(player) === null ? '—' : overall(player); }
+    function statMarkup(player) {
+      return statDefinitions.map(def => {
+        const value = player.stats[def.key];
+        return '<div class="card-stat"><span>'+def.label+'</span><strong>'+scoreText(value)+'</strong><div class="stat-track"><i style="width:'+(Number.isFinite(value)?Math.max(0,Math.min(100,value)):0)+'%"></i></div></div>';
+      }).join('');
+    }
+    function portraitMarkup(player) {
+      if (player.avatar && /^https:\/\//i.test(player.avatar)) return '<img src="'+escapeHtml(player.avatar)+'" alt="Retrato de '+escapeHtml(player.name)+'" referrerpolicy="no-referrer">';
+      return '<div class="card-monogram" id="card-monogram">'+escapeHtml(initials(player.name))+'</div>';
+    }
+    function renderCard() {
+      const player = players.find(item => item.id === selectedId);
+      if (!player) return;
+      $('card-rating').textContent = rating(player);
+      $('active-card-rating').textContent = (rating(player) === '—' ? 'SIN DATOS' : rating(player)+' OVR');
+      $('card-tier').innerHTML = (Number.isFinite(overall(player)) && overall(player) >= 85) ? 'CLAN<br>ELITE' : 'EDICIÓN<br>DINÁMICA';
+      $('card-portrait').innerHTML = portraitMarkup(player);
+      $('card-name').textContent = player.name;
+      $('card-nickname').textContent = player.username ? '@'+player.username : 'Miembro de Curruscos';
+      $('card-stats').innerHTML = statMarkup(player);
+      $('card-foot-left').textContent = (player.attended || 0)+' PLANES REGISTRADOS';
+      $('card-foot-right').textContent = 'TEMP. 2026';
+      $('active-card-subtitle').textContent = player.groupCount+' grupo'+(player.groupCount===1?'':'s')+' · actividad registrada';
+      mount.setAttribute('aria-label','Cromo dinámico de '+player.name+', media '+rating(player));
+      renderRoster();
+    }
+    function avatarMarkup(player) {
+      return player.avatar && /^https:\/\//i.test(player.avatar)
+        ? '<img src="'+escapeHtml(player.avatar)+'" alt="" loading="lazy" referrerpolicy="no-referrer">'
+        : escapeHtml(initials(player.name));
+    }
+    function renderRoster() {
+      $('roster-count').textContent = String(players.length).padStart(2,'0');
+      $('album-member-count').textContent = players.length+' MIEMBRO'+(players.length===1?'':'S');
+      if (!players.length) {
+        rosterEl.innerHTML = '<div class="album-empty"><strong>Tu álbum empieza aquí</strong>Inicia sesión y únete a un grupo para ver sus miembros reales.</div>';
+        return;
+      }
+      rosterEl.innerHTML = players.map(player =>
+        '<button type="button" class="roster-item" data-player-id="'+escapeHtml(player.id)+'" aria-pressed="'+(player.id===selectedId)+'"><span class="roster-avatar">'+avatarMarkup(player)+'</span><span class="roster-main"><span class="roster-name">'+escapeHtml(player.name)+'</span><span class="roster-sub">'+(player.attended||0)+' planes registrados</span></span><span class="roster-score">'+escapeHtml(String(rating(player)))+'</span></button>'
+      ).join('');
+      rosterEl.querySelectorAll('[data-player-id]').forEach(button => button.addEventListener('click', () => {
+        selectedId = button.dataset.playerId;
+        renderCard();
+      }));
+    }
+    function renderLineup() {
+      if (!players.length) {
+        lineupEl.innerHTML = '<div class="album-empty">La alineación aparecerá cuando haya miembros en tus grupos.</div>';
+        return;
+      }
+      const top = [...players].sort((a,b) => (b.weeklyActivity||0)-(a.weeklyActivity||0) || (overall(b)??-1)-(overall(a)??-1) || a.name.localeCompare(b.name,'es')).slice(0,3);
+      lineupEl.innerHTML = top.map((player,index) =>
+        '<button type="button" class="lineup-player" data-player-id="'+escapeHtml(player.id)+'"><span class="roster-avatar">'+avatarMarkup(player)+'</span><strong>'+escapeHtml(player.name)+'</strong><small>'+(player.weeklyActivity||0)+' PLANES · #'+(index+1)+'</small></button>'
+      ).join('');
+      lineupEl.querySelectorAll('[data-player-id]').forEach(button => button.addEventListener('click', () => {
+        selectedId = button.dataset.playerId;
+        renderCard();
+        $('active-card-title').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+      }));
+    }
+    function clampScore(value) { return Number.isFinite(value) ? Math.max(0,Math.min(100,Math.round(value))) : null; }
+    function buildPlayer(profile, memberships, ratingRow, participantsByUser, groupCount) {
+      const userId = profile.id;
+      const ratingData = ratingRow || null;
+      const participantRows = participantsByUser[userId] || [];
+      const pastRows = participantRows.filter(row => row.isPast);
+      const attendedCount = Number(ratingData?.attended_count ?? pastRows.filter(row => ['attended','present','completed','confirmed_attendance'].includes(String(row.status||'').toLowerCase())).length);
+      const noShowCount = Number(ratingData?.no_show_count ?? pastRows.filter(row => ['no_show','noshow','absent'].includes(String(row.status||'').toLowerCase())).length);
+      const attendanceTotal = attendedCount + noShowCount;
+      const reliabilityRaw = ratingData ? Number(ratingData.reliability_score) : null;
+      const reliability = Number.isFinite(reliabilityRaw) ? clampScore(reliabilityRaw <= 1 ? reliabilityRaw*100 : reliabilityRaw) : (attendanceTotal ? clampScore(attendedCount/attendanceTotal*100) : null);
+      const punctuality = attendanceTotal ? clampScore(attendedCount/attendanceTotal*100) : null;
+      const level = attendedCount > 0 ? clampScore(45 + 8*Math.log2(attendedCount+1)) : null;
+      const sharedGroups = new Set(memberships.map(row => row.group_id));
+      const chemistry = sharedGroups.size ? clampScore(55 + Math.min(45, (sharedGroups.size-1)*15)) : null;
+      const fairplay = null; // No hay una métrica de fair play independiente en el esquema actual.
+      const attended = attendedCount;
+      return {
+        id:userId,
+        name:profile.display_name || (profile.username ? '@'+profile.username : 'Miembro del clan'),
+        username:profile.username || '',
+        avatar:profile.avatar_url || '',
+        groupCount:sharedGroups.size,
+        attended,
+        stats:{punctuality,level,chemistry,reliability,fairplay}
+      };
+    }
+    async function loadAlbum() {
+      if (!window.supabaseClient) {
+        setMessage('No se ha podido iniciar la conexión con la base de datos. Recarga la página más tarde.', 'error');
+        rosterEl.innerHTML = '<div class="album-empty">No se pudo conectar con Curruscos.</div>';
+        lineupEl.innerHTML = '<div class="album-empty">Alineación no disponible.</div>';
+        return;
+      }
+      const client = window.supabaseClient;
+      const {data:sessionData,error:sessionError} = await client.auth.getSession();
+      if (sessionError) throw sessionError;
+      const user = sessionData?.session?.user;
+      if (!user) {
+        players = [];
+        renderRoster();
+        renderLineup();
+        $('card-name').textContent = 'Tu álbum te espera';
+        $('card-nickname').textContent = 'Inicia sesión para cargar tu plantilla';
+        $('card-stats').innerHTML = '<div class="card-stat"><span>Datos</span><strong>—</strong><div class="stat-track"><i style="width:0"></i></div></div>';
+        $('card-rating').textContent = '—';
+        $('active-card-rating').textContent = 'SESIÓN REQUERIDA';
+        setMessage('Inicia sesión y forma parte de un grupo para ver los cromos con datos reales. No se muestran miembros ficticios.', 'info');
+        return;
+      }
+      const {data:ownMemberships,error:membershipError} = await client.from('group_members').select('group_id,user_id').eq('user_id',user.id);
+      if (membershipError) throw membershipError;
+      const ownRows = ownMemberships || [];
+      const groupIds = [...new Set(ownRows.map(row => row.group_id).filter(Boolean))];
+      if (!groupIds.length) {
+        players = [];
+        renderRoster();
+        renderLineup();
+        $('card-name').textContent = 'Sin plantilla todavía';
+        $('card-nickname').textContent = 'Únete a un grupo para conseguir tu primer cromo';
+        $('card-stats').innerHTML = '';
+        $('card-rating').textContent = '—';
+        $('active-card-rating').textContent = 'SIN GRUPO';
+        setMessage('Tu cuenta aún no pertenece a ningún grupo. Cuando te unas a uno, aparecerán aquí sus miembros.', 'info');
+        return;
+      }
+      const [{data:allMemberships,error:allMembersError},{data:groups,error:groupsError}] = await Promise.all([
+        client.from('group_members').select('group_id,user_id').in('group_id',groupIds),
+        client.from('groups').select('id,name').in('id',groupIds)
+      ]);
+      if (allMembersError) throw allMembersError;
+      if (groupsError) throw groupsError;
+      const membershipRows = allMemberships || [];
+      const memberIds = [...new Set(membershipRows.map(row => row.user_id).filter(Boolean))];
+      if (!memberIds.length) {
+        players = [];
+        renderRoster(); renderLineup();
+        setMessage('No hay miembros visibles en los grupos de tu cuenta.', 'info');
+        return;
+      }
+      const [{data:profiles,error:profilesError},{data:ratings,error:ratingsError}] = await Promise.all([
+        client.from('profiles').select('id,username,display_name,avatar_url,is_public').in('id',memberIds),
+        client.from('fairplay_ratings').select('user_id,reliability_score,attended_count,no_show_count,updated_at').in('user_id',memberIds)
+      ]);
+      if (profilesError) throw profilesError;
+      if (ratingsError && !/does not exist|permission denied|not allowed/i.test(ratingsError.message||'')) throw ratingsError;
+      const ratingRows = ratings || [];
+      const ratingById = Object.fromEntries(ratingRows.map(row => [row.user_id,row]));
+      const profileRows = (profiles || []).filter(profile => profile.is_public !== false || profile.id === user.id);
+      const playerIds = profileRows.map(profile => profile.id);
+      const {data:eventRows,error:eventError} = await client.from('events').select('id,group_id,date,status').in('group_id',groupIds).lte('date',new Date().toISOString().slice(0,10)).limit(300);
+      if (eventError) throw eventError;
+      const eventIds = (eventRows || []).map(event => event.id).filter(Boolean);
+      let participantRows = [];
+      if (eventIds.length) {
+        const {data:participants,error:participantsError} = await client.from('event_participants').select('event_id,user_id,status').in('event_id',eventIds).in('user_id',playerIds);
+        if (participantsError && !/permission denied|not allowed/i.test(participantsError.message||'')) throw participantsError;
+        participantRows = participants || [];
+      }
+      const eventById = Object.fromEntries((eventRows||[]).map(event => [event.id,event]));
+      const participantsByUser = {};
+      participantRows.forEach(row => {
+        const event = eventById[row.event_id];
+        if (!event) return;
+        (participantsByUser[row.user_id] ||= []).push({...row,isPast:true});
+      });
+      const groupNames = Object.fromEntries((groups||[]).map(group=>[group.id,group.name]));
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate()-6);
+      const weekStartDate = weekStart.toISOString().slice(0,10);
+      const todayDate = new Date().toISOString().slice(0,10);
+      const weeklyByUser = {};
+      participantRows.forEach(row => {
+        const event = eventById[row.event_id];
+        if (!event || event.date < weekStartDate || event.date > todayDate || String(event.status||'').toLowerCase()==='cancelled') return;
+        (weeklyByUser[row.user_id] ||= new Set()).add(row.event_id);
+      });
+      players = profileRows.map(profile => {
+        const memberRows = membershipRows.filter(row => row.user_id === profile.id);
+        const built = buildPlayer(profile,memberRows,ratingById[profile.id],participantsByUser,memberRows.length);
+        built.weeklyActivity = weeklyByUser[profile.id]?.size || 0;
+        built.groupNames = memberRows.map(row => groupNames[row.group_id]).filter(Boolean);
+        return built;
+      }).sort((a,b)=>(overall(b)??-1)-(overall(a)??-1)||a.name.localeCompare(b.name,'es'));
+      selectedId = players.some(player => player.id === user.id) ? user.id : (players[0]?.id || null);
+      renderRoster();
+      renderLineup();
+      if (selectedId) renderCard();
+      const groupLabel = (groups||[]).length===1 ? (groups[0]?.name || 'tu grupo') : (groups||[]).length+' grupos';
+      setMessage('Plantilla cargada desde '+groupLabel+'. Las estadísticas dependen de los datos registrados; las que no tienen registros aparecen como pendientes.', 'success');
+    }
+
+    function setTilt(x,y) {
+      const rect = mount.getBoundingClientRect();
+      const nx = Math.max(-1,Math.min(1,(x-rect.left)/rect.width*2-1));
+      const ny = Math.max(-1,Math.min(1,(y-rect.top)/rect.height*2-1));
+      mount.style.setProperty('--ry',(nx*9)+'deg');
+      mount.style.setProperty('--rx',(-ny*8)+'deg');
+      mount.style.setProperty('--shine-x',((nx+1)*50)+'%');
+      mount.style.setProperty('--shine-y',((ny+1)*50)+'%');
+    }
+    function resetTilt() {
+      mount.style.setProperty('--rx','0deg'); mount.style.setProperty('--ry','0deg');
+      mount.style.setProperty('--shine-x','50%'); mount.style.setProperty('--shine-y','35%');
+    }
+    mount.addEventListener('pointermove',event=>{if(!orientationEnabled && event.pointerType!=='touch')setTilt(event.clientX,event.clientY);});
+    mount.addEventListener('pointerleave',resetTilt);
+    function stopOrientation() {
+      if (orientationHandler) window.removeEventListener('deviceorientation',orientationHandler);
+      orientationHandler=null;orientationEnabled=false;
+      $('btn-motion').textContent='Activar inclinación';
+      resetTilt();
+    }
+    async function startOrientation() {
+      try {
+        if (!('DeviceOrientationEvent' in window)) {
+          setMessage('Este dispositivo no ofrece datos de orientación. Puedes seguir usando el efecto con el cursor.', 'info');
+          return;
+        }
+        if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission !== 'granted') {
+            setMessage('Permiso de movimiento no concedido. El cromo seguirá funcionando con el cursor.', 'info');
+            return;
+          }
+        }
+        orientationHandler = event => {
+          if (event.gamma == null || event.beta == null) return;
+          const gx=Math.max(-1,Math.min(1,event.gamma/35));
+          const by=Math.max(-1,Math.min(1,(event.beta-45)/50));
+          mount.style.setProperty('--ry',(gx*9)+'deg');
+          mount.style.setProperty('--rx',(-by*8)+'deg');
+          mount.style.setProperty('--shine-x',((gx+1)*50)+'%');
+          mount.style.setProperty('--shine-y',((by+1)*50)+'%');
+        };
+        window.addEventListener('deviceorientation',orientationHandler,{passive:true});
+        orientationEnabled=true;
+        $('btn-motion').textContent='Desactivar inclinación';
+        setMessage('Efecto de inclinación activado. Puedes desactivarlo cuando quieras.', 'success');
+      } catch(error) {
+        setMessage('No se pudo activar el movimiento del dispositivo. Comprueba los permisos del navegador.', 'info');
+      }
+    }
+    $('btn-motion').addEventListener('click',()=>orientationEnabled?stopOrientation():startOrientation());
+    $('btn-share-my-card').addEventListener('click',async()=>{
+      const player=players.find(item=>item.id===selectedId);
+      if(!player){setMessage('No hay ningún cromo que compartir todavía.','info');return;}
+      const shareText='Mi cromo de Curruscos: '+player.name+' · '+(overall(player)===null?'OVR pendiente':overall(player)+' OVR')+'. Descubre el álbum del clan.';
+      const shareUrl=window.location.href;
+      try {
+        if(navigator.share) await navigator.share({title:'Cromo de '+player.name+' · Curruscos',text:shareText,url:shareUrl});
+        else window.open('https://wa.me/?text='+encodeURIComponent(shareText+' '+shareUrl),'_blank','noopener,noreferrer');
+        setMessage('Se ha abierto la opción para compartir el cromo seleccionado.','success');
+      } catch(error) {
+        if(error?.name!=='AbortError') setMessage('No se pudo abrir el menú para compartir. Puedes copiar la dirección de esta página.','error');
+      }
+    });
+    window.addEventListener('pagehide',stopOrientation);
+    loadAlbum().catch(error=>{
+      console.error('[album-clan]',error);
+      setMessage('No se pudo cargar la plantilla: '+(error?.message||'error de conexión')+'. Comprueba que tu sesión siga activa y vuelve a intentarlo.', 'error');
+      rosterEl.innerHTML='<div class="album-empty"><strong>Plantilla no disponible</strong>No se han podido leer los miembros del grupo con los permisos actuales.</div>';
+      lineupEl.innerHTML='<div class="album-empty">No se pudo calcular la alineación.</div>';
+    });
+  })();
+  </script>
+</body>
+</html>

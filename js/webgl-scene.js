@@ -9,7 +9,16 @@
   function init() {
     const canvas = document.getElementById("webgl-stage-canvas");
     const stage = document.querySelector(".webgl-hero-stage");
-    if (!canvas || !stage || !window.THREE || !window.WebGLRenderingContext) return;
+    if (!canvas || !stage) return;
+    try {
+      const visualPrefs = JSON.parse(localStorage.getItem("curruscos_visual_preferences") || "{}");
+      if (visualPrefs.webgl === false) {
+        canvas.style.display = "none";
+        stage.classList.add("webgl-disabled");
+        return;
+      }
+    } catch (_) {}
+    if (!window.THREE || !window.WebGLRenderingContext) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isSmall = window.matchMedia("(max-width: 680px)").matches;
@@ -117,6 +126,15 @@
     let frame = 0;
     let visible = true;
     const clock = new THREE.Clock();
+    let audioIntensity = 0;
+    let targetAudioIntensity = 0;
+
+    // Public bridge used by the optional microphone / touch-reactive controller.
+    window.WebGLStage = {
+      setAudioIntensity(value) {
+        targetAudioIntensity = Math.max(0, Math.min(1, Number(value) || 0));
+      }
+    };
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
@@ -151,6 +169,7 @@
       frame = 0;
       if (!visible || document.hidden) return;
       const t = clock.getElapsedTime();
+      audioIntensity += (targetAudioIntensity - audioIntensity) * 0.16;
       currentX += (targetX - currentX) * 0.045;
       currentY += (targetY - currentY) * 0.045;
 
@@ -158,17 +177,17 @@
         const p = position.array;
         for (let i = 0; i < p.length; i += 3) {
           const ox = original[i], oy = original[i + 1], oz = original[i + 2];
-          const wave = Math.sin(ox * 2.15 + t * 1.1) * Math.cos(oy * 2.0 - t * 0.9) * 0.045;
+          const wave = Math.sin(ox * 2.15 + t * (1.1 + audioIntensity * 2.1)) * Math.cos(oy * 2.0 - t * (0.9 + audioIntensity * 1.7)) * (0.045 + audioIntensity * 0.065);
           p[i] = ox + ox * wave;
           p[i + 1] = oy + oy * wave;
           p[i + 2] = oz + oz * wave;
         }
         position.needsUpdate = true;
         geometry.computeVertexNormals();
-        core.rotation.y = t * 0.15 + currentX * 0.3;
-        core.rotation.x = t * 0.11 - currentY * 0.25;
-        ring.rotation.z = t * -0.12;
-        secondRing.rotation.x = 0.4 + Math.sin(t * 0.18) * 0.12;
+        core.rotation.y = t * (0.15 + audioIntensity * 0.42) + currentX * 0.3;
+        core.rotation.x = t * (0.11 + audioIntensity * 0.3) - currentY * 0.25;
+        ring.rotation.z = t * (-0.12 - audioIntensity * 0.55);
+        secondRing.rotation.x = 0.4 + Math.sin(t * (0.18 + audioIntensity * 0.7)) * (0.12 + audioIntensity * 0.2);
         shards.forEach(function (shard) {
           shard.mesh.rotation.x += shard.x;
           shard.mesh.rotation.y += shard.y;
@@ -183,6 +202,7 @@
       sculpture.rotation.x += ((-currentY * 0.08) - sculpture.rotation.x) * 0.035;
       orangeLight.position.x = 3 + currentX * 1.8;
       orangeLight.position.y = 2 + currentY * 1.4;
+      orangeLight.intensity = 27 + audioIntensity * 18;
 
       const scrollProgress = Math.min(1, window.scrollY / Math.max(1, stage.offsetHeight));
       sculpture.position.y = -scrollProgress * 0.35;

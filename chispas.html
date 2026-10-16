@@ -8,6 +8,60 @@
 <link rel="stylesheet" href="css/design-system.css">
 <style>
 .fusion-page{max-width:690px;margin:auto;padding:24px 16px 110px}.fusion-nav{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border-light);background:var(--bg-surface)}.fusion-brand{font-weight:900;text-decoration:none;color:var(--text-main)}.fusion-links{display:flex;gap:14px;flex-wrap:wrap}.fusion-links a{font-size:.86rem;font-weight:700;color:var(--text-muted);text-decoration:none}.fusion-links a[aria-current=page]{color:var(--color-primary)}.fusion-hero{padding:25px 22px;border-radius:24px;color:white;background:radial-gradient(circle at 90% 15%,#fb923c 0,transparent 32%),linear-gradient(135deg,#27120b,#17181b);margin:14px 0 20px}.fusion-kicker{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#fdba74}.fusion-hero h1{font-size:clamp(1.7rem,5vw,2.2rem);line-height:1.1;margin:10px 0}.fusion-hero p{color:#f4e5dc;max-width:46ch}.fusion-card{padding:20px;border:1px solid var(--border-light);border-radius:22px;background:var(--bg-surface);box-shadow:var(--shadow-sm);margin:14px 0}.fusion-card h2{font-size:1rem;margin:0 0 12px}.fusion-muted{color:var(--text-muted);font-size:.88rem}.fusion-energy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fusion-energy{border:1px solid var(--border-light);background:var(--bg-surface);border-radius:15px;padding:13px 9px;text-align:left;cursor:pointer;color:var(--text-main)}.fusion-energy strong,.fusion-energy small{display:block}.fusion-energy small{font-size:.74rem;color:var(--text-muted);margin-top:3px}.fusion-energy.active{border-color:var(--color-primary);background:var(--color-primary-subtle);box-shadow:0 0 0 1px var(--color-primary)}.fusion-field{display:grid;gap:6px;margin:12px 0}.fusion-field label{font-size:.8rem;font-weight:800}.fusion-field input,.fusion-field select{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--border-light);border-radius:12px;background:var(--bg-surface);color:var(--text-main);font:inherit}.fusion-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fusion-resources{display:flex;gap:8px;flex-wrap:wrap}.fusion-resources label{font-size:.8rem;font-weight:700;padding:9px 11px;border:1px solid var(--border-light);border-radius:999px}.fusion-primary,.fusion-secondary{border:0;border-radius:12px;padding:12px 15px;font:inherit;font-weight:800;cursor:pointer}.fusion-primary{background:var(--color-primary);color:white}.fusion-secondary{background:var(--bg-muted);color:var(--text-main)}#fusion-submit{width:100%;margin-top:12px}.fusion-primary:disabled{opacity:.55}.fusion-status{padding:12px 14px;border-radius:12px;background:var(--bg-muted);font-size:.86rem;margin:12px 0}.fusion-status.is-error{background:#fff0f0;color:#a12121}.fusion-stage[hidden],.fusion-form[hidden]{display:none}.fusion-radar{position:relative;width:150px;height:150px;margin:22px auto;display:grid;place-items:center}.fusion-wave{position:absolute;border:2px solid var(--color-primary);border-radius:50%;animation:fusion-pulse 2.3s infinite ease-out}.fusion-wave-one{width:100px;height:100px}.fusion-wave-two{width:140px;height:140px;animation-delay:.7s}.fusion-core{position:relative;z-index:1;width:76px;height:76px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#17181b;color:white}.fusion-core strong{font-size:1.2rem;color:#ff8b62}.fusion-core small{font-size:.55rem;font-weight:900;letter-spacing:.08em}.fusion-live{display:inline-block;padding:5px 9px;border-radius:99px;background:var(--color-primary-subtle);color:var(--color-primary);font-size:.7rem;font-weight:900}.fusion-proposal-card{padding:17px;border:1px solid var(--color-primary);border-radius:18px;background:var(--bg-surface)}.fusion-proposal-card h2{margin:12px 0}.fusion-actions{display:flex;gap:9px;margin-top:14px}.fusion-actions button{flex:1}.fusion-footer{font-size:.75rem;color:var(--text-muted);margin:18px 0}.fusion-bottom{display:none}@keyframes fusion-pulse{0%{transform:scale(.55);opacity:.85}100%{transform:scale(1.15);opacity:0}}@media(max-width:600px){.fusion-links{gap:9px}.fusion-links a{font-size:.75rem}.fusion-two{grid-template-columns:1fr 1fr}.fusion-bottom{position:fixed;display:grid;grid-template-columns:repeat(4,1fr);left:10px;right:10px;bottom:max(8px,env(safe-area-inset-bottom));padding:7px;border:1px solid var(--border-light);border-radius:18px;background:rgba(255,255,255,.95);box-shadow:var(--shadow-md);z-index:10}.fusion-bottom a{text-align:center;text-decoration:none;color:var(--text-muted);font-size:.68rem;font-weight:800;padding:8px 0}.fusion-bottom a[aria-current=page]{color:var(--color-primary)}.fusion-page{padding-top:14px}}@media(prefers-reduced-motion:reduce){.fusion-wave{animation:none}}
+
+/* Cinematic dark treatment — keeps the real FusionEngine flow and Supabase RPCs. */
+:root{color-scheme:dark;--spark-hot:#ff713d;--spark-glow:rgba(255,113,61,.18)}
+body{background:#101014;color:#f5f3f6}
+.fusion-nav{background:rgba(16,16,20,.94);border-color:rgba(255,255,255,.09)}
+.fusion-brand{color:#fff}
+.fusion-links a{color:#a7a3ae}
+.fusion-links a[aria-current=page]{color:#ff966f}
+.fusion-hero{position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(255,113,61,.22);background:radial-gradient(ellipse at 85% 0%,rgba(255,113,61,.25),transparent 42%),linear-gradient(145deg,#241713,#151519 72%);box-shadow:0 22px 65px rgba(0,0,0,.24)}
+.fusion-hero:after{content:"";position:absolute;z-index:-1;right:-60px;top:-90px;width:220px;height:220px;border-radius:50%;background:#ff713d;filter:blur(90px);opacity:.15;pointer-events:none}
+.fusion-kicker{color:#ff9a72;letter-spacing:.14em}
+.fusion-hero h1{letter-spacing:-.065em}
+.fusion-hero p{color:#c2bac0;line-height:1.65}
+.fusion-card{background:#17171c;border-color:rgba(255,255,255,.09);box-shadow:0 16px 40px rgba(0,0,0,.15)}
+.fusion-card h2{color:#f7f5f8}
+.fusion-muted,.fusion-footer{color:#a5a1ac}
+.fusion-energy{background:#1b1b21;border-color:rgba(255,255,255,.11);color:#f5f3f6;min-width:0}
+.fusion-energy small{color:#a5a1ac}
+.fusion-energy.active{border-color:#ff713d;background:rgba(255,113,61,.12);box-shadow:0 0 0 1px rgba(255,113,61,.3),0 0 24px rgba(255,113,61,.08)}
+.fusion-field label{color:#ddd9e1}
+.fusion-field input,.fusion-field select{background:#111116;border-color:rgba(255,255,255,.14);color:#f5f3f6;min-width:0}
+.fusion-field input:focus,.fusion-field select:focus{outline:2px solid rgba(255,113,61,.65);outline-offset:1px}
+.fusion-resources label{border-color:rgba(255,255,255,.13);background:#1b1b21;color:#c7c2cd}
+.fusion-resources input{accent-color:#ff713d}
+.fusion-primary{background:linear-gradient(135deg,#ff7544,#ed4f35);color:#fff;box-shadow:0 8px 24px rgba(255,92,53,.18)}
+.fusion-secondary{background:#24242b;color:#e8e5ec;border:1px solid rgba(255,255,255,.1)}
+.fusion-status{background:#1b1b21;color:#c5c1cb;border:1px solid rgba(255,255,255,.07)}
+.fusion-status.is-error{background:rgba(255,72,92,.1);color:#ff8c9a;border-color:rgba(255,72,92,.25)}
+.fusion-core{background:#0e0e12;border:1px solid rgba(255,113,61,.25);box-shadow:0 0 28px rgba(255,113,61,.13)}
+.fusion-core strong{color:#ff956d}
+.fusion-wave{border-color:#ff713d}
+.fusion-live{background:rgba(255,113,61,.13);color:#ff9a72}
+.fusion-proposal-card{background:#1b1b21;border-color:rgba(255,113,61,.5);color:#f5f3f6}
+.fusion-bottom{background:rgba(18,18,23,.96);border-color:rgba(255,255,255,.12);backdrop-filter:blur(18px)}
+.fusion-bottom a{color:#a7a3ae}
+.fusion-bottom a[aria-current=page]{color:#ff966f}
+@media(max-width:600px){
+ .fusion-nav{padding:12px 14px;gap:12px;align-items:flex-start}
+ .fusion-links{justify-content:flex-end;max-width:72%;gap:7px 10px}
+ .fusion-links a{font-size:.72rem;white-space:nowrap}
+ .fusion-page{width:100%;padding:14px 12px 110px;overflow-x:clip}
+ .fusion-hero{padding:23px 19px;border-radius:22px}
+ .fusion-card{padding:17px;border-radius:19px}
+ .fusion-energy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fusion-energy{padding:12px 9px;overflow-wrap:anywhere}
+ .fusion-two{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .fusion-field input,.fusion-field select{font-size:16px}
+ .fusion-resources{gap:7px}
+ .fusion-resources label{padding:8px 10px;max-width:100%}
+ .fusion-actions{flex-wrap:wrap}
+ .fusion-actions button{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){.fusion-wave{animation:none}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>

@@ -1,22 +1,232 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Notificaciones · Curruscos</title>
-<meta name="description" content="Notificaciones de Curruscos.">
-<link rel="stylesheet" href="css/style.css">
-<style>
-.notice-page{max-width:900px;margin:auto;padding:60px 18px 90px}.notice-top{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px}.notice-top h1{font-size:clamp(46px,7vw,76px);letter-spacing:-.075em;line-height:.9;margin:9px 0}.notice-sub{color:var(--muted);font-size:13px}.notice-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.notice-count{font-size:11px;color:var(--muted)}.notice-list{display:grid;gap:8px}.notice{display:flex;gap:14px;align-items:flex-start;padding:17px;border:1px solid var(--border);border-radius:18px;background:var(--surface);cursor:pointer;transition:.15s}.notice:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}.notice.unread{border-color:var(--text)}.notice-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);margin-top:6px;flex:none}.notice.read .notice-dot{background:var(--border)}.notice-main{min-width:0;flex:1}.notice-main strong{display:block;font-size:13px}.notice-main p{margin:5px 0;color:var(--muted);font-size:12px;line-height:1.45}.notice-main small{color:var(--muted);font-size:9px}.notice-group-count{display:inline-grid;place-items:center;margin-left:5px;padding:2px 6px;border-radius:999px;background:var(--background);color:var(--muted);font-size:9px;font-weight:800;vertical-align:middle}.notice-action{font-size:10px;font-weight:800;border:1px solid var(--border);padding:7px 10px;border-radius:999px;background:var(--surface)}.notice-empty{text-align:center;padding:70px 20px;border:1px dashed var(--border);border-radius:22px;color:var(--muted);font-size:12px}.notice-empty strong{display:block;color:var(--text);font-size:18px;margin-bottom:6px}@media(max-width:650px){.notice-page{padding:40px 12px 70px}.notice-top{align-items:flex-start;flex-direction:column}.notice-toolbar{align-items:flex-start;flex-direction:column}.notice-action{display:none}}
-</style>
-<style>.nav-badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;margin-left:5px;border-radius:999px;background:var(--text);color:var(--surface);font-size:8px;font-weight:900;line-height:1;vertical-align:middle}</style><script src="js/i18n.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09090d">
+  <title>Notificaciones · Curruscos</title>
+  <meta name="description" content="Tus avisos de eventos, grupos y actividad de Curruscos, en un solo lugar.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/immersive-experiences.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg-app:#09090d;--bg-surface:#14141b;--text-main:#f5f4f8;--text-muted:#aaa9b5;--border-light:rgba(255,255,255,.11);--color-primary:#ff6a35;--color-primary-subtle:rgba(255,85,0,.13)}
+    body.notifications-page{background:radial-gradient(ellipse at 70% -10%,rgba(255,85,0,.13),transparent 43%),radial-gradient(ellipse at 0% 40%,rgba(91,82,255,.07),transparent 40%),#09090d;color:#f5f4f8}
+    .notifications-page .top-header{background:rgba(9,9,13,.84);border-bottom-color:rgba(255,255,255,.09);backdrop-filter:blur(22px)}
+    .notifications-page .app-brand{color:#fff;font-family:'Syne',sans-serif}
+    .notifications-page .header-subtitle{color:#aaa9b5}
+    .notifications-page .bottom-nav{background:rgba(12,12,18,.92);border-color:rgba(255,255,255,.12);backdrop-filter:blur(20px)}
+    .notifications-page .nav-tab{color:#aaa9b5}
+    .notifications-page .nav-tab.active{color:#fff}
+    .notifications-page .app-container{padding-top:30px}
+    .notifications-hero{position:relative;overflow:hidden;padding:25px 23px 23px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:radial-gradient(ellipse at 85% 0,rgba(255,85,0,.16),transparent 45%),linear-gradient(145deg,rgba(24,24,33,.96),rgba(12,12,18,.96));box-shadow:0 22px 65px rgba(0,0,0,.2)}
+    .notifications-hero:after{content:"";position:absolute;right:-42px;top:-78px;width:190px;height:190px;border:1px solid rgba(255,115,65,.2);border-radius:50%;box-shadow:0 0 0 22px rgba(255,115,65,.025),0 0 0 46px rgba(255,115,65,.02);pointer-events:none}
+    .notifications-kicker{font:700 9px/1.5 'JetBrains Mono',monospace;letter-spacing:.16em;text-transform:uppercase;color:#ff8b60}
+    .notifications-hero h1{position:relative;z-index:1;margin:9px 0 8px;font:800 clamp(32px,7vw,48px)/.98 'Syne',sans-serif;letter-spacing:-.065em}
+    .notifications-hero p{position:relative;z-index:1;max-width:440px;margin:0;color:#aaa9b5;font-size:13px;line-height:1.65}
+    .notifications-stats{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+    .notifications-stat{padding:8px 11px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.035);color:#b9b8c4;font:600 10px 'JetBrains Mono',monospace}
+    .notifications-stat strong{color:#fff;font-size:13px;margin-right:5px}
+    .notifications-live{display:inline-flex;align-items:center;gap:6px;margin-top:13px;color:#92919f;font:600 9px 'JetBrains Mono',monospace;letter-spacing:.04em}
+    .notifications-live:before{content:"";width:6px;height:6px;border-radius:50%;background:#65d99a;box-shadow:0 0 10px rgba(101,217,154,.5)}
+    .notifications-live.offline:before{background:#777785;box-shadow:none}
+    .notifications-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 12px}
+    .notifications-toolbar h2{margin:0;font:800 19px 'Syne',sans-serif;letter-spacing:-.045em}
+    .notifications-toolbar p{margin:4px 0 0;color:#92919f;font-size:11px}
+    .notifications-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .notifications-actions button{border:1px solid rgba(255,255,255,.14);border-radius:999px;background:#191920;color:#d9d8e1;padding:8px 12px;font-size:11px;font-weight:750;cursor:pointer}
+    .notifications-actions button:hover:not(:disabled){border-color:rgba(255,255,255,.35);background:#23232d}
+    .notifications-actions button:disabled{opacity:.4;cursor:not-allowed}
+    .notifications-filter{display:flex;gap:7px;margin:0 0 13px}
+    .notifications-filter button{border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.035);color:#aaa9b5;padding:8px 13px;font-size:11px;font-weight:750;cursor:pointer}
+    .notifications-filter button[aria-pressed="true"]{background:#f5f4f8;color:#111116;border-color:#f5f4f8}
+    .notifications-list{display:grid;gap:10px}
+    .notification-card{display:flex;gap:13px;align-items:flex-start;padding:16px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(20,20,27,.88);transition:border-color .18s,background .18s}
+    .notification-card.unread{border-color:rgba(255,105,53,.42);background:linear-gradient(120deg,rgba(255,85,0,.075),rgba(20,20,27,.94) 45%)}
+    .notification-icon{display:grid;place-items:center;flex:0 0 42px;height:42px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.045);font-size:17px}
+    .notification-card[data-type="sos"] .notification-icon{color:#ff9877;background:rgba(255,85,0,.11);border-color:rgba(255,85,0,.22)}
+    .notification-copy{min-width:0;flex:1}
+    .notification-heading{display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
+    .notification-heading h3{margin:1px 0 0;color:#f4f3f8;font-size:13px;line-height:1.4;font-weight:800;letter-spacing:-.015em;overflow-wrap:anywhere}
+    .notification-dot{width:7px;height:7px;flex:0 0 7px;margin-top:6px;border-radius:50%;background:#ff6a35;box-shadow:0 0 12px rgba(255,106,53,.65)}
+    .notification-message{margin:6px 0 0;color:#aaa9b5;font-size:12px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap}
+    .notification-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .notification-time{color:#777785;font:500 9px 'JetBrains Mono',monospace}
+    .notification-read{border:0;background:transparent;color:#ff966d;font-size:10px;font-weight:800;padding:3px 0;cursor:pointer}
+    .notification-read:hover{text-decoration:underline}
+    .notification-read:disabled{opacity:.5;cursor:wait}
+    .notifications-state{padding:32px 20px;text-align:center;border:1px dashed rgba(255,255,255,.15);border-radius:18px;background:rgba(255,255,255,.02)}
+    .notifications-state .state-symbol{font-size:26px}
+    .notifications-state h3{margin:10px 0 5px;color:#f5f4f8;font:800 17px 'Syne',sans-serif}
+    .notifications-state p{margin:0 auto;max-width:330px;color:#9695a3;font-size:12px;line-height:1.65}
+    .notifications-state a{display:inline-flex;margin-top:15px;text-decoration:none}
+    .notifications-status{min-height:20px;margin:9px 0 0;color:#9998a6;font-size:11px}
+    .notifications-status[data-state="error"]{color:#ff9992}.notifications-status[data-state="success"]{color:#8ee0ae}
+    @media(max-width:480px){.notifications-page .app-container{width:calc(100% - 24px);padding-top:20px}.notifications-hero{padding:21px 17px;border-radius:20px}.notification-card{padding:13px;gap:10px}.notification-icon{flex-basis:36px;height:36px;border-radius:12px}.notifications-toolbar{align-items:flex-start}.notifications-toolbar h2{font-size:17px}.notifications-actions button{padding:8px 10px}}
+    @media(prefers-reduced-motion:reduce){.notification-card{transition:none}}
+  </style>
 </head>
-<body>
-<header class="navbar"><a href="index.html" class="logo">CURRUSCOS.</a><nav id="mainNav"><a href="explorar.html">Explorar</a><a href="mis-eventos.html">Mis eventos</a><a href="rankings.html">Rankings</a><a href="crear.html">Crear</a><a href="chat.html">Chat</a><a href="notificaciones.html" class="active">Avisos</a><a href="login.html">Entrar</a><a href="guardados.html">Guardados</a><a href="viajes.html">Viajes</a></nav><button id="menuButton" class="menu-button" aria-label="Menú">☰</button></header>
-<main class="notice-page">
-<div class="notice-top"><div><span class="eyebrow">CENTRO DE ACTIVIDAD</span><h1>Avisos.</h1><p class="notice-sub">Invitaciones, actividad, eventos y novedades que requieren tu atención.</p></div><a class="button" href="chat.html">Abrir chat</a></div>
-<div class="notice-toolbar"><span id="noticeCount" class="notice-count">Cargando…</span><button id="markAll" class="button" type="button">Marcar todo como leído</button></div>
-<section id="noticeList" class="notice-list"><div class="notice-empty"><strong>Cargando…</strong>Preparando tus notificaciones.</div></section>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase.js"></script><script src="js/app.js"></script><script src="js/notificaciones.js"></script>
-</body></html>
+<body class="notifications-page">
+  <header class="top-header">
+    <a class="app-brand" href="index.html" aria-label="Curruscos, inicio">Curruscos</a>
+    <span class="header-subtitle">Tu actividad, al día</span>
+    <a class="btn btn-secondary" href="ajustes.html" style="font-size:11px;padding:8px 11px">Ajustes ↗</a>
+  </header>
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+  <main class="app-container">
+    <section class="notifications-hero" aria-labelledby="notifications-title">
+      <span class="notifications-kicker">CENTRO DE ACTIVIDAD / 01</span>
+      <h1 id="notifications-title">Todo al día<span style="color:#ff6a35">.</span></h1>
+      <p>Confirmaciones, actividad de tus grupos y avisos importantes. Lo relevante, sin ruido.</p>
+      <div class="notifications-stats" aria-live="polite">
+        <span class="notifications-stat"><strong id="notifications-total">—</strong>AVISOS</span>
+        <span class="notifications-stat"><strong id="notifications-unread">—</strong>SIN LEER</span>
+      </div>
+      <span class="notifications-live" id="notifications-live-status">CONECTANDO AL CENTRO DE ACTIVIDAD</span>
+    </section>
+    <section aria-labelledby="notifications-list-title">
+      <div class="notifications-toolbar">
+        <div><h2 id="notifications-list-title">Tus notificaciones</h2><p>Actualización automática mientras estás conectado.</p></div>
+        <div class="notifications-actions"><button id="btn-refresh-notifications" type="button">Actualizar ↻</button><button id="btn-mark-all-read" type="button" disabled>Marcar leídas</button></div>
+      </div>
+      <div class="notifications-filter" role="group" aria-label="Filtrar notificaciones">
+        <button type="button" data-filter="all" aria-pressed="true">Todas</button>
+        <button type="button" data-filter="unread" aria-pressed="false">Sin leer</button>
+      </div>
+      <div id="notifications-list-container" class="notifications-list" aria-live="polite" aria-busy="true">
+        <div class="notifications-state" role="status"><div class="state-symbol">◌</div><h3>Cargando actividad</h3><p>Estamos consultando tus notificaciones.</p></div>
+      </div>
+      <p id="notifications-status" class="notifications-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" class="nav-tab"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-6h6v6"/></svg><span>Inicio</span></a>
+    <a href="explorar.html" class="nav-tab"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg><span>Buscar</span></a>
+    <a href="eventos.html" class="nav-tab"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></svg><span>Mi grupo</span></a>
+    <a href="perfil.html" class="nav-tab"><svg fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mi perfil</span></a>
+  </nav>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    (() => {
+      "use strict";
+      const container=document.getElementById("notifications-list-container");
+      const markAllButton=document.getElementById("btn-mark-all-read");
+      const refreshButton=document.getElementById("btn-refresh-notifications");
+      const statusEl=document.getElementById("notifications-status");
+      const liveEl=document.getElementById("notifications-live-status");
+      const totalEl=document.getElementById("notifications-total");
+      const unreadEl=document.getElementById("notifications-unread");
+      const filterButtons=[...document.querySelectorAll("[data-filter]")];
+      let currentUser=null,notifications=[],activeFilter="all",channel=null,busy=false;
+      const icons={sos:"!",event:"↗",event_confirmation:"✓",participant:"◎",invitation:"✉",comment:"↳",social:"✳",fantasy:"✦",chat:"◌",group:"⌂",system:"✧"};
+      function setStatus(text,state=""){statusEl.textContent=text||"";statusEl.dataset.state=state;}
+      function timeLabel(value){
+        const date=new Date(value);if(Number.isNaN(date.getTime()))return "FECHA NO DISPONIBLE";
+        const seconds=Math.max(0,Math.floor((Date.now()-date.getTime())/1000));
+        if(seconds<60)return "HACE UN MOMENTO";if(seconds<3600)return "HACE "+Math.floor(seconds/60)+" MIN";
+        if(seconds<86400)return "HACE "+Math.floor(seconds/3600)+" H";if(seconds<604800)return "HACE "+Math.floor(seconds/86400)+" D";
+        return date.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:date.getFullYear()!==new Date().getFullYear()?"numeric":undefined}).toUpperCase();
+      }
+      function friendlyType(type){
+        const key=String(type||"").toLowerCase();
+        if(/sos|emergency|urgent/.test(key))return "sos";
+        if(/fantasy|market|elo|league/.test(key))return "fantasy";
+        if(/comment|reply|mention|social|post/.test(key))return "social";
+        if(/invitation/.test(key))return "invitation";
+        if(/participant|registration|reservation/.test(key))return "participant";
+        if(/event/.test(key))return "event";if(/chat|message/.test(key))return "chat";
+        if(/group|clan/.test(key))return "group";return "system";
+      }
+      function emptyState(symbol,title,copy,showExplore){
+        container.replaceChildren();const box=document.createElement("div");box.className="notifications-state";
+        const mark=document.createElement("div");mark.className="state-symbol";mark.textContent=symbol;
+        const heading=document.createElement("h3");heading.textContent=title;
+        const text=document.createElement("p");text.textContent=copy;box.append(mark,heading,text);
+        if(showExplore){const link=document.createElement("a");link.className="btn btn-primary";link.href="explorar.html";link.textContent="Descubrir planes ↗";box.append(link);}
+        container.append(box);
+      }
+      function updateCounters(){
+        totalEl.textContent=String(notifications.length);unreadEl.textContent=String(notifications.filter(n=>!n.is_read).length);
+        markAllButton.disabled=busy||!notifications.some(n=>!n.is_read);
+      }
+      function render(){
+        updateCounters();const list=activeFilter==="unread"?notifications.filter(n=>!n.is_read):notifications;
+        container.setAttribute("aria-busy","false");
+        if(!list.length){emptyState(activeFilter==="unread"?"✓":"✧",activeFilter==="unread"?"Todo leído":"Aún no hay avisos",activeFilter==="unread"?"No tienes notificaciones pendientes. Ya estás al día.":"Cuando haya actividad relevante en tus eventos o grupos, aparecerá aquí.",activeFilter!=="unread");return;}
+        container.replaceChildren();
+        for(const item of list){
+          const type=friendlyType(item.type),card=document.createElement("article");card.className="notification-card"+(item.is_read?"":" unread");card.dataset.type=type;
+          const icon=document.createElement("div");icon.className="notification-icon";icon.setAttribute("aria-hidden","true");icon.textContent=icons[type]||"✧";
+          const copy=document.createElement("div");copy.className="notification-copy";
+          const headingRow=document.createElement("div");headingRow.className="notification-heading";
+          const heading=document.createElement("h3");heading.textContent=item.title||"Aviso de Curruscos";headingRow.append(heading);
+          if(!item.is_read){const dot=document.createElement("span");dot.className="notification-dot";dot.setAttribute("aria-label","Sin leer");headingRow.append(dot);}
+          const message=document.createElement("p");message.className="notification-message";message.textContent=item.message||"Tienes una nueva notificación.";
+          const meta=document.createElement("div");meta.className="notification-meta";
+          const time=document.createElement("time");time.className="notification-time";time.dateTime=item.created_at||"";time.textContent=timeLabel(item.created_at);meta.append(time);
+          if(!item.is_read){const button=document.createElement("button");button.className="notification-read";button.type="button";button.textContent="Marcar como leída";button.addEventListener("click",()=>markRead(item.id,button));meta.append(button);}
+          else{const label=document.createElement("span");label.className="notification-time";label.textContent="LEÍDA";meta.append(label);}
+          copy.append(headingRow,message,meta);card.append(icon,copy);container.append(card);
+        }
+      }
+      async function loadNotifications({quiet=false}={}){
+        if(!window.supabaseClient||!currentUser)return;
+        if(!quiet){container.setAttribute("aria-busy","true");setStatus("Actualizando tus avisos…");}
+        try{
+          const {data,error}=await window.supabaseClient.from("notifications").select("id,user_id,group_id,type,title,message,reference_id,is_read,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(100);
+          if(error)throw error;notifications=data||[];render();if(!quiet)setStatus("Notificaciones sincronizadas.","success");
+        }catch(error){
+          console.error("No se pudieron cargar las notificaciones:",error);
+          if(!notifications.length)emptyState("!","No se pudo cargar el centro","Comprueba tu conexión y vuelve a intentarlo. Tus notificaciones no se han borrado.",false);
+          setStatus("No se han podido cargar los avisos. Inténtalo de nuevo.","error");
+        }
+      }
+      async function markRead(id,button){
+        if(busy||!currentUser)return;busy=true;button.disabled=true;updateCounters();
+        try{
+          const {data,error}=await window.supabaseClient.from("notifications").update({is_read:true}).eq("id",id).eq("user_id",currentUser.id).select("id,is_read").maybeSingle();
+          if(error)throw error;if(!data)throw new Error("No se ha podido confirmar el cambio. Recarga e inténtalo de nuevo.");
+          notifications=notifications.map(n=>n.id===id?{...n,is_read:true}:n);render();setStatus("Notificación marcada como leída.","success");
+        }catch(error){console.error("No se pudo marcar la notificación:",error);setStatus(error.message||"No se ha podido marcar como leída.","error");button.disabled=false;}
+        finally{busy=false;updateCounters();}
+      }
+      async function markAllRead(){
+        if(busy||!currentUser)return;if(!notifications.some(n=>!n.is_read))return;
+        busy=true;markAllButton.disabled=true;setStatus("Marcando avisos como leídos…");
+        try{
+          const {data,error}=await window.supabaseClient.from("notifications").update({is_read:true}).eq("user_id",currentUser.id).eq("is_read",false).select("id");
+          if(error)throw error;const ids=new Set((data||[]).map(n=>n.id));notifications=notifications.map(n=>ids.has(n.id)?{...n,is_read:true}:n);
+          render();setStatus("Avisos marcados como leídos.","success");
+        }catch(error){console.error("No se pudieron marcar todos como leídos:",error);setStatus(error.message||"No se han podido marcar los avisos.","error");}
+        finally{busy=false;updateCounters();}
+      }
+      function subscribeRealtime(){
+        if(!window.supabaseClient||!currentUser)return;
+        channel=window.supabaseClient.channel("notifications-user-"+currentUser.id)
+          .on("postgres_changes",{event:"*",schema:"public",table:"notifications",filter:"user_id=eq."+currentUser.id},payload=>{
+            if(payload.eventType==="DELETE")notifications=notifications.filter(n=>n.id!==payload.old.id);
+            else{const incoming=payload.new,index=notifications.findIndex(n=>n.id===incoming.id);if(index>=0)notifications[index]=incoming;else notifications.unshift(incoming);notifications.sort((a,b)=>new Date(b.created_at).getTime()-new Date(a.created_at).getTime());notifications=notifications.slice(0,100);}
+            render();setStatus("Actividad actualizada en tiempo real.","success");
+          }).subscribe(state=>{const live=state==="SUBSCRIBED";liveEl.textContent=live?"ACTUALIZACIONES EN TIEMPO REAL ACTIVAS":"SINCRONIZACIÓN EN CURSO";liveEl.classList.toggle("offline",!live);});
+      }
+      async function init(){
+        if(!window.supabaseClient){liveEl.textContent="SERVICIO NO DISPONIBLE";liveEl.classList.add("offline");emptyState("!","No se pudo iniciar la conexión","Recarga la página dentro de unos instantes.",false);setStatus("No se ha inicializado Supabase.","error");return;}
+        try{
+          const {data,error}=await window.supabaseClient.auth.getUser();if(error)throw error;currentUser=data?.user||null;
+          if(!currentUser){liveEl.textContent="INICIA SESIÓN PARA SINCRONIZAR";liveEl.classList.add("offline");emptyState("↗","Tu actividad te espera","Inicia sesión para consultar y gestionar tus notificaciones personales.",false);const link=document.createElement("a");link.className="btn btn-primary";link.href="perfil.html?action=login";link.textContent="Iniciar sesión ↗";container.firstElementChild?.append(link);setStatus("Las notificaciones están vinculadas a tu cuenta.");return;}
+          await loadNotifications();subscribeRealtime();
+        }catch(error){console.error("No se pudo iniciar el centro de notificaciones:",error);emptyState("!","No se pudo abrir el centro","Inicia sesión de nuevo o recarga la página.",false);setStatus("No se ha podido verificar tu sesión.","error");}
+      }
+      filterButtons.forEach(button=>button.addEventListener("click",()=>{activeFilter=button.dataset.filter;filterButtons.forEach(other=>other.setAttribute("aria-pressed",String(other===button)));render();}));
+      markAllButton.addEventListener("click",markAllRead);refreshButton.addEventListener("click",()=>loadNotifications());
+      window.addEventListener("pagehide",()=>{if(channel&&window.supabaseClient)window.supabaseClient.removeChannel(channel);},{once:true});
+      document.addEventListener("DOMContentLoaded",init);
+    })();
+  </script>
+</body>
+</html>

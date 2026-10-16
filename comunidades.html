@@ -79,6 +79,45 @@
     .community-post-comment-form button{white-space:nowrap;padding:8px 10px}
     .community-wall-error{font-size:.75rem;color:var(--color-primary);margin:4px 0}
 
+  
+    /* Art direction cinematográfica coherente con el resto de Curruscos */
+    :root{color-scheme:dark;--community-glow:rgba(255,87,34,.16)}
+    body{background:#090a0d;color:#f4f5f7}
+    body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 12% 0%,rgba(255,87,34,.10),transparent 38%),radial-gradient(ellipse at 88% 22%,rgba(80,92,125,.10),transparent 35%),#090a0d}
+    .top-header{background:rgba(9,10,13,.82);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .top-header nav{flex-wrap:wrap}
+    .communities-page{padding-top:clamp(28px,5vw,58px)}
+    .communities-hero h1{max-width:760px}
+    .communities-hero p{color:#a4a7b1;line-height:1.7}
+    .communities-kicker{color:#ff764b}
+    .communities-filters input,.communities-filters select,.community-create-form input,.community-create-form textarea,.community-create-form select,.community-post-form input,.community-post-form textarea,.community-post-comment-form input{background:#111319;border-color:rgba(255,255,255,.10);color:#f4f5f7}
+    .communities-filters input:focus,.communities-filters select:focus,.community-create-form input:focus,.community-create-form textarea:focus,.community-create-form select:focus,.community-post-form input:focus,.community-post-form textarea:focus,.community-post-comment-form input:focus{outline:2px solid rgba(255,87,34,.38);outline-offset:1px}
+    .community-card,.community-create-panel,.community-message,.community-post,.community-wall{background:linear-gradient(150deg,rgba(23,25,31,.97),rgba(13,14,18,.98));border-color:rgba(255,255,255,.09);box-shadow:0 14px 45px rgba(0,0,0,.16)}
+    .community-card{transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+    .community-card:hover{transform:translateY(-3px);border-color:rgba(255,87,34,.42);box-shadow:0 18px 50px rgba(0,0,0,.25)}
+    .community-card-top{height:5px;background:linear-gradient(90deg,#ff5722,#ff9a64 48%,rgba(255,87,34,.16))}
+    .community-avatar{background:rgba(255,87,34,.13);color:#ff8059;border:1px solid rgba(255,87,34,.2)}
+    .community-card h2{color:#f5f5f7}
+    .community-meta,.community-description,.community-wall-heading p,.community-wall-hint,.community-wall-status{color:#9a9eaa}
+    .community-tag{background:#22242b;color:#c1c4ce}
+    .community-tag.private{background:rgba(255,145,83,.12);color:#ffb184}
+    .community-actions{border-color:rgba(255,255,255,.08)}
+    .community-actions button{background:#171920;border-color:rgba(255,255,255,.11);color:#e7e8ed}
+    .community-actions button:hover{border-color:rgba(255,87,34,.55)}
+    .community-actions .join-button{background:#ff5722;border-color:#ff5722;color:#fff}
+    .community-actions .join-button:hover{background:#ff7043}
+    .community-event{background:#111319;border:1px solid rgba(255,255,255,.06)}
+    .community-post-form button,.community-post-comment-form button{background:#ff5722;border-color:#ff5722}
+    .community-post-pinned{background:rgba(255,87,34,.13);color:#ff9a78}
+    .community-post-title,.community-post-identity strong,.community-post-comment-copy strong{color:#f1f2f5}
+    .community-post-content,.community-post-comment-copy p{color:#c3c5cd}
+    .community-post-comments{border-color:rgba(255,255,255,.08)}
+    .community-status{color:#9a9eaa}
+    .community-empty{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.015)}
+    .bottom-nav{background:rgba(10,11,15,.92);border-top:1px solid rgba(255,255,255,.09);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+    .button-primary{background:#ff5722;border-color:#ff5722}
+    @media(prefers-reduced-motion:reduce){.community-card{transition:none}.community-card:hover{transform:none}}
+
   </style>
 </head>
 <body>

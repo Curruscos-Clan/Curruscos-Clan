@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ajustes y privacidad · Curruscos</title>
   <meta name="description" content="Configura la privacidad, seguridad y notificaciones de tu cuenta de Curruscos Clan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css">
   <style id="settings-page-styles">
     body.settings-app{background:#f6f6f3;color:#17181b;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -46,6 +49,43 @@
     .settings-delete-button:disabled{opacity:.45;cursor:not-allowed}
     @media(max-width:600px){.settings-page{width:calc(100% - 26px);padding:25px 0 90px}.settings-card{padding:18px;border-radius:18px}.settings-row{gap:12px}.settings-desc{max-width:34ch}.settings-card h2{font-size:16px}.settings-modal-card{padding:20px}}
     @media(prefers-reduced-motion:reduce){.settings-switch-track,.settings-switch-track:before{transition:none}}
+
+    /* Cinematic dark settings: aligned with the current Curruscos art direction. */
+    body.settings-app{background:#09090d!important;color:#f4f3f7!important;font-family:'DM Sans',Inter,-apple-system,BlinkMacSystemFont,sans-serif!important;color-scheme:dark}
+    body.settings-app:before{content:"";position:fixed;z-index:-1;pointer-events:none;inset:0;background:radial-gradient(ellipse at 70% -10%,rgba(255,85,0,.13),transparent 48%),radial-gradient(ellipse at 0% 35%,rgba(91,82,255,.08),transparent 42%)}
+    body.settings-app .navbar{background:rgba(9,9,13,.82)!important;border-bottom:1px solid rgba(255,255,255,.09)!important;backdrop-filter:blur(22px)}
+    body.settings-app .logo{color:#fff!important;font-family:'Syne',sans-serif;letter-spacing:-.05em}
+    body.settings-app #mainNav a{color:rgba(255,255,255,.62)!important}
+    body.settings-app #mainNav a:hover,body.settings-app #mainNav a[aria-current="page"]{color:#fff!important}
+    body.settings-app .settings-back{color:#aaa9b5}
+    body.settings-app .settings-heading h1{color:#f7f6fa;font-family:'Syne',sans-serif;letter-spacing:-.065em}
+    body.settings-app .settings-heading p{color:#a2a1ae}
+    body.settings-app .settings-card{background:rgba(20,20,27,.82);border-color:rgba(255,255,255,.105);box-shadow:0 16px 50px rgba(0,0,0,.16);backdrop-filter:blur(18px)}
+    body.settings-app .settings-icon{background:rgba(255,85,0,.13);color:#ff6a3d}
+    body.settings-app .settings-card h2{color:#f5f4f8;font-family:'Syne',sans-serif}
+    body.settings-app .settings-card-intro,body.settings-app .settings-desc,body.settings-app .settings-danger-copy{color:#a2a1ae}
+    body.settings-app .settings-label{color:#eeedf3}
+    body.settings-app .settings-row{border-top-color:rgba(255,255,255,.09)}
+    body.settings-app .settings-switch-track{background:#34343f}
+    body.settings-app .settings-switch input:checked+.settings-switch-track{background:#ff5a1f}
+    body.settings-app .settings-form label{color:#c9c7d1}
+    body.settings-app .settings-form input,body.settings-app .settings-confirm-input{background:#101016;border-color:rgba(255,255,255,.14);color:#f7f6fa}
+    body.settings-app .settings-message{color:#aaa9b5}
+    body.settings-app .settings-message[data-state="error"]{color:#ff8b83}
+    body.settings-app .settings-message[data-state="success"]{color:#80e0ad}
+    body.settings-app .settings-danger{border-color:rgba(255,91,91,.22)}
+    body.settings-app .settings-danger .settings-icon{background:rgba(255,70,70,.12);color:#ff8585}
+    body.settings-app .settings-danger .settings-card-head h2,body.settings-app .settings-danger .settings-label{color:#ff9292}
+    body.settings-app .button{border-color:rgba(255,255,255,.16);color:#f5f4f8;background:#25252e}
+    body.settings-app .button:hover:not(:disabled){border-color:rgba(255,255,255,.3);background:#30303a}
+    body.settings-app .settings-delete-button{background:#c8342c!important;border-color:#c8342c!important;color:#fff!important}
+    body.settings-app .settings-modal-card{background:#17171f;border-color:rgba(255,255,255,.12)}
+    body.settings-app .settings-modal-card h2{color:#ff9292}
+    body.settings-app .settings-modal-card p{color:#b5b3bf}
+    body.settings-app .settings-switch input:focus-visible+.settings-switch-track{outline-color:rgba(255,90,31,.65)}
+    .settings-kicker{font:10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#ff8054;margin-bottom:8px}
+    .settings-visual-note{margin:10px 0 0;color:#9998a5;font-size:11px;line-height:1.6}
+    @media(prefers-reduced-motion:reduce){body.settings-app *{scroll-behavior:auto!important}}
   </style>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
@@ -103,6 +143,14 @@
         <div class="settings-actions"><button id="settings-request-delete" class="button button-secondary" type="button">Solicitar eliminación de cuenta</button></div>
         <p id="settings-delete-message" class="settings-message" role="status" aria-live="polite"></p>
       </section>
+
+      <section class="settings-card" aria-labelledby="visualHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">✳</span><div><h2 id="visualHeading">Experiencia visual</h2><p class="settings-card-intro">Ajusta los efectos de interfaz en este dispositivo. Estos controles no cambian tus preferencias de cuenta.</p></div></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-3d-background">Escultura 3D de fondo</label><span class="settings-desc">Activa o desactiva la escena WebGL de la portada para priorizar rendimiento o estética.</span></div><label class="settings-switch"><input id="setting-3d-background" type="checkbox" role="switch"><span class="settings-switch-track"></span></label></div>
+        <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-cursor-sparkles">Estela de cursor</label><span class="settings-desc">Activa los destellos sutiles al mover el cursor en dispositivos compatibles.</span></div><label class="settings-switch"><input id="setting-cursor-sparkles" type="checkbox" role="switch"><span class="settings-switch-track"></span></label></div>
+        <p class="settings-visual-note">Las preferencias se guardan en este navegador y se aplican al abrir o recargar las páginas correspondientes. La estela se desactiva automáticamente si el sistema tiene activada la reducción de movimiento.</p>
+        <p id="settings-visual-message" class="settings-message" role="status" aria-live="polite"></p>
+      </section>
     </div>
   </main>
 
@@ -130,6 +178,37 @@
     let profile = null;
     let pendingSave = Promise.resolve();
 
+    const visualDefaults = { webgl: true, cursorSparkles: true };
+    function readVisualPreferences() {
+      try {
+        const raw = localStorage.getItem("curruscos_visual_preferences");
+        const saved = raw ? JSON.parse(raw) : {};
+        return {
+          webgl: typeof saved.webgl === "boolean" ? saved.webgl : visualDefaults.webgl,
+          cursorSparkles: typeof saved.cursorSparkles === "boolean" ? saved.cursorSparkles : visualDefaults.cursorSparkles
+        };
+      } catch (_) { return { ...visualDefaults }; }
+    }
+    function initVisualPreferences() {
+      const prefs = readVisualPreferences();
+      const webgl = byId("setting-3d-background");
+      const sparkles = byId("setting-cursor-sparkles");
+      webgl.checked = prefs.webgl;
+      sparkles.checked = prefs.cursorSparkles;
+      const save = (key, value) => {
+        const next = { ...readVisualPreferences(), [key]: value };
+        try {
+          localStorage.setItem("curruscos_visual_preferences", JSON.stringify(next));
+          message("settings-visual-message", "Guardado en este navegador. Se aplicará al abrir o recargar la página correspondiente.", "success");
+          window.dispatchEvent(new CustomEvent("curruscos:visual-preferences-changed", { detail: next }));
+        } catch (_) {
+          message("settings-visual-message", "Este navegador no permite guardar la preferencia.", "error");
+        }
+      };
+      webgl.addEventListener("change", () => save("webgl", webgl.checked));
+      sparkles.addEventListener("change", () => save("cursorSparkles", sparkles.checked));
+    }
+
     function message(id, text, state) {
       const el = byId(id);
       if (!el) return;
@@ -156,7 +235,7 @@
     }
 
     async function saveProfileChanges(changes, statusId) {
-      pendingSave = pendingSave.then(async () => {
+      pendingSave = pendingSave.catch(() => {}).then(async () => {
         message(statusId, "Guardando…");
         const { error } = await userClient().from("profiles").update(changes).eq("id", user.id);
         if (error) throw error;
@@ -190,6 +269,7 @@
     }
 
     async function init() {
+      initVisualPreferences();
       if (!userClient()) {
         message("settings-privacy-message", "No se ha podido conectar con Supabase. Recarga la página.", "error");
         return;
