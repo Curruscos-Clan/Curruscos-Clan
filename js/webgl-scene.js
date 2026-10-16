@@ -66,7 +66,7 @@
   const particleFragmentShader = [
     "uniform vec3 uStarColor;varying float vGlow;",
     "void main(){float d=length(gl_PointCoord-vec2(0.5));if(d>0.5)discard;",
-    "float halo=exp(-d*15.0);float core=smoothstep(0.19,0.0,d);",
+    "float halo=exp(-d*15.0);float core=1.0-smoothstep(0.0,0.19,d);",
     "gl_FragColor=vec4(uStarColor,(halo*0.45+core*0.8)*vGlow);}"
   ].join("\n");
 
@@ -183,6 +183,7 @@
         const t = clock.getElapsedTime();
         currentX += (targetX - currentX) * 0.055;
         currentY += (targetY - currentY) * 0.055;
+        WebGLStage.current.speed += (WebGLStage.target.speed - WebGLStage.current.speed) * 0.045;
         uniforms.uTime.value = t * WebGLStage.current.speed;
         uniforms.uNoiseScale.value += (WebGLStage.target.scale - uniforms.uNoiseScale.value) * 0.045;
         uniforms.uDistortion.value += (WebGLStage.target.distortion - uniforms.uDistortion.value) * 0.045;
