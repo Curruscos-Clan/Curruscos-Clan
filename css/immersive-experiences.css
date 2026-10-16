@@ -1,0 +1,68 @@
+/* Curruscos · immersive experiences — progressive enhancement */
+:root{--cx-orange:#ff5500;--cx-violet:#8278ff;--cx-ink:#09090d;--cx-line:rgba(255,255,255,.13)}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.cx-light-reactive{position:relative;isolation:isolate;overflow:hidden}
+.cx-light-reactive::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;background:radial-gradient(360px circle at var(--cx-mx,50%) var(--cx-my,50%),rgba(255,85,0,.105),transparent 68%);transition:opacity .22s}
+.cx-light-reactive:hover::after,.cx-light-reactive:focus-within::after{opacity:1}
+.cx-light-reactive>*{position:relative;z-index:1}
+.cx-venue-panel{position:relative;isolation:isolate;overflow:hidden;margin:0 0 18px;padding:20px;border:1px solid rgba(255,85,0,.23);border-radius:24px;background:radial-gradient(ellipse at 70% 0,rgba(255,85,0,.13),transparent 48%),linear-gradient(145deg,#101016,#08080c 78%);color:#f8f8fb;box-shadow:0 24px 70px rgba(0,0,0,.12)}
+.cx-venue-head,.cx-experience-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.cx-kicker{font:800 9px/1.4 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.15em;text-transform:uppercase;color:#ff7b42}
+.cx-venue-title{margin:7px 0 0;font-size:clamp(20px,3.8vw,34px);line-height:1;letter-spacing:-.055em;font-weight:900;max-width:750px;overflow-wrap:anywhere}
+.cx-venue-meta{margin:8px 0 0;color:#a5a5b2;font-size:11px;line-height:1.5}
+.cx-venue-stage{position:relative;height:clamp(245px,39vw,360px);margin-top:8px;touch-action:pan-y;cursor:grab}
+.cx-venue-stage:active{cursor:grabbing}
+.cx-venue-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
+.cx-venue-labels{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.cx-venue-pin{position:absolute;left:0;top:0;transform:translate(-50%,-100%);white-space:nowrap;padding:5px 8px;border:1px solid rgba(255,85,0,.6);border-radius:8px;background:rgba(8,8,13,.88);font:700 9px/1.2 "JetBrains Mono",monospace;color:#fff;box-shadow:0 4px 20px #ff550026}
+.cx-venue-pin small{color:#ff9c70;margin-left:4px}
+.cx-venue-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--cx-line);font:700 9px/1.5 "JetBrains Mono",monospace;letter-spacing:.07em;text-transform:uppercase;color:#9b9ba8}
+.cx-venue-foot strong{color:#ff8c5c}
+.cx-cylinder-section{margin:28px 0 20px;padding:20px 0 6px;overflow:hidden}
+.cx-cylinder-section .cx-experience-heading{padding:0 2px 10px}
+.cx-cylinder-section h2,.cx-profile-experience h2,.cx-physics-section h2{margin:0;font-size:clamp(21px,3vw,30px);font-weight:900;letter-spacing:-.06em}
+.cx-subline{margin:6px 0 0;color:var(--muted,#777);font-size:12px;line-height:1.6}
+.cx-cylinder-viewport{height:330px;position:relative;display:flex;align-items:center;justify-content:center;perspective:1200px;overflow:hidden;touch-action:pan-y;cursor:grab;user-select:none}
+.cx-cylinder-viewport:active{cursor:grabbing}
+.cx-cylinder-ring{position:relative;width:205px;height:250px;transform-style:preserve-3d;will-change:transform}
+.cx-cylinder-card{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border:1px solid rgba(255,255,255,.23);border-radius:20px;background:#15151d;color:#fff;text-decoration:none;backface-visibility:hidden;box-shadow:0 24px 55px rgba(0,0,0,.32)}
+.cx-cylinder-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.cx-cylinder-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(5,5,9,.93))}
+.cx-cylinder-copy{position:relative;z-index:1;padding:15px}
+.cx-cylinder-copy small{display:block;color:#ff9b71;font:800 8px/1.5 "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.1em}
+.cx-cylinder-copy strong{display:block;margin-top:6px;font-size:17px;line-height:1.08;letter-spacing:-.04em}
+.cx-cylinder-copy span{display:block;margin-top:7px;color:#c5c5d0;font-size:10px}
+.cx-profile-experience,.cx-physics-section,.cx-create-experience{position:relative;overflow:hidden;margin:22px 0;padding:20px;border:1px solid var(--border,rgba(0,0,0,.12));border-radius:22px;background:var(--surface,#fff)}
+.cx-profile-experience{background:radial-gradient(ellipse at 80% 20%,rgba(130,120,255,.13),transparent 40%),linear-gradient(145deg,#111119,#09090d);color:#f7f7fc;border-color:rgba(130,120,255,.25)}
+.cx-profile-grid{display:grid;grid-template-columns:minmax(130px,.6fr) minmax(0,1.4fr);gap:20px;align-items:center;margin-top:14px}
+.cx-holo-card{position:relative;min-height:210px;display:grid;place-items:center;perspective:800px}
+.cx-holo-card-inner{position:relative;width:min(100%,220px);aspect-ratio: .72;display:flex;flex-direction:column;justify-content:space-between;padding:17px;border-radius:20px;border:1px solid rgba(255,255,255,.34);background:radial-gradient(circle at 15% 12%,rgba(255,255,255,.3),transparent 23%),linear-gradient(135deg,rgba(255,85,0,.35),rgba(130,120,255,.28) 50%,rgba(12,12,22,.95));box-shadow:0 22px 55px rgba(0,0,0,.34),inset 0 0 25px rgba(255,255,255,.08);transform-style:preserve-3d;transition:transform .15s ease;overflow:hidden}
+.cx-holo-card-inner::before{content:"";position:absolute;inset:-60%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.24) 48%,transparent 60%);transform:translateX(-40%) rotate(12deg);animation:cx-holo-shine 7s ease-in-out infinite;pointer-events:none}
+@keyframes cx-holo-shine{0%,45%{transform:translateX(-45%) rotate(12deg)}75%,100%{transform:translateX(45%) rotate(12deg)}}
+.cx-holo-orbit{position:absolute;width:76%;aspect-ratio:1;border:1px solid rgba(255,255,255,.4);border-radius:50%;transform:rotateX(67deg) rotateZ(-30deg);box-shadow:0 0 25px rgba(130,120,255,.24)}
+.cx-holo-avatar{width:56px;height:56px;display:grid;place-items:center;border-radius:17px;background:rgba(7,7,12,.62);border:1px solid rgba(255,255,255,.35);font-size:23px;font-weight:900;color:white}
+.cx-holo-name{position:relative;font-size:23px;font-weight:950;line-height:.98;letter-spacing:-.06em;overflow-wrap:anywhere}
+.cx-holo-handle{position:relative;margin-top:7px;color:#d1d0e5;font:700 8px/1.4 "JetBrains Mono",monospace}
+.cx-holo-label{position:relative;color:#ff9c71;font:800 8px/1.5 "JetBrains Mono",monospace;letter-spacing:.12em}
+.cx-profile-data{min-width:0}
+.cx-profile-data h3{margin:5px 0;font-size:clamp(22px,4vw,38px);line-height:1;letter-spacing:-.06em;overflow-wrap:anywhere}
+.cx-profile-data p{color:#b7b7c5;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.cx-profile-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15)}
+.cx-profile-metrics strong{display:block;font-size:clamp(20px,4vw,30px);font-weight:900;letter-spacing:-.06em}
+.cx-profile-metrics span{display:block;margin-top:5px;color:#a8a8b6;font:700 8px/1.4 "JetBrains Mono",monospace;text-transform:uppercase}
+.cx-physics-canvas{width:100%;height:235px;display:block;touch-action:none;cursor:grab;border-radius:15px;background:radial-gradient(ellipse at 50% 0,rgba(255,85,0,.07),transparent 55%),#0d0d12}
+.cx-physics-canvas:active{cursor:grabbing}
+.cx-create-experience{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;background:linear-gradient(145deg,#101016,#08080c);color:#fff;border-color:rgba(255,85,0,.28)}
+.cx-create-experience h2{margin:5px 0;font-size:clamp(22px,3vw,30px);font-weight:900;letter-spacing:-.06em}
+.cx-create-experience p{margin:0;color:#a7a7b5;font-size:11px;line-height:1.6}
+.cx-create-stage{position:relative;min-height:230px;overflow:hidden;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:radial-gradient(ellipse at 50% 20%,rgba(255,85,0,.15),transparent 55%),#0a0a10}
+.cx-create-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cx-create-preview{position:absolute;left:14px;right:14px;bottom:14px;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:13px;border:1px solid rgba(255,255,255,.15);border-radius:13px;background:rgba(7,7,12,.76);backdrop-filter:blur(10px)}
+.cx-create-preview strong{display:block;font-size:clamp(15px,2vw,21px);line-height:1.1;letter-spacing:-.04em;overflow-wrap:anywhere}
+.cx-create-preview span{display:block;margin-top:5px;color:#b8b8c6;font-size:9px;line-height:1.5}
+.cx-create-price{flex:none;color:#ff9567;font:800 10px/1.4 "JetBrains Mono",monospace}
+.cx-create-foot{font:700 8px/1.5 "JetBrains Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:#9292a1}
+@media(min-width:760px){.cx-create-experience{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center}.cx-create-stage{min-height:270px}}
+@media(max-width:620px){.cx-venue-panel{padding:14px;border-radius:18px}.cx-venue-stage{height:260px}.cx-profile-grid{grid-template-columns:1fr}.cx-holo-card{min-height:250px}.cx-holo-card-inner{width:190px}.cx-profile-metrics{gap:6px}.cx-profile-metrics span{font-size:7px}.cx-cylinder-viewport{height:300px}.cx-cylinder-ring{width:185px;height:230px}.cx-physics-canvas{height:220px}}
+@media(prefers-reduced-motion:reduce){.cx-holo-card-inner::before{animation:none}.cx-holo-card-inner{transition:none}}
