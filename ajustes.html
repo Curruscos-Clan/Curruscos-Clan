@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Ajustes y privacidad · Curruscos</title>
   <meta name="description" content="Configura la privacidad, seguridad y notificaciones de tu cuenta de Curruscos Clan.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css">
   <style id="settings-page-styles">
     body.settings-app{background:#f6f6f3;color:#17181b;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -145,7 +148,7 @@
         <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">✳</span><div><h2 id="visualHeading">Experiencia visual</h2><p class="settings-card-intro">Ajusta los efectos de interfaz en este dispositivo. Estos controles no cambian tus preferencias de cuenta.</p></div></div>
         <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-3d-background">Escultura 3D de fondo</label><span class="settings-desc">Activa o desactiva la escena WebGL de la portada para priorizar rendimiento o estética.</span></div><label class="settings-switch"><input id="setting-3d-background" type="checkbox" role="switch"><span class="settings-switch-track"></span></label></div>
         <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-cursor-sparkles">Estela de cursor</label><span class="settings-desc">Activa los destellos sutiles al mover el cursor en dispositivos compatibles.</span></div><label class="settings-switch"><input id="setting-cursor-sparkles" type="checkbox" role="switch"><span class="settings-switch-track"></span></label></div>
-        <p class="settings-visual-note">Las preferencias se guardan en este navegador. La estela se desactiva automáticamente si el sistema tiene activada la reducción de movimiento.</p>
+        <p class="settings-visual-note">Las preferencias se guardan en este navegador y se aplican al abrir o recargar las páginas correspondientes. La estela se desactiva automáticamente si el sistema tiene activada la reducción de movimiento.</p>
         <p id="settings-visual-message" class="settings-message" role="status" aria-live="polite"></p>
       </section>
     </div>
@@ -196,7 +199,7 @@
         const next = { ...readVisualPreferences(), [key]: value };
         try {
           localStorage.setItem("curruscos_visual_preferences", JSON.stringify(next));
-          message("settings-visual-message", "Preferencias visuales guardadas en este navegador.", "success");
+          message("settings-visual-message", "Guardado en este navegador. Se aplicará al abrir o recargar la página correspondiente.", "success");
           window.dispatchEvent(new CustomEvent("curruscos:visual-preferences-changed", { detail: next }));
         } catch (_) {
           message("settings-visual-message", "Este navegador no permite guardar la preferencia.", "error");
@@ -232,7 +235,7 @@
     }
 
     async function saveProfileChanges(changes, statusId) {
-      pendingSave = pendingSave.then(async () => {
+      pendingSave = pendingSave.catch(() => {}).then(async () => {
         message(statusId, "Guardando…");
         const { error } = await userClient().from("profiles").update(changes).eq("id", user.id);
         if (error) throw error;
