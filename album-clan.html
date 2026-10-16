@@ -118,7 +118,7 @@
           <div id="roster-container" class="roster-list"><div class="roster-state">Cargando miembros de tus grupos…</div></div>
         </section>
         <section class="album-panel lineup-panel" aria-labelledby="lineup-title">
-          <div class="panel-heading"><div><h2 id="lineup-title">Alineación estelar</h2><p>Top semanal por actividad registrada</p></div><span class="album-count">TOP 3</span></div>
+          <div class="panel-heading"><div><h2 id="lineup-title">Alineación estelar</h2><p>Actividad registrada · últimos 7 días</p></div><span class="album-count">TOP 3</span></div>
           <div id="lineup-container" class="lineup-list"><div class="roster-state">Calculando alineación…</div></div>
         </section>
         <div id="album-message" class="album-message" role="status" aria-live="polite">Conectando con tu sesión…</div>
@@ -227,12 +227,9 @@
         lineupEl.innerHTML = '<div class="album-empty">La alineación aparecerá cuando haya miembros en tus grupos.</div>';
         return;
       }
-      const top = [...players].sort((a,b) => {
-        const scoreA = overall(a) ?? -1, scoreB = overall(b) ?? -1;
-        return scoreB-scoreA || (b.attended||0)-(a.attended||0) || a.name.localeCompare(b.name,'es');
-      }).slice(0,3);
+      const top = [...players].sort((a,b) => (b.weeklyActivity||0)-(a.weeklyActivity||0) || (overall(b)??-1)-(overall(a)??-1) || a.name.localeCompare(b.name,'es')).slice(0,3);
       lineupEl.innerHTML = top.map((player,index) =>
-        '<button type="button" class="lineup-player" data-player-id="'+escapeHtml(player.id)+'"><span class="roster-avatar">'+avatarMarkup(player)+'</span><strong>'+escapeHtml(player.name)+'</strong><small>'+(overall(player)===null?'S/D':overall(player)+' OVR')+' · #'+(index+1)+'</small></button>'
+        '<button type="button" class="lineup-player" data-player-id="'+escapeHtml(player.id)+'"><span class="roster-avatar">'+avatarMarkup(player)+'</span><strong>'+escapeHtml(player.name)+'</strong><small>'+(player.weeklyActivity||0)+' PLANES · #'+(index+1)+'</small></button>'
       ).join('');
       lineupEl.querySelectorAll('[data-player-id]').forEach(button => button.addEventListener('click', () => {
         selectedId = button.dataset.playerId;
@@ -255,7 +252,7 @@
       const level = attendedCount > 0 ? clampScore(45 + 8*Math.log2(attendedCount+1)) : null;
       const sharedGroups = new Set(memberships.map(row => row.group_id));
       const chemistry = sharedGroups.size ? clampScore(55 + Math.min(45, (sharedGroups.size-1)*15)) : null;
-      const fairplay = attendanceTotal ? clampScore(attendedCount/attendanceTotal*100) : null;
+      const fairplay = null; // No hay una métrica de fair play independiente en el esquema actual.
       const attended = attendedCount;
       return {
         id:userId,
@@ -347,9 +344,20 @@
         (participantsByUser[row.user_id] ||= []).push({...row,isPast:true});
       });
       const groupNames = Object.fromEntries((groups||[]).map(group=>[group.id,group.name]));
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate()-6);
+      const weekStartDate = weekStart.toISOString().slice(0,10);
+      const todayDate = new Date().toISOString().slice(0,10);
+      const weeklyByUser = {};
+      participantRows.forEach(row => {
+        const event = eventById[row.event_id];
+        if (!event || event.date < weekStartDate || event.date > todayDate || String(event.status||'').toLowerCase()==='cancelled') return;
+        (weeklyByUser[row.user_id] ||= new Set()).add(row.event_id);
+      });
       players = profileRows.map(profile => {
         const memberRows = membershipRows.filter(row => row.user_id === profile.id);
         const built = buildPlayer(profile,memberRows,ratingById[profile.id],participantsByUser,memberRows.length);
+        built.weeklyActivity = weeklyByUser[profile.id]?.size || 0;
         built.groupNames = memberRows.map(row => groupNames[row.group_id]).filter(Boolean);
         return built;
       }).sort((a,b)=>(overall(b)??-1)-(overall(a)??-1)||a.name.localeCompare(b.name,'es'));
