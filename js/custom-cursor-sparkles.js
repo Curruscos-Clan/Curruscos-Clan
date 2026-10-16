@@ -6,6 +6,10 @@
 
   function init() {
     if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    try {
+      const visualPrefs = JSON.parse(localStorage.getItem("curruscos_visual_preferences") || "{}");
+      if (visualPrefs.cursorSparkles === false) return;
+    } catch (_) {}
     const canvas = document.createElement("canvas");
     canvas.className = "sparkles-overlay-canvas";
     canvas.setAttribute("aria-hidden", "true");
