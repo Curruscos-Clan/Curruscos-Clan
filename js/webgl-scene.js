@@ -239,7 +239,7 @@
       [
         [0, 0, 0],
         [Math.PI / 2, 0, 0],
-        [0, 0, Math.PI / 2]
+        [0, Math.PI / 2, 0]
       ].forEach((rotation) => {
         const ring = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.009, 6, 96), meridianMaterial);
         ring.rotation.set(rotation[0], rotation[1], rotation[2]);
