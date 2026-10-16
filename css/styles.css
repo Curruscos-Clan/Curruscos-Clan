@@ -111,3 +111,29 @@ body {font-family:var(--font-sans);background:var(--bg-app);color:var(--text-mai
  .feed-list .event-card::before {left:-24px}
  .feed-list .event-card-media {flex-basis:124px;width:124px}
 }
+
+.bento-hero-grid {display:grid;grid-template-columns:1fr;gap:12px;margin:22px 0 30px}
+.bento-main-banner {position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:205px;padding:24px;border-radius:var(--radius-xl);background:#101014;color:#fff;text-decoration:none;box-shadow:var(--shadow-md)}
+.bento-main-banner::after {content:"";position:absolute;z-index:-1;right:-55px;bottom:-90px;width:270px;height:270px;background:radial-gradient(circle,var(--accent-orange),transparent 70%);opacity:.45;filter:blur(25px)}
+.bento-kicker {font:700 .68rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent-orange)}
+.bento-title {max-width:440px;font:800 clamp(1.65rem,5vw,2.15rem)/1.08 var(--font-display);letter-spacing:-.045em}
+.bento-copy {font-size:.88rem;color:rgba(255,255,255,.72);max-width:390px}
+.bento-action {margin-top:auto;padding-top:8px;color:#ff9a6c;font-weight:800;font-size:.85rem}
+.bento-side-stack {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bento-mini-card {display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-height:142px;padding:16px;border:1px solid var(--border-light);border-radius:var(--radius-lg);background:rgba(255,255,255,.85);box-shadow:var(--shadow-sm);text-decoration:none;color:var(--text-main)}
+.bento-mini-card strong {font:800 1rem/1.18 var(--font-display);letter-spacing:-.025em}
+.bento-mini-card>span:last-child {margin-top:auto;color:var(--text-muted);font-size:.75rem;line-height:1.35}
+.feed-list .event-card {overflow:visible}
+.feed-list .event-card-media {border-radius:var(--radius-lg) 0 0 var(--radius-lg)}
+@media(min-width:768px) {
+ .bento-hero-grid {grid-template-columns:1.5fr 1fr;gap:14px}
+ .bento-side-stack {grid-template-columns:1fr}
+ .bento-mini-card {min-height:90px}
+}
+@media(max-width:420px) {
+ .bento-side-stack {grid-template-columns:1fr}
+ .bento-mini-card {min-height:105px}
+ .feed-list .event-card-media {flex-basis:88px;width:88px}
+ .feed-list .event-card-body {padding:11px}
+ .feed-list .event-card-footer {align-items:flex-start}
+}
