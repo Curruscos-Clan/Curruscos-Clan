@@ -14,6 +14,7 @@ function safePublicEventCover(value) {
 (function(){
   "use strict";
   const feedList=document.getElementById("feed-list");
+  const postersContainer=document.getElementById("dice-posters-container");
   const toastContainer=document.getElementById("toast-container");
   const filterChips=[...document.querySelectorAll(".filter-chip")];
   if(!feedList)return;
@@ -90,8 +91,34 @@ function safePublicEventCover(value) {
   function renderState(title,copy,link){
     feedList.innerHTML='<div class="feed-state"><h2>'+esc(title)+'</h2><p>'+esc(copy)+'</p>'+(link?'<a class="btn btn-primary" href="'+esc(link.href)+'">'+esc(link.label)+'</a>':"")+'</div>';
   }
+  function renderPosters(){
+    if(!postersContainer)return;
+    const now=new Date();
+    const featured=rankEvents(allEvents.filter(event=>{
+      const date=startDate(event);
+      return event.status!=="cancelled" && date && date>now;
+    }),userContext).slice(0,8);
+    if(!featured.length){
+      postersContainer.innerHTML='<p class="poster-loading">Aún no hay eventos próximos. <a href="crear-evento.html">Propón el primero ↗</a></p>';
+      return;
+    }
+    postersContainer.innerHTML=featured.map(event=>{
+      const cover=safePublicEventCover(event.cover_url);
+      const date=startDate(event);
+      const dateText=date?date.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}):"Fecha por confirmar";
+      const price=Number(event.price||event.price_amount||0);
+      const title=esc(event.title||"Plan sin título");
+      const category=esc(event.category||event.event_type||"Evento");
+      const place=esc(event.location||"Lugar por confirmar");
+      return '<a class="dice-poster-card" href="evento-publico.html?id='+encodeURIComponent(event.id)+'">'+
+        (cover?'<img class="dice-poster-img" src="'+esc(cover)+'" alt="" loading="lazy" decoding="async">':'')+
+        '<div class="dice-poster-top"><span class="dice-glass-pill">'+category+'</span><span class="dice-price-tag">'+(price>0?esc(price+' €'):'GRATIS')+'</span></div>'+
+        '<div class="dice-poster-bottom"><span class="dice-poster-date">'+esc(dateText)+'</span><h3 class="dice-poster-title">'+title+'</h3><div class="dice-poster-meta"><span>'+place+'</span><span>'+esc(event.capacity?('Aforo '+Number(event.capacity)):'Plazas abiertas')+'</span></div></div></a>';
+    }).join("");
+  }
   function render(){
     const events=filteredEvents();
+    renderPosters();
     feedList.innerHTML="";
     if(!events.length){
       renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba con otro filtro o explora la comunidad para descubrir actividades.",{href:"explorar.html",label:"Explorar eventos"});
