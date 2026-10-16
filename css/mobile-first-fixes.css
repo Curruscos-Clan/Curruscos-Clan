@@ -1,0 +1,160 @@
+/* Curruscos · Mobile-first corrective layer
+   Keeps existing real data flows and page markup; only normalizes layout/input behavior. */
+html { max-width:100%; overflow-x:clip; scroll-padding-top:76px; }
+body { max-width:100%; overflow-x:clip; }
+img, canvas, video, iframe { max-width:100%; }
+button, a, input, select, textarea { -webkit-tap-highlight-color:transparent; }
+:where(.public-event-page,.profile-page,.public-create-page,.app-container,.main-content) {
+  min-width:0;
+  box-sizing:border-box;
+}
+:where(.public-event-page,.profile-page,.public-create-page) :where(input,select,textarea,button,a) {
+  max-width:100%;
+}
+:where(.event-card,.public-event-card,[data-tilt]) { transform-style:flat; }
+@media (hover:hover) and (pointer:fine) {
+  .event-card, .public-event-card, [data-tilt] { transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease; }
+}
+@media (hover:none), (pointer:coarse) {
+  .event-card:hover, .public-event-card:hover, [data-tilt]:hover,
+  .public-team-row:hover, .public-participant-row:hover, .related-event-card:hover {
+    transform:none!important;
+    box-shadow:none!important;
+  }
+  .webgl-hero-stage, .webgl-hero-stage canvas, .cx-venue-stage, .cx-create-stage,
+  .cx-physics-canvas, .cx-cylinder-viewport { touch-action:pan-y; }
+}
+@media (max-width:760px) {
+  html, body { width:100%; max-width:100%; overflow-x:clip; }
+  .bottom-nav {
+    box-sizing:border-box;
+    height:calc(66px + env(safe-area-inset-bottom, 0px));
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+    z-index:80;
+  }
+  body.public-event-app .bottom-nav,
+  body.group-events-app .bottom-nav,
+  body.profile-app .bottom-nav,
+  body.public-create-app .bottom-nav { display:flex!important; }
+  body.public-event-app .public-event-page {
+    width:100%; max-width:100%; padding:24px 14px calc(112px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  body.public-event-app .public-event-shell {
+    display:grid!important; grid-template-columns:minmax(0,1fr)!important; gap:12px!important; margin-top:18px!important;
+  }
+  body.public-event-app .public-event-main,
+  body.public-event-app .public-event-side {
+    min-width:0; width:100%; box-sizing:border-box; padding:18px!important; border-radius:16px!important;
+  }
+  body.public-event-app .public-event-main h1 {
+    font-size:clamp(30px,8.8vw,46px)!important; line-height:1.02!important; overflow-wrap:anywhere;
+  }
+  body.public-event-app .public-event-side { position:static!important; }
+  body.public-event-app .public-event-side .button,
+  body.public-event-app .public-event-side button { min-height:44px; }
+  body.public-event-app .public-event-main :where(.participant-mini-stats,.public-standings,.team-manager-grid,.public-participant-list,.related-events-grid) {
+    min-width:0; max-width:100%;
+  }
+  body.public-event-app .participant-mini-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  body.public-event-app .team-manager-head { flex-direction:column; gap:12px; }
+  body.public-event-app .team-manager-head form,
+  body.public-event-app .team-manager-head input { width:100%; min-width:0; box-sizing:border-box; }
+  body.public-event-app .public-standings { overflow-wrap:anywhere; }
+  body.public-event-app .public-standing-row { grid-template-columns:minmax(0,1fr) auto; gap:7px; }
+  body.public-event-app .public-standing-row small { grid-column:1/-1; }
+  body.public-event-app .match-result-form { flex-wrap:wrap; }
+  body.public-event-app .public-match-row { flex-wrap:wrap; align-items:flex-start; }
+  body.public-event-app .public-match-row>strong { text-align:left; }
+  body.group-events-app .page-hero .container,
+  body.group-events-app .section .container { width:calc(100% - 28px)!important; }
+  body.group-events-app .event-card {
+    display:flex!important; flex-direction:column!important; align-items:stretch!important;
+    width:100%; min-width:0; gap:10px!important; padding:14px!important;
+  }
+  body.group-events-app .events-list { grid-template-columns:minmax(0,1fr)!important; }
+  body.group-events-app .form-row { grid-template-columns:minmax(0,1fr)!important; }
+  body.group-events-app #eventForm { padding:17px!important; }
+  body.group-events-app .events-filters { max-width:100%; overflow-x:auto; flex-wrap:nowrap!important; -webkit-overflow-scrolling:touch; touch-action:pan-x; }
+  body.profile-app .profile-page {
+    width:calc(100% - 28px)!important; max-width:100%!important;
+    padding:24px 0 calc(112px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  body.profile-app .profile-layout { grid-template-columns:minmax(0,1fr)!important; gap:12px!important; }
+  body.profile-app .profile-card, body.profile-app .profile-side-card {
+    min-width:0; width:100%; box-sizing:border-box; padding:18px!important; border-radius:17px!important;
+  }
+  body.profile-app .profile-hero { align-items:flex-start; gap:12px; }
+  body.profile-app .profile-header h1 { font-size:clamp(32px,9vw,46px)!important; line-height:1!important; overflow-wrap:anywhere; }
+  body.profile-app .profile-activity-grid { grid-template-columns:repeat(3,minmax(0,1fr))!important; gap:6px!important; }
+  body.profile-app .profile-activity-card { min-width:0; padding:10px 8px!important; }
+  body.profile-app .profile-activity-card strong { font-size:clamp(17px,5vw,22px)!important; }
+  body.profile-app .profile-activity-head { align-items:flex-start; flex-wrap:wrap; }
+  body.public-create-app .public-create-page {
+    width:calc(100% - 28px)!important; max-width:100%!important;
+    padding:24px 0 calc(112px + env(safe-area-inset-bottom, 0px))!important;
+  }
+  body.public-create-app .public-create-card { padding:17px!important; border-radius:17px!important; }
+  body.public-create-app .public-create-grid { grid-template-columns:minmax(0,1fr)!important; }
+  body.public-create-app .create-progress { gap:4px!important; }
+  body.public-create-app .create-progress-step { min-width:0; overflow-wrap:anywhere; }
+  body.public-create-app .event-live-preview { min-width:0; overflow-wrap:anywhere; }
+  body.public-create-app .cx-create-experience { min-width:0; grid-template-columns:minmax(0,1fr)!important; }
+  body.public-create-app .cx-create-stage { min-height:220px; touch-action:pan-y; }
+}
+/* Home: give the sculpture a quiet, bounded viewport; keep all copy below it. */
+@media (max-width:680px) {
+  .webgl-hero-stage {
+    display:block; min-height:0!important; height:auto!important;
+    width:calc(100% - 16px); margin:8px auto 0; border-radius:18px;
+    overflow:hidden; touch-action:pan-y;
+  }
+  .webgl-hero-stage::after { height:12%; }
+  .webgl-hero-stage #webgl-stage-canvas {
+    position:absolute; inset:0 0 auto; width:100%; height:235px!important;
+    max-height:235px; pointer-events:none; touch-action:pan-y;
+  }
+  .webgl-giant-type {
+    top:117px; font-size:clamp(2.1rem,12vw,4.2rem);
+    line-height:.82; letter-spacing:-.09em; white-space:normal;
+  }
+  .webgl-hero-content {
+    min-height:0!important; padding:0 17px 20px!important;
+    display:flex; flex-direction:column; justify-content:flex-start; gap:14px;
+    pointer-events:auto;
+  }
+  .webgl-meta-row {
+    order:0; min-height:235px; margin:0; align-items:flex-start;
+    padding-top:15px; gap:8px; font-size:.54rem; line-height:1.4;
+  }
+  .webgl-meta-row span:last-child { max-width:40%; text-align:right; }
+  .webgl-hud-left, .webgl-hud-right, .webgl-floating-tag { display:none!important; }
+  .webgl-hero-bottom {
+    order:1; display:flex!important; flex-direction:column; align-items:stretch;
+    gap:18px; padding:0!important; margin:0!important;
+  }
+  .webgl-hero-copy { max-width:none; }
+  .webgl-eyebrow { margin-bottom:9px; font-size:.61rem; }
+  .webgl-hero-title { max-width:100%; font-size:clamp(2rem,9vw,3rem)!important; line-height:1.02; letter-spacing:-.065em; overflow-wrap:anywhere; }
+  .webgl-hero-description { max-width:44rem; margin-top:10px; font-size:.88rem; line-height:1.55; }
+  .webgl-hero-actions { display:grid!important; grid-template-columns:minmax(0,1fr); gap:8px; margin:0!important; }
+  .webgl-hero-actions .btn { width:100%; min-height:44px; box-sizing:border-box; justify-content:center; }
+  .app-container { width:calc(100% - 28px)!important; padding-top:22px!important; padding-bottom:calc(100px + env(safe-area-inset-bottom, 0px))!important; }
+  .bento-hero-grid { grid-template-columns:minmax(0,1fr)!important; }
+  .bento-side-stack { grid-template-columns:minmax(0,1fr)!important; }
+  .feed-toolbar { align-items:flex-start; flex-wrap:wrap; gap:12px; }
+  .feed-actions { display:flex; flex-wrap:wrap; gap:8px; }
+  .feed-actions .btn { min-height:42px; }
+  .filter-row { max-width:100%; overflow-x:auto; flex-wrap:nowrap; touch-action:pan-x; -webkit-overflow-scrolling:touch; }
+}
+@media (max-width:380px) {
+  .webgl-meta-row span:first-child { max-width:55%; }
+  .webgl-meta-row span:last-child { max-width:38%; }
+  body.profile-app .profile-activity-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+  .webgl-hero-stage *, .webgl-hero-stage *::before, .webgl-hero-stage *::after,
+  .cx-create-stage *, .cx-venue-stage *, .cx-holo-card-inner {
+    animation:none!important; transition:none!important;
+  }
+}
