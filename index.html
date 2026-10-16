@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="css/webgl-immersive.css">
   <link rel="stylesheet" href="css/immersive-experiences.css">
   <link rel="stylesheet" href="css/mobile-first-fixes.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <header class="top-header">
@@ -46,6 +49,8 @@
         <div class="webgl-hero-actions">
           <a href="#feed-list" class="btn btn-primary">Descubrir planes ↘</a>
           <a href="chispas.html" class="btn btn-secondary">Lanzar una Chispa ↗</a>
+          <button type="button" class="btn btn-secondary audio-reactive-button" id="btn-audio-reactive" aria-pressed="false">Activar audio 3D</button>
+          <span id="audio-reactive-status" class="audio-reactive-status" role="status" aria-live="polite">El audio es opcional; también puedes tocar la escena 3D.</span>
         </div>
       </div>
     </div>
@@ -115,6 +120,8 @@
   <script src="js/tilt-3d.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="js/webgl-scene.js" defer></script>
+  <script src="js/live-audio-reactive.js" defer></script>
+  <script src="js/custom-cursor-sparkles.js" defer></script>
   <script src="js/pwa.js"></script>
   <script src="js/immersive-experiences.js"></script>
   <script src="js/mouse-glow.js" defer></script>
