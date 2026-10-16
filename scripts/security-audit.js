@@ -98,6 +98,7 @@ function auditMigrations() {
   const tablesCreated = new Map();
   const rlsEnabled = new Set();
   const policiesCreated = new Set();
+  const directAccessRevoked = new Set();
 
   for (const file of sqlFiles) {
     // Remove SQL comments before scanning to avoid passing due to commented-out SQL.
