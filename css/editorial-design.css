@@ -185,3 +185,5 @@ body.group-events-app .navbar{background:rgba(247,246,242,.94)!important;border-
 .group-events-app .group-view-tabs{width:100%;justify-content:flex-start;border:0;border-bottom:1px solid var(--group-line);border-radius:0;background:transparent;padding:0;gap:8px}
 .group-events-app .group-view-tab{border-radius:0!important;border-bottom:2px solid transparent!important;background:transparent!important;padding:11px 14px!important;font-family:var(--font-mono)!important;font-size:10px!important;letter-spacing:.035em;text-transform:uppercase}
 .group-events-app .group-view-tab[aria-selected="true"]{border-bottom-color:#FF4800!important;color:#121211!important;box-shadow:none!important}
+.app-container .feed-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:520px){.app-container .feed-actions{width:100%}.app-container .feed-actions .btn{flex:1 1 auto}}
