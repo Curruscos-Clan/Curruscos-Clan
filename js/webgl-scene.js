@@ -1,6 +1,6 @@
 /**
  * Curruscos · Generative WebGL stage
- * Procedural plasma shader + GPU-animated orbital star field.
+ * Recognizable metallic armillary globe with restrained orbital accents.
  * Progressive enhancement: the page and real event feed work without WebGL.
  */
 (function () {
@@ -196,15 +196,37 @@
         uColorCore: { value: new THREE.Color(...WebGLStage.current.core) },
         uColorGlow: { value: new THREE.Color(...WebGLStage.current.glow) }
       };
-      const coreMaterial = new THREE.ShaderMaterial({
-        vertexShader: plasmaVertexShader,
-        fragmentShader: plasmaFragmentShader,
-        uniforms,
-        transparent: true,
-        depthWrite: false
+      // A solid, shaded globe replaces the shapeless plasma surface.
+      const coreMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x263640,
+        metalness: 0.72,
+        roughness: 0.27,
+        clearcoat: 0.95,
+        clearcoatRoughness: 0.2,
+        emissive: 0x101b22,
+        emissiveIntensity: 0.28
       });
       const core = new THREE.Mesh(coreGeometry, coreMaterial);
       sceneGroup.add(core);
+
+      // A visible tilted polar axis and end caps make the object read as an armillary sphere.
+      const axisGroup = new THREE.Group();
+      axisGroup.rotation.z = -0.42;
+      const axisMaterial = new THREE.MeshStandardMaterial({
+        color: 0xd6ad76, metalness: 0.9, roughness: 0.22
+      });
+      const axisRod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.014, 0.014, 2.82, 10),
+        axisMaterial
+      );
+      axisGroup.add(axisRod);
+      const poleGeometry = new THREE.SphereGeometry(0.055, 12, 8);
+      const northPole = new THREE.Mesh(poleGeometry, axisMaterial);
+      northPole.position.y = 1.43;
+      const southPole = new THREE.Mesh(poleGeometry, axisMaterial);
+      southPole.position.y = -1.43;
+      axisGroup.add(northPole, southPole);
+      sceneGroup.add(axisGroup);
 
       const shell = new THREE.Mesh(
         new THREE.SphereGeometry(1.12, small ? 18 : 28, small ? 12 : 18),
@@ -254,19 +276,19 @@
       sceneGroup.add(equator);
 
       // Particle positions stay fixed in the buffer; their orbital motion is calculated in the vertex shader.
-      const particleCount = small ? 220 : 420;
+      const particleCount = small ? 36 : 72;
       const positions = new Float32Array(particleCount * 3);
       const seeds = new Float32Array(particleCount);
       const radii = new Float32Array(particleCount);
       const speeds = new Float32Array(particleCount);
       for (let i = 0; i < particleCount; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = 1.45 + Math.random() * 2.35;
+        const radius = 1.65 + Math.random() * 1.15;
         positions[i * 3] = Math.cos(angle) * radius * 0.55;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 4.8;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 3.3;
         positions[i * 3 + 2] = Math.sin(angle) * radius * 0.55;
         seeds[i] = Math.random();
-        radii[i] = 0.12 + Math.random() * 0.75;
+        radii[i] = 0.08 + Math.random() * 0.34;
         speeds[i] = (Math.random() * 0.22 + 0.035) * (Math.random() < 0.5 ? -1 : 1);
       }
       const particleGeometry = new THREE.BufferGeometry();
@@ -290,10 +312,10 @@
       scene.add(particles);
 
       scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-      const warmLight = new THREE.PointLight(0xff5526, 16, 14);
+      const warmLight = new THREE.PointLight(0xffb66d, 9, 12);
       warmLight.position.set(3, 2, 3);
       scene.add(warmLight);
-      const coolLight = new THREE.PointLight(0x654cff, 12, 14);
+      const coolLight = new THREE.PointLight(0x567f9e, 5, 12);
       coolLight.position.set(-3, -2, -2);
       scene.add(coolLight);
 
@@ -425,6 +447,9 @@
         if (intersectionObserver) intersectionObserver.disconnect();
         coreGeometry.dispose();
         coreMaterial.dispose();
+        axisRod.geometry.dispose();
+        poleGeometry.dispose();
+        axisMaterial.dispose();
         shell.geometry.dispose();
         shell.material.dispose();
         arcA.geometry.dispose();
