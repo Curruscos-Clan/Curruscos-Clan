@@ -155,3 +155,163 @@ body {font-family:var(--font-sans);background:var(--bg-app);color:var(--text-mai
  .luma-day-header {position:sticky;top:82px;align-self:start;flex-direction:column;gap:3px}
  .luma-day-pin {left:0}
 }
+
+
+/* ==========================================================================
+   DIRECCIÓN DE ARTE CINEMATOGRÁFICA · CURRUSCOS
+   Capa visual compatible con las clases reales del feed actual.
+   ========================================================================== */
+:root {
+  color-scheme: dark;
+  --bg-app: #050508;
+  --bg-surface: #0e0e14;
+  --bg-subtle: #161622;
+  --text-main: #fafafc;
+  --text-muted: #9696a5;
+  --text-light: #626273;
+  --accent-orange: #ff5500;
+  --accent-orange-hover: #ff6e24;
+  --accent-orange-glow: rgba(255, 85, 0, .2);
+  --border-light: rgba(255, 255, 255, .085);
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, .3);
+  --shadow-md: 0 16px 42px rgba(0, 0, 0, .55);
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+html { background: var(--bg-app); }
+body {
+  background:
+    radial-gradient(ellipse at 50% -18%, rgba(255,85,0,.10), transparent 46%),
+    var(--bg-app);
+  color: var(--text-main);
+  font-family: 'DM Sans', var(--font-sans);
+}
+body::before {
+  content: "";
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: .23;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+.top-header {
+  background: rgba(5,5,8,.82);
+  border-bottom-color: var(--border-light);
+}
+.header-subtitle { color: var(--text-muted); }
+.app-brand, .feed-intro h1, .feed-toolbar h2, .section-heading h2,
+.event-card-title, .bento-title, .luma-day-title {
+  font-family: var(--font-display);
+}
+.app-brand { color: var(--text-main); }
+.eyebrow, .event-date-row, .luma-day-sub {
+  font-family: var(--font-mono);
+  letter-spacing: .055em;
+}
+.feed-intro h1 {
+  font-size: clamp(2.65rem, 8vw, 5.8rem);
+  line-height: .96;
+  letter-spacing: -.075em;
+  max-width: 900px;
+  text-wrap: balance;
+}
+.feed-intro p { color: var(--text-muted); }
+.feed-toolbar { border-top: 1px solid var(--border-light); padding-top: 20px; }
+.feed-toolbar h2 { font-size: clamp(1.3rem, 3vw, 1.8rem); }
+.filter-chip {
+  background: rgba(255,255,255,.035);
+  color: var(--text-muted);
+  border-color: var(--border-light);
+}
+.filter-chip:hover { color: var(--text-main); border-color: rgba(255,85,0,.4); }
+.filter-chip.active {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #fff;
+}
+.event-card {
+  position: relative;
+  isolation: isolate;
+  color: var(--text-main);
+  background: linear-gradient(145deg, rgba(19,19,27,.98), rgba(10,10,15,.98));
+  border-color: var(--border-light);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: transform .28s cubic-bezier(.2,.7,.2,1), border-color .28s ease, box-shadow .28s ease;
+}
+.event-card::before {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    440px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255,85,0,.17),
+    rgba(255,85,0,.055) 22%,
+    transparent 62%
+  );
+  transition: opacity .22s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .event-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,85,0,.48);
+    box-shadow: 0 20px 48px rgba(0,0,0,.5), 0 0 28px rgba(255,85,0,.075);
+  }
+  .event-card:hover::before { opacity: 1; }
+}
+.event-card-media { background-color: #14141c; }
+.event-card-media[data-has-cover="true"]::after {
+  background: linear-gradient(180deg, rgba(5,5,8,.04) 0%, rgba(5,5,8,.1) 32%, rgba(5,5,8,.84) 100%);
+}
+.event-card-symbol {
+  background: rgba(5,5,8,.42);
+  border-color: rgba(255,255,255,.2);
+}
+.event-card-body { background: transparent; }
+.event-card-title { color: var(--text-main); }
+.event-card-meta, .event-card-footer { color: var(--text-muted); }
+.event-card-footer { border-top-color: var(--border-light); }
+.badge-subtle {
+  background: rgba(255,255,255,.075);
+  color: #d7d7df;
+}
+.badge-joined { background: rgba(0,229,153,.13); color: #00e599; }
+.event-card .rsvp-btn, .btn-primary {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #fff;
+}
+.bento-main-banner {
+  background: radial-gradient(circle at 85% 20%, rgba(255,85,0,.17), transparent 38%), #101016;
+  border: 1px solid var(--border-light);
+}
+.bento-mini-card {
+  background: rgba(255,255,255,.035);
+  border-color: var(--border-light);
+  color: var(--text-main);
+}
+.bento-mini-card>span:last-child, .poster-loading { color: var(--text-muted); }
+.dice-poster-card { border: 1px solid var(--border-light); }
+.feed-state {
+  background: rgba(255,255,255,.025);
+  border-color: var(--border-light);
+  color: var(--text-muted);
+}
+.bottom-nav {
+  background: rgba(14,14,20,.9);
+  border-color: rgba(255,255,255,.12);
+}
+.nav-tab { color: rgba(255,255,255,.62); }
+.nav-tab.active { color: #fff; background: rgba(255,255,255,.12); }
+:focus-visible { outline-color: rgba(255,85,0,.72); }
+@media (prefers-reduced-motion: reduce) {
+  .event-card, .event-card::before { transition: none !important; }
+}
