@@ -187,10 +187,10 @@
       const coreGeometry = new THREE.IcosahedronGeometry(1.25, small ? 4 : 5);
       const uniforms = {
         uTime: { value: 0 },
-        uNoiseScale: { value: this.current.scale },
-        uDistortion: { value: this.current.distortion },
-        uColorCore: { value: new THREE.Color(...this.current.core) },
-        uColorGlow: { value: new THREE.Color(...this.current.glow) }
+        uNoiseScale: { value: WebGLStage.current.scale },
+        uDistortion: { value: WebGLStage.current.distortion },
+        uColorCore: { value: new THREE.Color(...WebGLStage.current.core) },
+        uColorGlow: { value: new THREE.Color(...WebGLStage.current.glow) }
       };
       const coreMaterial = new THREE.ShaderMaterial({
         vertexShader: plasmaVertexShader,
@@ -294,18 +294,18 @@
         smoothY += (pointerY - smoothY) * 0.055;
 
         if (!reducedMotion) {
-          this.current.scale += (this.target.scale - this.current.scale) * 0.035;
-          this.current.distortion += (this.target.distortion - this.current.distortion) * 0.035;
-          this.current.speed += (this.target.speed - this.current.speed) * 0.035;
+          WebGLStage.current.scale += (WebGLStage.target.scale - WebGLStage.current.scale) * 0.035;
+          WebGLStage.current.distortion += (WebGLStage.target.distortion - WebGLStage.current.distortion) * 0.035;
+          WebGLStage.current.speed += (WebGLStage.target.speed - WebGLStage.current.speed) * 0.035;
           for (let i = 0; i < 3; i++) {
-            this.current.core[i] += (this.target.core[i] - this.current.core[i]) * 0.035;
-            this.current.glow[i] += (this.target.glow[i] - this.current.glow[i]) * 0.035;
+            WebGLStage.current.core[i] += (WebGLStage.target.core[i] - WebGLStage.current.core[i]) * 0.035;
+            WebGLStage.current.glow[i] += (WebGLStage.target.glow[i] - WebGLStage.current.glow[i]) * 0.035;
           }
-          uniforms.uTime.value = t * this.current.speed;
-          uniforms.uNoiseScale.value = this.current.scale;
-          uniforms.uDistortion.value = this.current.distortion;
-          uniforms.uColorCore.value.setRGB(...this.current.core);
-          uniforms.uColorGlow.value.setRGB(...this.current.glow);
+          uniforms.uTime.value = t * WebGLStage.current.speed;
+          uniforms.uNoiseScale.value = WebGLStage.current.scale;
+          uniforms.uDistortion.value = WebGLStage.current.distortion;
+          uniforms.uColorCore.value.setRGB(...WebGLStage.current.core);
+          uniforms.uColorGlow.value.setRGB(...WebGLStage.current.glow);
           particleUniforms.uTime.value = t;
           core.rotation.y = t * 0.12 + smoothX * 0.28;
           core.rotation.x = t * 0.08 - smoothY * 0.2;
