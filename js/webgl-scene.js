@@ -9,7 +9,16 @@
   function init() {
     const canvas = document.getElementById("webgl-stage-canvas");
     const stage = document.querySelector(".webgl-hero-stage");
-    if (!canvas || !stage || !window.THREE || !window.WebGLRenderingContext) return;
+    if (!canvas || !stage) return;
+    try {
+      const visualPrefs = JSON.parse(localStorage.getItem("curruscos_visual_preferences") || "{}");
+      if (visualPrefs.webgl === false) {
+        canvas.style.display = "none";
+        stage.classList.add("webgl-disabled");
+        return;
+      }
+    } catch (_) {}
+    if (!window.THREE || !window.WebGLRenderingContext) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const isSmall = window.matchMedia("(max-width: 680px)").matches;
