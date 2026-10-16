@@ -39,11 +39,21 @@ class MyPlansRegressionTests(unittest.TestCase):
         self.assertIn("title.textContent = event.title", JS)
         self.assertIn("location.textContent =", JS)
 
-    def test_all_primary_navigation_points_to_mis_plans(self):
-        self.assertIn('href="mis-planes.html"', HTML)
-        for name, content in PAGES.items():
+    def test_home_primary_navigation_uses_the_simplified_four_destinations(self):
+        home = PAGES["index.html"]
+        nav_start = home.index('<nav class="bottom-nav"')
+        nav_end = home.index("</nav>", nav_start)
+        nav = home[nav_start:nav_end]
+        for href in ("index.html", "explorar.html", "crear-evento.html", "perfil.html"):
+            with self.subTest(destination=href):
+                self.assertIn(f'href="{href}"', nav)
+        self.assertNotIn('href="eventos.html"', nav)
+        self.assertNotIn('href="mis-planes.html"', nav)
+
+    def test_explore_and_profile_keep_access_to_my_plans(self):
+        for name in ("explorar.html", "perfil.html"):
             with self.subTest(page=name):
-                self.assertIn('href="mis-planes.html"', content)
+                self.assertIn('href="mis-planes.html"', PAGES[name])
 
     def test_group_events_remain_reachable_from_plans_page(self):
         self.assertIn('href="eventos.html"', HTML)
