@@ -113,3 +113,77 @@ body.group-events-app .navbar{background:rgba(247,246,242,.94)!important;border-
 .group-events-app .group-wall-panel .community-post-form,.group-events-app .group-wall-panel .community-post{border-radius:8px!important;box-shadow:none!important}
 .group-events-app .group-wall-panel .community-post-form input,.group-events-app .group-wall-panel .community-post-form textarea,.group-events-app .group-wall-panel .community-post-comment-form input{border-radius:4px!important;background:#F7F6F2!important}
 @media(prefers-reduced-motion:reduce){.event-card,.btn{transition:none!important}}
+
+/* Integración editorial refinada: papel, tinta, métricas técnicas y pases de evento. */
+.app-container .feed-list .event-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--border-light);
+  border-radius:8px;
+  box-shadow:none;
+}
+.app-container .feed-list .event-card:hover{
+  border-color:var(--text-main);
+  box-shadow:0 3px 10px rgba(18,18,17,.06);
+}
+.app-container .feed-list .event-card-media{
+  background:#252522;
+  background-image:none;
+}
+.app-container .feed-list .event-card-media[data-category="deporte"]{background-color:#24483d;background-image:none}
+.app-container .feed-list .event-card-media[data-category="ocio"]{background-color:#40364f;background-image:none}
+.app-container .feed-list .event-card-media[data-category="cultura"]{background-color:#70412f;background-image:none}
+.app-container .feed-list .event-card-media[data-category="comida"]{background-color:#6a3337;background-image:none}
+.app-container .feed-list .event-date-row,
+.app-container .feed-list .event-capacity,
+.app-container .feed-list .event-card-meta{
+  font-family:var(--font-mono);
+  font-size:.68rem;
+  letter-spacing:.015em;
+}
+.app-container .feed-list .event-card-title{letter-spacing:-.045em}
+.app-container .feed-list .event-card-footer{
+  position:relative;
+  border-top:1px dashed var(--border-light);
+}
+.app-container .feed-list .event-card-footer::before,
+.app-container .feed-list .event-card-footer::after{
+  content:"";
+  position:absolute;
+  top:-7px;
+  width:12px;
+  height:12px;
+  border:1px solid var(--border-light);
+  border-radius:50%;
+  background:var(--bg-app);
+  pointer-events:none;
+}
+.app-container .feed-list .event-card-footer::before{left:-24px}
+.app-container .feed-list .event-card-footer::after{right:-24px}
+.app-container .feed-list .event-card-header .badge{border-radius:4px;font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.025em}
+.app-container .feed-list .event-card-footer .btn{border-radius:4px}
+
+/* Cabecera de Mi grupo: tinta carbón sólida, sin degradados ni brillos. */
+.group-events-app .group-overview-card{
+  background:#121211!important;
+  color:#fff!important;
+  border-color:#121211!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+.group-events-app .group-overview-copy h2{color:#fff!important}
+.group-events-app .group-overview-copy p{color:#D6D3CD!important}
+.group-events-app .group-overview-copy .eyebrow{color:#FF6A35!important}
+.group-events-app .group-overview-stat{
+  background:#20201E!important;
+  border-color:#393936!important;
+  border-radius:4px!important;
+}
+.group-events-app .group-overview-stat strong{color:#fff!important;font-family:var(--font-mono)!important}
+.group-events-app .group-overview-stat span{color:#C5C2BB!important;font-family:var(--font-mono)!important}
+.group-events-app .group-overview-bottom{border-top:1px dashed rgba(255,255,255,.24)!important}
+.group-events-app .group-view-tabs{width:100%;justify-content:flex-start;border:0;border-bottom:1px solid var(--group-line);border-radius:0;background:transparent;padding:0;gap:8px}
+.group-events-app .group-view-tab{border-radius:0!important;border-bottom:2px solid transparent!important;background:transparent!important;padding:11px 14px!important;font-family:var(--font-mono)!important;font-size:10px!important;letter-spacing:.035em;text-transform:uppercase}
+.group-events-app .group-view-tab[aria-selected="true"]{border-bottom-color:#FF4800!important;color:#121211!important;box-shadow:none!important}
+.app-container .feed-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@media(max-width:520px){.app-container .feed-actions{width:100%}.app-container .feed-actions .btn{flex:1 1 auto}}
