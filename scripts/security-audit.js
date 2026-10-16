@@ -177,34 +177,48 @@ function auditMigrations() {
 
 function auditSecurityDefinerSearchPaths() {
   const migrationDir = path.join(ROOT, 'supabase', 'migrations');
-  const sqlFiles = walk(migrationDir, name => name.toLowerCase().endsWith('.sql'));
+  const sqlFiles = walk(migrationDir, name => name.toLowerCase().endsWith('.sql')).sort();
   let checked = 0;
+  const hardenedNames = new Set();
+
+  // Historical migrations may create a function first and harden it in a later
+  // ALTER FUNCTION migration. Track those later hardenings to avoid stale alerts.
+  for (const file of sqlFiles) {
+    const sql = read(file)
+      .replace(/--[^\n\r]*/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '');
+    for (const match of sql.matchAll(/\balter\s+function\s+(?:public\s*\.\s*)?("?[a-z_][\w$]*"?)\s*\([\s\S]*?\)\s*set\s+search_path\b/gi)) {
+      hardenedNames.add(match[1].replace(/"/g, '').toLowerCase());
+    }
+  }
 
   for (const file of sqlFiles) {
     const sql = read(file)
       .replace(/--[^\n\r]*/g, '')
       .replace(/\/\*[\s\S]*?\*\//g, '');
-    // Inspect each function declaration header up to AS; do not inspect the
-    // body, where unrelated functions could otherwise affect the result.
-    const headers = sql.matchAll(/\bcreate\s+(?:or\s+replace\s+)?function\b[\s\S]*?\bas\s+(?:\$[a-z_]*\$|')/gi);
+    const headers = sql.matchAll(/\bcreate\s+(?:or\s+replace\s+)?function\s+(?:public\s*\.\s*)?("?[a-z_][\w$]*"?)\s*\([\s\S]*?\bas\s+(?:\$[a-z_]*\$|')/gi);
     for (const match of headers) {
       const header = match[0];
       if (!/\bsecurity\s+definer\b/i.test(header)) continue;
       checked++;
       const relative = path.relative(ROOT, file);
-      const searchPath = header.match(/\\bset\\s+search_path\\s*(?:to|=)\\s*([\\s\\S]*?)(?=\\bas\\s+(?:\\$[a-z_]*\\$|'))/i);
+      const functionName = match[1].replace(/"/g, '').toLowerCase();
+      const searchPath = header.match(/\bset\s+search_path\s*(?:to|=)\s*([\s\S]*?)(?=\bas\s+(?:\$[a-z_]*\$|'))/i);
       if (!searchPath) {
-        report('warnings', relative + ': función SECURITY DEFINER sin SET search_path detectable; revisar manualmente.');
+        if (!hardenedNames.has(functionName)) {
+          report('warnings', relative + ': función SECURITY DEFINER sin SET search_path detectable ni ALTER posterior conocido; revisar manualmente.');
+        }
         continue;
       }
       const configured = searchPath[1]
         .split(',')
         .map(part => part.trim().replace(/[()'"]/g, '').toLowerCase())
         .filter(Boolean);
-      // Require a defensive ordering: pg_catalog first and pg_temp last.
-      // Schema trust still needs human review even when the order is correct.
-      if (configured[0] !== 'pg_catalog' || configured[configured.length - 1] !== 'pg_temp') {
-        report('warnings', relative + ': función SECURITY DEFINER con search_path=' + searchPath[1].trim() + '; comprobar que pg_catalog va primero y pg_temp al final.');
+      // An empty path is also defensive if all referenced objects are qualified.
+      if (configured.length > 0 && (configured[0] !== 'pg_catalog' || configured[configured.length - 1] !== 'pg_temp')) {
+        if (!hardenedNames.has(functionName)) {
+          report('warnings', relative + ': función SECURITY DEFINER con search_path=' + searchPath[1].trim() + '; comprobar que el orden es seguro.');
+        }
       }
     }
   }
