@@ -60,6 +60,45 @@ function auditHtml() {
       }
     }
 
+    const idsWithLabels = new Set();
+    for (const labelMatch of source.matchAll(/<label\b([^>]*)>([\s\S]*?)<\/label\s*>/gi)) {
+      const labelTag = '<label' + labelMatch[1] + '>';
+      const forId = getAttr(labelTag, 'for');
+      if (forId) idsWithLabels.add(forId);
+      const nestedControl = labelMatch[2].match(/<(?:input|select|textarea)\b[^>]*\bid\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i);
+      if (nestedControl) idsWithLabels.add(nestedControl[1] ?? nestedControl[2] ?? nestedControl[3]);
+    }
+
+    for (const match of source.matchAll(/<(input|select|textarea)\b([^>]*)>/gi)) {
+      const tagName = match[1].toLowerCase();
+      const openingTag = '<' + match[1] + match[2] + '>';
+      const type = (getAttr(openingTag, 'type') || '').toLowerCase();
+      if (tagName === 'input' && ['hidden', 'submit', 'button', 'reset', 'image'].includes(type)) continue;
+      const id = getAttr(openingTag, 'id');
+      const ariaLabel = getAttr(openingTag, 'aria-label');
+      const labelledBy = getAttr(openingTag, 'aria-labelledby');
+      if (!(ariaLabel && ariaLabel.trim()) && !(labelledBy && labelledBy.trim()) && !(id && idsWithLabels.has(id))) {
+        report('warnings', relative + ': <' + tagName + '> sin etiqueta asociada detectable (placeholder por sí solo no cuenta).');
+      }
+    }
+
+    for (const match of source.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi)) {
+      const openingTag = '<a' + match[1] + '>';
+      const inner = match[2];
+      const innerText = inner.replace(/<[^>]*>/g, ' ').replace(/&nbsp;|&#160;/gi, ' ').trim();
+      const hasImageAlt = [...inner.matchAll(/<img\b[^>]*>/gi)].some(imageMatch => {
+        const alt = getAttr(imageMatch[0], 'alt');
+        return alt !== null && alt.trim() !== '';
+      });
+      const ariaLabel = getAttr(openingTag, 'aria-label');
+      const labelledBy = getAttr(openingTag, 'aria-labelledby');
+      const title = getAttr(openingTag, 'title');
+      if (!(innerText || hasImageAlt || (ariaLabel && ariaLabel.trim()) ||
+            (labelledBy && labelledBy.trim()) || (title && title.trim()))) {
+        report('warnings', relative + ': enlace <a> sin nombre accesible detectable.');
+      }
+    }
+
     for (const match of source.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button\s*>/gi)) {
       buttonsChecked++;
       const openingTag = '<button' + match[1] + '>';
