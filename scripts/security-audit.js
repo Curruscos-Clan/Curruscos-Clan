@@ -118,13 +118,18 @@ function auditMigrations() {
     for (const match of sql.matchAll(/\bcreate\s+policy\s+(?:"[^"]+"|[a-z_][\w$]*)\s+on\s+(?:only\s+)?public\s*\.\s*("[^"]+"|[a-z_][\w$]*)/gi)) {
       policiesCreated.add(normalizeTableName(match[1]));
     }
+
+    for (const match of sql.matchAll(/\brevoke\s+all\s+(?:privileges\s+)?on\s+(?:table\s+)?public\s*\.\s*("[^"]+"|[a-z_][\w$]*)\s+from\s+([^;]+);/gi)) {
+      const roles = match[2].toLowerCase().replace(/[\s"']/g, '').split(',');
+      if (roles.includes('anon') && roles.includes('authenticated')) directAccessRevoked.add(normalizeTableName(match[1]));
+    }
   }
 
   for (const [table, origin] of tablesCreated) {
     if (!rlsEnabled.has(table)) {
       report('errors', `${origin}: public.${table} se crea en migraciones pero no se encontró ENABLE ROW LEVEL SECURITY en ninguna migración.`);
-    } else if (!policiesCreated.has(table)) {
-      report('warnings', `public.${table}: RLS está activado, pero el análisis estático no encontró ninguna CREATE POLICY; confirmar que el acceso previsto funciona.`);
+    } else if (!policiesCreated.has(table) && !directAccessRevoked.has(table)) {
+      report('warnings', `public.${table}: RLS está activado, pero no se detectaron políticas ni revocación explícita del acceso directo; confirmar el acceso previsto.`);
     }
   }
 
