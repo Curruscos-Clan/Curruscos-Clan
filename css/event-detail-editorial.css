@@ -1,0 +1,23 @@
+/* Curruscos — ficha editorial de convocatoria: papel, tinta y línea de corte. */
+body.public-event-app{background:#F7F6F2!important;color:#121211!important;font-family:var(--font-sans,'Plus Jakarta Sans',sans-serif)!important}
+.public-event-app .public-event-page{max-width:1040px!important;padding-top:42px!important}
+.public-event-app .public-event-page>.eyebrow{font-family:var(--font-mono,ui-monospace,monospace)!important;color:#FF4800!important;font-size:10px!important;font-weight:800!important;letter-spacing:.12em!important}
+.public-event-app .public-event-cover{display:block;width:100%;max-height:360px;object-fit:cover;border:1px solid #E4E2DC;border-radius:8px;margin-top:14px}
+.public-event-app .public-event-shell{gap:14px!important}
+.public-event-app .public-event-main,
+.public-event-app .public-event-side{border:1px solid #E4E2DC!important;border-radius:8px!important;box-shadow:none!important}
+.public-event-app .public-event-main{position:relative;background:#fff!important}
+.public-event-app .public-event-main h1{color:#121211!important;letter-spacing:-.06em!important}
+.public-event-app .public-event-main>p strong{font-family:var(--font-mono,ui-monospace,monospace)!important;font-size:.82em;letter-spacing:.015em}
+.public-event-app .public-event-description{border-top:1px dashed #E4E2DC;margin-top:20px;padding-top:18px;color:#383733!important}
+.public-event-app .public-event-side{background:#121211!important;color:#fff!important}
+.public-event-app .public-event-side .public-event-stat{border-bottom:1px dashed rgba(255,255,255,.22)!important;background:transparent!important;border-radius:0!important;padding:14px 0!important}
+.public-event-app .public-event-side .public-event-stat span{font-family:var(--font-mono,ui-monospace,monospace)!important;font-size:10px!important;letter-spacing:.08em;text-transform:uppercase;color:#C5C2BB!important}
+.public-event-app .public-event-side .public-event-stat strong{color:#fff!important;font-family:var(--font-mono,ui-monospace,monospace)!important}
+.public-event-app .public-event-side .btn-primary,
+.public-event-app .public-event-side .button-primary{border-radius:4px!important;background:#FF4800!important;color:#fff!important}
+.public-event-app .public-tournament-panel{border-radius:8px!important;border-color:#E4E2DC!important;background:#F7F6F2!important}
+.public-event-app .public-tournament-label{font-family:var(--font-mono,ui-monospace,monospace)!important;color:#FF4800!important}
+.public-event-app .public-match-row,.public-event-app .public-team-row,.public-event-app .public-round{border-radius:4px!important}
+@media(max-width:760px){.public-event-app .public-event-page{padding-top:28px!important}.public-event-app .public-event-main{padding:20px!important}.public-event-app .public-event-side{padding:18px!important}}
+@media(prefers-reduced-motion:reduce){.public-event-app *{transition:none!important;scroll-behavior:auto!important}}
