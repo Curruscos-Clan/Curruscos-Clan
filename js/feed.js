@@ -124,6 +124,19 @@ function safePublicEventCover(value) {
       renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba con otro filtro o explora la comunidad para descubrir actividades.",{href:"explorar.html",label:"Explorar eventos"});
       feedList.setAttribute("aria-busy","false");return;
     }
+    const dayStacks=new Map();
+    events.forEach(event=>{
+      const date=startDate(event);
+      const key=date?date.toDateString():"unknown";
+      if(dayStacks.has(key))return;
+      const section=document.createElement("section");
+      section.className="luma-day-group";
+      const dayTitle=date?date.toLocaleDateString("es-ES",{day:"numeric",month:"long"}):"Fecha por confirmar";
+      const weekday=date?date.toLocaleDateString("es-ES",{weekday:"long"}):"Próximamente";
+      section.innerHTML='<span class="luma-day-pin" aria-hidden="true"></span><div class="luma-day-header"><span class="luma-day-title">'+esc(dayTitle)+'</span><span class="luma-day-sub">'+esc(weekday)+'</span></div><div class="luma-cards-stack"></div>';
+      feedList.appendChild(section);
+      dayStacks.set(key,section.querySelector(".luma-cards-stack"));
+    });
     events.forEach(event=>{
       const joined=userContext.joinedEventIds.has(event.id);
       const card=document.createElement("article");card.className="event-card";
@@ -133,8 +146,9 @@ function safePublicEventCover(value) {
       const reason=esc(event._recommendationReason||"Descubre este plan");
       const description=String(event.description||"").trim();
       const capacity=event.capacity?("Aforo: "+Number(event.capacity)):"Plazas por confirmar";
+      const cover=safePublicEventCover(event.cover_url);
       card.innerHTML=
-        '<div class="event-card-media" data-category="'+esc(categoryClass(event))+'" data-has-cover="'+(safePublicEventCover(event.cover_url)?"true":"false")+'" aria-hidden="true">'+(safePublicEventCover(event.cover_url)?'<img class="event-card-cover" alt="" loading="lazy" decoding="async" src="'+esc(safePublicEventCover(event.cover_url))+'">':"")+'<span class="event-card-symbol">'+categorySymbol(event)+'</span></div>'+
+        '<div class="event-card-media" data-category="'+esc(categoryClass(event))+'" data-has-cover="'+(cover?"true":"false")+'" aria-hidden="true">'+(cover?'<img class="event-card-cover" alt="" loading="lazy" decoding="async" src="'+esc(cover)+'">':"")+'<span class="event-card-symbol">'+categorySymbol(event)+'</span></div>'+
         '<div class="event-card-body"><div class="event-card-header"><span class="badge badge-subtle">'+reason+'</span>'+
         (joined?'<span class="badge badge-joined">✓ Inscrito</span>':"")+'</div>'+
         '<div class="event-date-row">'+esc(dateLabel(event))+'</div><h2 class="event-card-title">'+title+'</h2>'+
@@ -145,7 +159,10 @@ function safePublicEventCover(value) {
         '</div></div>';
       const button=card.querySelector(".rsvp-btn");
       if(button&&!joined)button.addEventListener("click",()=>handleJoin(event.id,button));
-      feedList.appendChild(card);
+      const date=startDate(event);
+      const key=date?date.toDateString():"unknown";
+      const stack=dayStacks.get(key);
+      if(stack)stack.appendChild(card);
     });
     feedList.setAttribute("aria-busy","false");
   }
