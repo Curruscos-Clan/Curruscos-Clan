@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111114">
+  <meta name="description" content="Publica una señal SOS para cubrir una vacante de última hora en un plan del grupo.">
+  <title>Radar SOS · Curruscos</title>
+  <link rel="stylesheet" href="css/design-system.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--sos:#ff4059;--sos-soft:rgba(255,64,89,.12)}
+    body.sos-page{min-height:100vh;background:#101014;color:#f6f5f7;padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+    .sos-page .top-header{background:rgba(16,16,20,.84);border-color:rgba(255,255,255,.09);color:#f6f5f7}
+    .sos-page .app-brand{color:#fff}
+    .sos-page .app-container{width:min(100% - 32px,850px);padding-top:32px}
+    .sos-page .bottom-nav{background:rgba(15,15,18,.94);border-color:rgba(255,255,255,.12)}
+    .sos-page .nav-tab{color:rgba(255,255,255,.58);text-decoration:none}
+    .sos-page .nav-tab.active{color:#fff;background:rgba(255,255,255,.12)}
+    .sos-page .nav-tab.active svg{color:#ff6a45}
+    .sos-hero{position:relative;isolation:isolate;overflow:hidden;padding:clamp(26px,6vw,54px) clamp(20px,5vw,42px);border:1px solid rgba(255,64,89,.28);border-radius:28px;background:radial-gradient(ellipse at 50% 0%,rgba(255,64,89,.16),transparent 55%),linear-gradient(145deg,#1a151b,#121216 68%);text-align:center;box-shadow:0 18px 70px rgba(0,0,0,.24)}
+    .sos-hero:after{content:"";position:absolute;z-index:-1;width:260px;height:260px;left:50%;top:-190px;transform:translateX(-50%);border-radius:50%;background:var(--sos);filter:blur(100px);opacity:.2;pointer-events:none}
+    .sos-orbit{width:76px;height:76px;margin:0 auto 22px;display:grid;place-items:center;border:1px solid rgba(255,64,89,.7);border-radius:50%;color:#ff6578;background:var(--sos-soft);box-shadow:0 0 0 9px rgba(255,64,89,.045);animation:sos-pulse 2.4s ease-out infinite}
+    .sos-orbit svg{width:30px;height:30px}
+    @keyframes sos-pulse{0%,100%{box-shadow:0 0 0 8px rgba(255,64,89,.045),0 0 22px rgba(255,64,89,.08)}50%{box-shadow:0 0 0 15px rgba(255,64,89,.015),0 0 36px rgba(255,64,89,.2)}}
+    .sos-eyebrow{font:700 .68rem var(--font-mono);letter-spacing:.14em;color:#ff7383;text-transform:uppercase}
+    .sos-hero h1{margin:12px 0;font:800 clamp(2.1rem,7vw,3.5rem)/.98 var(--font-display);letter-spacing:-.075em;color:#fff}
+    .sos-hero p{max-width:510px;margin:0 auto;color:#aaa7b0;font-size:.94rem;line-height:1.65}
+    .sos-disclaimer{margin:18px auto 0;max-width:520px;color:#85818d;font-size:.74rem;line-height:1.55}
+    .sos-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:16px;margin-top:18px}
+    .sos-panel{min-width:0;padding:22px;border:1px solid rgba(255,255,255,.09);border-radius:22px;background:rgba(255,255,255,.035)}
+    .sos-panel h2{margin:0 0 5px;color:#f7f5f8;font:800 1.22rem var(--font-display);letter-spacing:-.045em}
+    .sos-panel-intro{margin:0 0 20px;color:#92909a;font-size:.82rem;line-height:1.5}
+    .sos-field{display:grid;gap:7px;margin:0 0 15px}
+    .sos-field label{color:#d9d6de;font-size:.78rem;font-weight:700}
+    .sos-field input,.sos-field select,.sos-field textarea{width:100%;min-height:44px;padding:11px 12px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:#17171d;color:#f7f5f8;font:inherit;font-size:.86rem}
+    .sos-field textarea{min-height:88px;resize:vertical}
+    .sos-field input::placeholder,.sos-field textarea::placeholder{color:#777480}
+    .sos-field input:focus,.sos-field select:focus,.sos-field textarea:focus{outline:2px solid rgba(255,64,89,.55);outline-offset:1px}
+    .sos-submit{width:100%;min-height:47px;border:0;border-radius:12px;background:var(--sos);color:#fff;font-weight:850;cursor:pointer;box-shadow:0 7px 24px rgba(255,64,89,.2);transition:transform .2s,opacity .2s}
+    .sos-submit:hover:not(:disabled){transform:translateY(-1px)}
+    .sos-submit:disabled{opacity:.55;cursor:wait}
+    .sos-status{min-height:22px;margin:12px 0 0;font-size:.8rem;line-height:1.5;color:#aaa7b0}
+    .sos-status[data-kind="error"]{color:#ff7c8d}.sos-status[data-kind="success"]{color:#82ddb0}
+    .sos-signal-list{display:grid;gap:10px}
+    .sos-empty{padding:22px 15px;border:1px dashed rgba(255,255,255,.13);border-radius:15px;text-align:center;color:#898692;font-size:.82rem;line-height:1.55}
+    .sos-signal{padding:15px;border:1px solid rgba(255,255,255,.09);border-radius:15px;background:rgba(255,255,255,.035)}
+    .sos-signal-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+    .sos-live{display:inline-flex;align-items:center;gap:6px;color:#ff7383;font:700 .63rem var(--font-mono);letter-spacing:.08em;text-transform:uppercase}
+    .sos-live:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--sos);box-shadow:0 0 10px var(--sos)}
+    .sos-time{color:#85818d;font-size:.67rem}
+    .sos-signal h3{margin:0 0 5px;color:#f7f5f8;font-size:.95rem;letter-spacing:-.02em}
+    .sos-signal p{margin:0;color:#aaa7b0;font-size:.8rem;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+    .sos-signal small{display:block;margin-top:10px;color:#85818d;font-size:.69rem}
+    .sos-refresh{margin-top:12px;padding:8px 11px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:transparent;color:#d6d3dc;font-size:.76rem;font-weight:700;cursor:pointer}
+    .sos-auth-note{margin-top:18px;padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:14px;color:#aaa7b0;font-size:.8rem;line-height:1.55}
+    .sos-auth-note a{color:#ff977f;font-weight:700}
+    @media(max-width:700px){.sos-layout{grid-template-columns:1fr}.sos-panel{padding:19px}.sos-hero{border-radius:23px}.sos-page .app-container{padding-top:20px}}
+    @media(prefers-reduced-motion:reduce){.sos-orbit{animation:none}.sos-submit{transition:none}}
+  </style>
+</head>
+<body class="sos-page">
+  <header class="top-header">
+    <a href="index.html" class="app-brand" aria-label="Curruscos, ir a inicio">curruscos</a>
+    <span class="header-subtitle" style="display:block;color:#aaa7b0">RADAR SOS</span>
+  </header>
+
+  <main class="app-container">
+    <section class="sos-hero" aria-labelledby="sos-title">
+      <div class="sos-orbit" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/></svg>
+      </div>
+      <div class="sos-eyebrow">● Protocolo de vacante · Clan</div>
+      <h1 id="sos-title">¿Nos falta alguien?</h1>
+      <p>Publica una señal para que el grupo pueda cubrir una baja de última hora en un partido o plan.</p>
+      <div class="sos-disclaimer">La señal se publicará en el tablón del grupo seleccionado. Esta versión no envía notificaciones push del móvil.</div>
+    </section>
+
+    <div class="sos-layout">
+      <section class="sos-panel" aria-labelledby="sos-form-title">
+        <h2 id="sos-form-title">Emitir señal</h2>
+        <p class="sos-panel-intro">Cuéntales qué ha pasado y qué plaza queda libre.</p>
+        <form id="sos-form">
+          <div class="sos-field">
+            <label for="sos-group">Grupo destinatario</label>
+            <select id="sos-group" name="group" required><option value="">Cargando tus grupos…</option></select>
+          </div>
+          <div class="sos-field">
+            <label for="sos-title-input">Plan o partido</label>
+            <input id="sos-title-input" name="title" maxlength="100" required placeholder="Ej. Pádel esta tarde · pista 3">
+          </div>
+          <div class="sos-field">
+            <label for="sos-when">¿Cuándo?</label>
+            <input id="sos-when" name="when" maxlength="100" placeholder="Ej. Hoy a las 19:30">
+          </div>
+          <div class="sos-field">
+            <label for="sos-details">Detalles de la vacante</label>
+            <textarea id="sos-details" name="details" maxlength="700" required placeholder="Nivel, lugar, coste y cualquier detalle útil…"></textarea>
+          </div>
+          <button class="sos-submit" id="sos-submit" type="submit">🚨 Publicar señal SOS</button>
+          <p class="sos-status" id="sos-form-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="sos-panel" aria-labelledby="sos-active-title">
+        <h2 id="sos-active-title">Señales recientes</h2>
+        <p class="sos-panel-intro">Avisos SOS publicados en tus grupos durante las últimas 24 horas.</p>
+        <div class="sos-signal-list" id="sos-list" aria-live="polite">
+          <div class="sos-empty">Cargando señales recientes…</div>
+        </div>
+        <button class="sos-refresh" id="sos-refresh" type="button">↻ Actualizar señales</button>
+      </section>
+    </div>
+
+    <div class="sos-auth-note" id="sos-auth-note" hidden>Para emitir o consultar señales necesitas iniciar sesión. <a href="perfil.html?action=login">Ir a mi perfil →</a></div>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <a href="index.html" class="nav-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></a>
+    <a href="explorar.html" class="nav-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><span>Buscar</span></a>
+    <a href="eventos.html" class="nav-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Mi grupo</span></a>
+    <a href="perfil.html" class="nav-tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Mi perfil</span></a>
+  </nav>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/navigation.js"></script>
+  <script>
+  (() => {
+    "use strict";
+    const form = document.getElementById("sos-form");
+    const groupSelect = document.getElementById("sos-group");
+    const submitButton = document.getElementById("sos-submit");
+    const statusNode = document.getElementById("sos-form-status");
+    const listNode = document.getElementById("sos-list");
+    const authNote = document.getElementById("sos-auth-note");
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    let currentUser = null;
+    let currentGroupIds = [];
+    let channel = null;
+
+    function status(message, kind = "") {
+      statusNode.textContent = message;
+      statusNode.dataset.kind = kind;
+    }
+    function escapeText(value) {
+      return String(value ?? "");
+    }
+    function relativeTime(value) {
+      const ms = Date.now() - new Date(value).getTime();
+      if (!Number.isFinite(ms) || ms < 0) return "Ahora";
+      const minutes = Math.floor(ms / 60000);
+      if (minutes < 1) return "Ahora";
+      if (minutes < 60) return "Hace " + minutes + " min";
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return "Hace " + hours + " h";
+      return new Date(value).toLocaleDateString("es-ES");
+    }
+    function showEmpty(message) {
+      listNode.replaceChildren();
+      const node = document.createElement("div");
+      node.className = "sos-empty";
+      node.textContent = message;
+      listNode.append(node);
+    }
+    function renderSignals(rows) {
+      listNode.replaceChildren();
+      if (!rows.length) {
+        showEmpty("No hay señales SOS recientes en tus grupos. Si necesitas cubrir una plaza, puedes publicar la primera.");
+        return;
+      }
+      rows.forEach(row => {
+        const card = document.createElement("article");
+        card.className = "sos-signal";
+        const top = document.createElement("div");
+        top.className = "sos-signal-top";
+        const live = document.createElement("span");
+        live.className = "sos-live";
+        live.textContent = "SOS de grupo";
+        const time = document.createElement("span");
+        time.className = "sos-time";
+        time.textContent = relativeTime(row.created_at);
+        top.append(live, time);
+        const title = document.createElement("h3");
+        title.textContent = row.title || "Vacante urgente";
+        const body = document.createElement("p");
+        body.textContent = row.content || "";
+        const group = document.createElement("small");
+        group.textContent = row.groups?.name ? "Grupo · " + row.groups.name : "Señal del grupo";
+        card.append(top, title, body, group);
+        listNode.append(card);
+      });
+    }
+    async function loadGroups() {
+      const { data, error } = await window.supabaseClient
+        .from("group_members")
+        .select("group_id, groups(id,name,slug)")
+        .eq("user_id", currentUser.id);
+      if (error) throw error;
+      const groups = (data || []).map(row => row.groups).filter(Boolean);
+      currentGroupIds = groups.map(group => group.id);
+      groupSelect.replaceChildren();
+      if (!groups.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No perteneces a ningún grupo";
+        groupSelect.append(option);
+        groupSelect.disabled = true;
+        submitButton.disabled = true;
+        status("Únete a un grupo antes de emitir una señal.", "error");
+        return;
+      }
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Selecciona un grupo…";
+      groupSelect.append(placeholder);
+      groups.forEach(group => {
+        const option = document.createElement("option");
+        option.value = group.id;
+        option.textContent = group.name || "Grupo";
+        groupSelect.append(option);
+      });
+    }
+    async function loadSignals() {
+      if (!currentUser || !currentGroupIds.length) {
+        showEmpty("Inicia sesión y únete a un grupo para ver las señales.");
+        return;
+      }
+      const { data, error } = await window.supabaseClient
+        .from("community_posts")
+        .select("id,group_id,title,content,created_at,groups(name)")
+        .in("group_id", currentGroupIds)
+        .ilike("title", "SOS · %")
+        .eq("is_hidden", false)
+        .gte("created_at", cutoff)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (error) {
+        showEmpty("No se pudieron cargar las señales. Comprueba tu conexión e inténtalo de nuevo.");
+        console.error("Radar SOS: error loading signals", error);
+        return;
+      }
+      renderSignals(data || []);
+    }
+    async function init() {
+      if (!window.supabaseClient) {
+        showEmpty("No se ha podido iniciar la conexión con el servidor. Recarga la página.");
+        status("No se pudo iniciar Supabase.", "error");
+        return;
+      }
+      const { data, error } = await window.supabaseClient.auth.getUser();
+      if (error || !data?.user) {
+        authNote.hidden = false;
+        groupSelect.innerHTML = '<option value="">Inicia sesión para continuar</option>';
+        groupSelect.disabled = true;
+        submitButton.disabled = true;
+        showEmpty("Inicia sesión para consultar las señales de tus grupos.");
+        return;
+      }
+      currentUser = data.user;
+      try {
+        await loadGroups();
+        await loadSignals();
+        if (currentGroupIds.length) {
+          channel = window.supabaseClient.channel("sos-radar-" + currentUser.id)
+            .on("postgres_changes", { event: "INSERT", schema: "public", table: "community_posts" }, payload => {
+              if (currentGroupIds.includes(payload.new?.group_id) && String(payload.new?.title || "").startsWith("SOS ·")) loadSignals();
+            })
+            .subscribe();
+        }
+      } catch (err) {
+        console.error("Radar SOS: initialization failed", err);
+        showEmpty("No se han podido cargar tus grupos. Revisa la conexión o vuelve a intentarlo.");
+        status("Error al cargar los grupos.", "error");
+      }
+    }
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!currentUser) {
+        status("Inicia sesión antes de publicar una señal.", "error");
+        return;
+      }
+      const groupId = groupSelect.value;
+      if (!groupId || !currentGroupIds.includes(groupId)) {
+        status("Selecciona uno de tus grupos.", "error");
+        return;
+      }
+      const plan = document.getElementById("sos-title-input").value.trim();
+      const when = document.getElementById("sos-when").value.trim();
+      const details = document.getElementById("sos-details").value.trim();
+      if (!plan || !details) {
+        status("Indica el plan y los detalles de la vacante.", "error");
+        return;
+      }
+      const title = "SOS · " + plan.slice(0, 90);
+      const content = ["🚨 VACANTE DE ÚLTIMA HORA", when ? "Cuándo: " + when : "", details].filter(Boolean).join("\n\n");
+      submitButton.disabled = true;
+      submitButton.textContent = "Publicando señal…";
+      status("");
+      try {
+        const { error } = await window.supabaseClient.from("community_posts").insert({
+          group_id: groupId,
+          author_id: currentUser.id,
+          title,
+          content,
+          pinned: false
+        });
+        if (error) throw error;
+        form.reset();
+        status("Señal publicada en el tablón del grupo. El aviso push no está disponible en esta versión.", "success");
+        await loadSignals();
+      } catch (err) {
+        console.error("Radar SOS: publish failed", err);
+        status(err?.message || "No se ha podido publicar la señal. Comprueba que sigues siendo miembro del grupo.", "error");
+      } finally {
+        submitButton.disabled = !currentGroupIds.length;
+        submitButton.textContent = "🚨 Publicar señal SOS";
+      }
+    });
+    document.getElementById("sos-refresh").addEventListener("click", loadSignals);
+    window.addEventListener("pagehide", () => {
+      if (channel && window.supabaseClient) window.supabaseClient.removeChannel(channel);
+    });
+    init();
+  })();
+  </script>
+</body>
+</html>
