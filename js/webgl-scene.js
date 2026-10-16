@@ -71,13 +71,16 @@
 
     void main() {
       float n1 = snoise(position * uNoiseScale + vec3(0.0, uTime * 0.19, uTime * 0.11));
-      float n2 = snoise(position * (uNoiseScale * 1.9) - vec3(uTime * 0.13, 0.0, uTime * 0.17)) * 0.28;
-      float n = n1 + n2;
-      vec3 displaced = position + normal * (n * uDistortion);
+      float n2 = snoise(position * (uNoiseScale * 1.9) - vec3(uTime * 0.13, 0.0, uTime * 0.17)) * 0.30;
+      float n3 = snoise(position * (uNoiseScale * 3.2) + vec3(uTime * 0.08, -uTime * 0.15, uTime * 0.12)) * 0.10;
+      float n = n1 + n2 + n3;
+      float ridge = 1.0 - abs(sin(n * 3.2 + n2 * 2.0));
+      vec3 displaced = position + normal * (n * uDistortion + ridge * 0.045);
       vec4 viewPosition = modelViewMatrix * vec4(displaced, 1.0);
-      vNormal = normalize(normalMatrix * normal);
+      // A subtle noise-weighted normal gives the deformed surface more sculptural light.
+      vNormal = normalize(normalMatrix * normalize(normal + vec3(n2, n3, n1) * 0.18));
       vViewPosition = -viewPosition.xyz;
-      vNoise = n;
+      vNoise = n + ridge * 0.12;
       gl_Position = projectionMatrix * viewPosition;
     }
   `;
@@ -93,11 +96,16 @@
     void main() {
       vec3 N = normalize(vNormal);
       vec3 V = normalize(vViewPosition);
-      float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.1);
-      float bands = 0.5 + 0.5 * sin(vNoise * 8.0 + uTime * 1.4);
-      vec3 plasma = mix(uColorGlow, uColorCore, smoothstep(-0.65, 0.75, vNoise + bands * 0.16));
-      plasma += uColorCore * fresnel * 1.15;
-      float alpha = 0.74 + fresnel * 0.24;
+      float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.35);
+      float flow = vNoise * 8.5 + uTime * 1.65 + sin(vNoise * 3.0 - uTime * 0.7) * 0.8;
+      float bands = 0.5 + 0.5 * sin(flow);
+      float filaments = pow(max(0.0, 1.0 - abs(sin(vNoise * 13.0 + uTime * 1.1))), 7.0);
+      float hotCore = smoothstep(0.62, 0.98, bands + fresnel * 0.22);
+      vec3 plasma = mix(uColorGlow * 0.42, uColorCore, smoothstep(-0.58, 0.62, vNoise + bands * 0.22));
+      plasma = mix(plasma, vec3(1.0, 0.78, 0.54), hotCore * 0.34);
+      plasma += uColorCore * fresnel * 1.5;
+      plasma += mix(uColorCore, vec3(1.0, 0.48, 0.22), 0.35) * filaments * (0.38 + fresnel * 0.7);
+      float alpha = clamp(0.64 + fresnel * 0.34 + filaments * 0.10, 0.0, 0.99);
       gl_FragColor = vec4(plasma, alpha);
     }
   `;
@@ -204,7 +212,7 @@
           color: 0xff713d,
           wireframe: true,
           transparent: true,
-          opacity: 0.13,
+          opacity: 0.19,
           depthWrite: false
         })
       );
@@ -212,8 +220,8 @@
 
       // A few orbital arcs frame the plasma; keep the silhouette readable.
       const arcMaterials = [
-        new THREE.MeshBasicMaterial({ color: 0xff8a43, transparent: true, opacity: 0.55, depthWrite: false }),
-        new THREE.MeshBasicMaterial({ color: 0x8276ff, transparent: true, opacity: 0.4, depthWrite: false })
+        new THREE.MeshBasicMaterial({ color: 0xff8a43, transparent: true, opacity: 0.62, depthWrite: false }),
+        new THREE.MeshBasicMaterial({ color: 0x8276ff, transparent: true, opacity: 0.48, depthWrite: false })
       ];
       const arcA = new THREE.Mesh(new THREE.TorusGeometry(1.78, 0.009, 6, 128), arcMaterials[0]);
       arcA.rotation.set(0.95, 0.25, 0.2);
