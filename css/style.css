@@ -6476,3 +6476,23 @@ body.group-panel-open{overflow:hidden}
   body.public-create-app .menu-button,
   body.profile-app .menu-button{display:none!important}
 }
+
+
+/* Editorial art direction: legacy banners use solid ink, never generic gradients. */
+.clan-banner,
+.arena-hero{
+  background:#121211!important;
+  background-image:none!important;
+  color:#fff!important;
+  border:1px solid #292929!important;
+  border-radius:8px!important;
+  box-shadow:none!important;
+}
+.clan-banner :is(h1,h2,h3,p,span,strong,a),
+.arena-hero :is(h1,h2,h3,p,span,strong,a){
+  color:inherit;
+}
+.clan-banner .eyebrow,
+.arena-hero .eyebrow{
+  color:#FF4800!important;
+}
