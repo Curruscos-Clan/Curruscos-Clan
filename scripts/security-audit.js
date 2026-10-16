@@ -192,14 +192,19 @@ function auditSecurityDefinerSearchPaths() {
       if (!/\bsecurity\s+definer\b/i.test(header)) continue;
       checked++;
       const relative = path.relative(ROOT, file);
-      const searchPath = header.match(/\bset\s+search_path\s*(?:to|=)\s*([^\s;]+)/i);
+      const searchPath = header.match(/\\bset\\s+search_path\\s*(?:to|=)\\s*([\\s\\S]*?)(?=\\bas\\s+(?:\\$[a-z_]*\\$|'))/i);
       if (!searchPath) {
         report('warnings', relative + ': función SECURITY DEFINER sin SET search_path detectable; revisar manualmente.');
         continue;
       }
-      const configured = searchPath[1].replace(/[()'"]/g, '').toLowerCase();
-      if (configured !== '' && configured !== 'pg_catalog') {
-        report('warnings', relative + ': función SECURITY DEFINER usa search_path=' + searchPath[1] + '; revisar resolución de objetos y pg_temp.');
+      const configured = searchPath[1]
+        .split(',')
+        .map(part => part.trim().replace(/[()'"]/g, '').toLowerCase())
+        .filter(Boolean);
+      // Require a defensive ordering: pg_catalog first and pg_temp last.
+      // Schema trust still needs human review even when the order is correct.
+      if (configured[0] !== 'pg_catalog' || configured[configured.length - 1] !== 'pg_temp') {
+        report('warnings', relative + ': función SECURITY DEFINER con search_path=' + searchPath[1].trim() + '; comprobar que pg_catalog va primero y pg_temp al final.');
       }
     }
   }
