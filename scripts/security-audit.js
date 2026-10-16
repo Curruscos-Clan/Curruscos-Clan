@@ -233,7 +233,7 @@ function auditLegalReadiness() {
       continue;
     }
     const source = read(file);
-    if (/\\[[^\\]]{2,}\\]/.test(source)) {
+    if (/\[[^\]]{2,}\]/.test(source)) {
       report('warnings', name + ': contiene campos entre corchetes pendientes de completar antes de publicar.');
     }
   }
@@ -241,13 +241,13 @@ function auditLegalReadiness() {
   const loginFile = path.join(ROOT, 'login.html');
   if (fs.existsSync(loginFile)) {
     const login = read(loginFile);
-    if (!/href=["']condiciones\\.html["']/i.test(login) || !/href=["']privacidad\\.html["']/i.test(login)) {
+    if (!/href=["']condiciones\.html["']/i.test(login) || !/href=["']privacidad\.html["']/i.test(login)) {
       report('warnings', 'login.html: el consentimiento de registro debe enlazar condiciones y política de privacidad.');
     }
   }
 }
 
-console.log('[SECURITY AUDIT] Auditoría estática pre-deploy de Curruscos Clan.\\n');
+console.log('[SECURITY AUDIT] Auditoría estática pre-deploy de Curruscos Clan.\n');
 auditHtml();
 auditMigrations();
 auditSecurityDefinerSearchPaths();
