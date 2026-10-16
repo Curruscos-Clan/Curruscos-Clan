@@ -315,3 +315,31 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .event-card, .event-card::before { transition: none !important; }
 }
+
+
+/* Audio-reactive interaction and restrained stardust trail */
+.audio-reactive-button {
+  border-color: rgba(255, 105, 48, .38);
+  background: rgba(255, 85, 0, .07);
+  color: var(--text-main, #fafafc);
+}
+.audio-reactive-button:hover,
+.audio-reactive-button.active {
+  border-color: rgba(255, 105, 48, .78);
+  background: rgba(255, 85, 0, .16);
+  box-shadow: 0 0 24px rgba(255, 85, 0, .12);
+}
+.audio-reactive-button:disabled { opacity: .6; cursor: wait; }
+.audio-reactive-status {
+  flex-basis: 100%;
+  color: var(--text-muted, #9696a5);
+  font: 500 .68rem/1.5 'JetBrains Mono', monospace;
+  letter-spacing: .015em;
+}
+.sparkles-overlay-canvas { contain: strict; }
+@media (max-width: 680px) {
+  .audio-reactive-status { font-size: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sparkles-overlay-canvas { display: none !important; }
+}
