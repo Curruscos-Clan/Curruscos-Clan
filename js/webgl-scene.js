@@ -119,7 +119,7 @@
     const clock = new THREE.Clock();
 
     function resize() {
-      const rect = stage.getBoundingClientRect();
+      const rect = canvas.getBoundingClientRect();
       const width = Math.max(1, rect.width);
       const height = Math.max(1, rect.height);
       camera.aspect = width / height;
@@ -207,7 +207,7 @@
       if (!reducedMotion) start();
     }, { passive: true });
     window.addEventListener("resize", resize, { passive: true });
-    if ("ResizeObserver" in window) new ResizeObserver(resize).observe(stage);
+    if ("ResizeObserver" in window) new ResizeObserver(resize).observe(canvas);
     resize();
     if (reducedMotion) renderStatic();
     else start();
