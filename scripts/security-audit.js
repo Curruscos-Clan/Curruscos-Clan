@@ -61,12 +61,18 @@ function auditHtml() {
     }
 
     const idsWithLabels = new Set();
-    for (const labelMatch of source.matchAll(/<label\b([^>]*)>([\s\S]*?)<\/label\s*>/gi)) {
+    const namedControlsInsideLabels = new Set();
+    for (const labelMatch of source.matchAll(/<label\\b([^>]*)>([\\s\\S]*?)<\\/label\\s*>/gi)) {
       const labelTag = '<label' + labelMatch[1] + '>';
       const forId = getAttr(labelTag, 'for');
       if (forId) idsWithLabels.add(forId);
-      const nestedControl = labelMatch[2].match(/<(?:input|select|textarea)\b[^>]*\bid\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))/i);
-      if (nestedControl) idsWithLabels.add(nestedControl[1] ?? nestedControl[2] ?? nestedControl[3]);
+      for (const nested of labelMatch[2].matchAll(/<(input|select|textarea)\\b([^>]*)>/gi)) {
+        const nestedTag = '<' + nested[1] + nested[2] + '>';
+        const nestedId = getAttr(nestedTag, 'id');
+        const nestedName = getAttr(nestedTag, 'name');
+        if (nestedId) idsWithLabels.add(nestedId);
+        else if (nestedName) namedControlsInsideLabels.add(nested[1].toLowerCase() + ':' + nestedName);
+      }
     }
 
     for (const match of source.matchAll(/<(input|select|textarea)\b([^>]*)>/gi)) {
@@ -75,9 +81,11 @@ function auditHtml() {
       const type = (getAttr(openingTag, 'type') || '').toLowerCase();
       if (tagName === 'input' && ['hidden', 'submit', 'button', 'reset', 'image'].includes(type)) continue;
       const id = getAttr(openingTag, 'id');
+      const name = getAttr(openingTag, 'name');
       const ariaLabel = getAttr(openingTag, 'aria-label');
       const labelledBy = getAttr(openingTag, 'aria-labelledby');
-      if (!(ariaLabel && ariaLabel.trim()) && !(labelledBy && labelledBy.trim()) && !(id && idsWithLabels.has(id))) {
+      if (!(ariaLabel && ariaLabel.trim()) && !(labelledBy && labelledBy.trim()) && !(id && idsWithLabels.has(id)) &&
+          !(name && namedControlsInsideLabels.has(tagName + ':' + name))) {
         report('warnings', relative + ': <' + tagName + '> sin etiqueta asociada detectable (placeholder por sí solo no cuenta).');
       }
     }
