@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#101010">
+  <meta name="description" content="Funda una comunidad en Curruscos y reúne a gente para compartir planes.">
+  <title>Fundar comunidad · Curruscos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/design-system.css">
+  <style>
+    .founder-page{width:min(100% - 32px,760px);margin:0 auto;padding:34px 0 112px}
+    .founder-back{display:inline-flex;align-items:center;gap:8px;color:var(--text-muted);font-size:.88rem;text-decoration:none;margin-bottom:30px}
+    .founder-back:hover{color:var(--text-main)}
+    .founder-hero{position:relative;overflow:hidden;border:1px solid var(--border-light);border-radius:26px;padding:clamp(22px,5vw,42px);background:radial-gradient(ellipse at 100% 0%,rgba(255,87,34,.15),transparent 48%),var(--bg-surface);box-shadow:var(--shadow-sm)}
+    .founder-kicker{display:inline-flex;align-items:center;gap:9px;color:var(--color-primary);font-size:.7rem;font-weight:850;letter-spacing:.15em;text-transform:uppercase}
+    .founder-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
+    .founder-hero h1{font-size:clamp(2.35rem,8vw,4.1rem);line-height:.96;letter-spacing:-.075em;margin:16px 0}
+    .founder-hero>p{max-width:540px;color:var(--text-muted);line-height:1.65;margin:0}
+    .founder-form{display:grid;gap:20px;margin-top:32px}
+    .founder-field{display:grid;gap:8px;min-width:0}
+    .founder-field label{font-size:.83rem;font-weight:780}
+    .founder-field label span{color:var(--text-muted);font-weight:500}
+    .founder-field input,.founder-field textarea,.founder-field select{width:100%;min-width:0;border:1px solid var(--border-light);border-radius:13px;background:var(--bg-base,var(--bg-surface));padding:13px 14px;color:var(--text-main);font:inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+    .founder-field textarea{resize:vertical;min-height:112px}
+    .founder-field input:focus,.founder-field textarea:focus,.founder-field select:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(255,87,34,.12)}
+    .founder-field input::placeholder,.founder-field textarea::placeholder{color:var(--text-muted);opacity:.8}
+    .founder-hint{font-size:.76rem;color:var(--text-muted);line-height:1.5}
+    .founder-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .founder-choice{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--border-light);border-radius:14px;padding:14px;cursor:pointer;background:var(--bg-surface)}
+    .founder-choice:has(input:checked){border-color:var(--color-primary);background:rgba(255,87,34,.07)}
+    .founder-choice input{margin-top:4px;accent-color:var(--color-primary)}
+    .founder-choice strong{display:block;font-size:.84rem}
+    .founder-choice small{display:block;color:var(--text-muted);font-size:.75rem;line-height:1.45;margin-top:4px}
+    .founder-submit{width:100%;min-height:50px;display:flex;justify-content:center;align-items:center;gap:10px;margin-top:4px}
+    .founder-status{display:none;padding:12px 14px;border-radius:12px;font-size:.86rem;line-height:1.5;overflow-wrap:anywhere}
+    .founder-status.visible{display:block}
+    .founder-status.error{border:1px solid rgba(255,90,90,.3);background:rgba(255,70,70,.08);color:var(--text-main)}
+    .founder-status.success{border:1px solid rgba(70,190,130,.3);background:rgba(70,190,130,.08);color:var(--text-main)}
+    .founder-note{font-size:.76rem;color:var(--text-muted);line-height:1.55;margin:0}
+    @media(max-width:540px){.founder-page{padding-top:22px}.founder-hero{border-radius:21px}.founder-options{grid-template-columns:1fr}.founder-form{gap:17px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <header class="top-navbar">
+      <div class="top-navbar-container">
+        <a href="index.html" class="brand-logo" aria-label="Curruscos, ir a Inicio">
+          <span class="brand-icon-box" aria-hidden="true">✳</span><span>Curruscos</span>
+        </a>
+        <nav class="desktop-nav-links" aria-label="Navegación principal">
+          <a href="index.html" class="desktop-nav-link">Inicio</a>
+          <a href="explorar.html" class="desktop-nav-link">Buscar</a>
+          <a href="comunidades.html" class="desktop-nav-link active" aria-current="page">Comunidades</a>
+          <a href="perfil.html" class="desktop-nav-link">Mi perfil</a>
+        </nav>
+        <div class="navbar-actions"><a href="comunidades.html" class="btn btn-outline">← Volver</a></div>
+      </div>
+    </header>
+
+    <main class="founder-page">
+      <a class="founder-back" href="comunidades.html">← Volver a comunidades</a>
+      <section class="founder-hero" aria-labelledby="founder-title">
+        <span class="founder-kicker">Tu comunidad empieza aquí</span>
+        <h1 id="founder-title">Junta a tu gente.<br>Activa tus planes.</h1>
+        <p>Crea un espacio para organizar actividades, descubrir personas afines y convertir las ideas en planes reales.</p>
+
+        <form id="form-create-clan" class="founder-form">
+          <div class="founder-field">
+            <label for="clan-name">Nombre de la comunidad <span>· obligatorio</span></label>
+            <input id="clan-name" name="name" type="text" placeholder="Ej. León Crew" minlength="3" maxlength="80" autocomplete="organization" required>
+            <span class="founder-hint">Elige un nombre claro que la gente pueda reconocer.</span>
+          </div>
+
+          <div class="founder-field">
+            <label for="clan-location">Ciudad o zona principal <span>· obligatorio</span></label>
+            <input id="clan-location" name="location" type="text" placeholder="Ej. León, España" maxlength="120" autocomplete="address-level2" required>
+            <span class="founder-hint">La ubicación se guardará junto a la descripción del grupo para que no se pierda.</span>
+          </div>
+
+          <div class="founder-field">
+            <label for="clan-description">¿De qué va la comunidad? <span>· opcional</span></label>
+            <textarea id="clan-description" name="description" maxlength="1200" placeholder="Planes que os gustan, a quién queréis reunir, qué actividades vais a organizar…"></textarea>
+          </div>
+
+          <div class="founder-field">
+            <span class="label-like" style="font-size:.83rem;font-weight:780">Privacidad de la comunidad</span>
+            <div class="founder-options">
+              <label class="founder-choice">
+                <input type="radio" name="visibility" value="public" checked>
+                <span><strong>🌍 Pública</strong><small>Otras personas podrán descubrirla y solicitar unirse.</small></span>
+              </label>
+              <label class="founder-choice">
+                <input type="radio" name="visibility" value="private">
+                <span><strong>🔒 Privada</strong><small>Un espacio más reservado, con acceso sujeto a las reglas del grupo.</small></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="founder-field">
+            <label for="clan-type">Categoría</label>
+            <select id="clan-type" name="type">
+              <option value="community">Planes y vida social</option>
+              <option value="sports">Deporte</option>
+              <option value="travel">Viajes y escapadas</option>
+              <option value="study">Estudio y aprendizaje</option>
+              <option value="organization">Organización</option>
+              <option value="other">Otros intereses</option>
+            </select>
+          </div>
+
+          <p id="create-status" class="founder-status" role="status" aria-live="polite"></p>
+          <button id="create-submit" type="submit" class="btn btn-primary founder-submit">Crear comunidad <span aria-hidden="true">↗</span></button>
+          <p class="founder-note">Al crearla, tu sesión de Curruscos se utilizará para registrar el grupo. No se mostrará como creada hasta que Supabase confirme la operación.</p>
+        </form>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación inferior">
+      <a href="index.html" class="bottom-nav-item"><span aria-hidden="true">⌂</span><span>Inicio</span></a>
+      <a href="explorar.html" class="bottom-nav-item"><span aria-hidden="true">⌕</span><span>Buscar</span></a>
+      <a href="comunidades.html" class="bottom-nav-item active" aria-current="page"><span aria-hidden="true">◎</span><span>Grupos</span></a>
+      <a href="perfil.html" class="bottom-nav-item"><span aria-hidden="true">◉</span><span>Perfil</span></a>
+    </nav>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    (() => {
+      const form = document.getElementById('form-create-clan');
+      const submit = document.getElementById('create-submit');
+      const status = document.getElementById('create-status');
+      const client = window.supabaseClient;
+
+      function showStatus(message, kind) {
+        status.textContent = message;
+        status.className = 'founder-status visible ' + kind;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!client) {
+          showStatus('No se ha podido conectar con Curruscos. Recarga la página e inténtalo de nuevo.', 'error');
+          return;
+        }
+
+        const name = document.getElementById('clan-name').value.trim();
+        const location = document.getElementById('clan-location').value.trim();
+        const description = document.getElementById('clan-description').value.trim();
+        const visibility = form.querySelector('input[name="visibility"]:checked')?.value || 'public';
+        const type = document.getElementById('clan-type').value;
+
+        if (name.length < 3 || name.length > 80) {
+          showStatus('El nombre debe tener entre 3 y 80 caracteres.', 'error');
+          return;
+        }
+        if (!location || location.length > 120) {
+          showStatus('Introduce una ciudad o zona válida (máximo 120 caracteres).', 'error');
+          return;
+        }
+
+        submit.disabled = true;
+        submit.setAttribute('aria-busy', 'true');
+        submit.textContent = 'Creando comunidad…';
+        status.className = 'founder-status';
+        try {
+          const { data: authData, error: authError } = await client.auth.getUser();
+          if (authError || !authData?.user) {
+            const redirect = 'crear-comunidad.html';
+            window.location.href = 'login.html?redirect=' + encodeURIComponent(redirect);
+            return;
+          }
+
+          // The current groups schema has no dedicated location column.
+          // Store the location as part of the persisted description instead of silently discarding it.
+          const fullDescription = ['Zona: ' + location, description].filter(Boolean).join('\n\n');
+          const { data, error } = await client.rpc('create_discoverable_group', {
+            group_name: name,
+            group_description: fullDescription,
+            group_visibility: visibility,
+            group_type: type
+          });
+          if (error) throw error;
+          if (!data || !data.id) throw new Error('La base de datos no ha devuelto el grupo creado. Comprueba tus comunidades antes de volver a intentarlo.');
+
+          showStatus('Comunidad creada. Abriendo el directorio…', 'success');
+          window.setTimeout(() => { window.location.href = 'comunidades.html'; }, 850);
+        } catch (error) {
+          showStatus(error?.message || 'No se ha podido crear la comunidad. Inténtalo de nuevo.', 'error');
+          submit.disabled = false;
+          submit.removeAttribute('aria-busy');
+          submit.innerHTML = 'Crear comunidad <span aria-hidden="true">↗</span>';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
