@@ -1,6 +1,6 @@
 /**
  * Curruscos · WebGL editorial stage
- * Three.js scene: organic metallic core, orbital HUD, floating crystal fragments.
+ * Three.js scene: compact Antikythera-inspired armillary mechanism.
  * Progressive enhancement: the page/feed remains usable if WebGL or the CDN fails.
  */
 (function () {
@@ -39,67 +39,65 @@
     const sculpture = new THREE.Group();
     scene.add(sculpture);
 
-    const geometry = new THREE.TorusKnotGeometry(1.18, 0.34, isSmall ? 88 : 128, 18, 2, 3);
+    const geometry = new THREE.SphereGeometry(0.52, isSmall ? 24 : 36, isSmall ? 18 : 28);
     const position = geometry.attributes.position;
     const original = new Float32Array(position.array);
     const coreMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x262630,
-      metalness: 0.88,
-      roughness: 0.19,
+      color: 0xb7863b,
+      metalness: 0.94,
+      roughness: 0.24,
       clearcoat: 1,
-      clearcoatRoughness: 0.12,
-      emissive: 0x3d1607,
-      emissiveIntensity: 0.28
+      clearcoatRoughness: 0.16,
+      emissive: 0x3d2107,
+      emissiveIntensity: 0.18
     });
     const core = new THREE.Mesh(geometry, coreMaterial);
     sculpture.add(core);
 
     const ringMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff642e, transparent: true, opacity: 0.62,
+      color: 0xd7a95c, metalness: 0.92, roughness: 0.28,
       side: THREE.DoubleSide, depthWrite: false
     });
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(2.0, 0.006, 6, 150), ringMaterial);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1.72, 0.024, 8, 128), ringMaterial);
     ring.rotation.set(1.0, 0.3, 0.18);
     sculpture.add(ring);
 
+    const innerRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1.22, 0.018, 8, 112),
+      new THREE.MeshPhysicalMaterial({ color: 0xc7c9d1, metalness: 0.92, roughness: 0.3, clearcoat: 0.7 })
+    );
+    innerRing.rotation.set(0.28, 0.85, 0.42);
+    sculpture.add(innerRing);
+
+    const tickGroup = new THREE.Group();
+    ring.add(tickGroup);
+    const tickGeometry = new THREE.BoxGeometry(0.018, 0.12, 0.025);
+    const tickMaterial = new THREE.MeshBasicMaterial({ color: 0xf0cf8b });
+    for (let i = 0; i < 36; i++) {
+      const angle = (i / 36) * Math.PI * 2;
+      const tick = new THREE.Mesh(tickGeometry, tickMaterial);
+      tick.position.set(Math.cos(angle) * 1.69, Math.sin(angle) * 1.69, 0);
+      tick.rotation.z = angle;
+      tickGroup.add(tick);
+    }
+
+    const handGroup = new THREE.Group();
+    sculpture.add(handGroup);
+    const handMaterial = new THREE.MeshBasicMaterial({ color: 0xff642e });
+    const longHand = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.018, 0.025), handMaterial);
+    longHand.position.x = 0.48;
+    handGroup.add(longHand);
+    const shortHand = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.026, 0.03), new THREE.MeshBasicMaterial({ color: 0xe3d3b3 }));
+    shortHand.position.x = 0.31;
+    shortHand.rotation.z = 1.05;
+    handGroup.add(shortHand);
+
     const secondRing = new THREE.Mesh(
-      new THREE.TorusGeometry(2.3, 0.003, 5, 128),
-      new THREE.MeshBasicMaterial({ color: 0x7776ff, transparent: true, opacity: 0.48, depthWrite: false })
+      new THREE.TorusGeometry(1.95, 0.012, 7, 128),
+      new THREE.MeshPhysicalMaterial({ color: 0x77716a, metalness: 0.9, roughness: 0.34, transparent: true, opacity: 0.9, depthWrite: false })
     );
     secondRing.rotation.set(0.4, 1.0, 0.7);
     sculpture.add(secondRing);
-
-    const shardGroup = new THREE.Group();
-    sculpture.add(shardGroup);
-    const shardGeometry = new THREE.OctahedronGeometry(0.13, 0);
-    const shardMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xdfe4ff, metalness: 0.34, roughness: 0.12,
-      clearcoat: 1, transparent: true, opacity: 0.9
-    });
-    const shards = [];
-    const shardCount = isSmall ? 9 : 18;
-    for (let i = 0; i < shardCount; i++) {
-      const mesh = new THREE.Mesh(shardGeometry, shardMaterial);
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() - 0.5) * Math.PI;
-      const radius = 2.35 + Math.random() * 1.05;
-      mesh.position.set(
-        Math.cos(theta) * Math.cos(phi) * radius,
-        Math.sin(phi) * radius * 0.72,
-        Math.sin(theta) * Math.cos(phi) * radius
-      );
-      const scale = 0.5 + Math.random() * 1.2;
-      mesh.scale.set(scale * 0.8, scale * 1.35, scale * 0.65);
-      mesh.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
-      shardGroup.add(mesh);
-      shards.push({
-        mesh,
-        x: (Math.random() - 0.5) * 0.012,
-        y: (Math.random() - 0.5) * 0.014,
-        phase: Math.random() * Math.PI * 2,
-        baseY: mesh.position.y
-      });
-    }
 
     scene.add(new THREE.AmbientLight(0xffffff, 1.25));
     const orangeLight = new THREE.PointLight(0xff5a1f, 27, 18);
@@ -169,14 +167,13 @@
         core.rotation.x = t * 0.11 - currentY * 0.25;
         ring.rotation.z = t * -0.12;
         secondRing.rotation.x = 0.4 + Math.sin(t * 0.18) * 0.12;
-        shards.forEach(function (shard) {
-          shard.mesh.rotation.x += shard.x;
-          shard.mesh.rotation.y += shard.y;
-          shard.mesh.position.y = shard.baseY + Math.sin(t * 0.6 + shard.phase) * 0.12;
-        });
+        innerRing.rotation.z = 0.42 + Math.sin(t * 0.16) * 0.08;
+        handGroup.rotation.z = t * 0.12;
+        tickGroup.rotation.z = t * -0.12;
       } else {
         core.rotation.y = currentX * 0.12;
         core.rotation.x = -currentY * 0.12;
+        handGroup.rotation.z = 0.2;
       }
 
       sculpture.rotation.y += ((currentX * 0.12) - sculpture.rotation.y) * 0.035;
