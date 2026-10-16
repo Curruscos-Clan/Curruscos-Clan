@@ -57,3 +57,21 @@ body.explore-app{
   .explore-app .explore-filters input{grid-column:1/-1}
 }
 @media(prefers-reduced-motion:reduce){.explore-app *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Controles y métricas de búsqueda: rectos y legibles como una ficha técnica. */
+.explore-app .explore-filters input,
+.explore-app .explore-filters select,
+.explore-app .explore-filters textarea,
+.explore-app .explore-chip{border-radius:4px!important}
+.explore-app .explore-toolbar,
+.explore-app .explore-section .section-title .eyebrow,
+.explore-app .public-event-date,
+.explore-app .public-event-price,
+.explore-app .public-event-spots,
+.explore-app .public-event-status{
+  font-family:var(--font-mono,ui-monospace,monospace)!important;
+  letter-spacing:.025em;
+}
+.explore-app .public-event-card{border-radius:8px!important;box-shadow:none!important}
+.explore-app .public-event-card-link{border-radius:8px!important}
+.explore-app .public-event-bottom{border-top:1px dashed var(--explore-line)!important}
