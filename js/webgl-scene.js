@@ -99,8 +99,6 @@
       plasma += uColorCore * fresnel * 1.15;
       float alpha = 0.74 + fresnel * 0.24;
       gl_FragColor = vec4(plasma, alpha);
-      #include <tonemapping_fragment>
-      #include <colorspace_fragment>
     }
   `;
 
@@ -138,8 +136,6 @@
       vec3 cool = vec3(0.25, 0.35, 1.0);
       vec3 color = mix(warm, cool, smoothstep(0.58, 0.95, vHue));
       gl_FragColor = vec4(color, glow * vAlpha);
-      #include <tonemapping_fragment>
-      #include <colorspace_fragment>
     }
   `;
 
