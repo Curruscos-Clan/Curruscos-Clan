@@ -62,11 +62,11 @@ function auditHtml() {
 
     const idsWithLabels = new Set();
     const namedControlsInsideLabels = new Set();
-    for (const labelMatch of source.matchAll(/<label\\b([^>]*)>([\\s\\S]*?)<\\/label\\s*>/gi)) {
+    for (const labelMatch of source.matchAll(/<label\b([^>]*)>([\s\S]*?)<\/label\s*>/gi)) {
       const labelTag = '<label' + labelMatch[1] + '>';
       const forId = getAttr(labelTag, 'for');
       if (forId) idsWithLabels.add(forId);
-      for (const nested of labelMatch[2].matchAll(/<(input|select|textarea)\\b([^>]*)>/gi)) {
+      for (const nested of labelMatch[2].matchAll(/<(input|select|textarea)\b([^>]*)>/gi)) {
         const nestedTag = '<' + nested[1] + nested[2] + '>';
         const nestedId = getAttr(nestedTag, 'id');
         const nestedName = getAttr(nestedTag, 'name');
