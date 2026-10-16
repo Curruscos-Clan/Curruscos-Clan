@@ -1,0 +1,77 @@
+/* Curruscos — búsqueda editorial. Mantiene intacta la lógica de exploración. */
+body.explore-app{
+  --explore-paper:#F7F6F2;--explore-ink:#121211;--explore-muted:#5C5B57;
+  --explore-line:#E4E2DC;--explore-orange:#FF4800;--explore-card:#FFFFFF;
+  background:var(--explore-paper)!important;color:var(--explore-ink)!important;
+  font-family:var(--font-sans, 'Plus Jakarta Sans', sans-serif)!important;
+}
+.explore-app .navbar{
+  background:rgba(247,246,242,.96)!important;border-bottom:1px solid var(--explore-line)!important;
+  backdrop-filter:blur(12px);
+}
+.explore-app .logo{color:var(--explore-ink)!important;letter-spacing:-.055em}
+.explore-app #mainNav a.active{background:#EFECE6!important;color:var(--explore-ink)!important}
+.explore-app .explore-page{max-width:1120px;padding:54px 24px 100px}
+.explore-app .explore-top{align-items:flex-end}
+.explore-app .explore-top h1{color:var(--explore-ink);letter-spacing:-.075em;font-weight:800}
+.explore-app .explore-top p{color:var(--explore-muted)}
+.explore-app .explore-top .eyebrow,.explore-app .section-title .eyebrow{
+  color:var(--explore-orange)!important;font-family:var(--font-mono,monospace);
+  font-size:10px;letter-spacing:.13em;font-weight:700
+}
+.explore-app .explore-filters input,.explore-app .explore-filters select,
+.explore-app input,.explore-app select,.explore-app textarea{
+  border-radius:4px!important;border-color:var(--explore-line)!important;
+  background:var(--explore-card)!important;color:var(--explore-ink)!important;
+}
+.explore-app .explore-filters input:focus,.explore-app .explore-filters select:focus,
+.explore-app input:focus,.explore-app select:focus,.explore-app textarea:focus{
+  border-color:var(--explore-ink)!important;outline:1px solid var(--explore-ink)!important;
+}
+.explore-app .explore-chip{border-radius:4px!important;border-color:var(--explore-line)!important;background:#fff!important;color:var(--explore-muted)!important}
+.explore-app .explore-chip.active{background:var(--explore-ink)!important;border-color:var(--explore-ink)!important;color:#fff!important}
+.explore-app .explore-section{scroll-margin-top:90px}
+.explore-app .explore-section h2,.explore-app .section-title h2{color:var(--explore-ink);letter-spacing:-.045em}
+.explore-app .explore-section p,.explore-app .section-title p{color:var(--explore-muted)}
+.explore-app .event-card,.explore-app .explore-event-card,.explore-app .discovery-card,
+.explore-app .team-card,.explore-app .person-card{
+  border-radius:8px!important;border-color:var(--explore-line)!important;
+  box-shadow:none!important;background:var(--explore-card)!important;
+}
+.explore-app .event-card:hover,.explore-app .explore-event-card:hover,.explore-app .discovery-card:hover{
+  border-color:var(--explore-ink)!important;box-shadow:0 4px 14px rgba(18,18,17,.06)!important;
+}
+.explore-app .event-card h3,.explore-app .event-card-title,.explore-app .discovery-card h3{color:var(--explore-ink)}
+.explore-app .event-card-date,.explore-app .event-date,.explore-app .event-badge{color:var(--explore-orange)!important}
+.explore-app .btn-primary,.explore-app .button-primary{background:var(--explore-orange)!important;border-color:var(--explore-orange)!important;border-radius:4px!important}
+.explore-app .btn-secondary,.explore-app .button-secondary{border-radius:4px!important;border-color:var(--explore-line)!important}
+.explore-app .bottom-nav{background:rgba(247,246,242,.97)!important;border-top:1px solid var(--explore-line)!important;box-shadow:none!important}
+.explore-app .bottom-nav-item{border-radius:4px!important}
+.explore-app .bottom-nav-item.active{background:#EFECE6!important;color:var(--explore-ink)!important}
+.explore-app .bottom-nav-item.active b{color:var(--explore-orange)!important}
+@media(max-width:760px){
+  .explore-app .explore-page{padding:32px 16px 90px}
+  .explore-app .explore-top{display:block}
+  .explore-app .explore-top h1{font-size:clamp(42px,12vw,62px)}
+  .explore-app .explore-filters{grid-template-columns:1fr 1fr}
+  .explore-app .explore-filters input{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.explore-app *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Controles y métricas de búsqueda: rectos y legibles como una ficha técnica. */
+.explore-app .explore-filters input,
+.explore-app .explore-filters select,
+.explore-app .explore-filters textarea,
+.explore-app .explore-chip{border-radius:4px!important}
+.explore-app .explore-toolbar,
+.explore-app .explore-section .section-title .eyebrow,
+.explore-app .public-event-date,
+.explore-app .public-event-price,
+.explore-app .public-event-spots,
+.explore-app .public-event-status{
+  font-family:var(--font-mono,ui-monospace,monospace)!important;
+  letter-spacing:.025em;
+}
+.explore-app .public-event-card{border-radius:8px!important;box-shadow:none!important}
+.explore-app .public-event-card-link{border-radius:8px!important}
+.explore-app .public-event-bottom{border-top:1px dashed var(--explore-line)!important}
