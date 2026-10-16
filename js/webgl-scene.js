@@ -7,11 +7,11 @@
   "use strict";
 
   const PRESETS = {
-    todas:       { scale: 1.45, distortion: 0.42, speed: 0.72, core: [1.0, 0.28, 0.08], glow: [0.28, 0.12, 0.82] },
-    deporte:     { scale: 2.15, distortion: 0.34, speed: 1.12, core: [0.04, 0.92, 0.52], glow: [1.0, 0.28, 0.04] },
-    ocio:        { scale: 1.15, distortion: 0.48, speed: 0.62, core: [1.0, 0.12, 0.34], glow: [0.9, 0.52, 0.08] },
-    viajes:      { scale: 2.75, distortion: 0.36, speed: 0.5, core: [0.08, 0.58, 1.0], glow: [0.0, 0.82, 0.62] },
-    videojuegos: { scale: 3.4, distortion: 0.5, speed: 1.25, core: [0.68, 0.12, 1.0], glow: [0.0, 0.88, 1.0] }
+    todas:       { scale: 1.45, distortion: 0.105, speed: 0.34, core: [0.72, 0.36, 0.16], glow: [0.10, 0.26, 0.48] },
+    deporte:     { scale: 2.15, distortion: 0.075, speed: 0.62, core: [0.12, 0.72, 0.56], glow: [0.82, 0.30, 0.10] },
+    ocio:        { scale: 1.15, distortion: 0.12, speed: 0.30, core: [0.86, 0.28, 0.30], glow: [0.92, 0.58, 0.22] },
+    viajes:      { scale: 2.75, distortion: 0.08, speed: 0.24, core: [0.16, 0.48, 0.78], glow: [0.12, 0.68, 0.62] },
+    videojuegos: { scale: 3.4, distortion: 0.14, speed: 0.68, core: [0.52, 0.30, 0.78], glow: [0.08, 0.66, 0.82] }
   };
 
   const plasmaVertexShader = `
@@ -188,7 +188,7 @@
       const sceneGroup = new THREE.Group();
       scene.add(sceneGroup);
 
-      const coreGeometry = new THREE.IcosahedronGeometry(1.25, small ? 4 : 5);
+      const coreGeometry = new THREE.SphereGeometry(1.08, small ? 32 : 48, small ? 24 : 36);
       const uniforms = {
         uTime: { value: 0 },
         uNoiseScale: { value: WebGLStage.current.scale },
@@ -207,12 +207,12 @@
       sceneGroup.add(core);
 
       const shell = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(1.31, small ? 2 : 3),
+        new THREE.SphereGeometry(1.12, small ? 18 : 28, small ? 12 : 18),
         new THREE.MeshBasicMaterial({
-          color: 0xff713d,
+          color: 0x7f9ba8,
           wireframe: true,
           transparent: true,
-          opacity: 0.19,
+          opacity: 0.22,
           depthWrite: false
         })
       );
@@ -220,15 +220,38 @@
 
       // A few orbital arcs frame the plasma; keep the silhouette readable.
       const arcMaterials = [
-        new THREE.MeshBasicMaterial({ color: 0xff8a43, transparent: true, opacity: 0.62, depthWrite: false }),
-        new THREE.MeshBasicMaterial({ color: 0x8276ff, transparent: true, opacity: 0.48, depthWrite: false })
+        new THREE.MeshStandardMaterial({ color: 0xdca66b, metalness: 0.82, roughness: 0.28, emissive: 0x5b260d, emissiveIntensity: 0.35 }),
+        new THREE.MeshStandardMaterial({ color: 0x8ba9c5, metalness: 0.78, roughness: 0.32, emissive: 0x142c4b, emissiveIntensity: 0.25 })
       ];
-      const arcA = new THREE.Mesh(new THREE.TorusGeometry(1.78, 0.009, 6, 128), arcMaterials[0]);
+      const arcA = new THREE.Mesh(new THREE.TorusGeometry(1.48, 0.018, 8, 144), arcMaterials[0]);
       arcA.rotation.set(0.95, 0.25, 0.2);
       sceneGroup.add(arcA);
-      const arcB = new THREE.Mesh(new THREE.TorusGeometry(1.58, 0.008, 6, 112), arcMaterials[1]);
+      const arcB = new THREE.Mesh(new THREE.TorusGeometry(1.34, 0.014, 8, 128), arcMaterials[1]);
       arcB.rotation.set(0.25, 1.0, 0.75);
       sceneGroup.add(arcB);
+
+      // Fine meridians make the central object read as a physical armillary globe.
+      const meridianMaterial = new THREE.MeshStandardMaterial({
+        color: 0x9eb7c4, metalness: 0.86, roughness: 0.24,
+        transparent: true, opacity: 0.48, depthWrite: false
+      });
+      const meridians = [];
+      [
+        [0, 0, 0],
+        [Math.PI / 2, 0, 0],
+        [0, 0, Math.PI / 2]
+      ].forEach((rotation) => {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.16, 0.009, 6, 96), meridianMaterial);
+        ring.rotation.set(rotation[0], rotation[1], rotation[2]);
+        sceneGroup.add(ring);
+        meridians.push(ring);
+      });
+      const equator = new THREE.Mesh(
+        new THREE.TorusGeometry(1.105, 0.014, 6, 96),
+        new THREE.MeshStandardMaterial({ color: 0xe7b878, metalness: 0.9, roughness: 0.22 })
+      );
+      equator.rotation.x = Math.PI / 2;
+      sceneGroup.add(equator);
 
       // Particle positions stay fixed in the buffer; their orbital motion is calculated in the vertex shader.
       const particleCount = small ? 220 : 420;
@@ -317,6 +340,10 @@
           shell.rotation.z = t * 0.045;
           arcA.rotation.z = 0.2 + t * 0.06;
           arcB.rotation.x = 0.25 + Math.sin(t * 0.18) * 0.08;
+          meridians[0].rotation.y = t * 0.045;
+          meridians[1].rotation.z = t * 0.035;
+          meridians[2].rotation.x = t * 0.04;
+          equator.rotation.z = t * 0.06;
           sceneGroup.rotation.y += (smoothX * 0.12 - sceneGroup.rotation.y) * 0.025;
           sceneGroup.rotation.x += (-smoothY * 0.08 - sceneGroup.rotation.x) * 0.025;
           particles.rotation.y = t * 0.018 + smoothX * 0.08;
@@ -403,6 +430,10 @@
         arcA.geometry.dispose();
         arcB.geometry.dispose();
         arcMaterials.forEach((material) => material.dispose());
+        meridians.forEach((ring) => { ring.geometry.dispose(); });
+        meridianMaterial.dispose();
+        equator.geometry.dispose();
+        equator.material.dispose();
         particleGeometry.dispose();
         particleMaterial.dispose();
         renderer.dispose();
