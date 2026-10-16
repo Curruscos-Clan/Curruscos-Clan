@@ -175,9 +175,41 @@ function auditMigrations() {
   console.log(`[SQL] ${sqlFiles.length} migraciones; ${tablesCreated.size} tablas public detectadas, ${rlsEnabled.size} tablas con RLS y ${policiesCreated.size} tablas con políticas detectadas.`);
 }
 
-console.log('[SECURITY AUDIT] Auditoría estática pre-deploy de Curruscos Clan.\n');
+function auditSecurityDefinerSearchPaths() {
+  const migrationDir = path.join(ROOT, 'supabase', 'migrations');
+  const sqlFiles = walk(migrationDir, name => name.toLowerCase().endsWith('.sql'));
+  let checked = 0;
+
+  for (const file of sqlFiles) {
+    const sql = read(file)
+      .replace(/--[^\n\r]*/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '');
+    // Inspect each function declaration header up to AS; do not inspect the
+    // body, where unrelated functions could otherwise affect the result.
+    const headers = sql.matchAll(/\bcreate\s+(?:or\s+replace\s+)?function\b[\s\S]*?\bas\s+(?:\$[a-z_]*\$|')/gi);
+    for (const match of headers) {
+      const header = match[0];
+      if (!/\bsecurity\s+definer\b/i.test(header)) continue;
+      checked++;
+      const relative = path.relative(ROOT, file);
+      const searchPath = header.match(/\bset\s+search_path\s*(?:to|=)\s*([^\s;]+)/i);
+      if (!searchPath) {
+        report('warnings', relative + ': función SECURITY DEFINER sin SET search_path detectable; revisar manualmente.');
+        continue;
+      }
+      const configured = searchPath[1].replace(/[()'"]/g, '').toLowerCase();
+      if (configured !== '' && configured !== 'pg_catalog') {
+        report('warnings', relative + ': función SECURITY DEFINER usa search_path=' + searchPath[1] + '; revisar resolución de objetos y pg_temp.');
+      }
+    }
+  }
+  console.log('[SQL] ' + checked + ' cabeceras SECURITY DEFINER revisadas para search_path.');
+}
+
+console.log('[SECURITY AUDIT] Auditoría estática pre-deploy de Curruscos Clan.\\n');
 auditHtml();
 auditMigrations();
+auditSecurityDefinerSearchPaths();
 
 console.log(`\n[RESULTADO] ${findings.errors} errores de RLS; ${findings.warnings} advertencias de accesibilidad/configuración.`);
 if (findings.errors > 0) {
