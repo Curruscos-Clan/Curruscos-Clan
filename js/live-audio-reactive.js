@@ -35,6 +35,8 @@
     };
 
     async function start() {
+      if (touchTimer) { clearInterval(touchTimer); touchTimer = 0; }
+      touchIntensity = 0;
       if (!navigator.mediaDevices?.getUserMedia || !AudioContextClass) {
         announce("Este navegador no permite activar el audio reactivo.");
         return;
