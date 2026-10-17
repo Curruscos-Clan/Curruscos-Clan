@@ -161,8 +161,25 @@ async function loadPublicEvents(){
     ["featuredEventsGrid","publicEventsGrid","peopleGrid","teamsGrid","recommendationsGrid"].forEach(id=>{const root=document.getElementById(id);if(!root?.querySelector(".explore-loading"))return;root.innerHTML='<div class="explore-error" role="status"><span>No se pudieron cargar los resultados.</span><button type="button" class="explore-retry">Reintentar</button></div>';root.querySelector(".explore-retry")?.addEventListener("click",loadPublicEvents,{once:true});});
   }finally{finishLoading();}
 }
+async function updateExploreHeader() {
+  const root = document.getElementById("auth-header-action");
+  if (!root) return;
+  try {
+    const user = typeof getCurrentUser === "function" ? await getCurrentUser() : null;
+    if (user) {
+      const label = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "Mi perfil";
+      root.innerHTML = '<a class="btn btn-secondary" href="perfil.html" aria-label="Abrir perfil">' + escapeHtml(label) + '</a>';
+    } else {
+      root.innerHTML = '<a class="btn btn-secondary" href="perfil.html?action=login">Entrar</a>';
+    }
+  } catch (err) {
+    console.warn("No se pudo actualizar el botón de auth en el header", err);
+  }
+}
+
 document.addEventListener("DOMContentLoaded",async()=>{
   await window.curruscosI18n?.ready;
+  updateExploreHeader();
   const params=new URLSearchParams(window.location.search),initialCategory=params.get("category"),initialType=params.get("event_type"),initialSearch=params.get("q"),initialSort=params.get("sort"),validQuickFilters=["all","open","soon","live"],requestedQuickFilter=params.get("filter"),initialQuickFilter=validQuickFilters.includes(requestedQuickFilter)?requestedQuickFilter:"all",search=document.getElementById("eventSearch");
   if(initialCategory&&document.getElementById("eventCategory"))document.getElementById("eventCategory").value=initialCategory;
   if(initialType&&document.getElementById("eventType"))document.getElementById("eventType").value=initialType;
@@ -170,6 +187,22 @@ document.addEventListener("DOMContentLoaded",async()=>{
   if(["date","newest","capacity"].includes(initialSort)&&document.getElementById("eventSort"))document.getElementById("eventSort").value=initialSort;
   document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter===initialQuickFilter;chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});
   document.querySelectorAll(".explore-scope-tab").forEach(button=>button.addEventListener("click",()=>setExploreScope(button.dataset.scope)));
+
+  // Dynamic filter clicks for category scroll links (prevents full page reloads)
+  document.querySelectorAll(".category-scroll a").forEach(link=>{
+    link.addEventListener("click",e=>{
+      e.preventDefault();
+      const href=link.getAttribute("href")||"";
+      const urlParams=new URLSearchParams(href.includes("?")?href.split("?")[1]:"");
+      const cat=urlParams.get("category");
+      const type=urlParams.get("event_type");
+      if(document.getElementById("eventCategory"))document.getElementById("eventCategory").value=cat||"all";
+      if(document.getElementById("eventType"))document.getElementById("eventType").value=type||"all";
+      applyAndRender();
+      if(currentExploreScope==="groups")loadPublicGroups();else loadPublicEvents();
+    });
+  });
+
   let timer=null;const instant=()=>{clearTimeout(timer);if(currentExploreScope==="groups"){timer=setTimeout(loadPublicGroups,180);return;}applyAndRender();updateExploreControls();timer=setTimeout(()=>loadPublicEvents(),500);};
   search?.addEventListener("input",instant);
   ["eventCategory","eventType","eventSort"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{applyAndRender();if(id!=="eventSort")loadPublicEvents();}));
