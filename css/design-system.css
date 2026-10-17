@@ -52,9 +52,10 @@ button, input, select, textarea, a {
   font-family: var(--font-sans);
 }
 
-button {
+button, .btn, .button, .filter-chip, .intent, .explore-chip, .rsvp-btn, .explore-scope-tab, .recommendation-dismiss, .clearExploreFilters, .category-scroll a, .nav-tab {
   color: inherit;
-  cursor: pointer;
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 a {
