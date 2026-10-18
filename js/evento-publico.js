@@ -299,6 +299,35 @@ async function renderPublicEvent(){
     const coverUrl=safePublicEventCover(event.cover_url);
     const coverMarkup=coverUrl?'<div class="public-event-cover"><img src="'+escapeHtml(coverUrl)+'" alt="" fetchpriority="high" decoding="async"></div>':"";
     root.innerHTML='<span class="eyebrow">'+escapeHtml(PUBLIC_ACTIVITY_LABELS[event.event_type]||PUBLIC_CATEGORY_LABELS[event.category]||"EVENTO")+'</span>'+coverMarkup+'<div class="public-event-shell"><article class="public-event-main"><h1>'+escapeHtml(event.title)+'</h1><p><strong>'+escapeHtml(publicDate(event))+'</strong>'+(event.time?" · "+escapeHtml(event.time):"")+(event.location?" · "+escapeHtml(event.location):"")+'</p>'+((event.organizer_name)?'<p><strong>Organiza:</strong> <a class="public-organizer-link" href="perfil-publico.html?id='+encodeURIComponent(event.created_by)+'">'+escapeHtml(event.organizer_name)+'</a></p>':"")+'<div class="public-event-description">'+escapeHtml(event.description||"El organizador todavía no ha añadido una descripción.")+'</div>'+(isOrganizer&&!["finished","cancelled"].includes(event.status)?renderPublicEventEditForm(event):"")+'</article><aside class="public-event-side"><div class="public-event-stat"><span>Participantes</span><strong>'+yes+(event.capacity?"/"+event.capacity:"")+'</strong></div><div class="public-event-stat"><span>Precio</span><strong>'+(fee>0?fee.toFixed(2).replace(".",",")+" €":"Gratis")+'</strong></div><div class="public-event-stat"><span>Inscripción</span><strong>'+((event.registration_deadline)?new Date(event.registration_deadline).toLocaleString("es-ES",{dateStyle:"medium",timeStyle:"short"}):"Hasta completar plazas")+'</strong></div><button id="eventJoinButton" class="button button-primary" type="button">'+(mine?.status==="yes"?(event.status==="finished"?"Participación cerrada":"Salir del evento"):(closed?(event.status==="finished"?"Evento finalizado":"Inscripciones cerradas"):(full?"Plazas completas":"Apuntarme al evento")))+'</button><p id="eventJoinNote" class="public-login-note">'+(user?"":'Necesitas una cuenta para apuntarte. <a href="login.html">Entrar o crear cuenta</a>.')+'</p></aside></div><div id="publicTournamentArea"></div><section class="event-comments-panel" id="eventCommentsPanel"><div class="event-comments-head"><div><span class="public-tournament-label">CONVERSACIÓN</span><h2>Preguntas y comentarios</h2></div><span class="event-comments-live">En directo</span></div><p class="event-comments-intro">Resuelve dudas y comparte información útil sobre este plan.</p><form id="eventCommentsForm" class="event-comments-form"><label class="event-comments-sr-only" for="eventCommentInput">Escribe una pregunta o comentario</label><textarea id="eventCommentInput" name="content" rows="3" maxlength="500" placeholder="Escribe una pregunta o comentario…" required></textarea><div class="event-comments-form-footer"><span id="eventCommentsCounter" class="event-comments-counter">0/500</span><button class="button button-primary" type="submit">Publicar comentario</button></div><p id="eventCommentsNotice" class="event-comments-notice" role="status" aria-live="polite" hidden></p></form><div id="eventCommentsList" class="event-comments-list" aria-live="polite" aria-busy="true"><p class="event-comments-empty">Cargando comentarios…</p></div></section>';
+    
+    // Envolvente visual de la portada: reutiliza datos reales del evento.
+    // El H1 original permanece accesible; la copia de portada es solo visual.
+    const eventCover = root.querySelector(".public-event-cover");
+    const eventEyebrow = root.querySelector(":scope > .eyebrow");
+    const eventHeading = root.querySelector(".public-event-main h1");
+    if (eventCover && eventEyebrow && eventHeading) {
+        const overlay = document.createElement("div");
+        overlay.className = "public-event-cover-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        const category = document.createElement("span");
+        category.className = "public-event-cover-category";
+        category.textContent = eventEyebrow.textContent;
+        const visualTitle = document.createElement("span");
+        visualTitle.className = "public-event-cover-title";
+        visualTitle.textContent = eventHeading.textContent;
+        overlay.append(category, visualTitle);
+        eventCover.appendChild(overlay);
+        eventCover.classList.add("has-event-title");
+        eventHeading.classList.add("event-hero-source-title");
+        eventEyebrow.remove();
+    }
+
+    const joinStateButton = document.getElementById("eventJoinButton");
+    if (joinStateButton && mine?.status === "yes") {
+        joinStateButton.classList.add("is-joined");
+        if (event.status !== "finished") joinStateButton.textContent = "Plaza reservada ✓ · Cancelar";
+    }
+
 
     if (window.CommentsModule) window.CommentsModule.init(event, user).catch(error => console.error("No se pudo iniciar el módulo de comentarios:", error));
 
