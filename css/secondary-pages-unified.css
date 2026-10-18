@@ -1,0 +1,215 @@
+/* Curruscos — shared visual and navigation repair for secondary pages.
+   Scoped to existing pages; preserves all form IDs, data flows and scripts. */
+:root {
+  color-scheme: light;
+  --secondary-bg: #f6f6f3;
+  --secondary-paper: #fff;
+  --secondary-ink: #171815;
+  --secondary-muted: #70716b;
+  --secondary-line: #e4e4dd;
+  --secondary-accent: #ff5a36;
+}
+html, body {
+  background: var(--secondary-bg) !important;
+  color: var(--secondary-ink) !important;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+body.explore-app, body.public-create-app, body.profile-app {
+  min-height: 100vh;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.explore-app .navbar,
+body.public-create-app .navbar,
+body.profile-app .navbar {
+  position: sticky !important;
+  inset: 0 0 auto !important;
+  z-index: 100 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  height: 64px !important;
+  min-height: 64px !important;
+  box-sizing: border-box !important;
+  padding: 0 max(18px, calc((100vw - 1180px)/2)) !important;
+  background: rgba(246,246,243,.94) !important;
+  color: var(--secondary-ink) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--secondary-line) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(18px) !important;
+}
+.explore-app .logo, .public-create-app .logo, .profile-app .logo {
+  color: var(--secondary-ink) !important;
+  font-weight: 850 !important;
+  letter-spacing: -.065em !important;
+  text-decoration: none !important;
+}
+.explore-app #mainNav, .public-create-app #mainNav, .profile-app #mainNav,
+.explore-app .menu-button, .public-create-app .menu-button, .profile-app .menu-button {
+  display: none !important;
+}
+.explore-page, .public-create-page, .profile-page {
+  box-sizing: border-box !important;
+  padding-top: 38px !important;
+}
+.explore-app .explore-page, .public-create-app .public-create-page, .profile-app .profile-page {
+  color: var(--secondary-ink) !important;
+}
+.explore-app .explore-page h1, .public-create-app .public-create-page h1,
+.profile-app .profile-header h1 {
+  color: var(--secondary-ink) !important;
+}
+.explore-app .explore-page p, .public-create-app .public-create-page > p,
+.profile-app .profile-header p {
+  color: var(--secondary-muted) !important;
+}
+.public-create-app .public-create-card,
+.profile-app .profile-card, .profile-app .profile-side-card {
+  background: var(--secondary-paper) !important;
+  color: var(--secondary-ink) !important;
+  border: 1px solid var(--secondary-line) !important;
+  box-shadow: 0 5px 22px rgba(20,20,18,.035) !important;
+}
+.public-create-app .public-create-form label, .profile-app .profile-form label {
+  color: #4d4e49 !important;
+}
+.public-create-app .public-create-form input,
+.public-create-app .public-create-form select,
+.public-create-app .public-create-form textarea,
+.profile-app .profile-form input,
+.explore-app input[type="search"], .explore-app input[type="text"],
+.explore-app select {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+  color: var(--secondary-ink) !important;
+  background: #fff !important;
+  border: 1px solid #dcdcd4 !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+.public-create-app .public-create-form input:focus,
+.public-create-app .public-create-form select:focus,
+.public-create-app .public-create-form textarea:focus,
+.profile-app .profile-form input:focus,
+.explore-app input:focus, .explore-app select:focus {
+  outline: 3px solid rgba(255,90,54,.14) !important;
+  border-color: #ff9c85 !important;
+}
+.explore-app .public-event-card {
+  background: #fff !important;
+  color: var(--secondary-ink) !important;
+  border-color: var(--secondary-line) !important;
+  box-shadow: 0 2px 8px rgba(20,20,10,.025) !important;
+}
+.explore-app .public-event-card.featured {
+  background: #20211f !important;
+  color: #fff !important;
+  border-color: #20211f !important;
+}
+.explore-app .public-event-card.featured h2 { color: #fff !important; }
+.explore-app .public-event-card:not(.featured) h2 { color: var(--secondary-ink) !important; }
+
+/* One real nav markup, one layout: .nav-tab links in four equal columns. */
+html body.explore-app nav.bottom-nav,
+html body.public-create-app nav.bottom-nav,
+html body.profile-app nav.bottom-nav {
+  position: fixed !important;
+  inset: auto auto calc(12px + env(safe-area-inset-bottom, 0px)) 50% !important;
+  top: auto !important;
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  gap: 4px !important;
+  box-sizing: border-box !important;
+  width: min(460px, calc(100% - 24px)) !important;
+  height: 66px !important;
+  min-height: 66px !important;
+  padding: 5px !important;
+  margin: 0 !important;
+  border: 1px solid rgba(20,20,10,.09) !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,.96) !important;
+  box-shadow: 0 8px 32px rgba(20,20,10,.14) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  z-index: 999 !important;
+}
+html body.explore-app nav.bottom-nav > a.nav-tab,
+html body.public-create-app nav.bottom-nav > a.nav-tab,
+html body.profile-app nav.bottom-nav > a.nav-tab {
+  position: static !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 52px !important;
+  height: 52px !important;
+  margin: 0 !important;
+  padding: 3px 1px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  transform: none !important;
+  color: #77786f !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  font-size: 10px !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+html body.explore-app nav.bottom-nav > a.nav-tab svg,
+html body.public-create-app nav.bottom-nav > a.nav-tab svg,
+html body.profile-app nav.bottom-nav > a.nav-tab svg {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex: 0 0 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+}
+html body.explore-app nav.bottom-nav > a.nav-tab span,
+html body.public-create-app nav.bottom-nav > a.nav-tab span,
+html body.profile-app nav.bottom-nav > a.nav-tab span {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: inherit !important;
+  font-size: 10px !important;
+  line-height: 1.15 !important;
+}
+html body.explore-app nav.bottom-nav > a.nav-tab.active,
+html body.public-create-app nav.bottom-nav > a.nav-tab.active,
+html body.profile-app nav.bottom-nav > a.nav-tab.active {
+  color: var(--secondary-ink) !important;
+  background: #f0f0eb !important;
+  box-shadow: none !important;
+}
+html body.explore-app nav.bottom-nav > a.nav-tab.active svg,
+html body.public-create-app nav.bottom-nav > a.nav-tab.active svg,
+html body.profile-app nav.bottom-nav > a.nav-tab.active svg {
+  color: var(--secondary-accent) !important;
+  stroke: var(--secondary-accent) !important;
+}
+@media (max-width: 680px) {
+  body.explore-app .navbar, body.public-create-app .navbar, body.profile-app .navbar {
+    height: 58px !important; min-height: 58px !important; padding: 0 16px !important;
+  }
+  .explore-page, .public-create-page, .profile-page {
+    width: calc(100% - 28px) !important;
+    padding-top: 25px !important;
+  }
+  .public-create-app .public-create-card, .profile-app .profile-card { padding: 18px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
