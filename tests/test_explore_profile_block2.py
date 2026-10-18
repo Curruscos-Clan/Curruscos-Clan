@@ -39,6 +39,8 @@ class ExploreProfileBlock2Tests(unittest.TestCase):
         self.assertIn("signInWithPassword", PROFILE_JS)
         self.assertIn("getCurrentProfile(true)", PROFILE_JS)
         self.assertIn("profileLogoutButton", PROFILE_JS)
+        self.assertIn('id="profileLogoutButton"', PROFILE_HTML)
+        self.assertIn('type="button" class="button button-secondary profile-logout-button">Cerrar sesión</button>', PROFILE_HTML)
 
     def test_profile_is_not_redirected_away_before_guest_view_renders(self):
         private_pages = APP_JS.split("const PRIVATE_PAGES = new Set([", 1)[1].split("]);", 1)[0]
