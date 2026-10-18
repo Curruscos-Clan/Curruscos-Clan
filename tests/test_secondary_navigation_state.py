@@ -85,6 +85,25 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         self.assertIn('"eventos.html"', pages)
         self.assertIn('"dashboard.html"', pages)
 
+    def test_secondary_page_mobile_tabs_use_the_four_primary_destinations(self):
+        expected = {
+            "evento-publico.html": ("Inicio", "Buscar", "Mi grupo", "Mi perfil"),
+            "mis-planes.html": ("Inicio", "Buscar", "Mi grupo", "Mi perfil"),
+        }
+        for filename, labels in expected.items():
+            source = (ROOT / filename).read_text(encoding="utf-8")
+            start = source.index('<nav class="bottom-nav"')
+            end = source.index("</nav>", start)
+            nav = source[start:end]
+            for href in ("index.html", "explorar.html", "eventos.html", "perfil.html"):
+                with self.subTest(page=filename, destination=href):
+                    self.assertIn(f'href="{href}"', nav)
+            for label in labels:
+                with self.subTest(page=filename, label=label):
+                    self.assertIn(f"<span>{label}</span>", nav)
+            self.assertNotIn('href="crear-evento.html"', nav)
+            self.assertNotIn('href="mis-planes.html"', nav)
+
     def test_app_shell_does_not_register_duplicate_mobile_menu_handler(self):
         start = APP_JS.index("function setupMobileMenu()")
         end = APP_JS.index("/* =========================================================", start + 1)
