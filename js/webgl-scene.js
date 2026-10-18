@@ -1,5 +1,5 @@
 /**
- * Curruscos · Interactive 3D Chess Knight (Caballo de Ajedrez)
+ * Curruscos · Obsidian / liquid titanium kinetic sculpture
  * Procedural 3D sculpture rendered with Three.js.
  * Progressive enhancement: the page and real event feed work without WebGL.
  */
@@ -7,11 +7,11 @@
   "use strict";
 
   const CAT_PRESETS = {
-    todas:       { speed: 0.18, accent: 0x0071e3 },
-    deporte:     { speed: 0.34, accent: 0x34c759 },
-    ocio:        { speed: 0.16, accent: 0xaf52de },
-    viajes:      { speed: 0.12, accent: 0x5856d6 },
-    videojuegos: { speed: 0.42, accent: 0xff9500 }
+    todas:       { speed: 0.18, accent: 0xd6b58a },
+    deporte:     { speed: 0.25, accent: 0xb9c5b5 },
+    ocio:        { speed: 0.17, accent: 0xd0c1ad },
+    viajes:      { speed: 0.12, accent: 0xa8b4c3 },
+    videojuegos: { speed: 0.3, accent: 0xc6b6a1 }
   };
 
   const WebGLStage = {
@@ -49,28 +49,48 @@
       const artifact = new THREE.Group();
       scene.add(artifact);
 
-      // Materials: Premium Apple dark titanium with high specular reflectivity
-      const knightMaterial = new THREE.MeshStandardMaterial({
-        color: 0x22242a,
-        metalness: 0.85,
-        roughness: 0.22
-      });
+      // Procedural studio environment: luminous panels provide reflections on the metal.
+      const envScene = new THREE.Scene();
+      envScene.background = new THREE.Color(0x08080a);
+      const panelGeo = new THREE.PlaneGeometry(5.5, 2.2);
+      const panelMaterials = [
+        new THREE.MeshBasicMaterial({ color: 0xf4f0e8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: 0xb4c0d0, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: 0xd6b58a, side: THREE.DoubleSide })
+      ];
+      const panelA = new THREE.Mesh(panelGeo, panelMaterials[0]);
+      panelA.position.set(0, 4, 1);
+      envScene.add(panelA);
+      const panelB = new THREE.Mesh(panelGeo, panelMaterials[1]);
+      panelB.position.set(-4, 0, -2);
+      panelB.rotation.y = Math.PI / 2;
+      envScene.add(panelB);
+      const panelC = new THREE.Mesh(panelGeo, panelMaterials[2]);
+      panelC.position.set(4, -1, 1);
+      panelC.rotation.y = -Math.PI / 2;
+      envScene.add(panelC);
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      let envMap = null;
+      try { envMap = pmrem.fromScene(envScene, 0.04).texture; } catch (_) {}
+      pmrem.dispose();
+      panelGeo.dispose();
+      panelMaterials.forEach((material) => material.dispose());
+      if (envMap) scene.environment = envMap;
 
+      const titaniumDark = new THREE.MeshStandardMaterial({
+        color: 0x202126, metalness: 0.96, roughness: 0.2, envMapIntensity: 1.8
+      });
+      const brushedSilver = new THREE.MeshStandardMaterial({
+        color: 0xd4d2cd, metalness: 1, roughness: 0.14, envMapIntensity: 2.1
+      });
       const accentMaterial = new THREE.MeshStandardMaterial({
-        color: 0x0071e3,
-        metalness: 0.9,
-        roughness: 0.15
+        color: 0xd6b58a, metalness: 0.9, roughness: 0.19, envMapIntensity: 1.7
       });
-
       const goldTrimMaterial = new THREE.MeshStandardMaterial({
-        color: 0xe5a93c,
-        metalness: 0.88,
-        roughness: 0.28
+        color: 0x8f7a60, metalness: 0.92, roughness: 0.24, envMapIntensity: 1.5
       });
-
       const disposableGeometries = [];
-      const disposableMaterials = new Set([knightMaterial, accentMaterial, goldTrimMaterial]);
-
+      const disposableMaterials = new Set([titaniumDark, brushedSilver, accentMaterial, goldTrimMaterial]);
       const addMesh = (geometry, material, parent = artifact) => {
         disposableGeometries.push(geometry);
         disposableMaterials.add(material);
@@ -79,92 +99,28 @@
         return mesh;
       };
 
-      // 1. Turned Pedestal Base
-      const basePoints = [
-        new THREE.Vector2(0, -1.25),
-        new THREE.Vector2(0.92, -1.25),
-        new THREE.Vector2(0.92, -1.10),
-        new THREE.Vector2(0.82, -0.98),
-        new THREE.Vector2(0.85, -0.86),
-        new THREE.Vector2(0.68, -0.70),
-        new THREE.Vector2(0.52, -0.22),
-        new THREE.Vector2(0.62, -0.04),
-        new THREE.Vector2(0.58, 0.08),
-        new THREE.Vector2(0.00, 0.08)
-      ];
-      const baseGeo = new THREE.LatheGeometry(basePoints, 64);
-      addMesh(baseGeo, knightMaterial);
+      // Smooth liquid-metal knot and three precision gimbal rings.
+      const coreGeo = new THREE.TorusKnotGeometry(0.57, 0.19, 180, 32, 2, 3);
+      const coreMesh = addMesh(coreGeo, titaniumDark);
+      coreMesh.rotation.x = 0.25;
+      const innerRing = addMesh(new THREE.TorusGeometry(0.98, 0.038, 24, 128), brushedSilver);
+      innerRing.rotation.x = Math.PI / 2.8;
+      const middleRing = addMesh(new THREE.TorusGeometry(1.22, 0.022, 20, 144), titaniumDark);
+      middleRing.rotation.y = Math.PI / 3;
+      const outerRing = addMesh(new THREE.TorusGeometry(1.46, 0.012, 16, 160), goldTrimMaterial);
+      outerRing.rotation.x = Math.PI / 2.4;
+      outerRing.rotation.y = Math.PI / 5;
 
-      // Pedestal accent ring
-      const ringGeo = new THREE.TorusGeometry(0.62, 0.022, 16, 64);
-      const ringMesh = addMesh(ringGeo, goldTrimMaterial);
-      ringMesh.position.y = -0.04;
-      ringMesh.rotation.x = Math.PI / 2;
-
-      // Base bottom ring
-      const bottomRingGeo = new THREE.TorusGeometry(0.86, 0.025, 16, 64);
-      const bottomRingMesh = addMesh(bottomRingGeo, accentMaterial);
-      bottomRingMesh.position.y = -0.92;
-      bottomRingMesh.rotation.x = Math.PI / 2;
-
-      // 2. Sculpted Knight Head & Neck
-      const knightShape = new THREE.Shape();
-      knightShape.moveTo(-0.42, 0.08);
-      knightShape.bezierCurveTo(-0.50, 0.42, -0.56, 0.82, -0.42, 1.18); // Mane crest
-      knightShape.lineTo(-0.40, 1.45); // Back ear base
-      knightShape.lineTo(-0.30, 1.78); // Ear tip 1
-      knightShape.lineTo(-0.18, 1.52); // Ear notch
-      knightShape.lineTo(-0.08, 1.74); // Ear tip 2
-      knightShape.lineTo(0.04, 1.45);  // Forehead
-      knightShape.bezierCurveTo(0.18, 1.22, 0.38, 0.95, 0.56, 0.70); // Nose bridge
-      knightShape.bezierCurveTo(0.60, 0.56, 0.50, 0.44, 0.36, 0.46); // Muzzle
-      knightShape.bezierCurveTo(0.16, 0.38, 0.02, 0.26, -0.16, 0.08); // Throat
-      knightShape.closePath();
-
-      const extrudeSettings = {
-        depth: 0.44,
-        bevelEnabled: true,
-        bevelSegments: 4,
-        steps: 2,
-        bevelSize: 0.05,
-        bevelThickness: 0.05,
-        curveSegments: 24
-      };
-
-      const headGeo = new THREE.ExtrudeGeometry(knightShape, extrudeSettings);
-      headGeo.center();
-
-      const headMesh = addMesh(headGeo, knightMaterial);
-      headMesh.position.set(-0.02, 0.92, 0);
-
-      // Eyes (Left & Right)
-      const eyeGeo = new THREE.SphereGeometry(0.065, 16, 12);
-      eyeGeo.scale(1.4, 0.8, 1);
-
-      const leftEye = addMesh(eyeGeo, accentMaterial, headMesh);
-      leftEye.position.set(0.16, 0.32, 0.23);
-      leftEye.rotation.y = 0.3;
-
-      const rightEye = addMesh(eyeGeo, accentMaterial, headMesh);
-      rightEye.position.set(0.16, 0.32, -0.23);
-      rightEye.rotation.y = -0.3;
-
-      // Nostril Details
-      const nostrilGeo = new THREE.SphereGeometry(0.045, 12, 10);
-      const leftNostril = addMesh(nostrilGeo, goldTrimMaterial, headMesh);
-      leftNostril.position.set(0.38, 0.02, 0.12);
-
-      const rightNostril = addMesh(nostrilGeo, goldTrimMaterial, headMesh);
-      rightNostril.position.set(0.38, 0.02, -0.12);
-
-      // Mane Ridge Locks
-      const maneLockGeo = new THREE.ConeGeometry(0.08, 0.22, 12);
-      for (let i = 0; i < 5; i++) {
-        const lock = addMesh(maneLockGeo, goldTrimMaterial, headMesh);
-        const progress = i / 4;
-        lock.position.set(-0.42 - progress * 0.04, 0.22 + progress * 0.48, 0);
-        lock.rotation.z = Math.PI / 2.5 + progress * 0.2;
+      const satellites = new THREE.Group();
+      const satelliteGeo = new THREE.SphereGeometry(0.045, 20, 16);
+      disposableGeometries.push(satelliteGeo);
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const satellite = new THREE.Mesh(satelliteGeo, brushedSilver);
+        satellite.position.set(Math.cos(angle) * 1.22, Math.sin(angle) * 1.22, 0);
+        satellites.add(satellite);
       }
+      middleRing.add(satellites);
 
       // 3. Floating Dust / Light Particles
       const dustCount = small ? 20 : 40;
@@ -193,15 +149,15 @@
       // Lighting Setup
       scene.add(new THREE.AmbientLight(0xffffff, 1.1));
 
-      const keyLight = new THREE.DirectionalLight(0xffffff, 2.8);
+      const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
       keyLight.position.set(-3, 4, 5);
       scene.add(keyLight);
 
-      const fillLight = new THREE.DirectionalLight(0xa0c8ff, 1.2);
+      const fillLight = new THREE.DirectionalLight(0xc2c6d0, 1.1);
       fillLight.position.set(3, -2, -2);
       scene.add(fillLight);
 
-      const rimLight = new THREE.PointLight(0x0071e3, 5.0, 10);
+      const rimLight = new THREE.PointLight(0xd6b58a, 3.2, 10);
       rimLight.position.set(1.8, 1.5, 2.5);
       scene.add(rimLight);
 
@@ -316,6 +272,7 @@
         disposableGeometries.forEach((geometry) => geometry.dispose());
         disposableMaterials.forEach((material) => material.dispose());
         renderer.dispose();
+        if (envMap) envMap.dispose();
         stage.classList.remove("webgl-ready");
         this.initialized = false;
       };
