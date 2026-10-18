@@ -271,7 +271,8 @@
         if (intersectionObserver) intersectionObserver.disconnect();
         disposableGeometries.forEach((geometry) => geometry.dispose());
         disposableMaterials.forEach((material) => material.dispose());
-        renderer.dispose();\n        if (envMap) envMap.dispose();
+        renderer.dispose();
+        if (envMap) envMap.dispose();
         stage.classList.remove("webgl-ready");
         this.initialized = false;
       };
