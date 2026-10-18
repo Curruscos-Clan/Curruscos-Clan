@@ -544,7 +544,7 @@ function createNotificationMarkup() {
         "notification-wrapper";
 
     wrapper.innerHTML =
-        '<button id="notificationButton" class="notification-button" type="button" aria-label="Notificaciones">' +
+        '<button id="notificationButton" class="notification-button" type="button" aria-label="Notificaciones" aria-expanded="false" aria-controls="notificationPanel">' +
             '🔔' +
             '<span id="notificationBadge" class="notification-badge" hidden>0</span>' +
         '</button>' +
@@ -739,6 +739,9 @@ async function initNotificationCenter() {
     refs.button.dataset.ready =
         "true";
 
+    refs.button.setAttribute("aria-expanded", "false");
+    refs.button.setAttribute("aria-controls", "notificationPanel");
+
     refs.button.addEventListener(
         "click",
         async event => {
@@ -746,6 +749,11 @@ async function initNotificationCenter() {
 
             refs.panel.hidden =
                 !refs.panel.hidden;
+
+            refs.button.setAttribute(
+                "aria-expanded",
+                String(!refs.panel.hidden)
+            );
 
             if (!refs.panel.hidden) {
                 await renderGlobalNotifications(
@@ -765,7 +773,21 @@ async function initNotificationCenter() {
     document.addEventListener(
         "click",
         () => {
-            refs.panel.hidden = true;
+            if (!refs.panel.hidden) {
+                refs.panel.hidden = true;
+                refs.button.setAttribute("aria-expanded", "false");
+            }
+        }
+    );
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (event.key === "Escape" && !refs.panel.hidden) {
+                refs.panel.hidden = true;
+                refs.button.setAttribute("aria-expanded", "false");
+                refs.button.focus();
+            }
         }
     );
 
