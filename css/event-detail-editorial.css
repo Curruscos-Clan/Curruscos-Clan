@@ -135,3 +135,153 @@ body.public-event-app {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Glass / Bento refinement for the real event detail view.
+   All text and state remain supplied by the existing Supabase-backed renderer. */
+.public-event-app .public-event-cover {
+  position: relative;
+  isolation: isolate;
+  min-height: 220px;
+  max-height: 360px;
+  margin: 16px auto 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,.24);
+  background: #101116;
+  box-shadow: 0 22px 60px rgba(20,24,32,.18);
+}
+.public-event-app .public-event-cover img {
+  min-height: 220px;
+  max-height: 360px;
+  aspect-ratio: 16 / 7;
+  opacity: .78;
+  filter: saturate(.92);
+  transition: transform .65s cubic-bezier(.2,.7,.2,1), opacity .25s ease;
+}
+.public-event-app .public-event-cover:hover img { transform: scale(1.025); opacity: .86; }
+.public-event-app .public-event-cover-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 12px;
+  padding: clamp(18px, 4vw, 36px);
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7,9,14,.02) 12%, rgba(7,9,14,.2) 42%, rgba(7,9,14,.88) 100%);
+}
+.public-event-app .public-event-cover-category {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 7px 10px;
+  border: 1px solid rgba(255,255,255,.26);
+  border-radius: 999px;
+  background: rgba(16,18,24,.42);
+  color: #fff;
+  font: 800 9px/1.2 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.public-event-app .public-event-cover-title {
+  display: block;
+  max-width: 880px;
+  color: #fff;
+  font-size: clamp(25px, 5.4vw, 52px);
+  font-weight: 850;
+  line-height: .98;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 22px rgba(0,0,0,.22);
+}
+.public-event-app .event-hero-source-title {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.public-event-app .public-event-main,
+.public-event-app .public-event-side,
+.public-event-app .event-comments-panel,
+.public-event-app .event-action-panel,
+.public-event-app .event-map-panel {
+  border-color: rgba(30,35,45,.09) !important;
+  box-shadow: 0 12px 34px rgba(20,24,32,.055), inset 0 1px 0 rgba(255,255,255,.7) !important;
+}
+.public-event-app .public-event-main {
+  background: linear-gradient(145deg, rgba(255,255,255,.96), rgba(250,250,252,.88)) !important;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+.public-event-app .public-event-side {
+  background: linear-gradient(155deg, rgba(255,255,255,.98), rgba(244,246,250,.94)) !important;
+}
+.public-event-app .public-event-stat {
+  margin: 5px 0;
+  padding: 13px 12px !important;
+  border: 1px solid rgba(30,35,45,.07) !important;
+  border-radius: 14px;
+  background: rgba(255,255,255,.62) !important;
+}
+.public-event-app .public-event-side #eventJoinButton {
+  min-height: 52px;
+  margin-top: 12px;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.public-event-app .public-event-side #eventJoinButton:not(:disabled):active { transform: scale(.985); }
+.public-event-app .public-event-side #eventJoinButton.is-joined {
+  background: #e6f7ed !important;
+  color: #167344 !important;
+  border: 1px solid rgba(22,115,68,.2) !important;
+  box-shadow: none !important;
+}
+.public-event-app .event-comments-panel {
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.public-event-app .event-comments-form textarea {
+  min-height: 104px;
+  border-radius: 16px;
+  background: rgba(248,249,251,.92);
+  font-size: 14px;
+  line-height: 1.55;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.public-event-app .event-comments-form textarea:focus {
+  border-color: rgba(0,113,227,.55);
+  box-shadow: 0 0 0 4px rgba(0,113,227,.09);
+  outline: none;
+}
+.public-event-app .event-comments-form button:disabled {
+  cursor: not-allowed;
+  opacity: .55;
+}
+@media(max-width:650px) {
+  .public-event-app .public-event-cover {
+    min-height: 240px;
+    margin: 10px auto 14px;
+    border-radius: 20px;
+  }
+  .public-event-app .public-event-cover img {
+    min-height: 240px;
+    aspect-ratio: 4 / 3;
+    max-height: 320px;
+  }
+  .public-event-app .public-event-cover-overlay { padding: 20px; gap: 10px; }
+  .public-event-app .public-event-cover-title { font-size: clamp(27px, 8vw, 39px); }
+  .public-event-app .public-event-stat { padding: 11px 10px !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .public-event-app .public-event-cover img { transition: none !important; }
+}

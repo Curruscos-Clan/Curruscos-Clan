@@ -3,7 +3,7 @@
  * Network-first para mantener la app actualizada y fallback offline seguro.
  * No intercepta servicios externos, Supabase ni operaciones que modifiquen datos.
  */
-const CACHE_NAME = "curruscos-v20";
+const CACHE_NAME = "curruscos-v21";
 const CORE_ASSETS = [
   "./",
   "./index.html",
