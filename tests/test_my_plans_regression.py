@@ -44,10 +44,10 @@ class MyPlansRegressionTests(unittest.TestCase):
         nav_start = home.index('<nav class="bottom-nav"')
         nav_end = home.index("</nav>", nav_start)
         nav = home[nav_start:nav_end]
-        for href in ("index.html", "explorar.html", "crear-evento.html", "perfil.html"):
+        for href in ("index.html", "explorar.html", "eventos.html", "perfil.html"):
             with self.subTest(destination=href):
                 self.assertIn(f'href="{href}"', nav)
-        self.assertNotIn('href="eventos.html"', nav)
+        self.assertNotIn('href="crear-evento.html"', nav)
         self.assertNotIn('href="mis-planes.html"', nav)
 
     def test_explore_and_profile_keep_access_to_my_plans(self):
