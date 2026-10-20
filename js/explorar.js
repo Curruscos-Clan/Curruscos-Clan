@@ -205,8 +205,9 @@ document.addEventListener("DOMContentLoaded",async()=>{
 
   let timer=null;const instant=()=>{clearTimeout(timer);if(currentExploreScope==="groups"){timer=setTimeout(loadPublicGroups,180);return;}applyAndRender();updateExploreControls();timer=setTimeout(()=>loadPublicEvents(),500);};
   search?.addEventListener("input",instant);
+  search?.addEventListener("keydown",e=>{if(e.key==="Escape"&&search.value){e.preventDefault();search.value="";instant();}});
   ["eventCategory","eventType","eventSort"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{applyAndRender();if(id!=="eventSort")loadPublicEvents();}));
   document.querySelectorAll(".explore-chip").forEach(chip=>chip.addEventListener("click",()=>{document.querySelectorAll(".explore-chip").forEach(item=>{const active=item===chip;item.classList.toggle("active",active);item.setAttribute("aria-pressed",String(active));});applyAndRender();}));
-  document.getElementById("clearExploreFilters")?.addEventListener("click",()=>{if(search)search.value="";document.getElementById("eventType").value="all";document.getElementById("eventCategory").value="all";document.getElementById("eventSort").value="date";document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter==="all";chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});syncExploreUrl();if(currentExploreScope==="groups")loadPublicGroups();else loadPublicEvents();});
+  document.getElementById("clearExploreFilters")?.addEventListener("click",()=>{if(search)search.value="";document.getElementById("eventType").value="all";document.getElementById("eventCategory").value="all";document.getElementById("eventSort").value="date";document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter==="all";chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});syncExploreUrl();if(currentExploreScope==="groups")loadPublicGroups();else loadPublicEvents();search?.focus();});
   bindExploreIntent();await loadPublicEvents();
 });
