@@ -1,0 +1,11 @@
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+server.log
+
+# Jules / verification artifacts
+/home/jules/verification/
