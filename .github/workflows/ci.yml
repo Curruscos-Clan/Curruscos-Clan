@@ -38,6 +38,9 @@ jobs:
             echo "✓ $file"
           done < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
 
+      - name: Auditoría estática de seguridad y accesibilidad
+        run: node scripts/security-audit.js
+
       - name: Comprobar páginas y recursos esenciales
         shell: bash
         run: |
