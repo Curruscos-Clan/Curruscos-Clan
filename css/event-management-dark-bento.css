@@ -1,0 +1,19 @@
+/* Dark Bento continuation for group and personal event management pages. */
+body.group-events-app,body.my-events-app{background:radial-gradient(ellipse at 12% -12%,rgba(255,87,34,.09),transparent 38rem),#0b0b0d!important;color:#f5f5f7!important}
+.group-events-app .logo,.my-events-app .logo,.group-events-app .page-hero h1,.group-events-app .section-heading h2,.my-events-app .my-events-header h1,.my-events-app .section-head h2{color:#f5f5f7!important}
+body.group-events-app .navbar,body.my-events-app .navbar{background:rgba(11,11,13,.88)!important;color:#f5f5f7!important;border-bottom:1px solid rgba(255,255,255,.09)!important}
+.group-events-app .page-hero p,.group-events-app .section-heading p,.group-events-app .events-results-meta,.group-events-app .event-card p,.group-events-app .event-card-location,.my-events-app .my-events-header p,.my-events-app .section-head p,.my-events-app .my-event-card p{color:#a1a1aa!important}
+.group-events-app .events-search input,.group-events-app .events-filter,.group-events-app #eventForm input,.group-events-app #eventForm select,.group-events-app #eventForm textarea,.my-events-app input,.my-events-app select,.my-events-app textarea{background:#111114!important;color:#f5f5f7!important;border-color:rgba(255,255,255,.14)!important}
+.group-events-app .events-filter{color:#d4d4d8!important}
+.group-events-app .events-filter.active{background:rgba(255,87,34,.18)!important;border-color:rgba(255,87,34,.45)!important;color:#fff!important}
+.group-events-app .event-card,.group-events-app #eventForm,.my-events-app .activity-stat,.my-events-app .my-event-card{background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025))!important;color:#f5f5f7!important;border-color:rgba(255,255,255,.10)!important;box-shadow:0 12px 36px rgba(0,0,0,.18)!important}
+.group-events-app .event-card h3,.group-events-app .event-card-title,.my-events-app .my-event-card h3,.my-events-app .activity-stat strong{color:#f5f5f7!important}
+.group-events-app #eventForm label{color:#d4d4d8!important}
+.group-events-app .create-event-section{border-color:rgba(255,255,255,.10)!important}
+.group-events-app .event-card:hover,.my-events-app .my-event-card:hover{border-color:rgba(255,87,34,.35)!important;box-shadow:0 16px 42px rgba(0,0,0,.3)!important}
+.group-events-app .events-search span,.group-events-app .event-card-date,.my-events-app .my-event-card small{color:#ff8969!important}
+.my-events-app .event-status,.my-events-app .my-empty,.my-events-app .my-events-loading{background:rgba(255,255,255,.045)!important;color:#a1a1aa!important;border-color:rgba(255,255,255,.13)!important}
+.my-events-app .my-button{background:rgba(255,255,255,.055)!important;color:#f5f5f7!important;border-color:rgba(255,255,255,.14)!important}
+.my-events-app .my-button.primary{background:#ff5722!important;color:#fff!important;border-color:#ff5722!important}
+.group-events-app .button-primary,.my-events-app .button-primary{background:#ff5722!important;color:#fff!important;border-color:#ff5722!important}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
