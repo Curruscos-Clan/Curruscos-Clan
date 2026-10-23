@@ -1,0 +1,32 @@
+/* Curruscos — dark Bento layer for secondary pages. Visual-only; keep existing flows intact. */
+:root{color-scheme:dark!important;--secondary-bg:#0b0b0d;--secondary-paper:#151518;--secondary-ink:#f5f5f7;--secondary-muted:#a1a1aa;--secondary-line:rgba(255,255,255,.10);--secondary-accent:#ff5722}
+html,body{background:#0b0b0d!important;color:#f5f5f7!important}
+body.explore-app,body.public-create-app,body.profile-app{background:radial-gradient(ellipse at 12% -12%,rgba(255,87,34,.09),transparent 38rem),#0b0b0d!important;color:#f5f5f7!important}
+body.explore-app .navbar,body.public-create-app .navbar,body.profile-app .navbar{background:rgba(11,11,13,.88)!important;color:#f5f5f7!important;border-bottom:1px solid rgba(255,255,255,.09)!important;box-shadow:none!important}
+.explore-app .logo,.public-create-app .logo,.profile-app .logo,.explore-app .explore-page h1,.public-create-app .public-create-page h1,.profile-app .profile-header h1{color:#f5f5f7!important}
+.explore-app .explore-page,.public-create-app .public-create-page,.profile-app .profile-page{color:#f5f5f7!important}
+.explore-app .explore-page p,.public-create-app .public-create-page>p,.profile-app .profile-header p,.explore-app .explore-section-head p{color:#a1a1aa!important}
+.public-create-app .public-create-card,.profile-app .profile-card,.profile-app .profile-side-card{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.025))!important;color:#f5f5f7!important;border:1px solid rgba(255,255,255,.10)!important;box-shadow:0 14px 40px rgba(0,0,0,.22)!important}
+.explore-app .public-event-card,.explore-app .public-event-card:not(.featured){background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025))!important;color:#f5f5f7!important;border-color:rgba(255,255,255,.10)!important;box-shadow:0 12px 36px rgba(0,0,0,.18)!important}
+.explore-app .public-event-card h2,.explore-app .public-event-card:not(.featured) h2,.explore-app .public-event-card.featured h2{color:#f5f5f7!important}
+.explore-app .public-event-meta,.explore-app .public-event-description,.explore-app .public-event-organizer,.explore-app .public-event-spots{color:#a1a1aa!important}
+.explore-app .public-event-card.featured{background:linear-gradient(145deg,#202024,#151518)!important;border-color:rgba(255,87,34,.28)!important}
+.public-create-app .public-create-form label,.profile-app .profile-form label{color:#d4d4d8!important}
+.public-create-app .public-create-form input,.public-create-app .public-create-form select,.public-create-app .public-create-form textarea,.profile-app .profile-form input,.explore-app input[type=search],.explore-app input[type=text],.explore-app select{color:#f5f5f7!important;background:#111114!important;border-color:rgba(255,255,255,.14)!important;box-shadow:none!important}
+.public-create-app .public-create-form input::placeholder,.public-create-app .public-create-form textarea::placeholder,.explore-app input::placeholder{color:#777781!important}
+.public-create-app .public-create-form input:focus,.public-create-app .public-create-form select:focus,.public-create-app .public-create-form textarea:focus,.profile-app .profile-form input:focus,.explore-app input:focus,.explore-app select:focus{border-color:rgba(255,87,34,.75)!important;outline:3px solid rgba(255,87,34,.13)!important}
+.public-create-app .create-progress-step,.profile-app .interest-chip,.profile-app .profile-activity-card,.profile-app .profile-activity-list>div,.public-create-app .smart-format-help{background:rgba(255,255,255,.045)!important;color:#d4d4d8!important;border-color:rgba(255,255,255,.10)!important}
+.public-create-app .create-progress-step.active{background:rgba(255,87,34,.18)!important;color:#fff!important;border-color:rgba(255,87,34,.42)!important}
+.public-create-app .create-note{background:rgba(255,87,34,.09)!important;border-color:rgba(255,87,34,.22)!important;color:#ffb29d!important}
+.public-create-app .create-note a,.profile-app .profile-activity-link{color:#ff8969!important}
+.public-create-app .event-live-preview{background:radial-gradient(circle at 100% 0,rgba(255,87,34,.2),transparent 15rem),#111114!important;border-color:rgba(255,255,255,.12)!important}
+.profile-app .profile-section h2,.profile-app .interest-section h2,.profile-app .profile-activity h2,.profile-app .profile-side-title,.profile-app .profile-activity-card strong{color:#f5f5f7!important}
+.profile-app .profile-section-copy,.profile-app .interest-section>p,.profile-app .profile-help,.profile-app .profile-side-note,.profile-app .profile-activity-card span,.profile-app .profile-activity-list small{color:#a1a1aa!important}
+.profile-app .interest-chip{background:#17171b!important;color:#d4d4d8!important}
+.profile-app .interest-chip[aria-pressed=true],.profile-app .interest-chip.active{background:rgba(255,87,34,.18)!important;border-color:rgba(255,87,34,.5)!important;color:#fff!important}
+.profile-app .profile-app .button-secondary,.profile-app .button-secondary{background:rgba(255,255,255,.06)!important;color:#f5f5f7!important;border-color:rgba(255,255,255,.14)!important}
+html body.explore-app nav.bottom-nav,html body.public-create-app nav.bottom-nav,html body.profile-app nav.bottom-nav{background:rgba(20,20,24,.90)!important;border-color:rgba(255,255,255,.14)!important;box-shadow:0 18px 55px rgba(0,0,0,.48)!important}
+html body.explore-app nav.bottom-nav>a.nav-tab,html body.public-create-app nav.bottom-nav>a.nav-tab,html body.profile-app nav.bottom-nav>a.nav-tab{color:#a1a1aa!important}
+html body.explore-app nav.bottom-nav>a.nav-tab.active,html body.public-create-app nav.bottom-nav>a.nav-tab.active,html body.profile-app nav.bottom-nav>a.nav-tab.active{color:#fff!important;background:rgba(255,87,34,.15)!important;box-shadow:inset 0 0 0 1px rgba(255,87,34,.30)!important}
+html body.explore-app nav.bottom-nav>a.nav-tab.active svg,html body.public-create-app nav.bottom-nav>a.nav-tab.active svg,html body.profile-app nav.bottom-nav>a.nav-tab.active svg{color:#ff7043!important;stroke:#ff7043!important}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
