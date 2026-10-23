@@ -38,6 +38,9 @@ jobs:
             echo "✓ $file"
           done < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
 
+      - name: Ejecutar pruebas de regresión Python
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
       - name: Comprobar páginas y recursos esenciales
         shell: bash
         run: |
