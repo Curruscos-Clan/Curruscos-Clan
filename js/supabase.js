@@ -383,15 +383,22 @@ async function getCurrentUser(forceRefresh = false) {
 
 async function getCurrentProfile(forceRefresh = false) {
 
-    if (currentProfileCache && !forceRefresh) {
-        return currentProfileCache;
-    }
-
-    const user = await getCurrentUser();
+    // El perfil en caché pertenece a una cuenta concreta. Comprueba primero
+    // el usuario actual para no reutilizar datos si cambia la sesión.
+    const user = await getCurrentUser(forceRefresh);
 
     if (!user) {
         currentProfileCache = null;
+        currentProfileUserId = null;
         return null;
+    }
+
+    if (
+        currentProfileCache &&
+        currentProfileUserId === user.id &&
+        !forceRefresh
+    ) {
+        return currentProfileCache;
     }
 
     const { data, error } = await supabaseClient
@@ -407,10 +414,12 @@ async function getCurrentProfile(forceRefresh = false) {
         );
 
         currentProfileCache = null;
+        currentProfileUserId = null;
         return null;
     }
 
     currentProfileCache = data;
+    currentProfileUserId = user.id;
 
     return currentProfileCache;
 }
@@ -1783,6 +1792,7 @@ let notificationRealtimeChannel = null;
 let currentUserCache = null;
 let currentUserLoaded = false;
 let currentProfileCache = null;
+let currentProfileUserId = null;
 let userGroupsCache = null;
 let currentGroupCache = null;
 
@@ -2315,6 +2325,7 @@ async function signOut() {
     currentUserCache = null;
     currentUserLoaded = true;
     currentProfileCache = null;
+    currentProfileUserId = null;
     userGroupsCache = null;
     currentGroupCache = null;
 
@@ -2657,6 +2668,7 @@ async function updateProfile(displayName, username, details = {}) {
     }
 
     currentProfileCache = data;
+    currentProfileUserId = user.id;
     return data;
 }
 
