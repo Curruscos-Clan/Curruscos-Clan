@@ -47,7 +47,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     const redirectAfterAuth = async () => {
-        const groups = await getUserGroups(true);
+        // No confundir un fallo de red/RLS con un usuario que aún no tiene grupos.
+        const groups = await getUserGroups(true, { throwOnError: true });
         window.location.replace(groups.length ? "dashboard.html" : "onboarding.html");
     };
 
