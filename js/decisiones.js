@@ -396,6 +396,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         pollSearch = pollSearchInput.value;
         renderPolls();
     });
+    pollSearchInput?.addEventListener("keydown", event => {
+        if (event.key === "Escape" && pollSearchInput.value) {
+            pollSearchInput.value = "";
+            pollSearch = "";
+            renderPolls();
+        }
+    });
 
     document.querySelectorAll("[data-poll-filter]").forEach(button => {
         button.addEventListener("click", () => {
