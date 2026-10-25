@@ -1125,6 +1125,13 @@ async function loadEvents() {
             query = search.value;
             render();
         });
+        search.addEventListener("keydown", event => {
+            if (event.key === "Escape" && search.value) {
+                search.value = "";
+                query = "";
+                render();
+            }
+        });
     }
 
     render();
