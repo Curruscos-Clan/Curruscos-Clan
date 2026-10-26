@@ -9,9 +9,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("mainNav")?.classList.toggle("mobile-open")
     );
 
-    document.getElementById("savedSearch")?.addEventListener("input", event => {
+    const searchInput = document.getElementById("savedSearch");
+    searchInput?.addEventListener("input", event => {
         savedSearch = event.target.value.trim().toLowerCase();
         renderSavedEvents();
+    });
+    searchInput?.addEventListener("keydown", event => {
+        if (event.key === "Escape" && searchInput.value) {
+            searchInput.value = "";
+            savedSearch = "";
+            renderSavedEvents();
+            searchInput.focus();
+        }
     });
 
     await loadSavedEvents();
