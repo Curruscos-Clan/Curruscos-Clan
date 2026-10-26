@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const passwordConfirm = $("passwordConfirm");
     const displayName = $("displayName");
     const username = $("username");
+    const city = $("city");
+    const phone = $("phone");
     const terms = $("termsAccepted");
     const meter = $("passwordMeter");
     const hint = $("passwordHint");
@@ -341,7 +343,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                     emailRedirectTo: redirectUrl,
                     data: {
                         display_name: name,
-                        username: handle
+                        username: handle,
+                        ...(city?.value.trim() ? { city: city.value.trim() } : {}),
+                        ...(phone?.value.trim() ? { phone: phone.value.trim() } : {})
                     }
                 }
             });
