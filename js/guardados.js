@@ -9,10 +9,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("mainNav")?.classList.toggle("mobile-open")
     );
 
-    document.getElementById("savedSearch")?.addEventListener("input", event => {
-        savedSearch = event.target.value.trim().toLowerCase();
-        renderSavedEvents();
-    });
+    const searchInput = document.getElementById("savedSearch");
+    if (searchInput) {
+        searchInput.addEventListener("input", event => {
+            savedSearch = event.target.value.trim().toLowerCase();
+            renderSavedEvents();
+        });
+        searchInput.addEventListener("keydown", event => {
+            if (event.key === "Escape" && searchInput.value) {
+                searchInput.value = "";
+                savedSearch = "";
+                renderSavedEvents();
+                searchInput.focus();
+            }
+        });
+    }
 
     await loadSavedEvents();
 });
@@ -154,7 +165,7 @@ function renderSavedEvents() {
                     <div><small>${esc(status)}</small></div>
                     <div class="event-action-buttons">
                         <a class="saved-open" href="evento-publico.html?id=${encodeURIComponent(event.id)}">${t("common.viewEvent")} ↗</a>
-                        <button class="saved-remove" data-saved-id="${esc(item.savedId)}" type="button">${t("common.remove")}</button>
+                        <button class="saved-remove" data-saved-id="${esc(item.savedId)}" type="button" aria-label="${t("common.remove")} ${esc(event.title)}">${t("common.remove")}</button>
                     </div>
                 </div>
             </article>
