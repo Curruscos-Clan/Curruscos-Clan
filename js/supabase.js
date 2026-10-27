@@ -1,5 +1,13 @@
 console.log("SUPABASE.JS SE HA CARGADO");
 
+let notificationRealtimeChannel = null;
+let currentUserCache = null;
+let currentUserLoaded = false;
+let currentProfileCache = null;
+let currentProfileUserId = null;
+let userGroupsCache = null;
+let currentGroupCache = null;
+
 const SUPABASE_URL = "https://prltjzwguleuaexpcbvi.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_VRAhrIDUBjoHwqejdo4clA_2KHiGZDf";
 
@@ -1787,14 +1795,6 @@ async function markAllNotificationsAsRead() {
 // ==========================================
 // 🔔 SUPABASE REALTIME - NOTIFICACIONES
 // ==========================================
-
-let notificationRealtimeChannel = null;
-let currentUserCache = null;
-let currentUserLoaded = false;
-let currentProfileCache = null;
-let currentProfileUserId = null;
-let userGroupsCache = null;
-let currentGroupCache = null;
 
 async function startNotificationRealtime() {
 
