@@ -40,7 +40,7 @@ class LoginFlowRegressionTests(unittest.TestCase):
         start = SUPABASE.index("async function getUserGroups(forceRefresh = false, options = {})")
         end = SUPABASE.index("async function getCurrentGroup", start)
         function = SUPABASE[start:end]
-        self.assertLess(function.index("getCurrentUser(forceRefresh"), function.index("if (\\n        userGroupsCache"))
+        self.assertLess(function.index("getCurrentUser(forceRefresh"), function.index("userGroupsCache &&"))
         self.assertIn("userGroupsCacheUserId === user.id", function)
         self.assertIn("userGroupsCacheUserId = user.id", function)
 
@@ -48,7 +48,7 @@ class LoginFlowRegressionTests(unittest.TestCase):
         start = SUPABASE.index("async function getCurrentGroup(forceRefresh = false)")
         end = SUPABASE.index("function setCurrentGroup", start)
         function = SUPABASE[start:end]
-        self.assertLess(function.index("getCurrentUser(forceRefresh)"), function.index("if (\\n        currentGroupCache"))
+        self.assertLess(function.index("getCurrentUser(forceRefresh)"), function.index("currentGroupCache &&"))
         self.assertIn("currentGroupCacheUserId === user.id", function)
         self.assertIn("currentGroupCacheUserId = user.id", function)
 
