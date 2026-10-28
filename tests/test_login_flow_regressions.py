@@ -10,7 +10,18 @@ class LoginFlowRegressionTests(unittest.TestCase):
     def test_forced_group_refresh_also_refreshes_auth_user(self):
         start = SUPABASE.index("async function getUserGroups(forceRefresh = false, options = {})")
         end = SUPABASE.index("// ========================================", start)
-        self.assertIn("getCurrentUser(forceRefresh)", SUPABASE[start:end])
+        self.assertIn(
+            "getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError })",
+            SUPABASE[start:end],
+        )
+
+    def test_strict_user_lookup_propagates_auth_errors(self):
+        start = SUPABASE.index("async function getCurrentUser(forceRefresh = false, options = {})")
+        end = SUPABASE.index("// ========================================", start)
+        function = SUPABASE[start:end]
+        self.assertIn("if (options?.throwOnError)", function)
+        self.assertIn("throw error", function)
+        self.assertIn("currentUserLoaded = false", function)
 
     def test_post_auth_redirect_handles_group_lookup_failure(self):
         start = LOGIN.index("const redirectAfterAuth = async () =>")
