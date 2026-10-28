@@ -36,6 +36,24 @@ class LoginFlowRegressionTests(unittest.TestCase):
         end = SUPABASE.index("// ========================================", start)
         self.assertIn("if (options?.throwOnError)", SUPABASE[start:end])
 
+    def test_group_cache_is_checked_only_after_resolving_current_user(self):
+        start = SUPABASE.index("async function getUserGroups(forceRefresh = false, options = {})")
+        end = SUPABASE.index("async function getCurrentGroup", start)
+        function = SUPABASE[start:end]
+        self.assertLess(function.index("getCurrentUser(forceRefresh"), function.index("userGroupsCache &&"))
+        self.assertIn("userGroupsCacheUserId === user.id", function)
+        self.assertIn("userGroupsCacheUserId = user.id", function)
+        self.assertIn("userGroupsCache = null", function)
+        self.assertIn("Do not cache a failed lookup", function)
+
+    def test_current_group_cache_is_scoped_to_current_user(self):
+        start = SUPABASE.index("async function getCurrentGroup(forceRefresh = false)")
+        end = SUPABASE.index("function setCurrentGroup", start)
+        function = SUPABASE[start:end]
+        self.assertLess(function.index("getCurrentUser(forceRefresh)"), function.index("currentGroupCache &&"))
+        self.assertIn("currentGroupCacheUserId === user.id", function)
+        self.assertIn("currentGroupCacheUserId = user.id", function)
+
 
 if __name__ == "__main__":
     unittest.main()

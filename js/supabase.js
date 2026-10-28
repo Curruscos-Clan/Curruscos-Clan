@@ -436,15 +436,22 @@ async function getCurrentProfile(forceRefresh = false) {
 
 async function getUserGroups(forceRefresh = false, options = {}) {
 
-    if (userGroupsCache && !forceRefresh) {
-        return userGroupsCache;
-    }
-
-    // Si se solicita refresco forzado, actualizar también el usuario autenticado.
+    // Resolve the identity before consulting this cache: it must never cross accounts.
     const user = await getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError });
 
     if (!user) {
         userGroupsCache = [];
+        userGroupsCacheUserId = null;
+        currentGroupCache = null;
+        currentGroupCacheUserId = null;
+        return userGroupsCache;
+    }
+
+    if (
+        userGroupsCache &&
+        userGroupsCacheUserId === user.id &&
+        !forceRefresh
+    ) {
         return userGroupsCache;
     }
 
@@ -484,8 +491,12 @@ async function getUserGroups(forceRefresh = false, options = {}) {
             throw error;
         }
 
-        userGroupsCache = [];
-        return userGroupsCache;
+        // Do not cache a failed lookup as a real empty membership list.
+        userGroupsCache = null;
+        userGroupsCacheUserId = null;
+        currentGroupCache = null;
+        currentGroupCacheUserId = null;
+        return [];
     }
 
     const groupIds = (data || [])
@@ -546,13 +557,27 @@ async function getUserGroups(forceRefresh = false, options = {}) {
             })
         }));
 
+    userGroupsCacheUserId = user.id;
     return userGroupsCache;
 }
 
 
 async function getCurrentGroup(forceRefresh = false) {
 
-    if (currentGroupCache && !forceRefresh) {
+    // The selected group is also user-scoped; resolve identity before using it.
+    const user = await getCurrentUser(forceRefresh);
+
+    if (!user) {
+        currentGroupCache = null;
+        currentGroupCacheUserId = null;
+        return null;
+    }
+
+    if (
+        currentGroupCache &&
+        currentGroupCacheUserId === user.id &&
+        !forceRefresh
+    ) {
         return currentGroupCache;
     }
 
@@ -561,6 +586,7 @@ async function getCurrentGroup(forceRefresh = false) {
 
     if (!groups.length) {
         currentGroupCache = null;
+        currentGroupCacheUserId = user.id;
         return null;
     }
 
@@ -574,6 +600,7 @@ async function getCurrentGroup(forceRefresh = false) {
             group =>
                 group.id === savedGroupId
         ) || groups[0];
+    currentGroupCacheUserId = user.id;
 
     if (
         currentGroupCache.id !==
@@ -1800,7 +1827,9 @@ let currentUserLoaded = false;
 let currentProfileCache = null;
 let currentProfileUserId = null;
 let userGroupsCache = null;
+let userGroupsCacheUserId = null;
 let currentGroupCache = null;
+let currentGroupCacheUserId = null;
 
 async function startNotificationRealtime() {
 
