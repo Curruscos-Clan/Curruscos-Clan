@@ -1,0 +1,208 @@
+{
+  "generated_at": "2026-10-28",
+  "purpose": "Read-only review aid; not a deployment plan.",
+  "counts": {
+    "local_sql_files": 166,
+    "remote_history_records": 193,
+    "local_version_collisions": 8,
+    "remote_duplicate_logical_names": 5
+  },
+  "local_version_collisions": [
+    {
+      "version": "20261004162000",
+      "files": [
+        {
+          "filename": "20261004162000_harden_invitation_mutation.sql",
+          "logical_name": "harden_invitation_mutation",
+          "remote_versions": [
+            "20261004133602"
+          ]
+        },
+        {
+          "filename": "20261004162000_harden_plan_request_rpc_access.sql",
+          "logical_name": "harden_plan_request_rpc_access",
+          "remote_versions": []
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261004163500",
+      "files": [
+        {
+          "filename": "20261004163500_centralize_event_trip_creation.sql",
+          "logical_name": "centralize_event_trip_creation",
+          "remote_versions": []
+        },
+        {
+          "filename": "20261004163500_harden_race_result_participant_scope.sql",
+          "logical_name": "harden_race_result_participant_scope",
+          "remote_versions": [
+            "20261004133631"
+          ]
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261004170000",
+      "files": [
+        {
+          "filename": "20261004170000_harden_competition_cross_event_integrity.sql",
+          "logical_name": "harden_competition_cross_event_integrity",
+          "remote_versions": []
+        },
+        {
+          "filename": "20261004170000_harden_trip_tenant_creator_immutability.sql",
+          "logical_name": "harden_trip_tenant_creator_immutability",
+          "remote_versions": []
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261004220000",
+      "files": [
+        {
+          "filename": "20261004220000_harden_team_follow_privacy.sql",
+          "logical_name": "harden_team_follow_privacy",
+          "remote_versions": [
+            "20261004220000"
+          ]
+        },
+        {
+          "filename": "20261004220000_harden_workspace_owner_invariants.sql",
+          "logical_name": "harden_workspace_owner_invariants",
+          "remote_versions": [
+            "20261004142437"
+          ]
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261005170000",
+      "files": [
+        {
+          "filename": "20261005170000_harden_chat_message_identity.sql",
+          "logical_name": "harden_chat_message_identity",
+          "remote_versions": [
+            "20261005150920"
+          ]
+        },
+        {
+          "filename": "20261005170000_harden_persistent_team_event_registration_concurrency.sql",
+          "logical_name": "harden_persistent_team_event_registration_concurrency",
+          "remote_versions": [
+            "20261005154220"
+          ]
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261005172000",
+      "files": [
+        {
+          "filename": "20261005172000_add_group_encryption_key_envelopes.sql",
+          "logical_name": "add_group_encryption_key_envelopes",
+          "remote_versions": [
+            "20261005155253"
+          ]
+        },
+        {
+          "filename": "20261005172000_harden_direct_chat_creation_concurrency.sql",
+          "logical_name": "harden_direct_chat_creation_concurrency",
+          "remote_versions": [
+            "20261005154726"
+          ]
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261005173000",
+      "files": [
+        {
+          "filename": "20261005173000_add_e2ee_payload_columns.sql",
+          "logical_name": "add_e2ee_payload_columns",
+          "remote_versions": [
+            "20261005155357"
+          ]
+        },
+        {
+          "filename": "20261005173000_harden_chat_invitation_role_concurrency_batch.sql",
+          "logical_name": "harden_chat_invitation_role_concurrency_batch",
+          "remote_versions": []
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    },
+    {
+      "version": "20261009163000",
+      "files": [
+        {
+          "filename": "20261009163000_move_public_event_editor_to_private_schema.sql",
+          "logical_name": "move_public_event_editor_to_private_schema",
+          "remote_versions": [
+            "20261009145218"
+          ]
+        },
+        {
+          "filename": "20261009163000_protect_task_identity_and_assignment.sql",
+          "logical_name": "protect_task_identity_and_assignment",
+          "remote_versions": [
+            "20261009161319"
+          ]
+        }
+      ],
+      "resolution": "manual_content_review_required",
+      "reason": "Do not rename until the deployed SQL content and migration commit are verified."
+    }
+  ],
+  "remote_duplicate_logical_names": [
+    {
+      "logical_name": "enforce_workspace_plan_limits",
+      "versions": [
+        "20261003101759",
+        "20261003115025"
+      ]
+    },
+    {
+      "logical_name": "harden_event_team_member_trigger_path",
+      "versions": [
+        "20261004182519",
+        "20261004250000"
+      ]
+    },
+    {
+      "logical_name": "harden_remaining_team_function_paths",
+      "versions": [
+        "20261004182610",
+        "20261004251000"
+      ]
+    },
+    {
+      "logical_name": "harden_chat_social_function_paths",
+      "versions": [
+        "20261004182659",
+        "20261004252000"
+      ]
+    },
+    {
+      "logical_name": "add_recommendation_impressions",
+      "versions": [
+        "20261007144651",
+        "20261007144721"
+      ]
+    }
+  ],
+  "safety_note": "No migration files or production history were changed. Timestamp/name mismatches require SQL-body and deployment-history verification before reconciliation."
+}
