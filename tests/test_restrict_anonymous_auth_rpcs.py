@@ -9,6 +9,8 @@ MIGRATION = ROOT / "supabase/migrations/20261028211607_restrict_anonymous_auth_r
 class RestrictAnonymousAuthRpcTests(unittest.TestCase):
     def test_revokes_public_and_anon_and_preserves_authenticated_access(self):
         sql = re.sub(r"--[^\n]*", "", MIGRATION.read_text(encoding="utf-8")).lower()
+        # PostgreSQL treats BOOL and BOOLEAN as aliases; normalize the migration spelling for signature checks.
+        sql = re.sub(r"\bbool\b", "boolean", sql)
         signatures = [
             "public.create_discoverable_group(text, text, text, text)",
             "public.get_group_membership_requests(uuid)",
