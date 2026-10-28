@@ -154,7 +154,7 @@ function renderSavedEvents() {
                     <div><small>${esc(status)}</small></div>
                     <div class="event-action-buttons">
                         <a class="saved-open" href="evento-publico.html?id=${encodeURIComponent(event.id)}">${t("common.viewEvent")} ↗</a>
-                        <button class="saved-remove" data-saved-id="${esc(item.savedId)}" type="button">${t("common.remove")}</button>
+                        <button class="saved-remove" data-saved-id="${esc(item.savedId)}" type="button" aria-label="${esc(t("common.remove"))}: ${esc(event.title)}">${t("common.remove")}</button>
                     </div>
                 </div>
             </article>
