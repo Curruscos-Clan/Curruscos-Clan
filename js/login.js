@@ -47,9 +47,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     const redirectAfterAuth = async () => {
-        // No confundir un fallo de red/RLS con un usuario que aún no tiene grupos.
-        const groups = await getUserGroups(true, { throwOnError: true });
-        window.location.replace(groups.length ? "dashboard.html" : "onboarding.html");
+        try {
+            // Una sesión recién iniciada debe consultar de nuevo usuario y grupos.
+            const groups = await getUserGroups(true, { throwOnError: true });
+            window.location.replace(groups.length ? "dashboard.html" : "onboarding.html");
+            return true;
+        } catch (error) {
+            console.error("No se pudo cargar el espacio tras autenticar:", error);
+            setMessage("Has iniciado sesión, pero no hemos podido cargar tus espacios. Comprueba tu conexión y vuelve a intentarlo.");
+            return false;
+        }
     };
 
     const normalizeEmail = value => String(value || "").trim().toLowerCase();
