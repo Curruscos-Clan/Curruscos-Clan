@@ -64,7 +64,7 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         for href, label in [
             ("index.html", "Inicio"),
             ("explorar.html", "Buscar"),
-            ("eventos.html", "Mi grupo"),
+            ("mis-planes.html", "Mis planes"),
             ("perfil.html", "Mi perfil"),
         ]:
             self.assertIn(f'href:"{href}"', primary)
