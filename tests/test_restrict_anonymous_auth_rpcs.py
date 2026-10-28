@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MIGRATION = ROOT / "supabase/migrations/20261028220000_restrict_anonymous_auth_rpcs.sql"
+MIGRATION = ROOT / "supabase/migrations/20261028211607_restrict_anonymous_auth_rpcs.sql"
 
 
 class RestrictAnonymousAuthRpcTests(unittest.TestCase):
