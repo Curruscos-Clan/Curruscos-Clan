@@ -46,6 +46,18 @@ class MigrationAuditTests(unittest.TestCase):
         self.assertEqual(report["remote_versions_absent_locally"], ["20261002000000"])
 
 
+    def test_reports_duplicate_remote_logical_names_with_distinct_versions(self):
+        local = []
+        remote = [
+            {"version": "20261007144651", "name": "add_recommendation_impressions"},
+            {"version": "20261007144721", "name": "add_recommendation_impressions"},
+        ]
+        report = AUDIT.compare(local, remote)
+        self.assertEqual(
+            report["duplicate_remote_names"],
+            {"add_recommendation_impressions": ["20261007144651", "20261007144721"]},
+        )
+
     def test_audit_snapshot_includes_latest_applied_production_migration(self):
         snapshot_path = ROOT / "supabase" / "migration-history-audit-2026-10-28.json"
         snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
