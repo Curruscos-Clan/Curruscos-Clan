@@ -435,7 +435,8 @@ async function getUserGroups(forceRefresh = false, options = {}) {
         return userGroupsCache;
     }
 
-    const user = await getCurrentUser();
+    // Si se solicita refresco forzado, actualizar también el usuario autenticado.
+    const user = await getCurrentUser(forceRefresh);
 
     if (!user) {
         userGroupsCache = [];
