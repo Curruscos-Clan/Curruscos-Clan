@@ -43,6 +43,8 @@ class LoginFlowRegressionTests(unittest.TestCase):
         self.assertLess(function.index("getCurrentUser(forceRefresh"), function.index("userGroupsCache &&"))
         self.assertIn("userGroupsCacheUserId === user.id", function)
         self.assertIn("userGroupsCacheUserId = user.id", function)
+        self.assertIn("userGroupsCache = null", function)
+        self.assertIn("Do not cache a failed lookup", function)
 
     def test_current_group_cache_is_scoped_to_current_user(self):
         start = SUPABASE.index("async function getCurrentGroup(forceRefresh = false)")
