@@ -57,7 +57,6 @@ def compare(local: list[dict[str, str]], remote: list[dict[str, str]]) -> dict:
         for version, items in sorted(remote_by_version.items()) if len(items) > 1
     }
     exact_name_matches = []
-    name_mismatches = []
     for name, local_items in sorted(local_by_name.items()):
         remote_items = remote_by_name.get(name, [])
         if remote_items:
@@ -81,12 +80,9 @@ def compare(local: list[dict[str, str]], remote: list[dict[str, str]]) -> dict:
             for name, items in sorted(local_by_name.items()) if len(items) > 1
         },
         "duplicate_remote_names": {
-            normalize_name(name): [item["version"] for item in items]
-            for name, items in sorted(
-                ((item["name"], [item]) for item in remote),
-                key=lambda pair: pair[0],
-            )
-            if len(remote_by_name[normalize_name(name)]) > 1
+            name: [item["version"] for item in items]
+            for name, items in sorted(remote_by_name.items())
+            if len(items) > 1
         },
     }
 
