@@ -435,7 +435,9 @@ async function getUserGroups(forceRefresh = false, options = {}) {
         return userGroupsCache;
     }
 
-    const user = await getCurrentUser();
+    // En un refresco forzado, refrescar también la sesión: la caché podría
+    // seguir guardando null desde antes de que el usuario iniciara sesión.
+    const user = await getCurrentUser(forceRefresh);
 
     if (!user) {
         userGroupsCache = [];
