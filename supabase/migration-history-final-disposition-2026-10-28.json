@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-10-28",
+  "project": "Curruscos-Clan/Curruscos-Clan",
+  "pull_request": 140,
+  "status": "audit-complete-for-current-evidence; production-reconciliation-blocked",
+  "validation": {
+    "commit": "4b17524dc5a983c86079e41039837dcc335ac77c",
+    "ci": "success",
+    "migration_audit_workflow": "success"
+  },
+  "inventory": {
+    "remote_migration_records": 193,
+    "local_sql_files": 166,
+    "local_timestamp_collisions": 8,
+    "duplicate_remote_version_ids": 0,
+    "repeated_remote_logical_names": 5
+  },
+  "verified_findings": [
+    "The local add_recommendation_impressions migration corresponds to a later permission-tightened SQL body; the two remote records cannot safely be collapsed.",
+    "The three search_path families have current local SQL matching the later remote versions 20261004250000, 20261004251000, and 20261004252000. The original SQL bodies for earlier remote versions 20261004182519, 20261004182610, and 20261004182659 have not been proven equivalent.",
+    "A related local workspace member limit migration exists, but it has not been proven equivalent to either remote enforce_workspace_plan_limits record.",
+    "Eight local filename timestamp collisions and the remaining logical-name mismatches require manual mapping or original migration artifacts."
+  ],
+  "production_action": {
+    "applied": false,
+    "reason": "No SQL was applied and no remote migration ledger rows were changed because the historical SQL for several remote versions is unavailable. Renaming, deleting, marking as applied, or replaying migrations without that evidence could leave production schema inconsistent or repeat changes.",
+    "safe_next_step": "Obtain the original SQL/deployment artifacts for unresolved remote versions, or validate the complete sequence in a disposable Supabase project before preparing a production reconciliation."
+  },
+  "files_added": [
+    "supabase/migration-history-audit-2026-10-28.json",
+    "supabase/migration-history-conflict-review-2026-10-28.json",
+    "supabase/migration-history-provenance-2026-10-28.json",
+    "supabase/migration-history-content-review-2026-10-28.json",
+    "supabase/migration-history-commit-comparison-2026-10-28.json"
+  ]
+}
