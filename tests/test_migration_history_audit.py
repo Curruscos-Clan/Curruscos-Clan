@@ -46,5 +46,13 @@ class MigrationAuditTests(unittest.TestCase):
         self.assertEqual(report["remote_versions_absent_locally"], ["20261002000000"])
 
 
+    def test_audit_snapshot_includes_latest_applied_production_migration(self):
+        snapshot_path = ROOT / "supabase" / "migration-history-audit-2026-10-28.json"
+        snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+        versions = {item["version"] for item in snapshot["migrations"]}
+        self.assertIn("20261028211607", versions)
+        self.assertEqual(len(snapshot["migrations"]), 193)
+
+
 if __name__ == "__main__":
     unittest.main()
