@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-10-28",
+  "scope": "Commit-level SQL comparison for migration-history duplicates",
+  "verified_facts": [
+    {
+      "item": "add_recommendation_impressions",
+      "remote_versions": [
+        "20261007144651",
+        "20261007144721"
+      ],
+      "source_commits": [
+        {
+          "sha": "586ade29a6fb93d43902b849ebf88d7dfcfc5faa",
+          "message": "Añadir analítica de impresiones de recomendaciones",
+          "date": "2026-10-07T14:45:48Z"
+        },
+        {
+          "sha": "f100a08efdb047e0914339f0ead3935ee4d9bbd9",
+          "message": "Endurecer permisos del RPC de impresiones",
+          "date": "2026-10-07T14:54:39Z"
+        }
+      ],
+      "difference": "The earlier SQL revokes EXECUTE from PUBLIC; the later SQL revokes from anon and PUBLIC. Both versions create the table/indexes and define the logging RPC. The current local file matches the later permission-tightening version.",
+      "conclusion": "These are demonstrably not byte-identical migration bodies. The second appears to be a security-hardening revision; do not collapse the two ledger rows or assume they are duplicates."
+    },
+    {
+      "item": "enforce_workspace_plan_limits",
+      "remote_versions": [
+        "20261003101759",
+        "20261003115025"
+      ],
+      "current_related_file": "supabase/migrations/20261003173000_enforce_workspace_member_limit.sql",
+      "source_commit": {
+        "sha": "46918404029b2d89d0ccd6074ed954200893d64e",
+        "message": "feat: enforce workspace member plan limits",
+        "date": "2026-10-03T10:22:31Z"
+      },
+      "difference": "The related current file defines enforce_group_member_plan_limit() and private.create_group_secure(); its body is identical at the inspected source commit and the audit branch. It is not named enforce_workspace_plan_limits.",
+      "conclusion": "This establishes a plausible related implementation but does not establish exact equivalence to either remote ledger version."
+    }
+  ],
+  "remaining_unresolved": [
+    "The exact historical SQL bodies for the earlier versions of harden_event_team_member_trigger_path, harden_remaining_team_function_paths, and harden_chat_social_function_paths are not yet established.",
+    "A production migration ledger stores version/name metadata and does not itself prove the exact SQL body executed.",
+    "No migration files were renamed, deleted, or marked as applied."
+  ],
+  "next_action": "Continue tracing original commit trees and migration-file renames for the three unresolved security-path families; keep PR #140 draft until evidence is sufficient for a safe reconciliation."
+}
