@@ -771,6 +771,10 @@
     {
       "version": "20261016143935",
       "name": "social_fusion_engine"
+    },
+    {
+      "version": "20261028211607",
+      "name": "restrict_anonymous_auth_rpcs"
     }
   ]
 }
