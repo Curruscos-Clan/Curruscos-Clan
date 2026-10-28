@@ -929,7 +929,7 @@ function ensureProductNavigation() {
         const items = [
             { href: "index.html", text: "Inicio", pages: ["index.html"] },
             { href: "explorar.html", text: "Buscar", pages: ["explorar.html"] },
-            { href: "eventos.html", text: "Mi grupo", pages: ["eventos.html", "dashboard.html"] },
+            { href: "mis-planes.html", text: "Mis planes", pages: ["mis-planes.html", "mis-eventos.html", "eventos.html", "dashboard.html"] },
             { href: "perfil.html", text: "Mi perfil", pages: ["perfil.html"] }
         ];
         nav.innerHTML = items.map(item => {
