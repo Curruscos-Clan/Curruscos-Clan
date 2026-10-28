@@ -50,7 +50,7 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         for href, label in [
             ("index.html", "Inicio"),
             ("explorar.html", "Buscar"),
-            ("eventos.html", "Mi grupo"),
+            ("mis-planes.html", "Mis planes"),
             ("perfil.html", "Mi perfil"),
         ]:
             self.assertIn(f'href: "{href}"', primary)
@@ -80,14 +80,14 @@ class SecondaryNavigationStateTests(unittest.TestCase):
         self.assertIn('"crear-evento.html"', pages)
         self.assertNotIn('"crear.html"', pages)
 
-    def test_dashboard_belongs_to_mi_grupo(self):
-        pages = shared_item_pages("eventos.html")
+    def test_dashboard_legacy_route_maps_to_mis_planes(self):
+        pages = shared_item_pages("mis-planes.html")
         self.assertIn('"eventos.html"', pages)
         self.assertIn('"dashboard.html"', pages)
 
     def test_secondary_page_mobile_tabs_use_the_four_primary_destinations(self):
         expected = {
-            "evento-publico.html": ("Inicio", "Buscar", "Mi grupo", "Mi perfil"),
+            "evento-publico.html": ("Inicio", "Buscar", "Mis planes", "Mi perfil"),
             "mis-planes.html": ("Inicio", "Buscar", "Mi grupo", "Mi perfil"),
         }
         for filename, labels in expected.items():
@@ -95,14 +95,14 @@ class SecondaryNavigationStateTests(unittest.TestCase):
             start = source.index('<nav class="bottom-nav"')
             end = source.index("</nav>", start)
             nav = source[start:end]
-            for href in ("index.html", "explorar.html", "eventos.html", "perfil.html"):
+            for href in ("index.html", "explorar.html", "mis-planes.html", "perfil.html"):
                 with self.subTest(page=filename, destination=href):
                     self.assertIn(f'href="{href}"', nav)
             for label in labels:
                 with self.subTest(page=filename, label=label):
                     self.assertIn(f"<span>{label}</span>", nav)
             self.assertNotIn('href="crear-evento.html"', nav)
-            self.assertNotIn('href="mis-planes.html"', nav)
+            self.assertNotIn('href="eventos.html"', nav)
 
     def test_app_shell_does_not_register_duplicate_mobile_menu_handler(self):
         start = APP_JS.index("function setupMobileMenu()")
