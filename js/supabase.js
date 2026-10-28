@@ -349,7 +349,7 @@ async function initializeGroupE2EE(groupId) {
 // USUARIO ACTUAL
 // ========================================
 
-async function getCurrentUser(forceRefresh = false) {
+async function getCurrentUser(forceRefresh = false, options = {}) {
 
     if (currentUserLoaded && !forceRefresh) {
         return currentUserCache;
@@ -367,11 +367,16 @@ async function getCurrentUser(forceRefresh = false) {
         );
 
         currentUserCache = null;
+        currentUserLoaded = false;
+
+        // Strict callers must not confuse an auth/network failure with a signed-out user.
+        if (options?.throwOnError) {
+            throw error;
+        }
     } else {
         currentUserCache = user || null;
+        currentUserLoaded = true;
     }
-
-    currentUserLoaded = true;
 
     return currentUserCache;
 }
@@ -436,7 +441,7 @@ async function getUserGroups(forceRefresh = false, options = {}) {
     }
 
     // Si se solicita refresco forzado, actualizar también el usuario autenticado.
-    const user = await getCurrentUser(forceRefresh);
+    const user = await getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError });
 
     if (!user) {
         userGroupsCache = [];
