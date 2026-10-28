@@ -88,7 +88,7 @@ class SecondaryNavigationStateTests(unittest.TestCase):
     def test_secondary_page_mobile_tabs_use_the_four_primary_destinations(self):
         expected = {
             "evento-publico.html": ("Inicio", "Buscar", "Mis planes", "Mi perfil"),
-            "mis-planes.html": ("Inicio", "Buscar", "Mi grupo", "Mi perfil"),
+            "mis-planes.html": ("Inicio", "Buscar", "Mis planes", "Mi perfil"),
         }
         for filename, labels in expected.items():
             source = (ROOT / filename).read_text(encoding="utf-8")
