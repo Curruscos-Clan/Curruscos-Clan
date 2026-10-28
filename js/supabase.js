@@ -491,8 +491,12 @@ async function getUserGroups(forceRefresh = false, options = {}) {
             throw error;
         }
 
-        userGroupsCache = [];
-        return userGroupsCache;
+        // Do not cache a failed lookup as a real empty membership list.
+        userGroupsCache = null;
+        userGroupsCacheUserId = null;
+        currentGroupCache = null;
+        currentGroupCacheUserId = null;
+        return [];
     }
 
     const groupIds = (data || [])
