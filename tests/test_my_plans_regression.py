@@ -44,19 +44,21 @@ class MyPlansRegressionTests(unittest.TestCase):
         nav_start = home.index('<nav class="bottom-nav"')
         nav_end = home.index("</nav>", nav_start)
         nav = home[nav_start:nav_end]
-        for href in ("index.html", "explorar.html", "eventos.html", "perfil.html"):
+        for href in ("index.html", "explorar.html", "mis-planes.html", "perfil.html"):
             with self.subTest(destination=href):
                 self.assertIn(f'href="{href}"', nav)
         self.assertNotIn('href="crear-evento.html"', nav)
-        self.assertNotIn('href="mis-planes.html"', nav)
+        self.assertNotIn('href="eventos.html"', nav)
 
     def test_explore_and_profile_keep_access_to_my_plans(self):
         for name in ("explorar.html", "perfil.html"):
             with self.subTest(page=name):
                 self.assertIn('href="mis-planes.html"', PAGES[name])
 
-    def test_group_events_remain_reachable_from_plans_page(self):
-        self.assertIn('href="eventos.html"', HTML)
+    def test_legacy_group_route_redirects_to_personal_plans(self):
+        self.assertNotIn('href="eventos.html"', HTML)
+        legacy = (ROOT / "eventos.html").read_text(encoding="utf-8")
+        self.assertIn('window.location.replace("mis-planes.html")', legacy)
 
 
 if __name__ == "__main__":
