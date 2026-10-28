@@ -1,0 +1,776 @@
+{
+  "project_id": "prltjzwguleuaexpcbvi",
+  "retrieved_at": "2026-10-28",
+  "source": "Supabase read-only migration history",
+  "note": "Audit snapshot only. Never replay this file or treat it as a deployment manifest.",
+  "migrations": [
+    {
+      "version": "20261002151212",
+      "name": "phase1_security_hardening"
+    },
+    {
+      "version": "20261002155705",
+      "name": "product_security_and_permissions"
+    },
+    {
+      "version": "20261002155843",
+      "name": "invitations_and_data_integrity"
+    },
+    {
+      "version": "20261002160827",
+      "name": "harden_content_and_poll_permissions"
+    },
+    {
+      "version": "20261002161323",
+      "name": "enforce_profile_identity_rules"
+    },
+    {
+      "version": "20261002170455",
+      "name": "add_trip_planning_foundation"
+    },
+    {
+      "version": "20261002171640",
+      "name": "link_events_to_trips"
+    },
+    {
+      "version": "20261002172124",
+      "name": "add_expense_splits"
+    },
+    {
+      "version": "20261002172614",
+      "name": "link_history_to_events"
+    },
+    {
+      "version": "20261002173406",
+      "name": "prevent_duplicate_poll_votes"
+    },
+    {
+      "version": "20261002173639",
+      "name": "add_trip_participants"
+    },
+    {
+      "version": "20261002181253",
+      "name": "add_public_event_platform_foundation"
+    },
+    {
+      "version": "20261002181320",
+      "name": "allow_public_event_discovery"
+    },
+    {
+      "version": "20261002181327",
+      "name": "tighten_public_event_participant_visibility"
+    },
+    {
+      "version": "20261002181533",
+      "name": "enforce_public_event_capacity_and_deadline"
+    },
+    {
+      "version": "20261002181614",
+      "name": "preserve_group_admin_event_updates"
+    },
+    {
+      "version": "20261002182252",
+      "name": "add_event_formats_and_tournament_foundation"
+    },
+    {
+      "version": "20261002182541",
+      "name": "build_knockout_tournament_engine"
+    },
+    {
+      "version": "20261002182558",
+      "name": "fix_knockout_bye_variable"
+    },
+    {
+      "version": "20261002182610",
+      "name": "propagate_all_knockout_byes"
+    },
+    {
+      "version": "20261002182719",
+      "name": "build_round_robin_tournament_engine"
+    },
+    {
+      "version": "20261002182728",
+      "name": "fix_round_robin_pairing_rotation"
+    },
+    {
+      "version": "20261002182735",
+      "name": "allow_round_robin_draws"
+    },
+    {
+      "version": "20261002182956",
+      "name": "add_public_event_team_management"
+    },
+    {
+      "version": "20261002183026",
+      "name": "include_public_event_participant_profiles"
+    },
+    {
+      "version": "20261002183224",
+      "name": "configure_public_event_participant_mode"
+    },
+    {
+      "version": "20261002183435",
+      "name": "enable_self_service_event_teams"
+    },
+    {
+      "version": "20261002183728",
+      "name": "add_swiss_pairing_engine"
+    },
+    {
+      "version": "20261002183745",
+      "name": "complete_swiss_individual_entries"
+    },
+    {
+      "version": "20261002183839",
+      "name": "validate_swiss_team_entries"
+    },
+    {
+      "version": "20261002183935",
+      "name": "add_event_type"
+    },
+    {
+      "version": "20261002190028",
+      "name": "add_event_scoring_system"
+    },
+    {
+      "version": "20261002190134",
+      "name": "make_public_stats_scoring_aware"
+    },
+    {
+      "version": "20261002190957",
+      "name": "competition_result_models"
+    },
+    {
+      "version": "20261002191111",
+      "name": "competition_lifecycle_states"
+    },
+    {
+      "version": "20261002192533",
+      "name": "harden_public_event_rpc_permissions"
+    },
+    {
+      "version": "20261002192547",
+      "name": "close_public_write_event_rpcs"
+    },
+    {
+      "version": "20261002193334",
+      "name": "harden_public_ranking_and_race_reads"
+    },
+    {
+      "version": "20261002193759",
+      "name": "add_public_related_events_v2"
+    },
+    {
+      "version": "20261002193813",
+      "name": "tighten_public_related_events_permissions"
+    },
+    {
+      "version": "20261002193934",
+      "name": "add_public_profile_teams"
+    },
+    {
+      "version": "20261002194043",
+      "name": "add_public_active_people"
+    },
+    {
+      "version": "20261002203202",
+      "name": "add_public_team_profile"
+    },
+    {
+      "version": "20261002203359",
+      "name": "add_public_active_team_discovery"
+    },
+    {
+      "version": "20261003064816",
+      "name": "recommend_saved_events_in_personalization"
+    },
+    {
+      "version": "20261003070238",
+      "name": "add_team_social_follows_v2"
+    },
+    {
+      "version": "20261003090606",
+      "name": "add_group_sense_engine"
+    },
+    {
+      "version": "20261003091003",
+      "name": "20261003123000_enrich_group_sense_health"
+    },
+    {
+      "version": "20261003100132",
+      "name": "add_trip_smart_search_preferences"
+    },
+    {
+      "version": "20261003100925",
+      "name": "add_workspace_billing_foundation"
+    },
+    {
+      "version": "20261003101455",
+      "name": "add_group_usage_meter"
+    },
+    {
+      "version": "20261003101759",
+      "name": "enforce_workspace_plan_limits"
+    },
+    {
+      "version": "20261003101806",
+      "name": "harden_workspace_plan_limits_auth"
+    },
+    {
+      "version": "20261003102028",
+      "name": "harden_group_creation_workspace_defaults"
+    },
+    {
+      "version": "20261003102132",
+      "name": "add_workspace_role_permissions"
+    },
+    {
+      "version": "20261003102224",
+      "name": "enforce_workspace_member_limit"
+    },
+    {
+      "version": "20261003102350",
+      "name": "upgrade_workspace_invitation_flow"
+    },
+    {
+      "version": "20261003102357",
+      "name": "upgrade_workspace_invitation_acceptance"
+    },
+    {
+      "version": "20261003102606",
+      "name": "workspace_onboarding_v2"
+    },
+    {
+      "version": "20261003103004",
+      "name": "workspace_invitation_management_v2"
+    },
+    {
+      "version": "20261003115025",
+      "name": "enforce_workspace_plan_limits"
+    },
+    {
+      "version": "20261003115030",
+      "name": "scope_event_limit_to_selected_workspace"
+    },
+    {
+      "version": "20261003115148",
+      "name": "workspace_plan_upgrade_requests"
+    },
+    {
+      "version": "20261003115228",
+      "name": "enforce_workspace_trip_limits"
+    },
+    {
+      "version": "20261003120258",
+      "name": "review_workspace_plan_requests"
+    },
+    {
+      "version": "20261004101817",
+      "name": "harden_workspace_parent_reassignment"
+    },
+    {
+      "version": "20261004133305",
+      "name": "restrict_internal_rpc_execute"
+    },
+    {
+      "version": "20261004133352",
+      "name": "harden_direct_workspace_reassignment_v2"
+    },
+    {
+      "version": "20261004133516",
+      "name": "add_missing_fk_indexes_v2"
+    },
+    {
+      "version": "20261004133602",
+      "name": "harden_invitation_mutation"
+    },
+    {
+      "version": "20261004133631",
+      "name": "harden_race_result_participant_scope"
+    },
+    {
+      "version": "20261004134558",
+      "name": "harden_match_result_authorization"
+    },
+    {
+      "version": "20261004134602",
+      "name": "harden_generic_match_result_authorization"
+    },
+    {
+      "version": "20261004134647",
+      "name": "harden_event_status_function"
+    },
+    {
+      "version": "20261004134825",
+      "name": "harden_group_member_admin_functions_v2"
+    },
+    {
+      "version": "20261004134903",
+      "name": "harden_invitation_acceptance_scope"
+    },
+    {
+      "version": "20261004135007",
+      "name": "harden_event_team_functions_search_path"
+    },
+    {
+      "version": "20261004135057",
+      "name": "harden_competition_generation_modes"
+    },
+    {
+      "version": "20261004135201",
+      "name": "harden_swiss_generation_search_path"
+    },
+    {
+      "version": "20261004135528",
+      "name": "improve_signup_profile_initialization"
+    },
+    {
+      "version": "20261004141922",
+      "name": "harden_profile_validation_and_membership_indexes"
+    },
+    {
+      "version": "20261004141935",
+      "name": "remove_duplicate_poll_vote_index"
+    },
+    {
+      "version": "20261004142244",
+      "name": "harden_invitation_concurrency"
+    },
+    {
+      "version": "20261004142251",
+      "name": "fix_invitation_notification_after_concurrency_hardening"
+    },
+    {
+      "version": "20261004142437",
+      "name": "harden_workspace_owner_invariants"
+    },
+    {
+      "version": "20261004142624",
+      "name": "harden_group_creation_search_path"
+    },
+    {
+      "version": "20261004142743",
+      "name": "harden_workspace_mutation_rpcs_v2"
+    },
+    {
+      "version": "20261004142941",
+      "name": "harden_plan_resource_capacity"
+    },
+    {
+      "version": "20261004182519",
+      "name": "harden_event_team_member_trigger_path"
+    },
+    {
+      "version": "20261004182610",
+      "name": "harden_remaining_team_function_paths"
+    },
+    {
+      "version": "20261004182659",
+      "name": "harden_chat_social_function_paths"
+    },
+    {
+      "version": "20261004200444",
+      "name": "harden_group_role_invitation_races"
+    },
+    {
+      "version": "20261004215500",
+      "name": "harden_persistent_team_member_privacy"
+    },
+    {
+      "version": "20261004220000",
+      "name": "harden_team_follow_privacy"
+    },
+    {
+      "version": "20261004233000",
+      "name": "harden_public_race_related_search_paths"
+    },
+    {
+      "version": "20261004234500",
+      "name": "harden_competition_rpc_search_paths"
+    },
+    {
+      "version": "20261004250000",
+      "name": "harden_event_team_member_trigger_path"
+    },
+    {
+      "version": "20261004251000",
+      "name": "harden_remaining_team_function_paths"
+    },
+    {
+      "version": "20261004252000",
+      "name": "harden_chat_social_function_paths"
+    },
+    {
+      "version": "20261004254000",
+      "name": "harden_persistent_team_base_privacy"
+    },
+    {
+      "version": "20261004260000",
+      "name": "harden_group_invitation_rejection"
+    },
+    {
+      "version": "20261005150026",
+      "name": "optimize_trip_participant_rls_auth_initplan"
+    },
+    {
+      "version": "20261005150920",
+      "name": "harden_chat_message_identity"
+    },
+    {
+      "version": "20261005151126",
+      "name": "20261005180000_harden_chat_room_context_uniqueness"
+    },
+    {
+      "version": "20261005151446",
+      "name": "harden_event_competition_identity"
+    },
+    {
+      "version": "20261005152135",
+      "name": "harden_competitive_event_finish_state"
+    },
+    {
+      "version": "20261005152210",
+      "name": "harden_swiss_pairing_completion"
+    },
+    {
+      "version": "20261005154109",
+      "name": "harden_pending_invitation_uniqueness"
+    },
+    {
+      "version": "20261005154220",
+      "name": "harden_persistent_team_event_registration_concurrency"
+    },
+    {
+      "version": "20261005154425",
+      "name": "harden_event_team_self_join"
+    },
+    {
+      "version": "20261005154726",
+      "name": "harden_direct_chat_creation_concurrency"
+    },
+    {
+      "version": "20261005154827",
+      "name": "harden_chat_and_group_invitation_concurrency_batch"
+    },
+    {
+      "version": "20261005155253",
+      "name": "add_group_encryption_key_envelopes"
+    },
+    {
+      "version": "20261005155357",
+      "name": "add_e2ee_payload_columns"
+    },
+    {
+      "version": "20261005155518",
+      "name": "add_group_e2ee_device_keys"
+    },
+    {
+      "version": "20261005155656",
+      "name": "add_group_e2ee_envelope_provisioning"
+    },
+    {
+      "version": "20261005192247",
+      "name": "harden_trip_creation_e2ee"
+    },
+    {
+      "version": "20261005192352",
+      "name": "add_encrypted_trip_creation_rpc"
+    },
+    {
+      "version": "20261005192416",
+      "name": "lock_encrypted_trip_creation_rpc"
+    },
+    {
+      "version": "20261005194006",
+      "name": "add_encrypted_group_event_creation"
+    },
+    {
+      "version": "20261005194234",
+      "name": "allow_nullable_encrypted_group_content"
+    },
+    {
+      "version": "20261005194428",
+      "name": "allow_nullable_encrypted_memory_expense_titles"
+    },
+    {
+      "version": "20261005200943",
+      "name": "harden_trip_e2ee_payload_consistency"
+    },
+    {
+      "version": "20261005201006",
+      "name": "harden_e2ee_trigger_search_path"
+    },
+    {
+      "version": "20261005201124",
+      "name": "harden_global_e2ee_content_constraints"
+    },
+    {
+      "version": "20261006132037",
+      "name": "recommendations_weight_signals_and_freshness"
+    },
+    {
+      "version": "20261007140805",
+      "name": "link_polls_to_group_plans"
+    },
+    {
+      "version": "20261007143902",
+      "name": "improve_event_recommendations_v2"
+    },
+    {
+      "version": "20261007144651",
+      "name": "add_recommendation_impressions"
+    },
+    {
+      "version": "20261007144721",
+      "name": "add_recommendation_impressions"
+    },
+    {
+      "version": "20261007150244",
+      "name": "add_recommendation_metrics_v2"
+    },
+    {
+      "version": "20261007191127",
+      "name": "atomic_public_event_join"
+    },
+    {
+      "version": "20261007191458",
+      "name": "secure_recommendation_impressions_rls"
+    },
+    {
+      "version": "20261007192221",
+      "name": "secure_chat_rls_membership"
+    },
+    {
+      "version": "20261007192329",
+      "name": "optimize_chat_queries_and_realtime_indexes"
+    },
+    {
+      "version": "20261007192353",
+      "name": "remove_duplicate_chat_rls_policies"
+    },
+    {
+      "version": "20261007192514",
+      "name": "add_large_event_chat_announcement_mode"
+    },
+    {
+      "version": "20261007192728",
+      "name": "add_unread_activity_counts"
+    },
+    {
+      "version": "20261007193355",
+      "name": "optimize_recommendation_metrics_signal_lookup"
+    },
+    {
+      "version": "20261007193635",
+      "name": "exclude_attending_events_from_recommendations"
+    },
+    {
+      "version": "20261008135117",
+      "name": "allow_save_activity_signal"
+    },
+    {
+      "version": "20261008135502",
+      "name": "sync_recommendation_algorithm_v3_fixed"
+    },
+    {
+      "version": "20261009131423",
+      "name": "add_category_filter_to_event_recommendations"
+    },
+    {
+      "version": "20261009144822",
+      "name": "allow_edit_public_event_details"
+    },
+    {
+      "version": "20261009145218",
+      "name": "move_public_event_editor_to_private_schema"
+    },
+    {
+      "version": "20261009150305",
+      "name": "fix_public_event_join_new_participant"
+    },
+    {
+      "version": "20261009150507",
+      "name": "restrict_direct_event_participant_inserts"
+    },
+    {
+      "version": "20261009150722",
+      "name": "secure_event_participant_status_updates"
+    },
+    {
+      "version": "20261009150844",
+      "name": "restrict_direct_group_invitation_inserts"
+    },
+    {
+      "version": "20261009151356",
+      "name": "restrict_direct_event_participant_updates"
+    },
+    {
+      "version": "20261009151654",
+      "name": "revoke_chat_membership_after_group_exit_or_event_cancel"
+    },
+    {
+      "version": "20261009152433",
+      "name": "secure_event_team_membership_mutations"
+    },
+    {
+      "version": "20261009152623",
+      "name": "secure_general_invitation_responses"
+    },
+    {
+      "version": "20261009152729",
+      "name": "secure_event_team_invitation_acceptance"
+    },
+    {
+      "version": "20261009152913",
+      "name": "limit_event_match_updates"
+    },
+    {
+      "version": "20261009153649",
+      "name": "serialize_workspace_quota_checks"
+    },
+    {
+      "version": "20261009153847",
+      "name": "serialize_legacy_group_event_quota_checks"
+    },
+    {
+      "version": "20261009154039",
+      "name": "harden_private_security_definer_execute_grants"
+    },
+    {
+      "version": "20261009154234",
+      "name": "protect_event_team_persistent_identity"
+    },
+    {
+      "version": "20261009154433",
+      "name": "clean_stale_event_chat_memberships"
+    },
+    {
+      "version": "20261009154631",
+      "name": "serialize_group_member_plan_limit_checks"
+    },
+    {
+      "version": "20261009155005",
+      "name": "enforce_event_match_team_integrity"
+    },
+    {
+      "version": "20261009155155",
+      "name": "fix_chat_message_insert_policy_identity_membership"
+    },
+    {
+      "version": "20261009155234",
+      "name": "protect_chat_message_primary_identity"
+    },
+    {
+      "version": "20261009155620",
+      "name": "serialize_event_trip_creation_quota_checks"
+    },
+    {
+      "version": "20261009155652",
+      "name": "serialize_encrypted_trip_quota_checks"
+    },
+    {
+      "version": "20261009155716",
+      "name": "serialize_self_team_creation_per_event"
+    },
+    {
+      "version": "20261009160032",
+      "name": "prevent_multi_team_event_membership"
+    },
+    {
+      "version": "20261009160351",
+      "name": "protect_expense_identity_fields"
+    },
+    {
+      "version": "20261009160619",
+      "name": "protect_poll_and_trip_participant_identity"
+    },
+    {
+      "version": "20261009160830",
+      "name": "protect_trip_itinerary_and_vote_identity"
+    },
+    {
+      "version": "20261009161039",
+      "name": "protect_notification_identity_and_content"
+    },
+    {
+      "version": "20261009161319",
+      "name": "protect_task_identity_and_assignment"
+    },
+    {
+      "version": "20261009161410",
+      "name": "protect_team_identity_fields"
+    },
+    {
+      "version": "20261009161820",
+      "name": "validate_nonnegative_expense_split_amounts"
+    },
+    {
+      "version": "20261009162105",
+      "name": "protect_profile_identity_fields"
+    },
+    {
+      "version": "20261009162402",
+      "name": "protect_trip_identity_and_group"
+    },
+    {
+      "version": "20261009172455",
+      "name": "secure_public_event_detail_updates"
+    },
+    {
+      "version": "20261012085306",
+      "name": "add_profile_bio_city_and_public_details"
+    },
+    {
+      "version": "20261012092007",
+      "name": "add_public_image_storage_buckets"
+    },
+    {
+      "version": "20261012094111",
+      "name": "add_event_comments_and_notifications"
+    },
+    {
+      "version": "20261012130446",
+      "name": "20261012_communities_directory"
+    },
+    {
+      "version": "20261012130914",
+      "name": "20261012_account_settings_privacy"
+    },
+    {
+      "version": "20261012131324",
+      "name": "20261012130000_communities_directory"
+    },
+    {
+      "version": "20261012131446",
+      "name": "20261012_account_owner_deletion_guard"
+    },
+    {
+      "version": "20261012133727",
+      "name": "add_group_community_posts"
+    },
+    {
+      "version": "20261012135901",
+      "name": "harden_community_post_permissions"
+    },
+    {
+      "version": "20261012142119",
+      "name": "reports_moderation"
+    },
+    {
+      "version": "20261012142148",
+      "name": "optimize_reports_rls"
+    },
+    {
+      "version": "20261012142203",
+      "name": "reports_resolved_by_idx"
+    },
+    {
+      "version": "20261012143300",
+      "name": "fairplay_engine"
+    },
+    {
+      "version": "20261016143935",
+      "name": "social_fusion_engine"
+    }
+  ]
+}
