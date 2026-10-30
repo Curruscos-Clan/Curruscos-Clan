@@ -315,7 +315,15 @@
     "emailPlaceholder": "tu@email.com",
     "password": "Password",
     "passwordPlaceholder": "Minimo 6 caratteri",
-    "loginButton": "Accedi"
+    "loginButton": "Accedi",
+    "profileAuthEyebrow": "IL TUO ACCOUNT",
+    "profileAuthTitle": "Bentornato su Curruscos.",
+    "profileAuthIntro": "Accedi per visualizzare il profilo, salvare i tuoi interessi, consultare i tuoi piani e scoprire nuove attività.",
+    "profileAuthSubmit": "Accedi",
+    "profileAuthCreateAccount": "Crea un account",
+    "profileAuthForgotPassword": "Hai dimenticato la password?",
+    "profileAuthBackHome": "Torna alla home",
+    "profileAuthSettings": "Aspetto, lingua e cookie"
   },
   "createEvent": {
     "adapts": "Per {{type}}, Curruscos adatterà l’organizzazione al formato scelto.",
@@ -402,7 +410,9 @@
     "noActivity": "Non hai ancora partecipato ad attività.",
     "organizedOne": "evento organizzato",
     "organizedMany": "eventi organizzati",
-    "round": "Turno"
+    "round": "Turno",
+    "pageTitle": "Il mio profilo — Curruscos",
+    "pageDescription": "Gestisci il tuo profilo Curruscos."
   },
   "saved": {
     "loadError": "Impossibile caricare gli eventi salvati.",
