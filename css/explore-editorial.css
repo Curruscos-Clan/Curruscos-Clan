@@ -267,10 +267,6 @@ body.explore-app {
   padding: 0 12px 12px;
 }
 
-body[data-explore-scope="groups"] .explore-advanced {
-  display: none !important;
-}
-
 @media (max-width: 420px) {
   .explore-app .advanced-filters {
     grid-template-columns: minmax(0, 1fr) !important;
