@@ -154,7 +154,7 @@ body.explore-app{--home-bg:var(--bg-primary,#f5f5f7);--home-ink:var(--text-prima
 <body class="explore-app">
 <header class="top-header">
   <a class="app-brand" href="index.html" aria-label="Curruscos, inicio">Curruscos</a>
-  <span class="header-subtitle">Planes reales en Palencia</span>
+  <span class="header-subtitle" data-i18n="explore.subtitle">Eventos y comunidades para compartir tus planes.</span>
   <div id="auth-header-action"><a class="btn btn-secondary" href="perfil.html?action=login">Entrar</a></div>
 </header>
 <main class="explore-page">
@@ -212,6 +212,11 @@ body.explore-app{--home-bg:var(--bg-primary,#f5f5f7);--home-ink:var(--text-prima
     <div id="publicGroupsGrid" class="public-groups-grid" aria-live="polite" aria-busy="true">
       <div class="explore-groups-empty" role="status">Cargando comunidades públicas…</div>
     </div>
+  <section id="teamsSection" class="explore-section secondary-discovery">
+    <div class="section-title"><div><span class="eyebrow">EQUIPOS</span><h2 data-i18n="explore.eventTeamsTitle">Equipos públicos de eventos</h2><p data-i18n="explore.eventTeamsDescription">Descubre equipos que participan en eventos públicos.</p></div></div>
+    <div id="teamsGrid" class="teams-discovery-grid" aria-label="Grupos públicos"></div>
+  </section>
+
   </section>
 
   <section id="recommendationsSection" class="explore-section recommendation-section" hidden>
@@ -228,11 +233,6 @@ body.explore-app{--home-bg:var(--bg-primary,#f5f5f7);--home-ink:var(--text-prima
     <div class="section-title"><div><span class="eyebrow">EXPLORAR</span><h2>Todos los eventos</h2><p id="allEventsLabel"></p></div></div>
     <div class="explore-toolbar"><span id="exploreSummary" role="status" aria-live="polite" aria-atomic="true"></span><span id="exploreHint">Los eventos públicos se actualizan automáticamente.</span></div>
     <div id="publicEventsGrid" class="public-events-grid"></div>
-  </section>
-
-  <section id="teamsSection" class="explore-section secondary-discovery">
-    <div class="section-title"><div><span class="eyebrow">COMUNIDAD</span><h2>Grupos activos</h2><p>Descubre grupos públicos con actividad en Curruscos.</p></div></div>
-    <div id="teamsGrid" class="teams-discovery-grid" aria-label="Grupos públicos"></div>
   </section>
 
   <section id="peopleSection" class="explore-section secondary-discovery">
