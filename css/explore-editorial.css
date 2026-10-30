@@ -400,3 +400,19 @@ body.explore-app {
 .explore-app .explore-advanced summary {
   color: #e6e6e9 !important;
 }
+
+
+/* Category links in Explore use plain anchors, not .explore-chip buttons. */
+.explore-app .category-scroll a {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #d0d0d5 !important;
+}
+
+.explore-app .category-scroll a:hover,
+.explore-app .category-scroll a[aria-current="true"],
+.explore-app .category-scroll a.active {
+  background: rgba(242, 85, 59, 0.18) !important;
+  border-color: rgba(242, 85, 59, 0.42) !important;
+  color: #ff9b88 !important;
+}
