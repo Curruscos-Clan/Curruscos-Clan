@@ -39,7 +39,7 @@
       .cc-manage-link{position:fixed;z-index:9998;left:14px;bottom:14px;border:1px solid var(--border,#e5e5e5);border-radius:999px;padding:8px 11px;background:rgba(255,255,255,.9);color:var(--muted,#666);font:inherit;font-size:9px;font-weight:900;cursor:pointer;box-shadow:0 5px 20px rgba(0,0,0,.07)}.cc-manage-link:hover{color:var(--text,#111)}
       /* Keep the persistent cookie control above the four-item mobile dock. */
       body.explore-app .cc-manage-link,body.public-create-app .cc-manage-link,body.profile-app .cc-manage-link{bottom:calc(88px + env(safe-area-inset-bottom, 0px))}
-      @media(max-width:700px){.cc-banner{left:10px;right:10px;bottom:10px;padding:17px;border-radius:19px}.cc-inner{display:block}.cc-actions{margin-top:14px;justify-content:stretch}.cc-btn{flex:1}.cc-setting{align-items:center}.cc-manage-link{bottom:8px;left:8px}}
+      @media(max-width:700px){.cc-banner{left:10px;right:10px;bottom:10px;padding:17px;border-radius:19px}.cc-inner{display:block}.cc-actions{margin-top:14px;justify-content:stretch}.cc-btn{flex:1}.cc-setting{align-items:center}.cc-manage-link{bottom:8px;left:8px}.cc-modal{align-items:end;padding:0}.cc-modal-card{width:100%;max-height:min(82dvh,calc(100vh - 20px));padding:22px 18px calc(18px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;border-bottom:0}}
     `;
     document.head.appendChild(style);
   }
