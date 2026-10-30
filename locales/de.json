@@ -135,6 +135,9 @@
   "explore": {
     "allActivities": "Alle Aktivitäten",
     "moreFilters": "Weitere Filter",
+    "subtitle": "Finde Veranstaltungen und Gruppen für gemeinsame Unternehmungen.",
+    "eventTeamsTitle": "Öffentliche Eventteams",
+    "eventTeamsDescription": "Entdecke Teams, die an öffentlichen Veranstaltungen teilnehmen.",
     "noEvents": "Keine Events gefunden.",
     "tryFilters": "Versuche eine andere Suche oder ändere die Filter.",
     "notInterested": "Nicht interessiert",
