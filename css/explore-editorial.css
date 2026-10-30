@@ -221,8 +221,56 @@ body.explore-app {
   border-top: 1px solid var(--explore-line) !important;
 }
 
+/* Keep secondary search refinements out of the first glance. */
+.explore-app .explore-advanced {
+  margin-top: 10px;
+  border: 1px solid rgba(17, 19, 24, 0.08);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+}
 
-/* Keep advanced filter names readable on narrow phones. */
+.explore-app .explore-advanced > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 13px;
+  color: #555;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  list-style: none;
+}
+
+.explore-app .explore-advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.explore-app .explore-advanced > summary::after {
+  content: "+";
+  color: #888;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.explore-app .explore-advanced[open] > summary::after {
+  content: "−";
+}
+
+.explore-app .explore-advanced[open] .advanced-filters {
+  margin: 0 !important;
+  padding: 0 12px 8px;
+}
+
+.explore-app .explore-advanced .filter-chips {
+  padding: 0 12px 12px;
+}
+
+body[data-explore-scope="groups"] .explore-advanced {
+  display: none !important;
+}
+
 @media (max-width: 420px) {
   .explore-app .advanced-filters {
     grid-template-columns: minmax(0, 1fr) !important;
