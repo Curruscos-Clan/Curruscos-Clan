@@ -305,7 +305,8 @@
     "No se ha podido crear el equipo.": "The team could not be created.",
     "Crear equipo": "Create team",
     "No se ha podido actualizar tu participación.": "Your participation could not be updated.",
-    "No se ha podido apuntarte al viaje.": "You could not be added to the trip."
+    "No se ha podido apuntarte al viaje.": "You could not be added to the trip.",
+    "Mis planes": "My plans"
   },
   "auth": {
     "completeLogin": "Enter your email and password.",
