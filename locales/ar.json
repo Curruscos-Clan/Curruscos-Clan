@@ -291,7 +291,15 @@
     "emailPlaceholder": "you@email.com",
     "password": "كلمة المرور",
     "passwordPlaceholder": "6 أحرف على الأقل",
-    "loginButton": "تسجيل الدخول"
+    "loginButton": "تسجيل الدخول",
+    "profileAuthEyebrow": "حسابك",
+    "profileAuthTitle": "مرحبًا بعودتك إلى Curruscos.",
+    "profileAuthIntro": "سجّل الدخول للوصول إلى ملفك الشخصي وحفظ اهتماماتك ومراجعة خططك واكتشاف أنشطة جديدة.",
+    "profileAuthSubmit": "تسجيل الدخول",
+    "profileAuthCreateAccount": "إنشاء حساب",
+    "profileAuthForgotPassword": "هل نسيت كلمة المرور؟",
+    "profileAuthBackHome": "العودة إلى الرئيسية",
+    "profileAuthSettings": "المظهر واللغة وإعدادات ملفات تعريف الارتباط"
   },
   "createEvent": {
     "adapts": "بالنسبة إلى {{type}}، سيكيّف Curruscos التنظيم وفق التنسيق المختار.",
@@ -378,7 +386,9 @@
     "noActivity": "لم تشارك في أي نشاط بعد.",
     "organizedOne": "فعالية منظمة",
     "organizedMany": "فعاليات منظمة",
-    "round": "الجولة"
+    "round": "الجولة",
+    "pageTitle": "ملفي الشخصي — Curruscos",
+    "pageDescription": "أدِر ملفك الشخصي في Curruscos."
   },
   "saved": {
     "loadError": "تعذر تحميل الفعاليات المحفوظة.",

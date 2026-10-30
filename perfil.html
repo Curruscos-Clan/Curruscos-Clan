@@ -8,11 +8,11 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Mi perfil — Curruscos</title>
+    <title data-i18n="profile.pageTitle">Mi perfil — Curruscos</title>
 
     <meta
         name="description"
-        content="Gestiona tu perfil de Curruscos."
+        content="Gestiona tu perfil de Curruscos." data-i18n="profile.pageDescription"
     >
 
     <link rel="stylesheet" href="css/style.css">
@@ -162,23 +162,23 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 
 <main class="profile-page is-loading">
 <section id="profileAuthView" class="profile-card profile-auth-card" aria-labelledby="profileAuthTitle">
-  <span class="interest-eyebrow">TU CUENTA</span>
-  <h1 id="profileAuthTitle">Vuelve a Curruscos.</h1>
-  <p>Inicia sesión para acceder a tu perfil, guardar tus intereses, consultar tus planes y descubrir nuevas actividades.</p>
+  <span class="interest-eyebrow" data-i18n="auth.profileAuthEyebrow">TU CUENTA</span>
+  <h1 id="profileAuthTitle" data-i18n="auth.profileAuthTitle">Vuelve a Curruscos.</h1>
+  <p data-i18n="auth.profileAuthIntro">Inicia sesión para acceder a tu perfil, guardar tus intereses, consultar tus planes y descubrir nuevas actividades.</p>
   <form id="profileAuthForm" class="profile-auth-form">
-    <label for="profileAuthEmail">Correo electrónico</label>
-    <input id="profileAuthEmail" type="email" autocomplete="email" required>
-    <label for="profileAuthPassword">Contraseña</label>
-    <input id="profileAuthPassword" type="password" autocomplete="current-password" minlength="6" required>
-    <button id="profileAuthSubmit" class="button button-primary" type="submit">Iniciar sesión</button>
+    <label for="profileAuthEmail" data-i18n="auth.email">Correo electrónico</label>
+    <input id="profileAuthEmail" type="email" autocomplete="email" data-i18n-placeholder="auth.emailPlaceholder" required>
+    <label for="profileAuthPassword" data-i18n="auth.password">Contraseña</label>
+    <input id="profileAuthPassword" type="password" autocomplete="current-password" data-i18n-placeholder="auth.passwordPlaceholder" minlength="6" required>
+    <button id="profileAuthSubmit" class="button button-primary" type="submit" data-i18n="auth.profileAuthSubmit">Iniciar sesión</button>
     <p id="profileAuthMessage" class="profile-auth-message" role="status" aria-live="polite"></p>
   </form>
   <div class="profile-auth-actions">
-    <a class="button button-secondary" href="login.html?mode=register">Crear una cuenta</a>
-    <a class="button button-secondary" href="login.html">¿Has olvidado la contraseña?</a>
-    <a class="button button-secondary" href="index.html">Volver al inicio</a>
+    <a class="button button-secondary" href="login.html?mode=register" data-i18n="auth.profileAuthCreateAccount">Crear una cuenta</a>
+    <a class="button button-secondary" href="login.html" data-i18n="auth.profileAuthForgotPassword">¿Has olvidado la contraseña?</a>
+    <a class="button button-secondary" href="index.html" data-i18n="auth.profileAuthBackHome">Volver al inicio</a>
   </div>
-  <a class="profile-auth-settings-link" href="ajustes.html">Ajustes de apariencia, idioma y cookies</a>
+  <a class="profile-auth-settings-link" href="ajustes.html" data-i18n="auth.profileAuthSettings">Ajustes de apariencia, idioma y cookies</a>
 </section>
 <div id="profileAuthenticatedView" class="profile-layout" hidden>
 <section class="profile-card">

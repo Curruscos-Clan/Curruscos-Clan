@@ -291,7 +291,15 @@
     "emailPlaceholder": "you@email.com",
     "password": "密码",
     "passwordPlaceholder": "至少 6 个字符",
-    "loginButton": "登录"
+    "loginButton": "登录",
+    "profileAuthEyebrow": "你的账户",
+    "profileAuthTitle": "欢迎回到 Curruscos。",
+    "profileAuthIntro": "登录即可访问个人资料、保存兴趣、查看计划并发现新的活动。",
+    "profileAuthSubmit": "登录",
+    "profileAuthCreateAccount": "创建账户",
+    "profileAuthForgotPassword": "忘记密码？",
+    "profileAuthBackHome": "返回首页",
+    "profileAuthSettings": "外观、语言和 Cookie 设置"
   },
   "createEvent": {
     "adapts": "对于{{type}}，Curruscos 会根据所选格式调整组织方式。",
@@ -378,7 +386,9 @@
     "noActivity": "你还没有参加任何活动。",
     "organizedOne": "个已组织活动",
     "organizedMany": "个已组织活动",
-    "round": "轮"
+    "round": "轮",
+    "pageTitle": "我的个人资料 — Curruscos",
+    "pageDescription": "管理你的 Curruscos 个人资料。"
   },
   "saved": {
     "loadError": "无法加载已保存的活动。",
