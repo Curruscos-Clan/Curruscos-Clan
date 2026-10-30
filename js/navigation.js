@@ -1,4 +1,10 @@
 (function(){
+  if (!document.querySelector('script[data-curruscos-preferences]')) {
+    const preferencesScript = document.createElement("script");
+    preferencesScript.src = new URL("js/preferences.js", document.baseURI).href;
+    preferencesScript.dataset.curruscosPreferences = "true";
+    document.head.appendChild(preferencesScript);
+  }
   const items=[
     {href:"index.html",label:"Inicio",pages:["index.html"]},
     {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
