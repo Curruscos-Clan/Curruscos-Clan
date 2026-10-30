@@ -472,5 +472,19 @@
     "communityTitle": "رؤية ما يحدث",
     "communityReason": "هناك نشاط حديث حول {{event}}.",
     "tripsInMotion": "لا توجد فعاليات قادمة، لكن هناك {{count}} من الرحلات قيد التنفيذ."
+  },
+  "settings": {
+    "appearanceTitle": "المظهر",
+    "appearanceIntro": "اختر لون التمييز في Curruscos لهذا المتصفح.",
+    "accentLabel": "لون التمييز",
+    "accentDescription": "يُحفظ على هذا الجهاز ويُطبّق على صفحات Curruscos.",
+    "toneOrange": "برتقالي",
+    "toneViolet": "بنفسجي",
+    "toneGreen": "أخضر",
+    "cookiesTitle": "تفضيلات ملفات تعريف الارتباط",
+    "cookiesIntro": "راجع اختيارك لملفات تعريف الارتباط أو غيّره في أي وقت.",
+    "cookiesLabel": "الموافقة",
+    "cookiesDescription": "أدِر تفضيلات التحليلات وملفات تعريف الارتباط الضرورية.",
+    "cookiesButton": "إعداد ملفات تعريف الارتباط"
   }
 }
