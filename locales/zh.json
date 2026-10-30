@@ -135,6 +135,9 @@
   "explore": {
     "allActivities": "所有活动",
     "moreFilters": "更多筛选",
+    "subtitle": "发现活动和社群，约上伙伴一起参加。",
+    "eventTeamsTitle": "公开活动队伍",
+    "eventTeamsDescription": "认识参与公开活动的队伍。",
     "noEvents": "没有找到活动。",
     "tryFilters": "尝试其他搜索或修改筛选条件。",
     "notInterested": "不感兴趣",
