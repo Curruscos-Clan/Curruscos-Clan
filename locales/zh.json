@@ -281,7 +281,8 @@
     "No se ha podido crear el equipo.": "无法创建团队。",
     "Crear equipo": "创建团队",
     "No se ha podido actualizar tu participación.": "无法更新你的参与状态。",
-    "No se ha podido apuntarte al viaje.": "无法将你加入旅行。"
+    "No se ha podido apuntarte al viaje.": "无法将你加入旅行。",
+    "Mis planes": "我的计划"
   },
   "auth": {
     "completeLogin": "请输入邮箱和密码。",
