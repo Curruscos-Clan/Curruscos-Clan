@@ -4,7 +4,7 @@ body.explore-app {
   --explore-ink: #1d1d1f;
   --explore-muted: #86868b;
   --explore-line: rgba(0, 0, 0, 0.08);
-  --explore-orange: #0071e3;
+  --explore-orange: #f2553b;
   --explore-card: #ffffff;
   background: var(--explore-paper) !important;
   color: var(--explore-ink) !important;
@@ -172,6 +172,10 @@ body.explore-app {
 
 .explore-app .bottom-nav-item {
   border-radius: 9999px !important;
+}
+
+.explore-app .nav-tab.active {
+  color: var(--explore-orange) !important;
 }
 
 .explore-app .bottom-nav-item.active {
