@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "css/home-redesign.css"
+      - "css/home-dark-bento.css"
       - "js/explorar.js"
       - "tests/test_home_feed_event_filter.py"
       - ".github/workflows/home-feed-regression-checks.yml"
