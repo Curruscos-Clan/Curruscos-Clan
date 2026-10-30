@@ -13,7 +13,13 @@
     "memories": "Erinnerungen",
     "events": "Events",
     "chat": "Chat",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "search": "Suchen",
+    "myPlans": "Meine Pläne",
+    "myProfile": "Mein Profil",
+    "primary": "Hauptnavigation",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen"
   },
   "community": {
     "activePeople": "Aktive Personen"

@@ -13,7 +13,13 @@
     "memories": "回忆",
     "events": "活动",
     "chat": "聊天",
-    "notifications": "通知"
+    "notifications": "通知",
+    "search": "搜索",
+    "myPlans": "我的计划",
+    "myProfile": "我的资料",
+    "primary": "主导航",
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
   },
   "community": {
     "activePeople": "活跃用户"
