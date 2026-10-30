@@ -178,6 +178,10 @@ body.explore-app {
   color: var(--explore-orange) !important;
 }
 
+.explore-app :is(button, a, input, select, textarea):focus-visible {
+  outline-color: rgba(242, 85, 59, 0.48) !important;
+}
+
 .explore-app .bottom-nav-item.active {
   background: rgba(0, 113, 227, 0.08) !important;
   color: #0071e3 !important;
