@@ -47,5 +47,22 @@ class HomeFeedEventFilterTests(unittest.TestCase):
         self.assertIn('event.participant_count??event.event_participants?.[0]?.count??0', EXPLORE)
 
 
+    def test_feed_uses_entry_fee_from_public_events_query(self):
+        supabase = (ROOT / "js" / "supabase.js").read_text(encoding="utf-8")
+        public_query = supabase[supabase.index("async function getPublicEvents"):]
+        self.assertIn("entry_fee", public_query)
+        self.assertIn("event.entry_fee??event.price??event.price_amount??0", FEED)
+        self.assertIn("const price=Number.isFinite(parsedPrice)&&parsedPrice>0?parsedPrice:0", FEED)
+
+    def test_feed_and_recommendations_do_not_depend_on_groups(self):
+        self.assertNotIn("getUserGroups(", FEED)
+        self.assertNotIn("groupIds", FEED)
+        self.assertNotIn("userContext.groupIds", RECOMMENDATIONS)
+
+    def test_home_copy_no_longer_promotes_communities_as_core_product(self):
+        self.assertIn("PLANES ABIERTOS", HOME)
+        self.assertNotIn("EVENTOS Y COMUNIDADES", HOME)
+
+
 if __name__ == "__main__":
     unittest.main()
