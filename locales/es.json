@@ -414,5 +414,19 @@
     "Crear equipo": "Crear equipo",
     "No se ha podido actualizar tu participación.": "No se ha podido actualizar tu participación.",
     "No se ha podido apuntarte al viaje.": "No se ha podido apuntarte al viaje."
+  },
+  "settings": {
+    "appearanceTitle": "Apariencia",
+    "appearanceIntro": "Personaliza el tono de acento de Curruscos en este navegador.",
+    "accentLabel": "Tono del color",
+    "accentDescription": "Se guarda en este dispositivo y se aplica en las páginas de Curruscos.",
+    "toneOrange": "Naranja",
+    "toneViolet": "Violeta",
+    "toneGreen": "Verde",
+    "cookiesTitle": "Preferencias de cookies",
+    "cookiesIntro": "Revisa o cambia tu elección de cookies cuando quieras.",
+    "cookiesLabel": "Consentimiento",
+    "cookiesDescription": "Gestiona las preferencias analíticas y las cookies necesarias.",
+    "cookiesButton": "Configurar cookies"
   }
 }
