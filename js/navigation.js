@@ -6,10 +6,10 @@
     document.head.appendChild(preferencesScript);
   }
   const items=[
-    {href:"index.html",key:"nav.home",label:"Inicio",pages:["index.html"]},
-    {href:"explorar.html",key:"nav.search",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
-    {href:"mis-planes.html",key:"nav.myPlans",label:"Mis planes",pages:["mis-planes.html","mis-eventos.html","eventos.html","dashboard.html"]},
-    {href:"perfil.html",key:"nav.myProfile",label:"Mi perfil",pages:["perfil.html"]}
+    {href:"index.html",label:"Inicio",key:"nav.home",pages:["index.html"]},
+    {href:"explorar.html",label:"Buscar",key:"nav.search",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
+    {href:"mis-planes.html",label:"Mis planes",key:"nav.myPlans",pages:["mis-planes.html","mis-eventos.html","eventos.html","dashboard.html"]},
+    {href:"perfil.html",label:"Mi perfil",key:"nav.myProfile",pages:["perfil.html"]}
   ];
   const translate=(key,fallback)=>{
     const value=window.curruscosI18n?.t?.(key);
