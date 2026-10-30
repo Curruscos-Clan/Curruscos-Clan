@@ -285,3 +285,31 @@ body[data-explore-scope="groups"] .explore-advanced {
     min-height: 44px;
   }
 }
+
+
+/* Match the search input to its white search surface (avoid native dark appearance). */
+.explore-app .search-main input {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background: transparent !important;
+  color: #1d1d1f !important;
+  -webkit-text-fill-color: #1d1d1f;
+}
+
+.explore-app .search-main input::placeholder {
+  color: #737377 !important;
+  opacity: 1;
+}
+
+@media (min-width: 761px) {
+  .explore-app .explore-mobile-hero {
+    padding: 12px 2px 14px !important;
+  }
+
+  .explore-app .explore-mobile-hero h1 {
+    max-width: none !important;
+    font-size: clamp(42px, 5vw, 64px) !important;
+    line-height: 1 !important;
+    margin: 7px 0 10px !important;
+  }
+}
