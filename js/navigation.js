@@ -6,11 +6,15 @@
     document.head.appendChild(preferencesScript);
   }
   const items=[
-    {href:"index.html",label:"Inicio",pages:["index.html"]},
-    {href:"explorar.html",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
-    {href:"mis-planes.html",label:"Mis planes",pages:["mis-planes.html","mis-eventos.html","eventos.html","dashboard.html"]},
-    {href:"perfil.html",label:"Mi perfil",pages:["perfil.html"]}
+    {href:"index.html",key:"nav.home",label:"Inicio",pages:["index.html"]},
+    {href:"explorar.html",key:"nav.search",label:"Buscar",pages:["explorar.html","evento-publico.html","crear-evento.html"]},
+    {href:"mis-planes.html",key:"nav.myPlans",label:"Mis planes",pages:["mis-planes.html","mis-eventos.html","eventos.html","dashboard.html"]},
+    {href:"perfil.html",key:"nav.myProfile",label:"Mi perfil",pages:["perfil.html"]}
   ];
+  const translate=(key,fallback)=>{
+    const value=window.curruscosI18n?.t?.(key);
+    return value&&value!==key?value:fallback;
+  };
   function init(){
     const nav=document.getElementById("mainNav");
     const page=(location.pathname.split("/").pop()||"index.html").toLowerCase();
@@ -18,9 +22,9 @@
     if(nav){
       nav.innerHTML=items.map(item=>{
         const active=item===activeItem;
-        return '<a href="'+item.href+'"'+(active?' class="active" aria-current="page"':'')+'>'+item.label+'</a>';
+        return '<a href="'+item.href+'"'+(active?' class="active" aria-current="page"':'')+'>'+translate(item.key,item.label)+'</a>';
       }).join("");
-      nav.setAttribute("aria-label","Navegación principal");
+      nav.setAttribute("aria-label",translate("nav.primary","Navegación principal"));
     }
     const bottomNav=document.querySelector(".bottom-nav");
     if(bottomNav){
@@ -39,7 +43,7 @@
       const setMenuOpen=open=>{
         nav.classList.toggle("mobile-open",open);
         button.setAttribute("aria-expanded",String(open));
-        button.setAttribute("aria-label",open?"Cerrar menú":"Abrir menú");
+        button.setAttribute("aria-label",translate(open?"nav.closeMenu":"nav.openMenu",open?"Cerrar menú":"Abrir menú"));
         button.textContent=open?"×":"☰";
       };
       button.addEventListener("click",e=>{
@@ -57,5 +61,6 @@
       });
     }
   }
+  window.addEventListener("curruscos:language-changed",init);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
 })();
