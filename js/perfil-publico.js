@@ -3,6 +3,17 @@ const ACTIVITY_LABELS={padel:"Pádel",futbol:"Fútbol",baloncesto:"Baloncesto",t
 const STATUS_LABELS={published:"Inscripciones abiertas",preparing:"Preparando",live:"En directo",finished:"Finalizado"};
 const FORMAT_LABELS={standard:"Evento libre",knockout:"Eliminación directa",round_robin:"Liga",swiss:"Sistema suizo",race:"Carrera",custom:"Formato personalizado"};
 
+async function loadPublicProfileTeamsSafely(userId){
+ try{
+  if(typeof getPublicProfileTeams==="function")return (await getPublicProfileTeams(userId))||[];
+  const {data,error}=await supabaseClient.rpc("get_public_profile_teams",{target_user_id:userId});
+  if(error)throw error;
+  return data||[];
+ }catch(error){
+  console.warn("No se pudieron cargar los equipos públicos del perfil.",error);
+  return [];
+ }
+}
 function eventDate(row){
  const d=new Date(row.event_date+"T"+(row.event_time||"00:00"));
  return d.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"});
@@ -19,7 +30,7 @@ document.addEventListener("DOMContentLoaded",async()=>{
  const root=document.getElementById("profileRoot");
  const id=new URLSearchParams(location.search).get("id");
  if(!id){root.innerHTML='<div class="pub-empty">Perfil no encontrado.</div>';return;}
- const [p,details,activity,teams,currentUser]=await Promise.all([getPublicProfile(id),getPublicProfileDetails(id),getPublicProfileActivity(id),getPublicProfileTeams(id),getCurrentUser()]);
+ const [p,details,activity,teams,currentUser]=await Promise.all([getPublicProfile(id),getPublicProfileDetails(id),getPublicProfileActivity(id),loadPublicProfileTeamsSafely(id),getCurrentUser()]);
  if(!p){root.innerHTML='<div class="pub-empty">Este perfil no está disponible.</div>';return;}
  const name=p.display_name||p.username||"Jugador";
  const matches=Number(p.wins||0)+Number(p.draws||0)+Number(p.losses||0);
