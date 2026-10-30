@@ -1502,7 +1502,6 @@ async function testSupabaseConnection() {
     );
 }
 
-testSupabaseConnection();
 
 async function getGroupMemories() {
     const group = await getCurrentGroup();
@@ -3179,3 +3178,6 @@ async function getGroupUsage(groupId) {
     }
     return data || null;
 }
+
+// Run after the script's lexical state has initialized.
+testSupabaseConnection();
