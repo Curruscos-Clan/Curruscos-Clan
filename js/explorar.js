@@ -83,7 +83,6 @@ function setExploreScope(scope){
     document.getElementById("recommendationsSection"),
     document.getElementById("featuredSection"),
     document.querySelector(".explore-all-events"),
-    document.getElementById("teamsSection"),
     document.getElementById("peopleSection")
   ];
   eventOnly.forEach(section=>{if(section)section.style.display=currentExploreScope==="events"?"":"none";});
