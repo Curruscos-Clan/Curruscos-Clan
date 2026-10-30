@@ -46,6 +46,11 @@
     .settings-delete-button:disabled{opacity:.45;cursor:not-allowed}
     @media(max-width:600px){.settings-page{width:calc(100% - 26px);padding:25px 0 90px}.settings-card{padding:18px;border-radius:18px}.settings-row{gap:12px}.settings-desc{max-width:34ch}.settings-card h2{font-size:16px}.settings-modal-card{padding:20px}}
     @media(prefers-reduced-motion:reduce){.settings-switch-track,.settings-switch-track:before{transition:none}}
+    .settings-row select{min-width:150px;min-height:42px;padding:0 32px 0 12px;border:1px solid #e3e3dd;border-radius:12px;background:#fafaf8;color:#17181b;font:inherit;font-size:12px}
+    .settings-app .settings-icon{background:var(--color-primary-subtle,rgba(242,85,59,.12));color:var(--settings-accent,#f2553b)}
+    .settings-app .settings-switch input:checked+.settings-switch-track{background:var(--settings-accent,#f2553b)}
+    .settings-app .settings-switch input:focus-visible+.settings-switch-track{outline-color:var(--color-primary-subtle,rgba(242,85,59,.35))}
+    @media(max-width:600px){.settings-row select{max-width:42vw}}
   </style>
   <script src="js/i18n.js"></script>
   <script src="js/navigation.js"></script>
@@ -67,6 +72,24 @@
     </div>
 
     <div class="settings-stack">
+      <section class="settings-card" aria-labelledby="appearanceHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">◐</span><div><h2 id="appearanceHeading" data-i18n="settings.appearanceTitle">Apariencia</h2><p class="settings-card-intro" data-i18n="settings.appearanceIntro">Personaliza el tono de acento de Curruscos en este navegador.</p></div></div>
+        <div class="settings-row">
+          <div class="settings-copy"><label class="settings-label" for="accentToneSetting" data-i18n="settings.accentLabel">Tono del color</label><span class="settings-desc" data-i18n="settings.accentDescription">El cambio se guarda en este dispositivo y se aplica en las páginas principales.</span></div>
+          <select id="accentToneSetting" aria-label="Tono del color">
+            <option value="orange" data-i18n="settings.toneOrange">Naranja</option>
+            <option value="violet" data-i18n="settings.toneViolet">Violeta</option>
+            <option value="green" data-i18n="settings.toneGreen">Verde</option>
+          </select>
+        </div>
+      </section>
+      <section class="settings-card" aria-labelledby="cookieSettingsHeading">
+        <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">◉</span><div><h2 id="cookieSettingsHeading" data-i18n="settings.cookiesTitle">Preferencias de cookies</h2><p class="settings-card-intro" data-i18n="settings.cookiesIntro">Revisa o cambia tu elección de cookies cuando quieras.</p></div></div>
+        <div class="settings-row">
+          <div class="settings-copy"><span class="settings-label" data-i18n="settings.cookiesLabel">Consentimiento</span><span class="settings-desc" data-i18n="settings.cookiesDescription">Gestiona las cookies necesarias y las preferencias analíticas.</span></div>
+          <button id="openCookieSettings" class="button button-secondary" type="button" data-i18n="settings.cookiesButton">Configurar cookies</button>
+        </div>
+      </section>
       <section class="settings-card" aria-labelledby="privacyHeading">
         <div class="settings-card-head"><span class="settings-icon" aria-hidden="true">◉</span><div><h2 id="privacyHeading">Privacidad del perfil</h2><p class="settings-card-intro">Estas preferencias se aplican también en los resultados de Explorar y en el historial del perfil.</p></div></div>
         <div class="settings-row"><div class="settings-copy"><label class="settings-label" for="setting-public-profile">Perfil público</label><span class="settings-desc">Permite que cualquier persona descubra tu perfil en Explorar. Si lo desactivas, solo tú y los miembros de tus clanes podrán abrirlo.</span></div><label class="settings-switch"><input id="setting-public-profile" type="checkbox" role="switch" disabled><span class="settings-switch-track"></span></label></div>
@@ -310,5 +333,7 @@
     document.addEventListener("DOMContentLoaded", init);
   })();
   </script>
+  <script src="js/preferences.js"></script>
+  <script src="js/cookies.js"></script>
 </body>
 </html>
