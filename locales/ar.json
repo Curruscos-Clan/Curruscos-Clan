@@ -281,7 +281,8 @@
     "No se ha podido crear el equipo.": "تعذر إنشاء الفريق.",
     "Crear equipo": "إنشاء فريق",
     "No se ha podido actualizar tu participación.": "تعذر تحديث مشاركتك.",
-    "No se ha podido apuntarte al viaje.": "تعذر إضافتك إلى الرحلة."
+    "No se ha podido apuntarte al viaje.": "تعذر إضافتك إلى الرحلة.",
+    "Mis planes": "خططي"
   },
   "auth": {
     "completeLogin": "أدخل بريدك الإلكتروني وكلمة المرور.",
