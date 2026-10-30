@@ -315,7 +315,15 @@
     "emailPlaceholder": "du@email.com",
     "password": "Passwort",
     "passwordPlaceholder": "Mindestens 6 Zeichen",
-    "loginButton": "Anmelden"
+    "loginButton": "Anmelden",
+    "profileAuthEyebrow": "DEIN KONTO",
+    "profileAuthTitle": "Willkommen zurück bei Curruscos.",
+    "profileAuthIntro": "Melde dich an, um dein Profil zu öffnen, Interessen zu speichern, deine Pläne anzusehen und neue Aktivitäten zu entdecken.",
+    "profileAuthSubmit": "Anmelden",
+    "profileAuthCreateAccount": "Konto erstellen",
+    "profileAuthForgotPassword": "Passwort vergessen?",
+    "profileAuthBackHome": "Zur Startseite",
+    "profileAuthSettings": "Darstellung, Sprache und Cookies"
   },
   "createEvent": {
     "adapts": "Für {{type}} passt Curruscos die Organisation an das gewählte Format an.",
@@ -402,7 +410,9 @@
     "noActivity": "Du hast noch an keiner Aktivität teilgenommen.",
     "organizedOne": "organisierte Veranstaltung",
     "organizedMany": "organisierte Veranstaltungen",
-    "round": "Runde"
+    "round": "Runde",
+    "pageTitle": "Mein Profil — Curruscos",
+    "pageDescription": "Verwalte dein Curruscos-Profil."
   },
   "saved": {
     "loadError": "Gespeicherte Veranstaltungen konnten nicht geladen werden.",
