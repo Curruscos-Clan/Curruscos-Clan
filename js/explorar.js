@@ -78,12 +78,11 @@ function setExploreScope(scope){
   const eventOnly=[
     document.querySelector(".explore-intent"),
     document.querySelector(".category-scroll"),
-    document.querySelector(".advanced-filters"),
+    document.querySelector(".explore-advanced"),
     document.getElementById("exploreChips"),
     document.getElementById("recommendationsSection"),
     document.getElementById("featuredSection"),
     document.querySelector(".explore-all-events"),
-    document.getElementById("teamsSection"),
     document.getElementById("peopleSection")
   ];
   eventOnly.forEach(section=>{if(section)section.style.display=currentExploreScope==="events"?"":"none";});

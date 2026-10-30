@@ -134,6 +134,10 @@
   },
   "explore": {
     "allActivities": "All activities",
+    "moreFilters": "More filters",
+    "subtitle": "Find events and communities to make plans together.",
+    "eventTeamsTitle": "Public event teams",
+    "eventTeamsDescription": "Meet teams taking part in public events.",
     "noEvents": "No events found.",
     "tryFilters": "Try another search or change the filters.",
     "notInterested": "Not interested",

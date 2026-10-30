@@ -134,6 +134,10 @@
   },
   "explore": {
     "allActivities": "Todas las actividades",
+    "moreFilters": "Más filtros",
+    "subtitle": "Encuentra eventos y comunidades para compartir tus planes.",
+    "eventTeamsTitle": "Equipos públicos de eventos",
+    "eventTeamsDescription": "Descubre equipos que participan en eventos públicos.",
     "noEvents": "No hemos encontrado eventos.",
     "tryFilters": "Prueba otra búsqueda o cambia los filtros.",
     "notInterested": "No me interesa",
