@@ -24,7 +24,7 @@ function calculateEventScore(event,userContext={}){
   const category=String(event.category||event.event_type||"").trim().toLowerCase();
   const interests=(userContext.interests||[]).map(value=>String(value).trim().toLowerCase());
   if(category && interests.includes(category)){score+=15;reasons.unshift("Según tus intereses");}
-  if(event.group_id && userContext.groupIds?.has(event.group_id)){score+=12;reasons.unshift("De tu grupo");}
+
   if(event.status==="live"){score+=5;reasons.push("En marcha");}
   return {score,primaryReason:reasons[0]||"Descubre este plan"};
 }

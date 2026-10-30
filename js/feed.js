@@ -21,7 +21,7 @@ function safePublicEventCover(value) {
   let currentUser=null;
   let allEvents=[];
   let currentFilter="all";
-  const userContext={joinedEventIds:new Set(),interests:[],groupIds:new Set()};
+  const userContext={joinedEventIds:new Set(),interests:[]};
 
   function esc(value){
     return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -69,14 +69,16 @@ function safePublicEventCover(value) {
   async function loadContext(){
     if(!currentUser)return;
     try{
-      const [participants,profile,groups]=await Promise.all([
+      const [participantsResult,profileResult]=await Promise.allSettled([
         supabaseClient.from("event_participants").select("event_id,status").eq("user_id",currentUser.id).eq("status","yes"),
-        supabaseClient.from("profiles").select("interests").eq("id",currentUser.id).maybeSingle(),
-        typeof getUserGroups==="function"?getUserGroups():Promise.resolve([])
+        supabaseClient.from("profiles").select("interests").eq("id",currentUser.id).maybeSingle()
       ]);
-      if(!participants.error&&participants.data)userContext.joinedEventIds=new Set(participants.data.map(row=>row.event_id));
-      if(!profile.error&&Array.isArray(profile.data?.interests))userContext.interests=profile.data.interests.map(value=>String(value).toLowerCase());
-      (groups||[]).forEach(item=>{const group=item?.groups||item;if(group?.id)userContext.groupIds.add(group.id);});
+      if(participantsResult.status==="fulfilled"&&!participantsResult.value.error&&participantsResult.value.data){
+        userContext.joinedEventIds=new Set(participantsResult.value.data.map(row=>row.event_id));
+      }
+      if(profileResult.status==="fulfilled"&&!profileResult.value.error&&Array.isArray(profileResult.value.data?.interests)){
+        userContext.interests=profileResult.value.data.interests.map(value=>String(value).toLowerCase());
+      }
     }catch(error){console.warn("No se ha podido cargar todo el contexto personalizado del feed.",error);}
   }
   function filteredEvents(){
@@ -106,7 +108,9 @@ function safePublicEventCover(value) {
       const cover=safePublicEventCover(event.cover_url);
       const date=startDate(event);
       const dateText=date?date.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}):"Fecha por confirmar";
-      const price=Number(event.price||event.price_amount||0);
+      const rawPrice=event.entry_fee??event.price??event.price_amount??0;
+      const parsedPrice=Number(rawPrice);
+      const price=Number.isFinite(parsedPrice)&&parsedPrice>0?parsedPrice:0;
       const title=esc(event.title||"Plan sin título");
       const category=esc(event.category||event.event_type||"Evento");
       const place=esc(event.location||"Lugar por confirmar");
@@ -121,7 +125,7 @@ function safePublicEventCover(value) {
     renderPosters();
     feedList.innerHTML="";
     if(!events.length){
-      renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba otro filtro o crea un plan para tu comunidad.",{href:"crear-evento.html",label:"Crear un plan"});
+      renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba otro filtro o publica un plan para que otras personas puedan apuntarse.",{href:"crear-evento.html",label:"Crear un plan"});
       feedList.setAttribute("aria-busy","false");return;
     }
     const dayStacks=new Map();
