@@ -101,3 +101,17 @@ body.public-event-app:has(#publicEventRoot > .empty-state) #publicEventRoot > .e
   line-height: 1.5;
   text-align: center;
 }
+
+
+/* Keep the public event navigation anchored as a four-item bottom bar on phones. */
+@media (max-width: 760px) {
+  body.public-event-app .bottom-nav {
+    top: auto !important;
+    bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
