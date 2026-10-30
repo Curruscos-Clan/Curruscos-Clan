@@ -38,7 +38,7 @@
     const button=document.getElementById("menuButton");
     if(button && nav && button.dataset.navReady!=="true"){
       button.dataset.navReady="true";
-      button.setAttribute("aria-expanded","false");
+      button.setAttribute("aria-expanded","false");\n      button.setAttribute("aria-label",translate("nav.openMenu","Abrir menú"));
       button.setAttribute("aria-controls","mainNav");
       const setMenuOpen=open=>{
         nav.classList.toggle("mobile-open",open);
