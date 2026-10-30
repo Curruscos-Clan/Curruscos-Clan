@@ -105,7 +105,7 @@ body.public-event-app:has(#publicEventRoot > .empty-state) #publicEventRoot > .e
 
 /* Keep the public event navigation anchored as a four-item bottom bar on phones. */
 @media (max-width: 760px) {
-  body.public-event-app .bottom-nav {
+  body.public-event-app .public-event-page + .bottom-nav {
     top: auto !important;
     bottom: max(10px, env(safe-area-inset-bottom, 0px)) !important;
     left: 12px !important;
