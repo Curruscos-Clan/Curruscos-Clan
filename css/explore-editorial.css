@@ -331,3 +331,72 @@ body.explore-app {
     line-height: 1.25;
   }
 }
+
+
+/* Keep discovery controls consistent with the dark Explore surface. */
+.explore-app .search-main {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow: none !important;
+  color: #f5f5f7 !important;
+}
+
+.explore-app .search-main > span {
+  color: #b8b8bf !important;
+}
+
+.explore-app .search-main input {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #f5f5f7 !important;
+  -webkit-text-fill-color: #f5f5f7 !important;
+}
+
+.explore-app .search-main input::placeholder {
+  color: #a1a1a8 !important;
+  -webkit-text-fill-color: #a1a1a8 !important;
+}
+
+.explore-app .search-main button {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #f5f5f7 !important;
+}
+
+.explore-app .explore-scope-tabs {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.explore-app .explore-scope-tab {
+  color: #c7c7cc !important;
+}
+
+.explore-app .explore-scope-tab[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.13) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.explore-app .explore-intent .intent,
+.explore-app .category-scroll .explore-chip {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #d0d0d5 !important;
+}
+
+.explore-app .explore-intent .intent.active,
+.explore-app .category-scroll .explore-chip.active {
+  background: rgba(242, 85, 59, 0.18) !important;
+  border-color: rgba(242, 85, 59, 0.42) !important;
+  color: #ff9b88 !important;
+}
+
+.explore-app .explore-advanced {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #d0d0d5 !important;
+}
+
+.explore-app .explore-advanced summary {
+  color: #e6e6e9 !important;
+}
