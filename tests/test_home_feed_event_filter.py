@@ -17,6 +17,13 @@ class HomeFeedEventFilterTests(unittest.TestCase):
         self.assertLess(supabase, recommendations)
         self.assertLess(recommendations, feed)
 
+    def test_home_uses_one_coherent_light_theme_without_hidden_webgl_runtime(self):
+        self.assertIn('css/home-redesign.css', HOME)
+        self.assertNotIn('css/home-dark-bento.css', HOME)
+        self.assertNotIn('three.min.js', HOME)
+        self.assertNotIn('js/webgl-scene.js', HOME)
+        self.assertIn('theme-color" content="#f6f6f3"', HOME)
+
     def test_home_filter_supports_both_event_date_shapes(self):
         self.assertIn("event?.date||event?.event_date", FEED)
         self.assertIn("event?.time||event?.event_time", FEED)
