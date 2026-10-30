@@ -92,3 +92,58 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .event-card { transition: none !important; }
 }
+
+
+/* Keep the primary actions and feed visible before the immersive artwork takes over. */
+@media (min-width: 681px) {
+  .webgl-hero-stage {
+    min-height: min(430px, calc(100vh - 150px)) !important;
+    padding: 32px !important;
+  }
+
+  .webgl-hero-content {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .webgl-hero-bottom {
+    gap: 24px !important;
+    padding-top: 0 !important;
+  }
+
+  .webgl-hero-title {
+    margin: 12px 0 !important;
+    font-size: clamp(2.7rem, 5.5vw, 4rem) !important;
+    line-height: .95 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .webgl-hero-stage {
+    min-height: 400px !important;
+    padding: 26px 20px 24px !important;
+  }
+
+  .webgl-hero-content {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  .webgl-hero-bottom {
+    gap: 20px !important;
+    padding-top: 0 !important;
+  }
+
+  .webgl-hero-actions {
+    margin-top: 0 !important;
+  }
+}
+
+
+@media (max-width: 680px) {
+  .webgl-hero-title {
+    margin: 10px 0 !important;
+    font-size: clamp(2.25rem, 10vw, 3rem) !important;
+    line-height: .95 !important;
+  }
+}
