@@ -25,20 +25,24 @@
     return selected;
   }
 
-  let savedTone = "orange";
-  try { savedTone = localStorage.getItem(STORAGE_KEY) || "orange"; } catch (_) {}
-  applyAccent(savedTone);
+  function init() {
+    let savedTone = "orange";
+    try { savedTone = localStorage.getItem(STORAGE_KEY) || "orange"; } catch (_) {}
+    const selected = applyAccent(savedTone);
+    const selector = document.getElementById("accentToneSetting");
+    if (selector) {
+      selector.value = selected;
+      selector.addEventListener("change", () => {
+        const tone = applyAccent(selector.value);
+        try { localStorage.setItem(STORAGE_KEY, tone); } catch (_) {}
+      });
+    }
 
-  const selector = document.getElementById("accentToneSetting");
-  if (selector) {
-    selector.value = tones[savedTone] ? savedTone : "orange";
-    selector.addEventListener("change", () => {
-      const selected = applyAccent(selector.value);
-      try { localStorage.setItem(STORAGE_KEY, selected); } catch (_) {}
+    document.getElementById("openCookieSettings")?.addEventListener("click", () => {
+      if (window.CurruscosCookies?.openSettings) window.CurruscosCookies.openSettings();
     });
   }
 
-  document.getElementById("openCookieSettings")?.addEventListener("click", () => {
-    if (window.CurruscosCookies?.openSettings) window.CurruscosCookies.openSettings();
-  });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+  else init();
 })();
