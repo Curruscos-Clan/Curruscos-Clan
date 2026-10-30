@@ -138,3 +138,12 @@ html, body {
     margin-top: 0 !important;
   }
 }
+
+
+@media (max-width: 680px) {
+  .webgl-hero-title {
+    margin: 10px 0 !important;
+    font-size: clamp(2.25rem, 10vw, 3rem) !important;
+    line-height: .95 !important;
+  }
+}
