@@ -31,6 +31,45 @@
     .plans-error{color:#b42318!important}
     .plans-secondary-link{display:inline-block;margin:18px 0 0;color:var(--text-muted);font-size:.8rem;text-decoration:underline;text-underline-offset:3px}
     @media(min-width:700px){.plans-intro{margin-top:36px}.plans-list{gap:14px}.plan-card{padding:20px}}
+    :root {
+      --color-primary: #f2553b;
+      --color-primary-hover: #e6472d;
+      --color-primary-subtle: rgba(242, 85, 59, .09);
+      --border-focus: #f2553b;
+    }
+    .btn-primary {
+      box-shadow: 0 2px 8px rgba(242, 85, 59, .22);
+    }
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 4px 14px rgba(242, 85, 59, .28);
+    }
+    main.app-container {
+      padding-bottom: 112px !important;
+    }
+    .bottom-nav {
+      position: fixed !important;
+      z-index: 120 !important;
+      left: 50% !important;
+      right: auto !important;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+      transform: translateX(-50%) !important;
+      width: min(calc(100% - 24px), 460px) !important;
+      height: 64px !important;
+      padding: 5px !important;
+      border: 1px solid rgba(20, 20, 10, .08) !important;
+      border-radius: 999px !important;
+      background: rgba(255, 255, 255, .94) !important;
+      box-shadow: 0 8px 32px rgba(20, 20, 10, .12) !important;
+      backdrop-filter: blur(18px) !important;
+      -webkit-backdrop-filter: blur(18px) !important;
+    }
+    .nav-tab {
+      border-radius: 999px;
+    }
+    .nav-tab.active {
+      color: var(--color-primary);
+      background: var(--color-primary-subtle);
+    }
   </style>
 </head>
 <body>
