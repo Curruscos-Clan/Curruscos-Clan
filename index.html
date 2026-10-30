@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Curruscos — Planes en Palencia</title>
-  <meta name="description" content="Descubre y organiza planes reales en Palencia: deporte, ocio, cenas y escapadas.">
+  <title>Curruscos — Eventos y planes</title>
+  <meta name="description" content="Descubre eventos, comunidades y actividades para compartir planes cerca de ti.">
   <meta name="theme-color" content="#030304">
   <link rel="canonical" href="https://curruscos-clan.github.io/Curruscos-Clan/">
   <link rel="manifest" href="manifest.webmanifest">
@@ -16,11 +16,13 @@
   <link rel="stylesheet" href="css/mobile-first-fixes.css">
   <link rel="stylesheet" href="css/home-redesign.css?v=20261018-2">
   <link rel="stylesheet" href="css/home-dark-bento.css?v=20261023-1">
+  <script src="js/i18n.js"></script>
+  <style>#feed-list{scroll-margin-top:84px}</style>
 </head>
 <body>
   <header class="top-header">
     <a class="app-brand" href="index.html" aria-label="Curruscos, inicio">Curruscos</a>
-    <span class="header-subtitle">Planes reales en Palencia</span>
+    <span class="header-subtitle">Eventos y planes para compartir</span>
     <div id="auth-header-action"><a class="btn btn-secondary" href="perfil.html?action=login">Entrar</a></div>
   </header>
 
@@ -31,13 +33,13 @@
     <div class="webgl-giant-type" aria-hidden="true"><span>CURRUSCOS</span><span>ENCUENTROS</span></div>
     <div class="webgl-hero-content">
       <div class="webgl-meta-row">
-        <span><i class="webgl-live-dot"></i>PALENCIA · PLANES LOCALES</span>
+        <span><i class="webgl-live-dot"></i>EVENTOS Y COMUNIDADES</span>
       </div>
       <div class="webgl-hero-bottom">
         <div class="webgl-hero-copy">
-          <span class="webgl-eyebrow">PALENCIA · PLANES EN VIVO</span>
+          <span class="webgl-eyebrow">PLANES PARA COMPARTIR</span>
           <h1 class="webgl-hero-title" id="webgl-hero-title">Planes reales,<br><em>sin caos.</em></h1>
-          <p class="webgl-hero-description">Partidos, cenas y escapadas. Descubre qué se mueve por Palencia o crea tu propio plan en unos minutos.</p>
+          <p class="webgl-hero-description">Partidos, cenas y escapadas. Descubre actividades cerca de ti o crea tu propio plan en unos minutos.</p>
         </div>
         <div class="webgl-hero-actions">
           <a href="crear-evento.html" class="btn btn-primary">+ Crear plan</a>
@@ -49,8 +51,8 @@
 
   <main class="app-container">
     <div class="feed-toolbar">
-      <div><span class="eyebrow">PALENCIA · ACTUALIZADO CON PLANES REALES</span><h2>Cartelera de planes</h2><p>Próximas actividades, ordenadas por fecha.</p></div>
-      <div class="feed-actions"><a href="crear-evento.html" class="btn btn-primary">+ Crear plan</a><a href="explorar.html" class="btn btn-secondary">Explorar ↗</a></div>
+      <div><span class="eyebrow">EVENTOS PÚBLICOS · ACTUALIZADOS</span><h2>Cartelera de planes</h2><p>Próximas actividades, ordenadas por fecha.</p></div>
+      <div class="feed-actions"><a href="crear-evento.html" class="btn btn-primary">+ Crear plan</a></div>
     </div>
 
     <div class="filter-row" role="group" aria-label="Filtrar eventos">
@@ -62,7 +64,7 @@
     <section id="feed-list" class="feed-list" aria-label="Eventos recomendados" aria-live="polite" aria-busy="true">
       <div class="feed-state" role="status"><h2>Cargando planes destacados…</h2><p>Estamos buscando actividades para ti.</p></div>
     </section>
-    <p class="feed-footer-note">Planes públicos de Palencia y alrededores. Consulta cada ficha para ver plazas, detalles y condiciones.</p>
+    <p class="feed-footer-note">Planes públicos de distintas comunidades y lugares. Consulta cada ficha para ver plazas, detalles y condiciones.</p>
   </main>
 
   <nav class="bottom-nav" aria-label="Navegación principal">
@@ -87,6 +89,7 @@
   <script src="js/tilt-3d.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
   <script src="js/webgl-scene.js?v=antikythera-20261017-1" defer></script>
+  <script src="js/preferences.js"></script>
   <script src="js/pwa.js"></script>
   <script src="js/immersive-experiences.js"></script>
 </body>
