@@ -75,3 +75,29 @@ html{scroll-behavior:smooth}
 .cx-create-stage.cx-has-cover{background:#101014}
 .cx-create-stage.cx-has-cover .cx-create-canvas{opacity:.72}
 @media(prefers-reduced-motion:reduce){.cx-create-cover-image{transition:none}}
+
+
+/* Do not show the generic 3D venue when the requested event is missing. */
+body.public-event-app:has(#publicEventRoot > .empty-state) #cxVenuePanel {
+  display: none !important;
+}
+
+body.public-event-app:has(#publicEventRoot > .empty-state) #publicEventRoot {
+  display: grid;
+  min-height: min(55vh, 420px);
+  place-items: center;
+}
+
+body.public-event-app:has(#publicEventRoot > .empty-state) #publicEventRoot > .empty-state {
+  width: min(100%, 600px);
+  margin: 0 auto !important;
+  padding: 24px;
+  border: 1px solid var(--cx-line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #e7e7eb;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: center;
+}
