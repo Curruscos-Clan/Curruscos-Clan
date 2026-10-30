@@ -159,30 +159,30 @@ body.explore-app{--home-bg:var(--bg-primary,#f5f5f7);--home-ink:var(--text-prima
 </header>
 <main class="explore-page">
   <section class="explore-mobile-hero">
-    <span class="eyebrow">BUSCAR</span>
-    <h1>Encuentra tu próximo plan.</h1>
-    <p>Eventos públicos cerca de tus intereses, sin tener que saber dónde buscar.</p>
+    <span class="eyebrow" data-i18n="explore.heroLabel">BUSCAR</span>
+    <h1 data-i18n="explore.heroTitle">Encuentra tu próximo plan.</h1>
+    <p data-i18n="explore.heroDescription">Eventos públicos cerca de tus intereses, sin tener que saber dónde buscar.</p>
   </section>
 
-  <section class="search-main" aria-label="Buscar eventos">
+  <section class="search-main" aria-label="Buscar eventos" data-i18n-aria-label="explore.searchEventsLabel">
     <span aria-hidden="true">⌕</span>
-    <input id="eventSearch" type="search" aria-label="Buscar eventos, lugares o personas" placeholder="Buscar eventos, lugares o personas..." autocomplete="off">
+    <input id="eventSearch" type="search" aria-label="Buscar eventos, lugares o personas" data-i18n-aria-label="explore.searchEventsLabel" placeholder="Buscar eventos, lugares o personas..." data-i18n-placeholder="explore.searchEventsPlaceholder" autocomplete="off">
     <button id="clearExploreFilters" type="button" aria-label="Limpiar búsqueda">×</button>
   </section>
 
-  <section class="explore-scope-tabs" role="group" aria-label="Tipo de contenido">
-    <button class="explore-scope-tab" type="button" data-scope="events" aria-pressed="true">Eventos y planes</button>
-    <button class="explore-scope-tab" type="button" data-scope="groups" aria-pressed="false">Comunidades</button>
+  <section class="explore-scope-tabs" role="group" aria-label="Tipo de contenido" data-i18n-aria-label="explore.scopeLabel">
+    <button class="explore-scope-tab" type="button" data-scope="events" aria-pressed="true" data-i18n="explore.scopeEvents">Eventos y planes</button>
+    <button class="explore-scope-tab" type="button" data-scope="groups" aria-pressed="false" data-i18n="explore.scopeGroups">Comunidades</button>
   </section>
 
 
-  <section class="category-scroll" aria-label="Categorías">
-    <a href="explorar.html?category=sport">Deporte</a>
-    <a href="explorar.html?category=gaming">Gaming</a>
-    <a href="explorar.html?category=social">Social</a>
-    <a href="explorar.html?category=activity">Actividades</a>
-    <a href="explorar.html?event_type=running">Running</a>
-    <a href="explorar.html?event_type=padel">Pádel</a>
+  <section class="category-scroll" aria-label="Categorías" data-i18n-aria-label="explore.categoriesLabel">
+    <a href="explorar.html?category=sport" data-i18n="explore.categorySport">Deporte</a>
+    <a href="explorar.html?category=gaming" data-i18n="explore.categoryGaming">Gaming</a>
+    <a href="explorar.html?category=social" data-i18n="explore.categorySocial">Social</a>
+    <a href="explorar.html?category=activity" data-i18n="explore.categoryActivity">Actividades</a>
+    <a href="explorar.html?event_type=running" data-i18n="explore.categoryRunning">Running</a>
+    <a href="explorar.html?event_type=padel" data-i18n="explore.categoryPadel">Pádel</a>
   </section>
 
   <details class="explore-advanced">
@@ -230,7 +230,7 @@ body.explore-app{--home-bg:var(--bg-primary,#f5f5f7);--home-ink:var(--text-prima
   </section>
 
   <section class="explore-section explore-all-events">
-    <div class="section-title"><div><span class="eyebrow">EXPLORAR</span><h2>Todos los eventos</h2><p id="allEventsLabel"></p></div></div>
+    <div class="section-title"><div><span class="eyebrow">EXPLORAR</span><h2 data-i18n="explore.allEventsTitle">Todos los eventos</h2><p id="allEventsLabel"></p></div></div>
     <div class="explore-toolbar"><span id="exploreSummary" role="status" aria-live="polite" aria-atomic="true"></span><span id="exploreHint">Los eventos públicos se actualizan automáticamente.</span></div>
     <div id="publicEventsGrid" class="public-events-grid"></div>
   </section>
