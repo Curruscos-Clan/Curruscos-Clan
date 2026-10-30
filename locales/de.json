@@ -134,6 +134,7 @@
   },
   "explore": {
     "allActivities": "Alle Aktivitäten",
+    "moreFilters": "Weitere Filter",
     "noEvents": "Keine Events gefunden.",
     "tryFilters": "Versuche eine andere Suche oder ändere die Filter.",
     "notInterested": "Nicht interessiert",

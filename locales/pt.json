@@ -134,6 +134,7 @@
   },
   "explore": {
     "allActivities": "Todas as atividades",
+    "moreFilters": "Mais filtros",
     "noEvents": "Não encontrámos eventos.",
     "tryFilters": "Experimenta outra pesquisa ou altera os filtros.",
     "notInterested": "Não tenho interesse",

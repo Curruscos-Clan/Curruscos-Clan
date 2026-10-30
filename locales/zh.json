@@ -134,6 +134,7 @@
   },
   "explore": {
     "allActivities": "所有活动",
+    "moreFilters": "更多筛选",
     "noEvents": "没有找到活动。",
     "tryFilters": "尝试其他搜索或修改筛选条件。",
     "notInterested": "不感兴趣",
