@@ -476,5 +476,19 @@
     "communityTitle": "Ver o que está a acontecer",
     "communityReason": "Há atividade recente em torno de {{event}}.",
     "tripsInMotion": "Não há eventos próximos, mas {{count}} viagem(ns) já estão em andamento."
+  },
+  "settings": {
+    "appearanceTitle": "Aparência",
+    "appearanceIntro": "Escolha o tom de destaque do Curruscos neste navegador.",
+    "accentLabel": "Cor de destaque",
+    "accentDescription": "Guardada neste dispositivo e aplicada às páginas do Curruscos.",
+    "toneOrange": "Laranja",
+    "toneViolet": "Violeta",
+    "toneGreen": "Verde",
+    "cookiesTitle": "Preferências de cookies",
+    "cookiesIntro": "Reveja ou altere a sua escolha de cookies quando quiser.",
+    "cookiesLabel": "Consentimento",
+    "cookiesDescription": "Gira as preferências de análise e os cookies necessários.",
+    "cookiesButton": "Configurar cookies"
   }
 }

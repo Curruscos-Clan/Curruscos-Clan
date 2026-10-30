@@ -119,6 +119,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 .profile-auth-actions{display:grid;gap:8px;margin-top:8px}
 .profile-auth-message{min-height:18px;margin:5px 0 0;color:var(--profile-muted);font-size:11px;line-height:1.5}
 .profile-auth-message[data-state="error"]{color:#b42318}.profile-auth-message[data-state="success"]{color:#16804a}
+.profile-auth-settings-link{display:inline-flex;margin-top:15px;color:var(--profile-muted);font-size:11px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
 .profile-logout-button{width:100%;margin-top:9px}
 </style>
 
@@ -168,14 +169,16 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
     <label for="profileAuthEmail">Correo electrónico</label>
     <input id="profileAuthEmail" type="email" autocomplete="email" required>
     <label for="profileAuthPassword">Contraseña</label>
-    <input id="profileAuthPassword" type="password" autocomplete="current-password" minlength="8" required>
+    <input id="profileAuthPassword" type="password" autocomplete="current-password" minlength="6" required>
     <button id="profileAuthSubmit" class="button button-primary" type="submit">Iniciar sesión</button>
     <p id="profileAuthMessage" class="profile-auth-message" role="status" aria-live="polite"></p>
   </form>
   <div class="profile-auth-actions">
     <a class="button button-secondary" href="login.html?mode=register">Crear una cuenta</a>
     <a class="button button-secondary" href="login.html">¿Has olvidado la contraseña?</a>
+    <a class="button button-secondary" href="index.html">Volver al inicio</a>
   </div>
+  <a class="profile-auth-settings-link" href="ajustes.html">Ajustes de apariencia, idioma y cookies</a>
 </section>
 <div id="profileAuthenticatedView" class="profile-layout" hidden>
 <section class="profile-card">
@@ -199,7 +202,7 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 <button type="button" class="interest-chip" data-interest="padel" aria-pressed="false">Pádel</button><button type="button" class="interest-chip" data-interest="futbol" aria-pressed="false">Fútbol</button><button type="button" class="interest-chip" data-interest="baloncesto" aria-pressed="false">Baloncesto</button><button type="button" class="interest-chip" data-interest="tenis" aria-pressed="false">Tenis</button><button type="button" class="interest-chip" data-interest="ajedrez" aria-pressed="false">Ajedrez</button><button type="button" class="interest-chip" data-interest="gaming" aria-pressed="false">Gaming</button><button type="button" class="interest-chip" data-interest="running" aria-pressed="false">Running</button><button type="button" class="interest-chip" data-interest="social" aria-pressed="false">Planes sociales</button><button type="button" class="interest-chip" data-interest="viajes" aria-pressed="false">Viajes</button><button type="button" class="interest-chip" data-interest="senderismo" aria-pressed="false">Senderismo</button><button type="button" class="interest-chip" data-interest="musica" aria-pressed="false">Música</button><button type="button" class="interest-chip" data-interest="cine" aria-pressed="false">Cine</button></div><button id="saveInterestsButton" type="button" class="button button-primary">Guardar intereses</button><p id="interestMessage" class="profile-message" aria-live="polite"></p></div></section>
 <section class="profile-section"><div class="profile-activity"><div class="profile-activity-head"><h2>Tu actividad</h2><a class="profile-activity-link" href="mis-planes.html">Ver mis planes →</a></div><div id="profileActivityStats" class="profile-activity-grid"><div class="profile-activity-card"><span>Eventos</span><strong>—</strong></div><div class="profile-activity-card"><span>Próximos</span><strong>—</strong></div><div class="profile-activity-card"><span>Partidos</span><strong>—</strong></div></div><div id="profileTeams" class="profile-activity-list"></div><div id="profileResults" class="profile-activity-list"></div></div></section>
 </section>
-<aside class="profile-side-card"><div class="profile-side-title">Tu identidad en Curruscos</div><p class="profile-side-note">Este perfil alimenta invitaciones, equipos, eventos y tu presencia pública. No necesitas completar veinte campos para empezar.</p><a class="button button-secondary" href="mis-planes.html">Mis planes</a><a class="button button-secondary" href="perfil-publico.html">Vista pública</a><button id="profileLogoutButton" type="button" class="button button-secondary profile-logout-button">Cerrar sesión</button>
+<aside class="profile-side-card"><div class="profile-side-title">Tu identidad en Curruscos</div><p class="profile-side-note">Este perfil alimenta invitaciones, equipos, eventos y tu presencia pública. No necesitas completar veinte campos para empezar.</p><a class="button button-secondary" href="mis-planes.html">Mis planes</a><a class="button button-secondary" href="perfil-publico.html">Vista pública</a><a class="button button-secondary" href="ajustes.html">Ajustes y privacidad</a><button id="profileLogoutButton" type="button" class="button button-secondary profile-logout-button">Cerrar sesión</button>
 </aside>
 </div>
 </main>
@@ -225,5 +228,6 @@ body.profile-app .navbar{height:68px;padding:0 max(22px,calc((100vw - 1180px)/2)
 <script src="js/perfil.js"></script>
 
   <script src="js/immersive-experiences.js"></script>
+  <script src="js/preferences.js"></script>
 </body>
 </html>

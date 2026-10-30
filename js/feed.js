@@ -121,7 +121,7 @@ function safePublicEventCover(value) {
     renderPosters();
     feedList.innerHTML="";
     if(!events.length){
-      renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba con otro filtro o explora la comunidad para descubrir actividades.",{href:"explorar.html",label:"Explorar eventos"});
+      renderState(allEvents.length?"No hay planes para este filtro":"Todavía no hay planes públicos","Prueba otro filtro o crea un plan para tu comunidad.",{href:"crear-evento.html",label:"Crear un plan"});
       feedList.setAttribute("aria-busy","false");return;
     }
     const dayStacks=new Map();

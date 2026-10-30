@@ -476,5 +476,19 @@
     "communityTitle": "看看正在发生什么",
     "communityReason": "{{event}} 周围有新的社区活动。",
     "tripsInMotion": "暂无即将开始的活动，但已有 {{count}} 次旅行在进行中。"
+  },
+  "settings": {
+    "appearanceTitle": "外观",
+    "appearanceIntro": "选择 Curruscos 在此浏览器中的强调色。",
+    "accentLabel": "强调色",
+    "accentDescription": "保存在此设备，并应用于 Curruscos 页面。",
+    "toneOrange": "橙色",
+    "toneViolet": "紫色",
+    "toneGreen": "绿色",
+    "cookiesTitle": "Cookie 偏好设置",
+    "cookiesIntro": "你可以随时查看或更改 Cookie 选择。",
+    "cookiesLabel": "同意设置",
+    "cookiesDescription": "管理分析偏好和必要 Cookie。",
+    "cookiesButton": "配置 Cookie"
   }
 }

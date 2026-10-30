@@ -500,5 +500,19 @@
     "communityTitle": "See what is happening",
     "communityReason": "There is recent activity around {{event}}.",
     "tripsInMotion": "No upcoming events, but {{count}} trip(s) are already in motion."
+  },
+  "settings": {
+    "appearanceTitle": "Appearance",
+    "appearanceIntro": "Choose Curruscos’ accent tone on this browser.",
+    "accentLabel": "Accent colour",
+    "accentDescription": "Saved on this device and applied across Curruscos pages.",
+    "toneOrange": "Orange",
+    "toneViolet": "Violet",
+    "toneGreen": "Green",
+    "cookiesTitle": "Cookie preferences",
+    "cookiesIntro": "Review or change your cookie choice at any time.",
+    "cookiesLabel": "Consent",
+    "cookiesDescription": "Manage analytics preferences and necessary cookies.",
+    "cookiesButton": "Configure cookies"
   }
 }
