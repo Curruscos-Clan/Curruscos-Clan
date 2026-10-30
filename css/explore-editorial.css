@@ -313,3 +313,13 @@ body[data-explore-scope="groups"] .explore-advanced {
     margin: 7px 0 10px !important;
   }
 }
+
+
+/* Use a readable, zoom-safe target size for touch search on phones. */
+@media (max-width: 760px) {
+  .explore-app .search-main input {
+    min-height: 44px !important;
+    font-size: 16px !important;
+    line-height: 1.25;
+  }
+}
