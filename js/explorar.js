@@ -89,7 +89,7 @@ function setExploreScope(scope){
   const groupsSection=document.getElementById("groupsSection");
   if(groupsSection){groupsSection.hidden=currentExploreScope!=="groups";groupsSection.style.display=currentExploreScope==="groups"?"block":"none";}
   const search=document.getElementById("eventSearch");
-  if(search)search.placeholder=currentExploreScope==="groups"?"Buscar comunidades por nombre o descripción…":"Buscar eventos, lugares o personas…";
+  if(search)search.placeholder=t(currentExploreScope==="groups"?"explore.searchGroupsPlaceholder":"explore.searchEventsPlaceholder");
   if(currentExploreScope==="groups")loadPublicGroups();
   else loadPublicEvents();
 }
