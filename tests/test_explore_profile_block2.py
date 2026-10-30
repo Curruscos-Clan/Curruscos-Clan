@@ -12,17 +12,17 @@ LOGIN_JS = (ROOT / "js" / "login.js").read_text(encoding="utf-8")
 
 
 class ExploreProfileBlock2Tests(unittest.TestCase):
-    def test_explore_has_event_and_community_scopes(self):
-        self.assertIn('data-scope="events"', EXPLORE_HTML)
-        self.assertIn('data-scope="groups"', EXPLORE_HTML)
-        self.assertIn('id="groupsSection"', EXPLORE_HTML)
-        self.assertIn('id="publicGroupsGrid"', EXPLORE_HTML)
+    def test_explore_is_focused_on_events_without_community_scope(self):
+        self.assertNotIn('data-scope="groups"', EXPLORE_HTML)
+        self.assertNotIn('id="groupsSection"', EXPLORE_HTML)
+        self.assertNotIn('id="publicGroupsGrid"', EXPLORE_HTML)
+        self.assertNotIn('href="comunidades.html"', EXPLORE_HTML)
 
-    def test_community_search_uses_public_groups_only(self):
-        self.assertIn('from("groups")', EXPLORE_JS)
-        self.assertIn('.eq("visibility","public")', EXPLORE_JS)
-        self.assertIn("function loadPublicGroups()", EXPLORE_JS)
-        self.assertIn('currentExploreScope==="groups"', EXPLORE_JS)
+    def test_explore_does_not_query_or_render_discoverable_groups(self):
+        self.assertNotIn('from("groups")', EXPLORE_JS)
+        self.assertNotIn("function loadPublicGroups()", EXPLORE_JS)
+        self.assertNotIn("currentExploreScope", EXPLORE_JS)
+        self.assertNotIn("loadPublicGroups", EXPLORE_JS)
 
     def test_existing_event_discovery_is_preserved(self):
         self.assertIn('id="publicEventsGrid"', EXPLORE_HTML)
