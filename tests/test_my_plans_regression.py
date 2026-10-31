@@ -18,7 +18,7 @@ class MyPlansRegressionTests(unittest.TestCase):
         self.assertIn('id="plans-content"', HTML)
 
     def test_guest_state_links_to_canonical_login(self):
-        self.assertIn('getCurrentUser(true)', JS)
+        self.assertIn('getCurrentUser(true, { throwOnError: true })', JS)
         self.assertIn('"Iniciar sesión"', JS)
         self.assertIn('"login.html"', JS)
 
@@ -34,6 +34,21 @@ class MyPlansRegressionTests(unittest.TestCase):
         self.assertIn("window.confirm(", JS)
         self.assertIn("if (!removed) throw new Error", JS)
         self.assertIn('cancel.textContent = "Cancelar asistencia"', JS)
+
+
+    def test_network_failures_are_not_rendered_as_empty_agenda(self):
+        helper_start = SUPABASE.index("async function getMyPublicEvents()")
+        helper_end = SUPABASE.index("async function getMyEventActivity()", helper_start)
+        helper = SUPABASE[helper_start:helper_end]
+        self.assertIn("throw new Error(getSupabaseErrorMessage(oe", helper)
+        self.assertIn("throw new Error(getSupabaseErrorMessage(pe", helper)
+        self.assertIn("throwOnError:true", helper.replace(" ", ""))
+
+    def test_my_plans_has_recoverable_timeouts(self):
+        self.assertIn("function withTimeout(", JS)
+        self.assertIn("15000", JS)
+        self.assertIn("10000", JS)
+        self.assertIn('retry?.addEventListener("click"', JS)
 
     def test_user_content_is_rendered_as_text(self):
         self.assertIn("title.textContent = event.title", JS)
