@@ -66,7 +66,8 @@ function setLoading(){exploreResultIds.forEach(id=>{const root=document.getEleme
 function finishLoading(){exploreResultIds.forEach(id=>document.getElementById(id)?.removeAttribute("aria-busy"));}
 function syncExploreUrl(){if(!window.history?.replaceState)return;const params=new URLSearchParams(window.location.search);["category","event_type","q","sort","filter"].forEach(key=>params.delete(key));const category=document.getElementById("eventCategory")?.value||"all",type=document.getElementById("eventType")?.value||"all",search=(document.getElementById("eventSearch")?.value||"").trim(),sort=document.getElementById("eventSort")?.value||"date",quick=document.querySelector(".explore-chip.active")?.dataset.filter||"all";if(category!=="all")params.set("category",category);if(type!=="all")params.set("event_type",type);if(search)params.set("q",search);if(sort!=="date")params.set("sort",sort);if(quick!=="all")params.set("filter",quick);const query=params.toString();window.history.replaceState(window.history.state,"",window.location.pathname+(query?"?"+query:"")+window.location.hash);}
 
-let savedEventIds=new Set(),currentEvents=[],searchTimer=null;
+const EXPLORE_EVENTS_CACHE_TTL_MS=60*1000;
+let savedEventIds=new Set(),currentEvents=[],currentEventsFetchedAt=0,backgroundRefreshInFlight=false,searchTimer=null;
 function applyAndRender(){
   updateExploreControls();syncExploreUrl();
   document.querySelectorAll(".explore-chip").forEach(chip=>chip.setAttribute("aria-pressed",String(chip.classList.contains("active"))));
@@ -84,7 +85,7 @@ async function loadPublicEvents(){
   try{
     const search=document.getElementById("eventSearch")?.value||"",type=document.getElementById("eventType")?.value||"all",category=document.getElementById("eventCategory")?.value||"all",user=await getCurrentUser();
     if(user&&!savedEventIds.size){const {data:savedRows}=await supabaseClient.from("saved_events").select("event_id").eq("user_id",user.id);savedEventIds=new Set((savedRows||[]).map(row=>String(row.event_id)));}
-    if(!currentEvents.length)currentEvents=await getPublicEvents({search:"",category:"all",event_type:"all"})||[];
+    if(!currentEventsFetchedAt||Date.now()-currentEventsFetchedAt>=EXPLORE_EVENTS_CACHE_TTL_MS){currentEvents=await getPublicEvents({search:"",category:"all",event_type:"all"})||[];currentEventsFetchedAt=Date.now();}
     if(user&&search.trim())logActivitySignal("search",null,type,search.trim(),{source:"explore"});
     applyAndRender();
     const [people,teams,feed,recommended]=await Promise.all([getPublicActivePeople(search,type),getPublicActiveTeams(search,type),user?getSocialActivity():Promise.resolve([]),user?getRecommendedPublicEvents(search,type,category):Promise.resolve([])]);
@@ -140,5 +141,13 @@ document.addEventListener("DOMContentLoaded",async()=>{
   ["eventCategory","eventType","eventSort"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>{applyAndRender();if(id!=="eventSort")loadPublicEvents();}));
   document.querySelectorAll(".explore-chip").forEach(chip=>chip.addEventListener("click",()=>{document.querySelectorAll(".explore-chip").forEach(item=>{const active=item===chip;item.classList.toggle("active",active);item.setAttribute("aria-pressed",String(active));});applyAndRender();}));
   document.getElementById("clearExploreFilters")?.addEventListener("click",()=>{if(search)search.value="";document.getElementById("eventType").value="all";document.getElementById("eventCategory").value="all";document.getElementById("eventSort").value="date";document.querySelectorAll(".explore-chip").forEach(chip=>{const active=chip.dataset.filter==="all";chip.classList.toggle("active",active);chip.setAttribute("aria-pressed",String(active));});syncExploreUrl();loadPublicEvents();});
+  const refreshExploreWhenStale=async()=>{
+    if(document.hidden||backgroundRefreshInFlight||!currentEventsFetchedAt)return;
+    if(Date.now()-currentEventsFetchedAt<EXPLORE_EVENTS_CACHE_TTL_MS)return;
+    backgroundRefreshInFlight=true;
+    try{await loadPublicEvents();}finally{backgroundRefreshInFlight=false;}
+  };
+  document.addEventListener("visibilitychange",refreshExploreWhenStale);
+  window.addEventListener("focus",refreshExploreWhenStale);
   bindExploreIntent();await loadPublicEvents();
 });
