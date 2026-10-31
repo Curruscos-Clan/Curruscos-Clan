@@ -56,6 +56,24 @@ class PublicEventRegistrationContractTests(unittest.TestCase):
         self.assertIn("if(left!==true)", self.public_js)
         self.assertIn("No se ha podido cancelar tu inscripción", self.public_js)
 
+    def test_secondary_activity_signal_cannot_reverse_a_confirmed_registration(self):
+        self.assertIn("async function recordPublicEventActionSignal(action,event)", self.public_js)
+        self.assertIn('recordPublicEventActionSignal("join",event)', self.public_js)
+        self.assertIn('recordPublicEventActionSignal("leave",event)', self.public_js)
+        helper_start = self.public_js.index("async function recordPublicEventActionSignal")
+        helper_end = self.public_js.index("async function renderPublicEvent", helper_start)
+        helper = self.public_js[helper_start:helper_end]
+        self.assertIn("catch(error)", helper)
+        self.assertIn("console.warn", helper)
+
+    def test_leave_registration_propagates_auth_and_database_failures(self):
+        start = self.supabase_js.index("async function leavePublicEvent(eventId)")
+        end = self.supabase_js.index("async function sendPersistentTeamInvitation", start)
+        leave = self.supabase_js[start:end]
+        self.assertIn("getCurrentUser(false, { throwOnError: true })", leave)
+        self.assertIn("throw new Error(getSupabaseErrorMessage(error", leave)
+        self.assertIn("return !!data", leave)
+
 
 if __name__ == "__main__":
     unittest.main()
