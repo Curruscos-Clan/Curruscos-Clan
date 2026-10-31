@@ -138,10 +138,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     page?.classList.add("is-ready");
 
     // Intereses: si fallan no bloquean el resto del perfil.
-    const interests = await safe(getMyInterests(), [], "interests");
+    // Los controles de intereses se activan inmediatamente; la consulta inicial
+    // se ejecuta en segundo plano y no bloquea el guardado del perfil.
+    let interestsTouched = false;
+    const interestsPromise = safe(getMyInterests(), [], "interests");
     interestGrid?.querySelectorAll("[data-interest]").forEach(btn => {
-        btn.setAttribute("aria-pressed", interests.includes(btn.dataset.interest) ? "true" : "false");
         btn.addEventListener("click", () => {
+            interestsTouched = true;
             const next = btn.getAttribute("aria-pressed") !== "true";
             btn.setAttribute("aria-pressed", String(next));
         });
@@ -150,59 +153,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     interestSave?.addEventListener("click", async () => {
         interestSave.disabled = true;
         interestSave.textContent = t("profile.saving");
-        interestMessage.textContent = "";
+        if (interestMessage) { interestMessage.textContent = ""; interestMessage.dataset.state = ""; }
         try {
-            const selected = [...interestGrid.querySelectorAll('[aria-pressed="true"]')].map(x => x.dataset.interest);
+            await interestsPromise;
+            const selected = [...(interestGrid?.querySelectorAll('[aria-pressed="true"]') || [])].map(x => x.dataset.interest);
             const saved = await setMyInterests(selected);
             if (!saved) throw new Error(t("profile.interestsError"));
-            interestMessage.textContent = selected.length
-                ? t("profile.interestsSaved", {count:selected.length})
-                : t("profile.interestsUpdated");
-            interestMessage.dataset.state = "success";
+            if (interestMessage) {
+                interestMessage.textContent = selected.length
+                    ? t("profile.interestsSaved", {count:selected.length})
+                    : t("profile.interestsUpdated");
+                interestMessage.dataset.state = "success";
+            }
         } catch (error) {
-            interestMessage.textContent = getSupabaseErrorMessage(error, t("profile.interestsError"));
-            interestMessage.dataset.state = "error";
+            if (interestMessage) {
+                interestMessage.textContent = getSupabaseErrorMessage(error, t("profile.interestsError"));
+                interestMessage.dataset.state = "error";
+            }
         } finally {
             interestSave.disabled = false;
             interestSave.textContent = t("profile.saveInterests");
         }
     });
 
-    // Actividad: una consulta lenta no debe bloquear el editor.
-    const activity = await safe(getMyEventActivity(), {participating:[], organizing:[], teams:[], matches:[], activityTypes:[]}, "activity");
-    const stats = document.getElementById("profileActivityStats");
-    const teamsRoot = document.getElementById("profileTeams");
-    const resultsRoot = document.getElementById("profileResults");
-    const finished = activity.matches || [];
-    const teamIds = new Set((activity.teams || []).map(t => t.id));
-    let wins=0, draws=0, losses=0;
-    finished.forEach(m => {
-        const home = teamIds.has(m.home_team_id), away = teamIds.has(m.away_team_id);
-        if (!home && !away) return;
-        const hs=Number(m.home_score), as=Number(m.away_score);
-        if (hs===as) draws++;
-        else if ((home&&hs>as)||(away&&as>hs)) wins++;
-        else losses++;
+    interestsPromise.then(interests => {
+        if (interestsTouched) return;
+        interestGrid?.querySelectorAll("[data-interest]").forEach(btn => {
+            btn.setAttribute("aria-pressed", interests.includes(btn.dataset.interest) ? "true" : "false");
+        });
     });
-    const upcoming=(activity.participating||[]).filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;
-    const cards=[
-        [t("profile.events"),activity.participating.length],
-        ["Organizados",activity.organizing.length],
-        [t("profile.upcoming"),upcoming],
-        [t("profile.matches"),finished.length],
-        [t("profile.wins"),wins],
-        [t("profile.draws"),draws],
-        [t("profile.losses"),losses]
-    ];
-    stats.innerHTML=cards.map(([label,value])=>'<div class="profile-activity-card"><span>'+label+'</span><strong>'+value+'</strong></div>').join("");
-    teamsRoot.innerHTML=activity.teams?.length
-        ? '<strong>'+t("profile.teams")+'</strong>'+activity.teams.map(team=>'<div>'+escapeHtml(team.name)+'<small>'+t("profile.eventTeam")+'</small></div>').join("")
-        : '<strong>'+t("profile.teams")+'</strong><div class="profile-muted-row">Todavía no formas parte de ningún equipo.</div>';
-    const typeLabels={padel:t("activity.padel"),futbol:t("activity.futbol"),baloncesto:t("activity.baloncesto"),tenis:t("activity.tenis"),ajedrez:t("activity.ajedrez"),gaming:t("activity.gaming"),running:t("activity.running"),otro:t("activity.otherPlural")};
-    resultsRoot.innerHTML='<strong>'+t("profile.activity")+'</strong><div>'+
-        ((activity.activityTypes||[]).map(type=>typeLabels[type]||type).join(" · ")||t("profile.noActivity"))+
-        '<small>'+activity.organizing.length+' evento'+(activity.organizing.length===1?"":"s")+' organizado'+(activity.organizing.length===1?"":"s")+'</small></div>';
-
     const form=document.getElementById("profileForm");
     const button=document.getElementById("saveProfileButton");
     form?.addEventListener("submit", async event => {
@@ -251,4 +230,42 @@ document.addEventListener("DOMContentLoaded", async () => {
             button.textContent=t("profile.save");
         }
     });
+
+    // La actividad es secundaria: se carga después de activar el formulario.
+    // Actividad: una consulta lenta no debe bloquear el editor.
+    const activity = await safe(getMyEventActivity(), {participating:[], organizing:[], teams:[], matches:[], activityTypes:[]}, "activity");
+    const stats = document.getElementById("profileActivityStats");
+    const teamsRoot = document.getElementById("profileTeams");
+    const resultsRoot = document.getElementById("profileResults");
+    const finished = activity.matches || [];
+    const teamIds = new Set((activity.teams || []).map(t => t.id));
+    let wins=0, draws=0, losses=0;
+    finished.forEach(m => {
+        const home = teamIds.has(m.home_team_id), away = teamIds.has(m.away_team_id);
+        if (!home && !away) return;
+        const hs=Number(m.home_score), as=Number(m.away_score);
+        if (hs===as) draws++;
+        else if ((home&&hs>as)||(away&&as>hs)) wins++;
+        else losses++;
+    });
+    const upcoming=(activity.participating||[]).filter(e=>new Date(e.date+"T"+(e.time||"23:59"))>=new Date()).length;
+    const cards=[
+        [t("profile.events"),activity.participating.length],
+        ["Organizados",activity.organizing.length],
+        [t("profile.upcoming"),upcoming],
+        [t("profile.matches"),finished.length],
+        [t("profile.wins"),wins],
+        [t("profile.draws"),draws],
+        [t("profile.losses"),losses]
+    ];
+    stats.innerHTML=cards.map(([label,value])=>'<div class="profile-activity-card"><span>'+label+'</span><strong>'+value+'</strong></div>').join("");
+    teamsRoot.innerHTML=activity.teams?.length
+        ? '<strong>'+t("profile.teams")+'</strong>'+activity.teams.map(team=>'<div>'+escapeHtml(team.name)+'<small>'+t("profile.eventTeam")+'</small></div>').join("")
+        : '<strong>'+t("profile.teams")+'</strong><div class="profile-muted-row">Todavía no formas parte de ningún equipo.</div>';
+    const typeLabels={padel:t("activity.padel"),futbol:t("activity.futbol"),baloncesto:t("activity.baloncesto"),tenis:t("activity.tenis"),ajedrez:t("activity.ajedrez"),gaming:t("activity.gaming"),running:t("activity.running"),otro:t("activity.otherPlural")};
+    resultsRoot.innerHTML='<strong>'+t("profile.activity")+'</strong><div>'+
+        ((activity.activityTypes||[]).map(type=>typeLabels[type]||type).join(" · ")||t("profile.noActivity"))+
+        '<small>'+activity.organizing.length+' evento'+(activity.organizing.length===1?"":"s")+' organizado'+(activity.organizing.length===1?"":"s")+'</small></div>';
+
+
 });
