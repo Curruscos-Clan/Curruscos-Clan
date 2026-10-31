@@ -390,7 +390,7 @@ async function getCurrentProfile(forceRefresh = false, options = {}) {
 
     // El perfil en caché pertenece a una cuenta concreta. Comprueba primero
     // el usuario actual para no reutilizar datos si cambia la sesión.
-    const user = await getCurrentUser(forceRefresh);
+    const user = await getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError });
 
     if (!user) {
         currentProfileCache = null;
