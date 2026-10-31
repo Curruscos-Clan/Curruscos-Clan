@@ -12,6 +12,16 @@
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
+  function withTimeout(promise, milliseconds, message) {
+    let timer;
+    return Promise.race([
+      Promise.resolve(promise),
+      new Promise((_, reject) => {
+        timer = window.setTimeout(() => reject(new Error(message)), milliseconds);
+      })
+    ]).finally(() => window.clearTimeout(timer));
+  }
+
   function showToast(message, kind = "") {
     if (!toastContainer) return;
     const toast = document.createElement("div");
@@ -146,7 +156,7 @@
     try {
       // getMyPublicEvents recupera IDs de event_participants y luego consulta
       // events por separado: no depende de una relación/foreign key embebida.
-      const result = await getMyPublicEvents();
+      const result = await withTimeout(getMyPublicEvents(), 15000, "La consulta está tardando demasiado. Comprueba tu conexión y vuelve a intentarlo.");
       if (version !== requestVersion) return;
       const events = activeTab === "attending" ? result.participating : result.organizing;
       const ordered = [...(events || [])].sort((a, b) => {
@@ -201,7 +211,7 @@
     setupTabs();
     if (!content) return;
     try {
-      currentUser = await getCurrentUser(true);
+      currentUser = await withTimeout(getCurrentUser(true, { throwOnError: true }), 10000, "No se ha podido comprobar la sesión porque la conexión está tardando demasiado.");
       if (!currentUser) {
         renderState(
           "Inicia sesión para ver tu agenda",
@@ -214,7 +224,9 @@
       await loadPlans();
     } catch (error) {
       console.error("Error comprobando la sesión:", error);
-      renderState("No se ha podido comprobar tu sesión", "Vuelve a intentarlo o inicia sesión de nuevo.", "Iniciar sesión", "login.html", true);
+      renderState("No se ha podido comprobar tu sesión", error?.message || "Comprueba la conexión y vuelve a intentarlo.", "Reintentar", "#", true);
+      const retry = content.querySelector("a");
+      retry?.addEventListener("click", event => { event.preventDefault(); init(); });
     }
   }
 
