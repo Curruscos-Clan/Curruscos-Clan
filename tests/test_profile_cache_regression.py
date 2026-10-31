@@ -7,13 +7,13 @@ SOURCE = (ROOT / "js" / "supabase.js").read_text(encoding="utf-8")
 
 class ProfileCacheRegressionTests(unittest.TestCase):
     def test_forced_profile_refresh_also_refreshes_the_user(self):
-        start = SOURCE.index("async function getCurrentProfile(forceRefresh = false)")
+        start = SOURCE.index("async function getCurrentProfile(forceRefresh = false, options = {})")
         end = SOURCE.index("// ========================================", start)
         function = SOURCE[start:end]
-        self.assertIn("getCurrentUser(forceRefresh)", function)
+        self.assertIn("getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError })", function)
 
     def test_profile_cache_is_scoped_to_the_current_user(self):
-        start = SOURCE.index("async function getCurrentProfile(forceRefresh = false)")
+        start = SOURCE.index("async function getCurrentProfile(forceRefresh = false, options = {})")
         end = SOURCE.index("// ========================================", start)
         function = SOURCE[start:end]
         self.assertIn("currentProfileUserId === user.id", function)

@@ -37,7 +37,7 @@ class ExploreProfileBlock2Tests(unittest.TestCase):
         self.assertIn('id="profileForm"', PROFILE_HTML)
         self.assertIn('id="interestGrid"', PROFILE_HTML)
         self.assertIn("signInWithPassword", PROFILE_JS)
-        self.assertIn("getCurrentProfile(true)", PROFILE_JS)
+        self.assertIn("getCurrentProfile(true, { throwOnError: true })", PROFILE_JS)
         self.assertIn("profileLogoutButton", PROFILE_JS)
         self.assertIn('id="profileLogoutButton"', PROFILE_HTML)
         self.assertIn('type="button" class="button button-secondary profile-logout-button">Cerrar sesión</button>', PROFILE_HTML)
