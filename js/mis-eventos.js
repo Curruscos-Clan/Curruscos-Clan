@@ -134,7 +134,8 @@
     const link = document.createElement("a");
     link.className = "card-action";
     link.href = "evento-publico.html?id=" + encodeURIComponent(event.id);
-    link.textContent = "Ver ficha →";
+    link.textContent = organizing ? "Ver y gestionar →" : "Ver ficha →";
+    if (organizing) link.setAttribute("aria-label", "Ver y gestionar " + (event.title || "este plan"));
     bottom.append(status,link);
     article.append(category,title,detail,bottom);
 
@@ -217,8 +218,16 @@
       : "Controla el aforo, consulta a los asistentes y cancela los planes que ya no vayan a celebrarse.";
     const a = document.getElementById("tabParticipating");
     const b = document.getElementById("tabOrganizing");
-    if (a) {a.classList.toggle("active",currentTab==="participating");a.setAttribute("aria-selected",String(currentTab==="participating"));}
-    if (b) {b.classList.toggle("active",currentTab==="organizing");b.setAttribute("aria-selected",String(currentTab==="organizing"));}
+    if (a) {
+      a.classList.toggle("active",currentTab==="participating");
+      a.setAttribute("aria-selected",String(currentTab==="participating"));
+      a.tabIndex = currentTab==="participating" ? 0 : -1;
+    }
+    if (b) {
+      b.classList.toggle("active",currentTab==="organizing");
+      b.setAttribute("aria-selected",String(currentTab==="organizing"));
+      b.tabIndex = currentTab==="organizing" ? 0 : -1;
+    }
     renderSummary(participating,organizing,finished);
     renderEvents(document.getElementById("upcomingEvents"),shown,currentTab,
       currentTab === "participating" ? "No tienes planes públicos próximos confirmados." : "Todavía no has creado ningún plan público.",
@@ -271,8 +280,26 @@
     if (window.curruscosReady) await window.curruscosReady;
     const user = await getCurrentUser();
     if (!user) { window.location.replace("login.html"); return; }
-    document.getElementById("tabParticipating")?.addEventListener("click",function(){currentTab="participating";refreshViews();});
-    document.getElementById("tabOrganizing")?.addEventListener("click",function(){currentTab="organizing";refreshViews();});
+    const participatingTab = document.getElementById("tabParticipating");
+    const organizingTab = document.getElementById("tabOrganizing");
+    participatingTab?.addEventListener("click",function(){currentTab="participating";refreshViews();});
+    organizingTab?.addEventListener("click",function(){currentTab="organizing";refreshViews();});
+    const tabList = document.querySelector('[role="tablist"]');
+    tabList?.addEventListener("keydown",function(event){
+      const tabs = [participatingTab, organizingTab].filter(Boolean);
+      const index = tabs.indexOf(document.activeElement);
+      if (index < 0) return;
+      let next = index;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % tabs.length;
+      else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + tabs.length) % tabs.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      currentTab = tabs[next] === organizingTab ? "organizing" : "participating";
+      refreshViews();
+      tabs[next].focus();
+    });
     try {
       activity = await getMyPublicEvents();
       refreshViews();
