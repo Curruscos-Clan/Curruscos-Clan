@@ -52,5 +52,12 @@ class CorePageLocalReferenceTests(unittest.TestCase):
                     missing.append(f"{page} [{tag} {attr}]: {raw}")
         self.assertFalse(missing, "Referencias locales rotas:\n" + "\n".join(missing))
 
+    def test_rankings_menu_button_has_aria_label(self):
+        rankings_path = ROOT / "rankings.html"
+        self.assertTrue(rankings_path.is_file())
+        content = rankings_path.read_text(encoding="utf-8")
+        self.assertIn('id="menuButton"', content)
+        self.assertIn('aria-label="Abrir menú"', content)
+
 if __name__ == "__main__":
     unittest.main()
