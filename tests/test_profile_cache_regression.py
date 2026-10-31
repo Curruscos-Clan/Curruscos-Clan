@@ -10,7 +10,7 @@ class ProfileCacheRegressionTests(unittest.TestCase):
         start = SOURCE.index("async function getCurrentProfile(forceRefresh = false, options = {})")
         end = SOURCE.index("// ========================================", start)
         function = SOURCE[start:end]
-        self.assertIn("getCurrentUser(forceRefresh)", function)
+        self.assertIn("getCurrentUser(forceRefresh, { throwOnError: options?.throwOnError })", function)
 
     def test_profile_cache_is_scoped_to_the_current_user(self):
         start = SOURCE.index("async function getCurrentProfile(forceRefresh = false, options = {})")
