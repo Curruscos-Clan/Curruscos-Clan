@@ -2894,8 +2894,10 @@ async function joinPublicEvent(eventId) {
 }
 
 async function leavePublicEvent(eventId) {
-    const user = await getCurrentUser();
-    if (!user || !eventId) return false;
+    if (!eventId) return false;
+    // No conviertas un fallo de autenticación/red en una baja aparentemente fallida.
+    const user = await getCurrentUser(false, { throwOnError: true });
+    if (!user) return false;
 
     const { data, error } = await supabaseClient
         .from("event_participants")
@@ -2907,7 +2909,7 @@ async function leavePublicEvent(eventId) {
 
     if (error) {
         console.error("Error saliendo del evento:", error);
-        return false;
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido cancelar la inscripción."));
     }
     // PostgREST puede devolver cero filas eliminadas sin error; no confundirlo con éxito.
     return !!data;

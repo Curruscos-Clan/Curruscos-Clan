@@ -262,6 +262,16 @@ async function toggleSavedEvent(eventId,user,eventType=null){
 }
 
 
+async function recordPublicEventActionSignal(action,event){
+    try{
+        await logActivitySignal(action,event.id,event.event_type,null,{source:"event_button"});
+    }catch(error){
+        // La inscripción/cancelación ya está confirmada; un fallo analítico
+        // no debe presentarse como si hubiera fallado la operación principal.
+        console.warn("No se pudo registrar la señal secundaria del evento:",error);
+    }
+}
+
 async function renderPublicEvent(){
     const root=document.getElementById("publicEventRoot");
     const id=new URLSearchParams(location.search).get("id");
@@ -476,6 +486,7 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
     if(manager){const area=document.getElementById("publicTournamentArea");area.insertAdjacentHTML("afterbegin",'<details class="organizer-tools"><summary>Gestionar equipos y participantes</summary>'+manager+'</details>');document.getElementById("createTeamForm")?.addEventListener("submit",async e=>{e.preventDefault();const input=document.getElementById("newTeamName");const button=e.submitter;button.disabled=true;try{await createEventTeam(event.id,input.value);await renderPublicEvent();}catch(err){alert(err.message);button.disabled=false;}});document.querySelectorAll(".add-team-member").forEach(form=>form.addEventListener("submit",async e=>{e.preventDefault();const select=form.querySelector("select");try{await addEventTeamMember(form.dataset.team,select.value);await renderPublicEvent();}catch(err){alert(err.message);}}));document.querySelectorAll(".remove-team-member").forEach(button=>button.addEventListener("click",async()=>{try{await removeEventTeamMember(button.dataset.team,button.dataset.user);await renderPublicEvent();}catch(err){alert(err.message);}}));}
 
     const btn=document.getElementById("eventJoinButton");
+    if(!btn)return;
     if(!user){btn.addEventListener("click",()=>location.href="login.html");return;}
     if(mine?.status==="yes"){
         if(event.status==="finished"){btn.disabled=true;return;}
@@ -490,7 +501,7 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
                     if(note)note.textContent="No se ha podido cancelar tu inscripción. Inténtalo de nuevo.";
                     return;
                 }
-                await logActivitySignal("leave",id,event.event_type,null,{source:"event_button"});
+                await recordPublicEventActionSignal("leave",event);
                 await renderPublicEvent();
             }catch(error){
                 console.error("Error cancelando inscripción:",error);
@@ -513,7 +524,7 @@ document.querySelectorAll(".event-follow-person").forEach(async button=>{const c
                 if(note)note.textContent=joined?.message||"No se ha podido completar la inscripción.";
                 return;
             }
-            await logActivitySignal("join",id,event.event_type,null,{source:"event_button"});
+            await recordPublicEventActionSignal("join",event);
             await renderPublicEvent();
         }catch(error){
             console.error("Error apuntándose al evento:",error);
