@@ -3017,24 +3017,26 @@ async function leaveEventTeam(teamId){const {data,error}=await supabaseClient.rp
 async function generateSwissRound(eventId){const {data,error}=await supabaseClient.rpc("generate_swiss_round",{target_event_id:eventId});if(error)throw new Error(getSupabaseErrorMessage(error,"No se ha podido generar la ronda suiza."));return data;}
 
 async function getMyPublicEvents(){
-    const user=await getCurrentUser();
+    // No conviertas un error de red/RLS en una agenda vacía: la interfaz debe
+    // distinguir entre "no tienes planes" y "no hemos podido consultarlos".
+    const user=await getCurrentUser(false,{throwOnError:true});
     if(!user)return {participating:[],organizing:[]};
     const base="id,title,date,time,location,category,format,status,visibility,event_type,participant_mode,capacity,entry_fee,organizer_name,created_by,cover_url";
     const {data:organizing,error:oe}=await supabaseClient.from("events").select(base).eq("created_by",user.id).eq("visibility","public").order("date",{ascending:true});
-    if(oe)console.error("Error obteniendo eventos organizados:",oe);
+    if(oe)throw new Error(getSupabaseErrorMessage(oe,"No se han podido consultar los planes que organizas."));
     const {data:rows,error:pe}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");
-    if(pe)console.error("Error obteniendo participaciones:",pe);
+    if(pe)throw new Error(getSupabaseErrorMessage(pe,"No se han podido consultar tus inscripciones."));
     const ids=[...new Set((rows||[]).map(r=>r.event_id).filter(Boolean))];
     let participating=[];
     if(ids.length){
         const {data,error}=await supabaseClient.from("events").select(base).in("id",ids).eq("visibility","public").order("date",{ascending:true});
-        if(error)console.error("Error obteniendo eventos participados:",error);
+        if(error)throw new Error(getSupabaseErrorMessage(error,"No se han podido cargar los planes a los que te has apuntado."));
         participating=data||[];
     }
     const owned=organizing||[];
     if(owned.length){
         const countById=await getPublicEventParticipantCountMap(owned.map(event=>event.id));
-        owned.forEach(event=>event.participant_count=countById.get(event.id));
+        owned.forEach(event=>event.participant_count=countById.get(event.id)??null);
     }
     return {participating,organizing:owned};
 }
