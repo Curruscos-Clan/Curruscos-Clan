@@ -97,7 +97,7 @@
 
   function checkSession() {
     return Promise.race([
-      Promise.resolve().then(() => getCurrentUser(true)),
+      Promise.resolve().then(() => getCurrentUser(true, { throwOnError: true })),
       new Promise((_, reject) => window.setTimeout(
         () => reject(new Error("La comprobación de sesión está tardando demasiado. Comprueba tu conexión y vuelve a intentarlo.")),
         10000
