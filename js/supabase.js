@@ -386,7 +386,7 @@ async function getCurrentUser(forceRefresh = false, options = {}) {
 // PERFIL ACTUAL
 // ========================================
 
-async function getCurrentProfile(forceRefresh = false) {
+async function getCurrentProfile(forceRefresh = false, options = {}) {
 
     // El perfil en caché pertenece a una cuenta concreta. Comprueba primero
     // el usuario actual para no reutilizar datos si cambia la sesión.
@@ -420,6 +420,9 @@ async function getCurrentProfile(forceRefresh = false) {
 
         currentProfileCache = null;
         currentProfileUserId = null;
+        if (options?.throwOnError) {
+            throw new Error(getSupabaseErrorMessage(error, "No se ha podido cargar el perfil."));
+        }
         return null;
     }
 
@@ -2793,8 +2796,8 @@ async function updatePublicEventDetails(eventId,details){
 }
 
 async function createPublicEvent(eventData) {
-    const user = await getCurrentUser();
-    if (!user) return null;
+    const user = await getCurrentUser(false, { throwOnError: true });
+    if (!user) throw new Error("Tu sesión ha caducado. Inicia sesión de nuevo para publicar.");
 
     const { data, error } = await supabaseClient
         .from("events")
@@ -2826,8 +2829,9 @@ async function createPublicEvent(eventData) {
 
     if (error) {
         console.error("Error creando evento público:", error);
-        return null;
+        throw new Error(getSupabaseErrorMessage(error, "No se ha podido publicar el evento."));
     }
+    if (!data) throw new Error("Supabase no ha confirmado la creación del evento. No se ha publicado.");
     return data;
 }
 
