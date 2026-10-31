@@ -2,7 +2,11 @@
    El perfil no puede quedarse bloqueado esperando una consulta secundaria.
 */
 document.addEventListener("DOMContentLoaded", async () => {
-    await window.curruscosI18n?.ready;
+    // Evita que una traducción pendiente deje el perfil en blanco.
+    await Promise.race([
+        Promise.resolve(window.curruscosI18n?.ready).catch(error => console.warn("i18n no disponible en perfil:", error)),
+        new Promise(resolve => setTimeout(resolve, 1200))
+    ]);
 
     const page = document.querySelector(".profile-page");
     const authView = document.getElementById("profileAuthView");
@@ -100,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (authenticatedView) authenticatedView.hidden = false;
     const access = { user };
 
-    const profile = await safe(getCurrentProfile(true), null, "profile");
+    const profile = await safe(getCurrentProfile(true, { throwOnError: true }), null, "profile");
     if (!profile) {
         page?.classList.remove("is-loading");
         setStatus("No se ha podido cargar tu perfil. Comprueba tu conexión y recarga la página.", "error");
