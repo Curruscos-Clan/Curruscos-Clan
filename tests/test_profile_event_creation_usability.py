@@ -18,6 +18,13 @@ class ProfileAndEventCreationUsabilityTests(unittest.TestCase):
         self.assertIn("let interestsTouched = false", PROFILE_JS)
         self.assertIn("if (interestsTouched) return", PROFILE_JS)
 
+
+    def test_profile_distinguishes_auth_network_failure_from_guest_session(self):
+        self.assertIn('getCurrentUser(true, { throwOnError: true })', PROFILE_JS)
+        self.assertIn('const authCheckFailed = { authCheckFailed: true }', PROFILE_JS)
+        self.assertIn('if (user === authCheckFailed)', PROFILE_JS)
+        self.assertIn('clearTimeout(timer)', PROFILE_JS)
+
     def test_event_creation_keeps_core_fields_visible_and_advanced_options_collapsed(self):
         self.assertIn('id="publicEventTitle"', CREATE_HTML)
         self.assertIn('id="publicEventCategory"', CREATE_HTML)
