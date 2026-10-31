@@ -47,6 +47,13 @@ class HomeFeedEventFilterTests(unittest.TestCase):
         self.assertIn('event.participant_count??event.event_participants?.[0]?.count??0', EXPLORE)
 
 
+    def test_explore_refreshes_stale_event_cache_when_user_returns(self):
+        self.assertIn("const EXPLORE_EVENTS_CACHE_TTL_MS=60*1000;", EXPLORE)
+        self.assertIn("currentEventsFetchedAt=Date.now();", EXPLORE)
+        self.assertIn('document.addEventListener("visibilitychange",refreshExploreWhenStale)', EXPLORE)
+        self.assertIn('window.addEventListener("focus",refreshExploreWhenStale)', EXPLORE)
+        self.assertIn("backgroundRefreshInFlight", EXPLORE)
+
     def test_feed_uses_entry_fee_from_public_events_query(self):
         supabase = (ROOT / "js" / "supabase.js").read_text(encoding="utf-8")
         public_query = supabase[supabase.index("async function getPublicEvents"):]
