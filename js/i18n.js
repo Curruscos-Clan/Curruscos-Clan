@@ -1,4 +1,49 @@
 /* =========================================================
+   DEVICE ADAPTATION
+   Detects the current layout context without relying on user-agent.
+   Viewport decides the layout; pointer/hover describe input capabilities.
+   ========================================================= */
+(function initDeviceAdaptation(){
+  const root=document.documentElement;
+  const coarseQuery=window.matchMedia("(pointer: coarse)");
+  const hoverQuery=window.matchMedia("(hover: hover)");
+  const compactQuery=window.matchMedia("(max-width: 767px)");
+  const tabletQuery=window.matchMedia("(min-width: 768px) and (max-width: 1024px)");
+  function update(){
+    const width=window.innerWidth||root.clientWidth||0;
+    const compact=compactQuery.matches||width<=767;
+    const tablet=!compact&&tabletQuery.matches&&coarseQuery.matches;
+    const device=compact?"mobile":tablet?"tablet":"desktop";
+    const input=coarseQuery.matches?"touch":"pointer";
+    root.dataset.device=device;
+    root.dataset.input=input;
+    root.dataset.hover=hoverQuery.matches?"available":"unavailable";
+    root.classList.toggle("device-mobile",device==="mobile");
+    root.classList.toggle("device-tablet",device==="tablet");
+    root.classList.toggle("device-desktop",device==="desktop");
+    root.classList.toggle("input-touch",coarseQuery.matches);
+    root.classList.toggle("input-pointer",!coarseQuery.matches);
+    if(document.body){
+      document.body.dataset.device=device;
+      document.body.dataset.input=input;
+      document.body.classList.toggle("device-mobile",device==="mobile");
+      document.body.classList.toggle("device-tablet",device==="tablet");
+      document.body.classList.toggle("device-desktop",device==="desktop");
+      document.body.classList.toggle("input-touch",coarseQuery.matches);
+      document.body.classList.toggle("input-pointer",!coarseQuery.matches);
+    }
+  }
+  update();
+  document.addEventListener("DOMContentLoaded",update,{once:true});
+  window.addEventListener("resize",update,{passive:true});
+  window.addEventListener("orientationchange",update,{passive:true});
+  [coarseQuery,hoverQuery,compactQuery,tabletQuery].forEach(query=>{
+    if(typeof query.addEventListener==="function")query.addEventListener("change",update);
+    else if(typeof query.addListener==="function")query.addListener(update);
+  });
+})();
+
+/* =========================================================
    CURRUSCOS — INTERNATIONALIZATION
    ========================================================= */
 

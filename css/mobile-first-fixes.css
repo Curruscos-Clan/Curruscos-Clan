@@ -158,3 +158,21 @@ button, a, input, select, textarea { -webkit-tap-highlight-color:transparent; }
     animation:none!important; transition:none!important;
   }
 }
+
+/* Device-aware interaction layer: viewport controls layout, input capability controls affordances. */
+html[data-device="mobile"] body,
+html[data-device="tablet"] body,
+html[data-device="desktop"] body { min-width:0; }
+@media (pointer:coarse) {
+  body :where(button,a,input,select,textarea,[role="button"]) { touch-action:manipulation; }
+}
+@media (hover:hover) and (pointer:fine) {
+  body.device-desktop :where(a,button,[role="button"]):focus-visible {
+    outline:2px solid var(--accent-orange,#0071e3);
+    outline-offset:3px;
+  }
+}
+@media (max-width:767px) {
+  body.device-mobile :where(button,input,select,textarea) { font-size:16px; }
+  body.device-mobile :where(button,.btn,[role="button"]) { min-height:42px; }
+}
