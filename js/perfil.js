@@ -19,14 +19,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (el) { el.textContent = text || ""; el.dataset.state = kind; }
     };
     const safe = async (promise, fallback, label) => {
+        let timer;
         try {
             return await Promise.race([
                 Promise.resolve(promise),
-                new Promise(resolve => setTimeout(() => resolve(fallback), 8000))
+                new Promise(resolve => {
+                    timer = setTimeout(() => resolve(fallback), 8000);
+                })
             ]);
         } catch (error) {
             console.error("Perfil:", label, error);
             return fallback;
+        } finally {
+            clearTimeout(timer);
         }
     };
     const showGuestView = () => {
@@ -77,7 +82,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     // La página de perfil también es accesible como invitado. La autenticación
     // se comprueba aquí, sin depender del shell privado ni de un grupo activo.
     page?.classList.add("is-loading");
-    const user = await safe(getCurrentUser(true), null, "auth");
+    const authCheckFailed = { authCheckFailed: true };
+    const user = await safe(getCurrentUser(true, { throwOnError: true }), authCheckFailed, "auth");
+    if (user === authCheckFailed) {
+        showGuestView();
+        if (authMessage) {
+            authMessage.textContent = "No se ha podido comprobar tu sesión. Comprueba tu conexión e inténtalo de nuevo.";
+            authMessage.dataset.state = "error";
+        }
+        return;
+    }
     if (!user) {
         showGuestView();
         return;
