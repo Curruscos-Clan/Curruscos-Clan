@@ -58,4 +58,24 @@ function installRuntimeTranslations(){
 function installLanguageSelector(){if(document.querySelector(".i18n-control"))return;const header=document.querySelector(".navbar,.landing-header");if(!header)return;const control=document.createElement("div");control.className="i18n-control";const select=document.createElement("select");select.className="i18n-select";select.setAttribute("aria-label",languageLabel());Object.entries(I18N_SUPPORTED_LANGUAGES).forEach(([code,info])=>{const option=document.createElement("option");option.value=code;option.textContent=info.native;select.appendChild(option);});select.value=getLanguage();select.addEventListener("change",()=>{localStorage.setItem(I18N_STORAGE_KEY,normalizeLanguage(select.value)||I18N_DEFAULT_LANGUAGE);window.location.reload();});control.appendChild(select);const menuButton=header.querySelector("#menuButton");const landingNav=header.querySelector(".landing-nav");if(landingNav)landingNav.prepend(control);else if(menuButton)header.insertBefore(control,menuButton);else header.appendChild(control);}
 async function applyI18n(root){const language=getLanguage();window.curruscosTranslations=await loadLocale(language);document.documentElement.lang=language;document.documentElement.dir=I18N_SUPPORTED_LANGUAGES[language]?.dir||"ltr";document.documentElement.dataset.language=language;applyAttributeTranslations(root||document);applyLegacyTextTranslations(root||document);const title=document.querySelector("title");if(title){const key=LEGACY_TEXT_KEYS[title.textContent.trim()];if(key)title.textContent=t(key);}document.querySelectorAll("meta[name=description][data-i18n]").forEach(meta=>meta.setAttribute("content",t(meta.dataset.i18n)));installLanguageSelector();installI18nObserver();installRuntimeTranslations();window.dispatchEvent(new CustomEvent("curruscos:language-changed",{detail:{language}}));}
 window.curruscosI18n={supported:I18N_SUPPORTED_LANGUAGES,getLanguage,setLanguage(language){const normalized=normalizeLanguage(language);if(!normalized)return false;localStorage.setItem(I18N_STORAGE_KEY,normalized);window.location.reload();return true;},t,date:localeDate,number:localeNumber,currency:localeCurrency,ready:null};
-window.curruscosI18n.ready=new Promise(resolve=>{const start=()=>applyI18n(document).then(()=>resolve(window.curruscosI18n)).catch(()=>resolve(window.curruscosI18n));if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();});
+window.curruscosI18n.ready=new Promise(resolve=>{
+  const start=()=>{
+    let settled=false;
+    const finish=()=>{
+      if(settled)return;
+      settled=true;
+      window.clearTimeout(safetyTimer);
+      resolve(window.curruscosI18n);
+    };
+    // Locale downloads improve the interface but must never hold up page controls.
+    // If the network is slow, scripts can initialize with the page's original copy;
+    // translations are applied later when the request completes.
+    const safetyTimer=window.setTimeout(finish,1200);
+    applyI18n(document).then(finish).catch(error=>{
+      console.warn("La interfaz continuará con el idioma disponible.",error);
+      finish();
+    });
+  };
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});
+  else start();
+});
