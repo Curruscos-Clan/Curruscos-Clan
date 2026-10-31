@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-10-28",
+  "purpose": "Read-only content-level follow-up to the Supabase migration-history audit.",
+  "findings": [
+    {
+      "remote_logical_name": "harden_event_team_member_trigger_path",
+      "remote_versions": [
+        "20261004182519",
+        "20261004250000"
+      ],
+      "local_current_file": "supabase/migrations/20261004250000_harden_event_team_member_trigger_path.sql",
+      "local_body_summary": "ALTER FUNCTION public.validate_event_team_member_event() SET search_path = ''.",
+      "conclusion": "Only the later-named file is present in the current local migration directory. The current file cannot establish the historical SQL body associated with the earlier remote version."
+    },
+    {
+      "remote_logical_name": "harden_remaining_team_function_paths",
+      "remote_versions": [
+        "20261004182610",
+        "20261004251000"
+      ],
+      "local_current_file": "supabase/migrations/20261004251000_harden_remaining_team_function_paths.sql",
+      "local_body_summary": "Sets an empty search_path on six team-related functions.",
+      "conclusion": "Only one current local file is present for two remote records. Do not assume both remote records executed the same SQL."
+    },
+    {
+      "remote_logical_name": "harden_chat_social_function_paths",
+      "remote_versions": [
+        "20261004182659",
+        "20261004252000"
+      ],
+      "local_current_file": "supabase/migrations/20261004252000_harden_chat_social_function_paths.sql",
+      "local_body_summary": "Sets explicit search_path values on ten chat/social functions.",
+      "conclusion": "Only one current local file is present for two remote records. The earlier body is not recoverable from the current file alone."
+    },
+    {
+      "remote_logical_name": "add_recommendation_impressions",
+      "remote_versions": [
+        "20261007144651",
+        "20261007144721"
+      ],
+      "local_current_file": "supabase/migrations/20261007183000_add_recommendation_impressions.sql",
+      "local_body_summary": "Creates recommendation_impressions, indexes, RLS, logging RPC, and grants.",
+      "conclusion": "One current local file exists while the remote ledger has two versions. This could represent a reapplication or an earlier variant; SQL-body evidence is needed before reconciliation."
+    },
+    {
+      "remote_logical_name": "enforce_workspace_plan_limits",
+      "remote_versions": [
+        "20261003101759",
+        "20261003115025"
+      ],
+      "local_current_files": [],
+      "conclusion": "No current local migration file with this exact logical filename was found. Related workspace billing/limit migrations exist under different names, so mapping by topic alone would be unsafe."
+    }
+  ],
+  "safety_decision": {
+    "automatic_renames_performed": 0,
+    "production_history_modified": false,
+    "rationale": "Remote migration ledger records version/name, not the original SQL body. Current local files do not contain enough evidence to prove which body each historical version represents.",
+    "recommended_next_action": "Use the migration source commit/artifact for each remote version, or reconstruct on a separate disposable Supabase project from the available SQL, then reconcile the local migration set with explicit reviewed mappings. Keep PR #140 in draft until then."
+  }
+}

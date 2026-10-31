@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-10-28",
+  "purpose": "Read-only provenance evidence for local migration timestamp collisions; not a deployment or rename manifest.",
+  "source": "GitHub commit history for each migration path on the repository",
+  "finding": "All 16 files in the 8 timestamp-collision pairs have distinct originating commits. This proves they are not duplicate filenames created by one commit, but does not prove which exact SQL body was applied to production.",
+  "files": [
+    [
+      "20261004162000_harden_invitation_mutation.sql",
+      "985dd898bde62fd6230808332fe9062031aa693e",
+      "2026-10-04T13:36:06Z",
+      "security: lock invitation routing fields"
+    ],
+    [
+      "20261004162000_harden_plan_request_rpc_access.sql",
+      "d60644df9254f2ea68ade9e6d612e3419d60204e",
+      "2026-10-04T14:48:06Z",
+      "security: restrict workspace plan request RPC access"
+    ],
+    [
+      "20261004163500_centralize_event_trip_creation.sql",
+      "ef53ce9",
+      "2026-10-04T14:49:34Z",
+      "security: centralize event and trip creation"
+    ],
+    [
+      "20261004163500_harden_race_result_participant_scope.sql",
+      "5822457",
+      "2026-10-04T13:36:36Z",
+      "security: scope race results to event participants"
+    ],
+    [
+      "20261004170000_harden_competition_cross_event_integrity.sql",
+      "4c93497",
+      "2026-10-04T13:38:28Z",
+      "security: enforce competition cross-event integrity"
+    ],
+    [
+      "20261004170000_harden_trip_tenant_creator_immutability.sql",
+      "49faddb",
+      "2026-10-04T14:55:04Z",
+      "Harden trip tenant and creator immutability"
+    ],
+    [
+      "20261004220000_harden_team_follow_privacy.sql",
+      "3ce2fe5",
+      "2026-10-04T18:59:07Z",
+      "Harden team follow privacy"
+    ],
+    [
+      "20261004220000_harden_workspace_owner_invariants.sql",
+      "dd91f6d",
+      "2026-10-04T14:25:15Z",
+      "Harden workspace owner and role invariants"
+    ],
+    [
+      "20261005170000_harden_chat_message_identity.sql",
+      "9ab5df9",
+      "2026-10-05T15:09:24Z",
+      "security: lock chat message identity and room updates"
+    ],
+    [
+      "20261005170000_harden_persistent_team_event_registration_concurrency.sql",
+      "d5b5857",
+      "2026-10-05T15:42:27Z",
+      "Harden team event registration concurrency"
+    ],
+    [
+      "20261005172000_add_group_encryption_key_envelopes.sql",
+      "c2d7398",
+      "2026-10-05T15:53:01Z",
+      "security: add per-member group encryption key envelopes"
+    ],
+    [
+      "20261005172000_harden_direct_chat_creation_concurrency.sql",
+      "742afde",
+      "2026-10-05T15:47:30Z",
+      "Harden direct chat creation concurrency"
+    ],
+    [
+      "20261005173000_add_e2ee_payload_columns.sql",
+      "f87f427",
+      "2026-10-05T15:55:56Z",
+      "security: add E2EE payload fields for private group content"
+    ],
+    [
+      "20261005173000_harden_chat_invitation_role_concurrency_batch.sql",
+      "46b0249",
+      "2026-10-05T15:48:45Z",
+      "Harden chat, team invitation and group role concurrency"
+    ],
+    [
+      "20261009163000_move_public_event_editor_to_private_schema.sql",
+      "a6b947e",
+      "2026-10-09T14:52:25Z",
+      "Aislar la función privilegiada de edición de eventos"
+    ],
+    [
+      "20261009163000_protect_task_identity_and_assignment.sql",
+      "4ec6257",
+      "2026-10-09T16:13:26Z",
+      "Protect task identity and assignment permissions"
+    ]
+  ],
+  "safe_next_step": "Reconcile each local file against the deployed migration's exact version and SQL content using available deployment artifacts or a clean temporary Supabase project. Do not rename files or mark migrations applied solely from commit timestamps."
+}

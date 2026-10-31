@@ -1,0 +1,32 @@
+name: Supabase migration history audit
+
+on:
+  pull_request:
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/migration-history-audit-2026-10-28.json"
+      - "scripts/audit_supabase_migrations.py"
+      - "tests/test_migration_history_audit.py"
+      - ".github/workflows/migration-history-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migration-history-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test the read-only migration comparator
+        run: python -m unittest discover -s tests -p 'test_migration_history_audit.py'
+      - name: Generate migration inventory report
+        run: python scripts/audit_supabase_migrations.py --json > migration-history-audit-report.json
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-history-audit-report
+          path: migration-history-audit-report.json
