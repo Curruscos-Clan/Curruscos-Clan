@@ -159,7 +159,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Los controles de intereses se activan inmediatamente; la consulta inicial
     // se ejecuta en segundo plano y no bloquea el guardado del perfil.
     let interestsTouched = false;
-    const interestsPromise = safe(getMyInterests(), [], "interests");
+    const interestsLoadFailed = { loadFailed: true };
+    const interestsPromise = safe(getMyInterests(), interestsLoadFailed, "interests");
     interestGrid?.querySelectorAll("[data-interest]").forEach(btn => {
         btn.addEventListener("click", () => {
             interestsTouched = true;
@@ -173,7 +174,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         interestSave.textContent = t("profile.saving");
         if (interestMessage) { interestMessage.textContent = ""; interestMessage.dataset.state = ""; }
         try {
-            await interestsPromise;
+            const loadedInterests = await interestsPromise;
+            if (loadedInterests === interestsLoadFailed) {
+                throw new Error("No se han podido cargar tus intereses guardados. Recarga la página antes de modificarlos para evitar sobrescribirlos.");
+            }
             const selected = [...(interestGrid?.querySelectorAll('[aria-pressed="true"]') || [])].map(x => x.dataset.interest);
             const saved = await setMyInterests(selected);
             if (!saved) throw new Error(t("profile.interestsError"));
@@ -195,6 +199,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     interestsPromise.then(interests => {
+        if (interests === interestsLoadFailed) {
+            if (interestMessage) {
+                interestMessage.textContent = "No se han podido cargar tus intereses. Recarga la página antes de guardarlos.";
+                interestMessage.dataset.state = "error";
+            }
+            return;
+        }
         if (interestsTouched) return;
         interestGrid?.querySelectorAll("[data-interest]").forEach(btn => {
             btn.setAttribute("aria-pressed", interests.includes(btn.dataset.interest) ? "true" : "false");
@@ -251,10 +262,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // La actividad es secundaria: se carga después de activar el formulario.
     // Actividad: una consulta lenta no debe bloquear el editor.
-    const activity = await safe(getMyEventActivity(), {participating:[], organizing:[], teams:[], matches:[], activityTypes:[]}, "activity");
+    const activityLoadFailed = { loadFailed: true };
+    const activity = await safe(getMyEventActivity(), activityLoadFailed, "activity");
     const stats = document.getElementById("profileActivityStats");
     const teamsRoot = document.getElementById("profileTeams");
     const resultsRoot = document.getElementById("profileResults");
+    if (activity === activityLoadFailed) {
+        if (stats) stats.innerHTML = '<div class="profile-activity-error" role="status">No se ha podido cargar tu actividad. Tu perfil y tus cambios siguen disponibles.</div>';
+        if (teamsRoot) teamsRoot.textContent = "No se han podido cargar tus equipos.";
+        if (resultsRoot) resultsRoot.textContent = "No se han podido cargar tus resultados.";
+        return;
+    }
     const finished = activity.matches || [];
     const teamIds = new Set((activity.teams || []).map(t => t.id));
     let wins=0, draws=0, losses=0;

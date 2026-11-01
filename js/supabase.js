@@ -1915,7 +1915,7 @@ async function getRecommendedPublicEvents(search="",eventType="all",category="al
     // las reglas de relevancia/cold-start del recomendador.
     return candidates.slice(0,6);
 }
-async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);return [];}return (data||[]).map(x=>x.interest);}
+async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);throw new Error(getSupabaseErrorMessage(error,"No se han podido cargar tus intereses."));}return (data||[]).map(x=>x.interest);}
 async function setMyInterests(interests){const {data,error}=await supabaseClient.rpc("set_my_interests",{target_interests:interests});if(error)throw error;return !!data;}
 async function logActivitySignal(signal,eventId=null,eventType=null,searchText=null,metadata={}){
     // Las señales de intención fuerte siempre se conservan. Para vistas y búsquedas,
@@ -3047,7 +3047,71 @@ async function getMyPublicEvents(){
     return {participating,organizing:owned};
 }
 
-async function getMyEventActivity(){const user=await getCurrentUser();if(!user)return {participating:[],organizing:[],teams:[],matches:[]};const {data:parts}=await supabaseClient.from("event_participants").select("event_id,status").eq("user_id",user.id).eq("status","yes");const ids=(parts||[]).map(x=>x.event_id);let participating=[];if(ids.length){const {data}=await supabaseClient.from("events").select("id,title,date,time,location,event_type,format,category,status,participant_mode").in("id",ids).eq("visibility","public");participating=data||[];}const {data:organizing}=await supabaseClient.from("events").select("id,title,date,time,location,event_type,format,category,status,participant_mode").eq("created_by",user.id).eq("visibility","public");const {data:members}=await supabaseClient.from("event_team_members").select("team_id").eq("user_id",user.id);let teams=[];if((members||[]).length){const teamIds=members.map(x=>x.team_id);const {data}=await supabaseClient.from("event_teams").select("id,event_id,name,seed").in("id",teamIds);teams=data||[];}let matches=[];if(ids.length){const {data:all}=await supabaseClient.from("event_matches").select("id,event_id,home_team_id,away_team_id,home_score,away_score,status,round_number,match_number").in("event_id",ids).eq("status","finished");const teamIds=new Set(teams.map(t=>t.id));matches=(all||[]).filter(m=>teamIds.has(m.home_team_id)||teamIds.has(m.away_team_id));}const activityTypes=[...new Set(participating.map(e=>e.event_type).filter(Boolean))];return {participating,organizing:organizing||[],teams,matches,activityTypes};}
+async function getMyEventActivity() {
+    const user = await getCurrentUser(false, { throwOnError: true });
+    if (!user) return { participating: [], organizing: [], teams: [], matches: [], activityTypes: [] };
+
+    const eventFields = "id,title,date,time,location,event_type,format,category,status,participant_mode";
+    const { data: parts, error: partsError } = await supabaseClient
+        .from("event_participants")
+        .select("event_id,status")
+        .eq("user_id", user.id)
+        .eq("status", "yes");
+    if (partsError) throw new Error(getSupabaseErrorMessage(partsError, "No se han podido cargar tus inscripciones."));
+
+    const ids = (parts || []).map(row => row.event_id);
+    let participating = [];
+    if (ids.length) {
+        const { data, error } = await supabaseClient
+            .from("events")
+            .select(eventFields)
+            .in("id", ids)
+            .eq("visibility", "public");
+        if (error) throw new Error(getSupabaseErrorMessage(error, "No se han podido cargar tus eventos."));
+        participating = data || [];
+    }
+
+    const { data: organizing, error: organizingError } = await supabaseClient
+        .from("events")
+        .select(eventFields)
+        .eq("created_by", user.id)
+        .eq("visibility", "public");
+    if (organizingError) throw new Error(getSupabaseErrorMessage(organizingError, "No se han podido cargar los eventos que organizas."));
+
+    const { data: members, error: membersError } = await supabaseClient
+        .from("event_team_members")
+        .select("team_id")
+        .eq("user_id", user.id);
+    if (membersError) throw new Error(getSupabaseErrorMessage(membersError, "No se han podido cargar tus equipos."));
+
+    let teams = [];
+    if ((members || []).length) {
+        const teamIds = members.map(row => row.team_id);
+        const { data, error } = await supabaseClient
+            .from("event_teams")
+            .select("id,event_id,name,seed")
+            .in("id", teamIds);
+        if (error) throw new Error(getSupabaseErrorMessage(error, "No se han podido cargar los datos de tus equipos."));
+        teams = data || [];
+    }
+
+    let matches = [];
+    if (ids.length) {
+        const { data: all, error } = await supabaseClient
+            .from("event_matches")
+            .select("id,event_id,home_team_id,away_team_id,home_score,away_score,status,round_number,match_number")
+            .in("event_id", ids)
+            .eq("status", "finished");
+        if (error) throw new Error(getSupabaseErrorMessage(error, "No se han podido cargar tus resultados."));
+        const teamIds = new Set(teams.map(team => team.id));
+        matches = (all || []).filter(match =>
+            teamIds.has(match.home_team_id) || teamIds.has(match.away_team_id)
+        );
+    }
+
+    const activityTypes = [...new Set(participating.map(event => event.event_type).filter(Boolean))];
+    return { participating, organizing: organizing || [], teams, matches, activityTypes };
+}
 
 async function getPublicRankings(eventType="all"){const {data,error}=await supabaseClient.rpc("get_public_rankings",{target_event_type:eventType});if(error){console.error("Error obteniendo rankings:",error);return [];}return data||[];}
 
