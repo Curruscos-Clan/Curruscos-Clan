@@ -43,6 +43,22 @@ class ProfileAndEventPublishingRegressionTests(unittest.TestCase):
         self.assertIn("if (loadedInterests === interestsLoadFailed)", source)
         self.assertIn("Recarga la página antes de modificarlos", source)
 
+    def test_profile_activity_queries_propagate_database_errors(self):
+        source = (ROOT / "js/supabase.js").read_text()
+        start = source.index("async function getMyEventActivity()")
+        end = source.index("async function getPublicRankings", start)
+        helper = source[start:end]
+        for error_name in ("partsError", "organizingError", "membersError"):
+            with self.subTest(error=error_name):
+                self.assertIn(f"if ({error_name}) throw new Error", helper)
+        self.assertIn("if (error) throw new Error", helper)
+
+    def test_profile_does_not_render_activity_query_failure_as_zero_activity(self):
+        source = (ROOT / "js/perfil.js").read_text()
+        self.assertIn("const activityLoadFailed = { loadFailed: true }", source)
+        self.assertIn("if (activity === activityLoadFailed)", source)
+        self.assertIn("No se ha podido cargar tu actividad", source)
+
 
 if __name__ == "__main__":
     unittest.main()
