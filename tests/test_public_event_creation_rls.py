@@ -3,7 +3,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MIGRATION = ROOT / "supabase/migrations/20261101103000_allow_standalone_public_event_creation.sql"
+MIGRATION = ROOT / "supabase/migrations/20261101203344_allow_standalone_public_event_creation.sql"
 CREATE_JS = ROOT / "js/supabase.js"
 
 
