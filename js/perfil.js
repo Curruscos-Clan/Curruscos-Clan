@@ -262,10 +262,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // La actividad es secundaria: se carga después de activar el formulario.
     // Actividad: una consulta lenta no debe bloquear el editor.
-    const activity = await safe(getMyEventActivity(), {participating:[], organizing:[], teams:[], matches:[], activityTypes:[]}, "activity");
+    const activityLoadFailed = { loadFailed: true };
+    const activity = await safe(getMyEventActivity(), activityLoadFailed, "activity");
     const stats = document.getElementById("profileActivityStats");
     const teamsRoot = document.getElementById("profileTeams");
     const resultsRoot = document.getElementById("profileResults");
+    if (activity === activityLoadFailed) {
+        if (stats) stats.innerHTML = '<div class="profile-activity-error" role="status">No se ha podido cargar tu actividad. Tu perfil y tus cambios siguen disponibles.</div>';
+        if (teamsRoot) teamsRoot.textContent = "No se han podido cargar tus equipos.";
+        if (resultsRoot) resultsRoot.textContent = "No se han podido cargar tus resultados.";
+        return;
+    }
     const finished = activity.matches || [];
     const teamIds = new Set((activity.teams || []).map(t => t.id));
     let wins=0, draws=0, losses=0;
