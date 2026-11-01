@@ -1915,7 +1915,7 @@ async function getRecommendedPublicEvents(search="",eventType="all",category="al
     // las reglas de relevancia/cold-start del recomendador.
     return candidates.slice(0,6);
 }
-async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);return [];}return (data||[]).map(x=>x.interest);}
+async function getMyInterests(){const {data,error}=await supabaseClient.rpc("get_my_interests");if(error){console.error("Interests:",error);throw new Error(getSupabaseErrorMessage(error,"No se han podido cargar tus intereses."));}return (data||[]).map(x=>x.interest);}
 async function setMyInterests(interests){const {data,error}=await supabaseClient.rpc("set_my_interests",{target_interests:interests});if(error)throw error;return !!data;}
 async function logActivitySignal(signal,eventId=null,eventType=null,searchText=null,metadata={}){
     // Las señales de intención fuerte siempre se conservan. Para vistas y búsquedas,
