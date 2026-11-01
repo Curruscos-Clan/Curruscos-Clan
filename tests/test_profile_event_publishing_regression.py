@@ -34,7 +34,7 @@ class ProfileAndEventPublishingRegressionTests(unittest.TestCase):
         start = source.index("async function getMyInterests()")
         end = source.index("async function setMyInterests(", start)
         helper = source[start:end]
-        self.assertIn("if(error)throw new Error", helper)
+        self.assertIn("if(error){console.error(\"Interests:\",error);throw new Error", helper)
         self.assertNotIn("if(error){console.error(\"Interests:\",error);return [];}", helper)
 
     def test_profile_refuses_to_overwrite_interests_when_initial_load_fails(self):
