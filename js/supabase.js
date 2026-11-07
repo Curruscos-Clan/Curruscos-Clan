@@ -2732,12 +2732,18 @@ async function getPublicEvent(eventId) {
 }
 
 async function getPublicEvents(filters = {}) {
+    const now = new Date();
+    const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
     let query = supabaseClient
         .from("events")
         .select("id,title,date,time,location,description,category,capacity,entry_fee,registration_deadline,status,visibility,format,organizer_name,participant_mode,team_size,event_type,cover_url,created_at")
         .eq("visibility", "public")
         .eq("is_hidden", false)
         .in("status", ["published", "preparing", "live"])
+        // Keep current/future plans and genuinely live events; expired published
+        // events must not occupy the 48-row window ahead of upcoming plans.
+        .or(`date.gte.${today},status.eq.live`)
         .order("date", { ascending: true })
         .order("time", { ascending: true })
         .limit(48);

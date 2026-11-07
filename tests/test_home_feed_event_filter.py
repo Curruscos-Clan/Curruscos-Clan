@@ -58,6 +58,8 @@ class HomeFeedEventFilterTests(unittest.TestCase):
         supabase = (ROOT / "js" / "supabase.js").read_text(encoding="utf-8")
         public_query = supabase[supabase.index("async function getPublicEvents"):]
         self.assertIn("entry_fee", public_query)
+        self.assertIn("const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)", public_query)
+        self.assertIn(".or(`date.gte.${today},status.eq.live`)", public_query)
         self.assertIn("event.entry_fee??event.price??event.price_amount??0", FEED)
         self.assertIn("const price=Number.isFinite(parsedPrice)&&parsedPrice>0?parsedPrice:0", FEED)
 
