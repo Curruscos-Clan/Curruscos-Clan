@@ -3,7 +3,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MIGRATION = ROOT / "supabase/migrations/20261107100000_allow_standalone_events_through_triggers.sql"
+MIGRATION = ROOT / "supabase/migrations/20261107090350_allow_standalone_events_through_triggers.sql"
 
 
 class StandaloneEventTriggerCompatibilityTests(unittest.TestCase):
