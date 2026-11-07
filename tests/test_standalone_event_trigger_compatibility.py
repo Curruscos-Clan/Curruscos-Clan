@@ -13,7 +13,7 @@ class StandaloneEventTriggerCompatibilityTests(unittest.TestCase):
 
     def test_only_own_standalone_public_events_bypass_workspace_quota(self):
         self.assertIn("new.group_id is null", self.sql)
-        self.assertIn("tg_table_name = 'events'", self.sql)
+        self.assertIn("if tg_table_name = 'events' then\n      if new.visibility = 'public'", self.sql)
         self.assertIn("new.visibility = 'public'", self.sql)
         self.assertIn("new.created_by = v_user", self.sql)
         self.assertIn("v_user is not null", self.sql)
