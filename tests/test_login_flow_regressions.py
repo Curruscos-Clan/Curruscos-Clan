@@ -31,6 +31,15 @@ class LoginFlowRegressionTests(unittest.TestCase):
         self.assertIn("catch (error)", function)
         self.assertIn("no hemos podido cargar tus espacios", function.lower())
 
+    def test_login_controls_are_bound_before_network_session_lookup(self):
+        self.assertNotIn("await window.curruscosI18n?.ready", LOGIN)
+        session_check = LOGIN.index("const initializeExistingSession = async () =>")
+        submit_handler = LOGIN.index('form.addEventListener("submit"')
+        self.assertLess(submit_handler, session_check)
+        self.assertLess(LOGIN.index("forgotPassword?.addEventListener"), session_check)
+        self.assertIn("Promise.race([initializeExistingSession(), sessionCheckTimeout])", LOGIN)
+        self.assertIn("Puedes iniciar sesión igualmente.", LOGIN)
+
     def test_group_lookup_can_distinguish_error_from_no_groups(self):
         start = SUPABASE.index("async function getUserGroups(forceRefresh = false, options = {})")
         end = SUPABASE.index("// ========================================", start)
