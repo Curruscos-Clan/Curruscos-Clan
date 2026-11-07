@@ -14,11 +14,14 @@ DECLARE
   v_members integer;
 BEGIN
   IF NEW.group_id IS NULL THEN
-    IF TG_TABLE_NAME = 'events'
-       AND NEW.visibility = 'public'
-       AND NEW.created_by = v_user
-       AND v_user IS NOT NULL THEN
-      RETURN NEW;
+    -- NEW is a table-specific record; inspect event-only fields only inside
+    -- the events branch so the shared trigger remains safe for trips.
+    IF TG_TABLE_NAME = 'events' THEN
+      IF NEW.visibility = 'public'
+         AND NEW.created_by = v_user
+         AND v_user IS NOT NULL THEN
+        RETURN NEW;
+      END IF;
     END IF;
     RAISE EXCEPTION 'GROUP_REQUIRED';
   END IF;
