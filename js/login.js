@@ -2,7 +2,7 @@
    CURRUSCOS — ACCESO, REGISTRO Y RECUPERACIÓN
    ========================================================= */
 document.addEventListener("DOMContentLoaded", async () => {
-    await window.curruscosI18n?.ready;
+    // Bind the access controls immediately. Locale loading is deliberately non-blocking.
 
     const $ = id => document.getElementById(id);
     const card = $("authCard"), form = $("loginForm");
@@ -185,38 +185,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         return getSupabaseErrorMessage(error, "No se ha podido completar la operación.");
     };
-
-    const isResetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
-
-    /*
-     * Recovery links create an authenticated session before the password is changed.
-     * We check that session before redirecting normal signed-in users, so a recovery
-     * link can never get sent straight to the dashboard.
-     */
-    if (isResetRequested) {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-
-        if (session) {
-            form.style.display = "none";
-            authSuccess.classList.remove("active");
-            divider?.style.setProperty("display", "none");
-            registerButton.style.display = "none";
-            modeButton.style.display = "none";
-            trust?.style.setProperty("display", "none");
-            resetPanel?.classList.add("active");
-            title.textContent = "Recupera tu cuenta.";
-            subtitle.textContent = "Establece una nueva contraseña para volver a acceder.";
-            resetPassword?.focus();
-        } else {
-            setMessage("El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo desde el acceso.");
-        }
-    } else {
-        const existingUser = await getCurrentUser();
-        if (existingUser) {
-            await redirectAfterAuth();
-            return;
-        }
-    }
 
     if (new URLSearchParams(window.location.search).get("mode") === "register") {
         setRegisterMode(true);
@@ -491,4 +459,47 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     updateMeter(password, meter, hint);
     updateMeter(resetPassword, resetMeter, resetHint);
+    // Session discovery is intentionally started only after every control has
+    // its handlers. A slow or unavailable auth request must never make the
+    // sign-in, registration, or recovery buttons appear dead.
+    const initializeExistingSession = async () => {
+        const isResetRequested = new URLSearchParams(window.location.search).get("reset") === "1";
+
+        try {
+            if (isResetRequested) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+
+                if (session) {
+                    form.style.display = "none";
+                    authSuccess.classList.remove("active");
+                    divider?.style.setProperty("display", "none");
+                    registerButton.style.display = "none";
+                    modeButton.style.display = "none";
+                    trust?.style.setProperty("display", "none");
+                    resetPanel?.classList.add("active");
+                    title.textContent = "Recupera tu cuenta.";
+                    subtitle.textContent = "Establece una nueva contraseña para volver a acceder.";
+                    resetPassword?.focus();
+                } else {
+                    setMessage("El enlace de recuperación no es válido o ha caducado. Solicita uno nuevo desde el acceso.");
+                }
+                return;
+            }
+
+            const existingUser = await getCurrentUser();
+            if (existingUser) await redirectAfterAuth();
+        } catch (error) {
+            console.warn("No se pudo comprobar la sesión inicial:", error);
+            setMessage("No hemos podido comprobar tu sesión. Puedes intentar iniciar sesión; si el problema continúa, revisa tu conexión.");
+        }
+    };
+
+    const sessionCheckTimeout = new Promise(resolve => {
+        window.setTimeout(() => resolve("timeout"), 8000);
+    });
+    Promise.race([initializeExistingSession(), sessionCheckTimeout]).then(result => {
+        if (result === "timeout" && !message.textContent) {
+            setMessage("La comprobación de sesión está tardando. Puedes iniciar sesión igualmente.");
+        }
+    });
 });
