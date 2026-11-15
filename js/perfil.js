@@ -2,8 +2,8 @@
    El perfil no puede quedarse bloqueado esperando una consulta secundaria.
 */
 document.addEventListener("DOMContentLoaded", async () => {
-    // Evita que una traducción pendiente deje el perfil en blanco.
-    await Promise.race([
+    // La localización se prepara en paralelo; no debe retrasar los controles de acceso.
+    const localeReady = Promise.race([
         Promise.resolve(window.curruscosI18n?.ready).catch(error => console.warn("i18n no disponible en perfil:", error)),
         new Promise(resolve => setTimeout(resolve, 1200))
     ]);
@@ -82,6 +82,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             setStatus(getSupabaseErrorMessage(error, "No se ha podido cerrar la sesión."), "error");
         }
     });
+
+    // Los controles de acceso ya están enlazados; ahora sí podemos esperar a la localización.
+    await localeReady;
 
     // La página de perfil también es accesible como invitado. La autenticación
     // se comprueba aquí, sin depender del shell privado ni de un grupo activo.
