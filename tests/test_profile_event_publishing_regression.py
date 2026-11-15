@@ -11,6 +11,15 @@ class ProfileAndEventPublishingRegressionTests(unittest.TestCase):
         self.assertIn("setTimeout(resolve, 1200)", source)
         self.assertNotIn("await window.curruscosI18n?.ready;", source)
 
+    def test_profile_auth_controls_are_bound_before_i18n_wait(self):
+        source = (ROOT / "js/perfil.js").read_text(encoding="utf-8")
+        auth_handler = source.index('authForm?.addEventListener("submit"')
+        logout_handler = source.index('logoutButton?.addEventListener("click"')
+        locale_wait = source.index("await localeReady")
+        self.assertLess(auth_handler, locale_wait)
+        self.assertLess(logout_handler, locale_wait)
+        self.assertIn("const localeReady = Promise.race([", source)
+
     def test_profile_query_errors_can_reach_the_ui(self):
         source = (ROOT / "js/supabase.js").read_text()
         self.assertIn("async function getCurrentProfile(forceRefresh = false, options = {})", source)
